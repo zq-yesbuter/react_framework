@@ -1,0 +1,92 @@
+
+.right {
+    flex: 1;
+    padding:10px;
+    position: relative;
+    .recordHeader{
+      height:32px;
+      line-height: 32px;
+      margin-bottom:8px;
+      text-align: center;
+  }
+  .chatPanel{
+    // position: relative;
+    // height: 100%;
+    width: 100%;
+    .chatPanelContainer{
+      position: absolute;
+      top: 16px;
+      left: 0;
+      width: 100%;
+      height: calc(100vh - 330px);
+      overflow: auto;
+      .chatList {
+        margin-left: -40px;
+        li {
+          position: relative;
+          margin-bottom: 8px;
+          min-height: 60px;
+        }
+        .avatar {
+          position: absolute;
+        }
+        .chatTime{
+          font-size: 11px;
+        }
+        .chatName{
+          font-size: 11px;
+          margin-left: 10px;
+        }
+        .chatText {
+          display: inline-block;
+          text-align: left;
+          margin-top: 8px;
+          padding: 6px 8px;
+          font-size: 14px;
+          line-height: 1.5;
+          border:1px solid #cccccc;
+          margin-left: 15px;
+          font-weight: 500;
+        }
+        .chatItemMine {
+          text-align: right;
+          padding-right: 60px;
+          padding-left: 0;
+          .avatar {
+            right: 0;
+          }
+          .chatText {
+            background-color: #99cc00;
+            border-radius: 8px 0 8px 8px;
+          }
+        }
+        .chatItemJoysec {
+          .avatar {
+            left: 0;
+          }
+          .chatText {
+            // background-color: #1BB8A8;
+            border-radius: 0 8px 8px 8px;
+          }
+        }
+      }
+    }
+  }
+  .bottomLoading{
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    height: 80px;
+    font-size:8px;
+    position: absolute;
+    top: 0;
+    left:50%-4px;
+  }
+  .noContent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:#888;
+    height: calc(100vh - 330px);
+  }
+}
