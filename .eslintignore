@@ -1,0 +1,6 @@
+**/*.testLayer.js
+src/components/Plugin
+index.ejs
+public/
+config/
+

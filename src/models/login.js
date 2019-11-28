@@ -3,6 +3,7 @@ import { stringify } from 'querystring';
 import { fakeAccountLogin, getFakeCaptcha } from '@/services/login';
 import { setAuthority } from '@/utils/authority';
 import { getPageQuery } from '@/utils/utils';
+
 const Model = {
   namespace: 'login',
   state: {
@@ -54,7 +55,7 @@ const Model = {
             search: stringify({
               redirect: window.location.href,
             }),
-          }),
+          })
         );
       }
     },

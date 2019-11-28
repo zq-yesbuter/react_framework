@@ -1,9 +1,9 @@
-/**
- * request 网络请求工具
- * 更详细的 api 文档: https://github.com/umijs/umi-request
- */
-import { extend } from 'umi-request';
+import fetch from 'dva/fetch';
 import { notification } from 'antd';
+import { parse, stringify } from 'qs';
+import { routerRedux } from 'dva/router';
+// import store from '../index';
+
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
   201: '新建或修改数据成功。',
@@ -21,36 +21,121 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
 };
+function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  }
+  const errortext = codeMessage[response.status] || response.statusText;
+  notification.error({
+    message: `请求错误 ${response.status}: ${response.url}`,
+    description: errortext,
+  });
+  const error = new Error(errortext);
+  error.name = response.status;
+  error.response = response;
+  throw error;
+}
+
 /**
- * 异常处理程序
+ * 校验请求结果
+ * @param {} response
  */
+function checkResult(response, options) {
+  if (response.code === 'SUCCESS') {
+    return response.obj;
+  } else if (response.code === 'NOT_LOGIN') {
+    const error = new Error('未登录');
+    error.name = 401;
+    error.response = response;
+    throw error;
+  }
+  const message = response.message || '未知错误';
+  // if (!options.ignoreError) {
+  //   notification.error({
+  //     message: '服务错误',
+  //     description: `message:${message},code:${response.code}`,
+  //   });
+  // }
+  const error = new Error(message);
+  error.name = 200;
+  error.response = response;
+  error.code = response.code;
+  throw error;
+}
+// try {
+//   await request().catch((e)=>{console.log(e.code)})
+// }catch (e){
+//
+// }
 
-const errorHandler = error => {
-  const { response } = error;
-
-  if (response && response.status) {
-    const errorText = codeMessage[response.status] || response.statusText;
-    const { status, url } = response;
-    notification.error({
-      message: `请求错误 ${status}: ${url}`,
-      description: errorText,
-    });
-  } else if (!response) {
-    notification.error({
-      description: '您的网络发生异常，无法连接服务器',
-      message: '网络异常',
-    });
+/**
+ * Requests a URL, returning a promise.
+ *
+ * @param  {string} url       The URL we want to request
+ * @param  {object} [options] The options we want to pass to "fetch"
+ * @return {object}           An object containing either "data" or "err"
+ */
+export default function request(url, options) {
+  const defaultOptions = {
+    ignoreError: false,
+    credentials: 'include',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+      'X-Requested-With': 'XMLHttpRequest',
+    },
+  };
+  const newOptions = { ...defaultOptions, ...options };
+  if (newOptions.method === 'POST' || newOptions.method === 'PUT') {
+    if (!(newOptions.body instanceof FormData)) {
+      newOptions.headers = {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+        ...newOptions.headers,
+      };
+      newOptions.body = JSON.stringify(newOptions.body);
+    } else {
+      // newOptions.body is FormData
+      newOptions.headers = {
+        Accept: 'application/json',
+      };
+    }
   }
 
-  return response;
-};
-/**
- * 配置request请求时的默认参数
- */
+  return fetch(url, newOptions)
+    .then(checkStatus)
+    .then(response => {
+      if (newOptions.method === 'DELETE' || response.status === 204) {
+        return response.text();
+      }
+      return response.json();
+    })
+    .then(res => {
+      return checkResult(res, newOptions);
+    })
+    .catch(e => {
+      const status = e.name;
+      if (status === 401) {
+        loginRedirect();
+        return;
+      }
+      if (status === 403) {
+        // window.g_app._store.dispatch(routerRedux.push('/exception/403'));
+        return;
+      }
+      throw e;
+      // if (status <= 504 && status >= 500) {
+      //   dispatch(routerRedux.push('/exception/500'));
+      //   return;
+      // }
+      // if (status >= 404 && status < 422) {
+      //   dispatch(routerRedux.push('/exception/404'));
+      // }
+    });
+}
 
-const request = extend({
-  errorHandler,
-  // 默认错误处理
-  credentials: 'include', // 默认请求是否带上cookie
-});
-export default request;
+export function loginRedirect() {
+  const returnUrl = `http://jmis.jd.com/remote/index.htm?callBack=${encodeURIComponent(
+    `${location.origin}/`
+  )}&appCode=OMS`;
+  window.location.href = returnUrl;
+}

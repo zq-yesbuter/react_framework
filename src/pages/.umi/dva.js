@@ -10,20 +10,41 @@ export function _onCreate() {
   const runtimeDva = plugins.mergeConfig('dva');
   app = dva({
     history,
-    
+
     ...(runtimeDva.config || {}),
     ...(window.g_useSSR ? { initialState: window.g_initialData } : {}),
   });
-  
+
   app.use(createLoading());
   (runtimeDva.plugins || []).forEach(plugin => {
     app.use(plugin);
   });
-  
-  app.model({ namespace: 'global', ...(require('/Users/zhangqing272/knowledge/human_resources_platform/src/models/global.js').default) });
-app.model({ namespace: 'login', ...(require('/Users/zhangqing272/knowledge/human_resources_platform/src/models/login.js').default) });
-app.model({ namespace: 'setting', ...(require('/Users/zhangqing272/knowledge/human_resources_platform/src/models/setting.js').default) });
-app.model({ namespace: 'user', ...(require('/Users/zhangqing272/knowledge/human_resources_platform/src/models/user.js').default) });
+
+  app.model({
+    namespace: 'chatrecord',
+    ...require('/Users/zhangqing272/workspace/new/human_resources_platform/src/models/chatrecord.js')
+      .default,
+  });
+  app.model({
+    namespace: 'global',
+    ...require('/Users/zhangqing272/workspace/new/human_resources_platform/src/models/global.js')
+      .default,
+  });
+  app.model({
+    namespace: 'login',
+    ...require('/Users/zhangqing272/workspace/new/human_resources_platform/src/models/login.js')
+      .default,
+  });
+  app.model({
+    namespace: 'setting',
+    ...require('/Users/zhangqing272/workspace/new/human_resources_platform/src/models/setting.js')
+      .default,
+  });
+  app.model({
+    namespace: 'user',
+    ...require('/Users/zhangqing272/workspace/new/human_resources_platform/src/models/user.js')
+      .default,
+  });
   return app;
 }
 

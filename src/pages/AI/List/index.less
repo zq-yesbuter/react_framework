@@ -1,16 +1,25 @@
-.search{
+.search {
   display: flex;
   padding: 15px 0;
 }
-.bottom{
-  position:fixed;
-  bottom:0;
-  height:60px;
-  // border-top:1px solid #f7f7f7;
-  padding:10px;
-  .bottomContent{
-    display: flex;
+.header {
+  display: flex;
+  .common {
+    background: #ccc;
+    flex: 1;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
   }
 }
-
-
+.bottom {
+  position: fixed;
+  bottom: 0;
+  display: flex;
+  height: 90px;
+  border-top: 1px solid #f7f7f7;
+  padding: 10px 40px 40px 10px;
+  align-items: center;
+  justify-content: space-between;
+  width: 25vw;
+}

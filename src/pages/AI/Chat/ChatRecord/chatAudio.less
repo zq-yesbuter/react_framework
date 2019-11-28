@@ -1,0 +1,66 @@
+.box {
+  display: inline-block;
+  // width: 30px;
+  // height: 30px;
+  box-sizing: border-box;
+  position: relative;
+  margin-top: 5px;
+  // margin: 10px auto;
+  cursor: pointer;
+  .wifi-symbol {
+    width: 15px;
+    height: 15px;
+    box-sizing: border-box;
+    overflow: hidden;
+    transform: rotate(-45deg);
+    .wifi-circle {
+      border: 2px solid rgba(0, 0, 0, 0.8);
+      border-radius: 50%;
+      position: absolute;
+    }
+    .first {
+      width: 10px;
+      height: 10px;
+      top: 12px;
+      left: 12px;
+    }
+
+    .second {
+      width: 20px;
+      height: 20px;
+      top: 7px;
+      left: 7px;
+      // animation: fadeInOut 1s infinite 0.2s;
+    }
+    .secondActive {
+      animation: fadeInOut 1s infinite 0.2s;
+    }
+
+    .third {
+      width: 35px;
+      height: 35px;
+      top: 1px;
+      left: 1px;
+      // animation: fadeInOut 1s infinite 0.4s;
+    }
+    .thirdActive {
+      animation: fadeInOut 1s infinite 0.4s;
+    }
+
+    @keyframes fadeInOut {
+      0% {
+        opacity: 0; /*初始状态 透明度为0*/
+      }
+      // 50% {
+      //     opacity: 0.5; /*初始状态 透明度为0*/
+      // }
+      100% {
+        opacity: 1; /*结尾状态 透明度为1*/
+      }
+    }
+  }
+  .wifi-symbol-left {
+    transform: rotate(135deg);
+    margin-left: 10px;
+  }
+}

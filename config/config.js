@@ -102,17 +102,17 @@ export default {
   devtool: isAntDesignProPreview ? 'source-map' : false,
   // umi routes: https://umijs.org/zh/guide/router.html
   routes: [
-    {
-      path: '/user',
-      component: '../layouts/UserLayout',
-      routes: [
-        {
-          name: 'login',
-          path: '/user/login',
-          component: './user/login',
-        },
-      ],
-    },
+    // {
+    //   path: '/user',
+    //   component: '../layouts/UserLayout',
+    //   routes: [
+    //     {
+    //       name: 'login',
+    //       path: '/user/login',
+    //       component: './user/login',
+    //     },
+    //   ],
+    // },
     {
       path: '/',
       component: '../layouts/SecurityLayout',
@@ -147,6 +147,7 @@ export default {
     },
   ],
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
+  // 主题颜色
   theme: {
     'primary-color': '#1BB8A8',
   },

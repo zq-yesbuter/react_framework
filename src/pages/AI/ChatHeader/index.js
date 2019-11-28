@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Radio, DatePicker, Select,Input } from 'antd';
+import { Radio, DatePicker, Select, Input } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
@@ -9,8 +9,8 @@ import { getDateString } from '@/utils/utils';
 const dateFormat = 'YYYY-MM-DD';
 const { RangePicker } = DatePicker;
 const { Option } = Select;
-function ChatHeader({ dispatch, wechatrecord={} }) {
-  const { wechatList=[], conUserName='jjj' } = wechatrecord;
+function ChatHeader({ dispatch, chatrecord = {} }) {
+  const { wechatList = [], conUserName = 'jjj' } = chatrecord;
   const [value, setValue] = useState(getDateString('today'));
   const [selectValue, setSelectValue] = useState(conUserName);
 
@@ -21,7 +21,7 @@ function ChatHeader({ dispatch, wechatrecord={} }) {
   }
   useEffect(() => {
     dispatch({
-      type: 'wechatrecord/save',
+      type: 'chatrecord/save',
       payload: {
         time: getDateString('today'),
         conUserName: selectValue,
@@ -29,12 +29,9 @@ function ChatHeader({ dispatch, wechatrecord={} }) {
       },
     });
   }, []);
-  useEffect(
-    () => {
-      setSelectValue(conUserName);
-    },
-    [conUserName],
-  );
+  useEffect(() => {
+    setSelectValue(conUserName);
+  }, [conUserName]);
 
   return (
     <div
@@ -45,14 +42,14 @@ function ChatHeader({ dispatch, wechatrecord={} }) {
         marginTop: 2,
       }}
     >
-      <Input/>
+      <Input />
     </div>
   );
 }
 
 ChatHeader.propTypes = {
-  wechatrecord: PropTypes.object.isRequired,
+  chatrecord: PropTypes.object.isRequired,
   dispatch: PropTypes.func.isRequired,
 };
-const mapStateToProps = ({ wechatrecord }) => ({ wechatrecord });
+const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
 export default connect(mapStateToProps)(ChatHeader);

@@ -2,6 +2,7 @@ import { Button, message, notification } from 'antd';
 import React from 'react';
 import { formatMessage } from 'umi-plugin-react/locale';
 import defaultSettings from '../config/defaultSettings';
+
 const { pwa } = defaultSettings; // if pwa is true
 
 if (pwa) {
@@ -10,13 +11,12 @@ if (pwa) {
     message.warning(
       formatMessage({
         id: 'app.pwa.offline',
-      }),
+      })
     );
   }); // Pop up a prompt on the page asking the user if they want to use the latest version
 
   window.addEventListener('sw.updated', event => {
     const e = event;
-
     const reloadSW = async () => {
       // Check if there is sw whose state is waiting in ServiceWorkerRegistration
       // https://developer.mozilla.org/en-US/docs/Web/API/ServiceWorkerRegistration
@@ -41,7 +41,7 @@ if (pwa) {
           {
             type: 'skip-waiting',
           },
-          [channel.port2],
+          [channel.port2]
         );
       }); // Refresh current page to use the updated HTML and other assets after SW has skiped waiting
 

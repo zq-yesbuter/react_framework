@@ -5,6 +5,7 @@ import Link from 'umi/link';
 import { connect } from 'dva';
 import LoginComponents from './components/Login';
 import styles from './style.less';
+
 const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginComponents;
 
 @connect(({ login, loading }) => ({
@@ -13,15 +14,18 @@ const { Tab, UserName, Password, Mobile, Captcha, Submit } = LoginComponents;
 }))
 class Login extends Component {
   loginForm = undefined;
+
   state = {
     type: 'account',
     autoLogin: true,
   };
+
   changeAutoLogin = e => {
     this.setState({
       autoLogin: e.target.checked,
     });
   };
+
   handleSubmit = (err, values) => {
     const { type } = this.state;
 
@@ -33,11 +37,13 @@ class Login extends Component {
       });
     }
   };
+
   onTabChange = type => {
     this.setState({
       type,
     });
   };
+
   onGetCaptcha = () =>
     new Promise((resolve, reject) => {
       if (!this.loginForm) {
@@ -62,6 +68,7 @@ class Login extends Component {
         }
       });
     });
+
   renderMessage = content => (
     <Alert
       style={{
@@ -99,7 +106,7 @@ class Login extends Component {
               this.renderMessage(
                 formatMessage({
                   id: 'user-login.login.message-invalid-credentials',
-                }),
+                })
               )}
             <UserName
               name="userName"
@@ -149,7 +156,7 @@ class Login extends Component {
               this.renderMessage(
                 formatMessage({
                   id: 'user-login.login.message-invalid-verification-code',
-                }),
+                })
               )}
             <Mobile
               name="mobile"

@@ -19,7 +19,10 @@ import logo from '../assets/logo.svg';
  */
 const menuDataRender = menuList =>
   menuList.map(item => {
-    const localItem = { ...item, children: item.children ? menuDataRender(item.children) : [] };
+    const localItem = {
+      ...item,
+      children: item.children ? menuDataRender(item.children) : [],
+    };
     return Authorized.check(item.authority, localItem, null);
   });
 
@@ -82,14 +85,14 @@ const BasicLayout = props => {
    */
 
   useEffect(() => {
-    if (dispatch) {
-      dispatch({
-        type: 'user/fetchCurrent',
-      });
-      dispatch({
-        type: 'settings/getSetting',
-      });
-    }
+    // if (dispatch) {
+    //   dispatch({
+    //     type: 'user/fetchCurrent',
+    //   });
+    //   dispatch({
+    //     type: 'settings/getSetting',
+    //   });
+    // }
   }, []);
   /**
    * init variables

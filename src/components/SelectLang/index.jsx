@@ -30,7 +30,7 @@ const SelectLang = props => {
         <Menu.Item key={locale}>
           <span role="img" aria-label={languageLabels[locale]}>
             {languageIcons[locale]}
-          </span>{' '}
+          </span>
           {languageLabels[locale]}
         </Menu.Item>
       ))}

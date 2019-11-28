@@ -73,7 +73,8 @@ const NoticeList = ({
       <div className={styles.bottomBar}>
         {showClear ? (
           <div onClick={onClear}>
-            {clearText} {title}
+            {clearText}
+            {title}
           </div>
         ) : null}
         {showViewMore ? (

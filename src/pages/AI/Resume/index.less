@@ -1,0 +1,130 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-self: center;
+  height: 60px;
+  padding: 0 40px;
+}
+.chanceItem {
+  position: relative;
+  box-sizing: border-box;
+  margin: 16px auto; //width: 428px;
+  border-radius: 4px;
+  list-style: none;
+  min-height: 105px;
+  margin: 0 40px 40px 40px;
+  cursor: pointer;
+  .resumeTitle {
+    background: rgba(24, 158, 145, 0.5);
+    padding-left: 5px;
+    height: 30px;
+    line-height: 30px;
+    border-radius: 4px 4px 0px 0px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+  .arrow {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-top: 2px solid @primary-color;
+    border-right: 2px solid @primary-color;
+  }
+  .arrowLeft {
+    transform: rotate(-135deg) skew(15deg, 15deg);
+    position: absolute;
+    top: 50%;
+    left: 0;
+    z-index: 10;
+  }
+  .arrowRight {
+    transform: rotate(45deg) skew(15deg, 15deg);
+    position: absolute;
+    top: 50%;
+    right: 0;
+    z-index: 10;
+  }
+  .mycarousel {
+    width: calc(~'25vw - 80px');
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .carousel {
+    position: relative;
+    div {
+      height: 30px;
+      line-height: 30px;
+    }
+    .expand {
+      height: 60px;
+      // overflow:hidden;
+      // clear : left;
+      // text-overflow:ellipsis; //溢出用省略号显示
+      // white-space:nowrap; //溢出不换行
+      // -webkit-line-clamp: 3;
+      // -webkit-box-orient: vertical;
+      // display: -webkit-box;overflow : hidden;text-overflow: ellipsis;-webkit-line-clamp: 3;-webkit-box-orient: vertical;
+      // display: -webkit-box;
+      // -webkit-line-clamp: 3;
+      // -webkit-box-orient: vertical;
+      // overflow: hidden;
+      display: -webkit-box;
+      /*! autoprefixer: off */
+      -webkit-box-orient: vertical;
+      /* autoprefixer: on */
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+    .button {
+      position: absolute;
+      padding-left: 3px;
+      right: 0px;
+      bottom: 12px;
+      background: #fff;
+      z-index: 10;
+      color: @primary-color;
+    }
+    .summary {
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 5px;
+      line-height: 22px;
+      word-break: break-all;
+      text-indent: 5em;
+    }
+    .content p {
+      height: 90px;
+    }
+    .content:before {
+      display: block;
+      content: attr(data-content);
+      position: absolute;
+      z-index: 1;
+      left: 0;
+      top: 0;
+      height: 66px; //这里的高是3×22的结果，其中22是行高 ，3是4-1
+      width: 100%;
+      overflow: hidden;
+      color: #000;
+      background-color: #fff;
+      text-indent: 5em;
+    }
+    .content:after {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      -webkit-line-clamp: 4; //4就是需要在收起的时候显示的行数
+      content: attr(data-content);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      text-indent: -4em;
+      padding-right: 3em;
+      color: #000;
+      background-color: #fff;
+    }
+  }
+}
