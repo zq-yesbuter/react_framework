@@ -39,7 +39,7 @@ startServer.stdout.on('data', data => {
       ['test', '--', '--maxWorkers=1', '--runInBand'],
       {
         stdio: 'inherit',
-      },
+      }
     );
     testCmd.on('exit', code => {
       startServer.kill();

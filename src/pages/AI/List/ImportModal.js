@@ -16,6 +16,7 @@ import {
   Modal,
   Upload,
   Icon,
+  message,
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
@@ -37,6 +38,8 @@ const formItemLayout = {
 };
 function ImportModal({ dispatch, visible, form, close }) {
   const { getFieldDecorator, validateFields, resetFields } = form;
+  const { fileList, setFileList } = useState([]);
+
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
@@ -53,6 +56,63 @@ function ImportModal({ dispatch, visible, form, close }) {
         // }).catch(() => {});
       }
     });
+  }
+  function beforeUpload(file) {
+    // console.log('文件格式==》', file.type);
+    const fileType = ['pdf', 'word', 'excel', 'doc', 'docs', 'xlsx', 'image/png', 'image/jpeg'];
+    const currentType = fileType.includes(file.type);
+    if (!currentType) {
+      message.error('请上传正确格式!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return currentType && isLt2M;
+  }
+  function uploadChange({ file, fileList }) {
+    if (file.status !== 'uploading') {
+      // console.log('notuploading===>', file, fileList);
+    }
+    if (file.status === 'done') {
+      // console.log('notuploading===>', file, fileList, [...fileList, file]);
+    }
+  }
+  const uploadProps = {
+    customRequest: () => {},
+    beforeUpload,
+    onChange: uploadChange,
+    // defaultFileList: [
+    //   {
+    //     uid: '1',
+    //     name: 'xxx.png',
+    //     status: 'done',
+    //     response: 'Server Error 500', // custom error message to show
+    //     url: 'http://www.baidu.com/xxx.png',
+    //   },
+    //   {
+    //     uid: '2',
+    //     name: 'yyy.png',
+    //     status: 'done',
+    //     url: 'http://www.baidu.com/yyy.png',
+    //   },
+    //   {
+    //     uid: '3',
+    //     name: 'zzz.png',
+    //     // status: 'error',
+    //     response: 'Server Error 500', // custom error message to show
+    //     url: 'http://www.baidu.com/zzz.png',
+    //   },
+    // ],
+    // fileList,
+    // directory: true,
+  };
+  function normFile(e) {
+    // console.log('Upload event:===>', e);
+    if (Array.isArray(e)) {
+      return e;
+    }
+    return e && e.fileList;
   }
   return (
     <Modal
@@ -76,6 +136,8 @@ function ImportModal({ dispatch, visible, form, close }) {
         </Item>
         <Item label="导入文件" required>
           {getFieldDecorator('file', {
+            valuePropName: 'fileList',
+            getValueFromEvent: normFile,
             rules: [
               {
                 required: true,
@@ -83,7 +145,7 @@ function ImportModal({ dispatch, visible, form, close }) {
               },
             ],
           })(
-            <Upload>
+            <Upload {...uploadProps} multiple>
               <Button>
                 <Icon type="upload" />
                 选择文件

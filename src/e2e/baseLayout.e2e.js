@@ -12,7 +12,7 @@ function formatter(routes, parentPath = '') {
     }
     if (item.routes) {
       result = result.concat(
-        formatter(item.routes, item.path ? `${fixedParentPath}/${item.path}` : parentPath),
+        formatter(item.routes, item.path ? `${fixedParentPath}/${item.path}` : parentPath)
       );
     }
   });
@@ -21,18 +21,20 @@ function formatter(routes, parentPath = '') {
 
 describe('Ant Design Pro E2E test', () => {
   const testPage = path => async () => {
+    // eslint-disable-next-line no-undef
     await page.goto(`${BASE_URL}${path}`);
+    // eslint-disable-next-line no-undef
     await page.waitForSelector('footer', {
       timeout: 2000,
     });
+    // eslint-disable-next-line no-undef
     const haveFooter = await page.evaluate(
-      () => document.getElementsByTagName('footer').length > 0,
+      () => document.getElementsByTagName('footer').length > 0
     );
     expect(haveFooter).toBeTruthy();
   };
 
   const routers = formatter(RouterConfig);
-  console.log('routers', routers);
   routers.forEach(route => {
     it(`test pages ${route}`, testPage(route));
   });

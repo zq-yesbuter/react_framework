@@ -41,16 +41,14 @@ function RecordBottom({ form }) {
     });
   }
   return (
-    <Row gutter={16} style={{ marginLeft: 20, marginRight: 20 }}>
+    <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
           <h3>计划邀约时间</h3>
-          <Item>
-            {getFieldDecorator('name1')(
-              <DatePicker showTime placeholder="选择计划邀约时间" style={{ width: '100%' }} />
-            )}
-          </Item>
-          <Item>
+          <div style={{ marginBottom: 10 }}>
+            {getFieldDecorator('name1')(<DatePicker showTime placeholder="选择计划邀约时间" />)}
+          </div>
+          <div style={{ marginBottom: 10 }}>
             {getFieldDecorator('name2', {
               initialValue: 100,
             })(
@@ -62,7 +60,7 @@ function RecordBottom({ form }) {
                 parser={value => value.replace('分钟', '')}
               />
             )}
-          </Item>
+          </div>
           <Button onClick={onSubmit} block>
             发送邀约短信
           </Button>

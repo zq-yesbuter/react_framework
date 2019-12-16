@@ -1,4 +1,4 @@
-# 人资AI系统
+# 人资 AI 系统
 
 Follow is the quick guide for how to use.
 

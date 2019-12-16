@@ -53,6 +53,16 @@ const data = [
     name: '胡',
     content: '待邀约',
   },
+  {
+    id: '5',
+    name: '胡d',
+    content: '待邀约',
+  },
+  {
+    id: '4',
+    name: '胡dd',
+    content: '待邀约',
+  },
 ];
 function ChatList({ dispatch, chatrecord = {}, form }) {
   const { talker = '二傻' } = chatrecord;
@@ -224,6 +234,8 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
     let newDataSource = [];
     if (e.target.checked) {
       newDataSource = dataSource.map(item => ({ ...item, checked: true }));
+      newSelectedKeys = dataSource.map(item => item.id);
+      console.log('全选==》666', newSelectedKeys);
       setAllChecked(true);
     } else {
       newSelectedKeys = [];
@@ -268,8 +280,10 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
   function bottom() {
     const importMenu = (
       <Menu onClick={onExportChange}>
-        <Menu.Item key={1}>导出简历/邀约结果</Menu.Item>
-        <Menu.Item key={2}>批量设置邀约结果</Menu.Item>
+        <Menu.Item key={1}>导出简历</Menu.Item>
+        <Menu.Item key={2}>导出邀约</Menu.Item>
+        <Menu.Item key={3}>导出简历+邀约</Menu.Item>
+        <Menu.Item key={4}>分配邀约时间</Menu.Item>
       </Menu>
     );
     return (
@@ -277,7 +291,12 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
         <Checkbox onChange={onAllChange} checked={allChecked}>
           全选
         </Checkbox>
-        <Dropdown overlay={importMenu} trigger={['hover']} placement="bottomCenter">
+        <Dropdown
+          overlay={importMenu}
+          trigger={['hover']}
+          placement="bottomCenter"
+          disabled={!selectedKeys.length}
+        >
           <Button style={{ width: 200 }}>导出邀约</Button>
         </Dropdown>
       </div>
@@ -287,7 +306,7 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
     <Fragment>
       {search()}
       {header()}
-      {component()}
+      <div className={styles.listContent}>{component()}</div>
       {bottom()}
       <ImportModal visible={visible} close={() => setVisible(false)} />
       <SetModal visible={settingVisible} close={() => setSettingVisible(false)} />

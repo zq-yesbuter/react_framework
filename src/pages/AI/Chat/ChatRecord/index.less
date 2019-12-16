@@ -23,8 +23,13 @@
       top: 16px;
       left: 0;
       width: 100%;
-      height: calc(100vh - 330px);
-      overflow: auto;
+      height: 60vh;
+      // height: calc(100vh - 330px);
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        width: 4px;
+        /*height: 4px;*/
+      }
       .chatList {
         margin-left: -40px;
         li {

@@ -3,7 +3,7 @@ import { Router as DefaultRouter, Route, Switch } from 'react-router-dom';
 import dynamic from 'umi/dynamic';
 import renderRoutes from 'umi/lib/renderRoutes';
 import history from '@tmp/history';
-import RendererWrapper0 from '/Users/zhangqing272/workspace/new/human_resources_platform/src/pages/.umi/LocaleWrapper.jsx';
+import RendererWrapper0 from '/Users/zhangqing272/workspace/work/human_resources_platform/src/pages/.umi/LocaleWrapper.jsx';
 import _dvaDynamic from 'dva/dynamic';
 
 const Router = require('dva/router').routerRedux.ConnectedRouter;
@@ -17,7 +17,7 @@ const routes = [
             import(
               /* webpackChunkName: "layouts__SecurityLayout" */ '../../layouts/SecurityLayout'
             ),
-          LoadingComponent: require('/Users/zhangqing272/workspace/new/human_resources_platform/src/components/PageLoading/index')
+          LoadingComponent: require('/Users/zhangqing272/workspace/work/human_resources_platform/src/components/PageLoading/index')
             .default,
         })
       : require('../../layouts/SecurityLayout').default,
@@ -28,7 +28,7 @@ const routes = [
           ? _dvaDynamic({
               component: () =>
                 import(/* webpackChunkName: "layouts__BlankLayout" */ '../../layouts/BlankLayout'),
-              LoadingComponent: require('/Users/zhangqing272/workspace/new/human_resources_platform/src/components/PageLoading/index')
+              LoadingComponent: require('/Users/zhangqing272/workspace/work/human_resources_platform/src/components/PageLoading/index')
                 .default,
             })
           : require('../../layouts/BlankLayout').default,
@@ -46,7 +46,7 @@ const routes = [
             component: __IS_BROWSER
               ? _dvaDynamic({
                   component: () => import(/* webpackChunkName: "p__AI" */ '../AI'),
-                  LoadingComponent: require('/Users/zhangqing272/workspace/new/human_resources_platform/src/components/PageLoading/index')
+                  LoadingComponent: require('/Users/zhangqing272/workspace/work/human_resources_platform/src/components/PageLoading/index')
                     .default,
                 })
               : require('../AI').default,
@@ -56,7 +56,7 @@ const routes = [
             component: __IS_BROWSER
               ? _dvaDynamic({
                   component: () => import(/* webpackChunkName: "p__404" */ '../404'),
-                  LoadingComponent: require('/Users/zhangqing272/workspace/new/human_resources_platform/src/components/PageLoading/index')
+                  LoadingComponent: require('/Users/zhangqing272/workspace/work/human_resources_platform/src/components/PageLoading/index')
                     .default,
                 })
               : require('../404').default,
@@ -65,7 +65,7 @@ const routes = [
           {
             component: () =>
               React.createElement(
-                require('/Users/zhangqing272/workspace/new/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
+                require('/Users/zhangqing272/workspace/work/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
                   .default,
                 { pagesPath: 'src/pages', hasRoutesInConfig: true }
               ),
@@ -76,7 +76,7 @@ const routes = [
         component: __IS_BROWSER
           ? _dvaDynamic({
               component: () => import(/* webpackChunkName: "p__404" */ '../404'),
-              LoadingComponent: require('/Users/zhangqing272/workspace/new/human_resources_platform/src/components/PageLoading/index')
+              LoadingComponent: require('/Users/zhangqing272/workspace/work/human_resources_platform/src/components/PageLoading/index')
                 .default,
             })
           : require('../404').default,
@@ -85,7 +85,7 @@ const routes = [
       {
         component: () =>
           React.createElement(
-            require('/Users/zhangqing272/workspace/new/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
+            require('/Users/zhangqing272/workspace/work/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
               .default,
             { pagesPath: 'src/pages', hasRoutesInConfig: true }
           ),
@@ -96,7 +96,7 @@ const routes = [
     component: __IS_BROWSER
       ? _dvaDynamic({
           component: () => import(/* webpackChunkName: "p__404" */ '../404'),
-          LoadingComponent: require('/Users/zhangqing272/workspace/new/human_resources_platform/src/components/PageLoading/index')
+          LoadingComponent: require('/Users/zhangqing272/workspace/work/human_resources_platform/src/components/PageLoading/index')
             .default,
         })
       : require('../404').default,
@@ -105,7 +105,7 @@ const routes = [
   {
     component: () =>
       React.createElement(
-        require('/Users/zhangqing272/workspace/new/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
+        require('/Users/zhangqing272/workspace/work/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
           .default,
         { pagesPath: 'src/pages', hasRoutesInConfig: true }
       ),

@@ -12,7 +12,7 @@ function NormalAudio({ audioProps = {}, sourceProps = {}, reloadAudio, propWidth
   const audioEl = useRef(null);
   const ref = useRef();
   const [played, setPlayed] = useState(false);
-
+  const [err, setErr] = useState(false);
   const [curTime, setCurTime] = useState(0);
   const [totalTime, setTotalTime] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -73,6 +73,7 @@ function NormalAudio({ audioProps = {}, sourceProps = {}, reloadAudio, propWidth
   }
 
   function handleError() {
+    setErr(true);
     const src = sourceProps.src || audioProps.src || 'javascript:;';
     // console.log('无法加载音频:', src);
   }
@@ -110,13 +111,17 @@ function NormalAudio({ audioProps = {}, sourceProps = {}, reloadAudio, propWidth
         style={{ display: 'none' }}
         // {...audioProps}
       />
-      <div className={styles.box} onClick={play} style={{ width: propWidth || 30 }}>
-        <div className={clsBox}>
-          <div className={classnames(styles['wifi-circle'], styles.first)} />
-          <div className={clsSecond} />
-          <div className={clsThird} />
+      {err ? (
+        <div className={styles.box} onClick={play} style={{ width: propWidth || 30 }}>
+          <div className={clsBox}>
+            <div className={classnames(styles['wifi-circle'], styles.first)} />
+            <div className={clsSecond} />
+            <div className={clsThird} />
+          </div>
         </div>
-      </div>
+      ) : (
+        <span>语音消息无法播放</span>
+      )}
     </Fragment>
   );
 }

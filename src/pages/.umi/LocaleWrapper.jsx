@@ -37,10 +37,10 @@ const localeInfo = {
   'en-US': {
     messages: {
       ...(locale => (locale.__esModule ? locale.default : locale))(
-        require('/Users/zhangqing272/workspace/new/human_resources_platform/src/locales/en-US.js')
+        require('/Users/zhangqing272/workspace/work/human_resources_platform/src/locales/en-US.js')
       ),
       ...(locale => (locale.__esModule ? locale.default : locale))(
-        require('/Users/zhangqing272/workspace/new/human_resources_platform/src/pages/user/login/locales/en-US.js')
+        require('/Users/zhangqing272/workspace/work/human_resources_platform/src/pages/user/login/locales/en-US.js')
       ),
     },
     locale: 'en-US',
@@ -51,7 +51,7 @@ const localeInfo = {
   'pt-BR': {
     messages: {
       ...(locale => (locale.__esModule ? locale.default : locale))(
-        require('/Users/zhangqing272/workspace/new/human_resources_platform/src/locales/pt-BR.js')
+        require('/Users/zhangqing272/workspace/work/human_resources_platform/src/locales/pt-BR.js')
       ),
     },
     locale: 'pt-BR',
@@ -62,10 +62,10 @@ const localeInfo = {
   'zh-CN': {
     messages: {
       ...(locale => (locale.__esModule ? locale.default : locale))(
-        require('/Users/zhangqing272/workspace/new/human_resources_platform/src/locales/zh-CN.js')
+        require('/Users/zhangqing272/workspace/work/human_resources_platform/src/locales/zh-CN.js')
       ),
       ...(locale => (locale.__esModule ? locale.default : locale))(
-        require('/Users/zhangqing272/workspace/new/human_resources_platform/src/pages/user/login/locales/zh-CN.js')
+        require('/Users/zhangqing272/workspace/work/human_resources_platform/src/pages/user/login/locales/zh-CN.js')
       ),
     },
     locale: 'zh-CN',
@@ -76,10 +76,10 @@ const localeInfo = {
   'zh-TW': {
     messages: {
       ...(locale => (locale.__esModule ? locale.default : locale))(
-        require('/Users/zhangqing272/workspace/new/human_resources_platform/src/locales/zh-TW.js')
+        require('/Users/zhangqing272/workspace/work/human_resources_platform/src/locales/zh-TW.js')
       ),
       ...(locale => (locale.__esModule ? locale.default : locale))(
-        require('/Users/zhangqing272/workspace/new/human_resources_platform/src/pages/user/login/locales/zh-TW.js')
+        require('/Users/zhangqing272/workspace/work/human_resources_platform/src/pages/user/login/locales/zh-TW.js')
       ),
     },
     locale: 'zh-TW',

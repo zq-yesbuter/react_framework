@@ -13,7 +13,6 @@ import {
   Dropdown,
   Form,
   Modal,
-  Upload,
   Icon,
   InputNumber,
   DatePicker,

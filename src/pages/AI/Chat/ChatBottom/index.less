@@ -1,12 +1,25 @@
 @import '~antd/lib/style/themes/default.less';
 .gutter-row {
-  padding: 30px;
+  padding: 10px;
   .gutter-box {
     background: hsl(0, 0%, 97%);
     border-radius: 10px;
-    padding: 20px;
-    height: calc(~'40vh - 120px');
+    padding: 10px;
+    height: calc(~'40vh - 80px');
     overflow-y: auto;
     text-align: center;
+    &::-webkit-scrollbar {
+      width: 4px;
+      /*height: 4px;*/
+    }
+    :global {
+      .ant-steps-item-title {
+        padding-right: 0px;
+      }
+      // .ant-steps-vertical .ant-steps-item-description{
+      //   padding-right: 0px;
+      //   padding-bottom: 0px;
+      // }
+    }
   }
 }

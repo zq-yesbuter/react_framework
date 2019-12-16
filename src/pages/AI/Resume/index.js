@@ -17,17 +17,26 @@ import {
   Row,
   Carousel,
   Icon,
+  Typography,
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
-import PDFJS from 'pdfjs-dist';
 import user from '@/assets/user.svg';
 import classnames from 'classnames';
+import PDF from 'react-pdf-js';
+import PDFJS from 'pdfjs-dist';
+// import { TextLayerBuilder } from '@/pdfjs-dist/web/pdf_viewer.js';
+// import '@/pdfjs-dist/web/pdf_viewer.css';
 import styles from './index.less';
 
+// PDFJS.GlobalWorkerOptions.workerSrc = '@/pdfjs-dist/build/pdf.worker.js';
+PDFJS.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js';
 const { Option } = Select;
 const { Search } = Input;
 const { Item } = Form;
+const { Paragraph } = Typography;
+
+const pdfurl = require('./1.pdf');
 
 const basicData = [
   { name: '姓名', value: '张三', id: '1' },
@@ -76,14 +85,16 @@ function showResume() {
   iframe.id = 1;
   iframe.width = '100%';
   iframe.height = '100%';
-  iframe.src =
-    'https://view.officeapps.live.com/op/view.aspx?src=http://storage.xuetangx.com/public_assets/xuetangx/PDF/1.xls';
+  iframe.src = 'http://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
+  // 'https://view.officeapps.live.com/op/view.aspx?src=http://storage.xuetangx.com/public_assets/xuetangx/PDF/1.xls';
   const win = window.open();
   // let loadingDiv = document.createElement('div');
   // loadingDiv.width='100%';
   // loadingDiv.height='100%';
   // loadingDiv.innerHTML='eeeeeeee';
   // win.document.body.appendChild(loadingDiv);
+
+  // win.document.body.appendChild();
   win.document.body.appendChild(iframe);
   if (iframe.attachEvent) {
     iframe.attachEvent('onload', () => {});
@@ -124,15 +135,19 @@ function Resume({ dispatch, chatrecord = {}, form }) {
   }
   function prev() {
     CRef.current.prev();
+    setCExpand(1);
   }
   function next() {
     CRef.current.next();
+    setCExpand(1);
   }
   function proPrev() {
     PRef.current.prev();
+    setPExpand(1);
   }
   function proNext() {
     PRef.current.next();
+    setPExpand(1);
   }
   function cContentExpand() {
     setCExpand(cExpand === 1 ? 2 : 1);
@@ -142,14 +157,20 @@ function Resume({ dispatch, chatrecord = {}, form }) {
     setPExpand(pExpand === 2 ? 1 : 2);
   }
   // console.log('render===>', pExpand);
+  console.log('window==>', <PDF file={pdfurl} />);
+  function expand(e) {
+    console.log('eee==>', e);
+  }
   return (
     <div>
       {header()}
       <li className={styles.chanceItem}>
         <h4 className={styles.resumeTitle}>基本信息</h4>
+        {/* <PDF file={pdfurl} /> */}
+
         <Row type="flex">
           <Col
-            className="gutter-row"
+            // className="gutter-row"
             span={4}
             style={{
               flexShrink: 1,
@@ -161,11 +182,11 @@ function Resume({ dispatch, chatrecord = {}, form }) {
           >
             <img src={user} alt="avatar" style={{ width: '100%', borderRadius: 10 }} />
           </Col>
-          <Col className="gutter-row" span={18}>
+          <Col span={18}>
             <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
               {basicData.map(({ name, value, id }) => (
-                <Col className="gutter-row" span={12} key={id}>
-                  <div className="gutter-box">{`${name}:${value}`}</div>
+                <Col span={12} key={id}>
+                  <div>{`${name}:${value}`}</div>
                 </Col>
               ))}
             </Row>
@@ -176,11 +197,7 @@ function Resume({ dispatch, chatrecord = {}, form }) {
         <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={prev} />
         <span className={classnames(styles.arrow, styles.arrowRight)} onClick={next} />
         <h4 className={styles.resumeTitle}>工作经历</h4>
-        <Carousel
-          className={styles.mycarousel}
-          // style={{ width: "calc(~'25vw - 40px')", paddingLeft: 20, paddingRight: 20 }}
-          ref={CRef}
-        >
+        <Carousel className={styles.mycarousel} ref={CRef}>
           {workContent.map((item, index) => (
             <div className={styles.carousel} key={index}>
               <div>{item.time}</div>
@@ -193,7 +210,7 @@ function Resume({ dispatch, chatrecord = {}, form }) {
               </p>
               {pExpand ? (
                 <span onClick={cContentExpand} className={styles.button}>
-                  {pExpand === 1 ? '展开' : '收起'}
+                  {cExpand === 1 ? '展开' : '收起'}
                 </span>
               ) : null}
             </div>
@@ -204,11 +221,7 @@ function Resume({ dispatch, chatrecord = {}, form }) {
         <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={proPrev} />
         <span className={classnames(styles.arrow, styles.arrowRight)} onClick={proNext} />
         <h4 className={styles.resumeTitle}>项目经历</h4>
-        <Carousel
-          className={styles.mycarousel}
-          // style={{ width: "25vw", paddingLeft: 20, paddingRight: 20 }}
-          ref={PRef}
-        >
+        <Carousel className={styles.mycarousel} ref={PRef}>
           {workContent.map((item, index) => (
             <div className={styles.carousel} key={index}>
               <div>{item.time}</div>
