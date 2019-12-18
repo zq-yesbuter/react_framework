@@ -7,56 +7,42 @@ import moment from 'moment';
 import NormalAudio from './ChatAudio';
 import styles from './index.less';
 
-function RecordList({ dispatch, chatrecord = {} }) {
+function RecordList({
+  dispatch,
+  chatrecord: { messageList = [], newTalk, noLoading = false, bottomLoading = false },
+}) {
   const ref = useRef(null);
   const [pageNo, setPageNo] = useState(0);
   const [scroll, setScroll] = useState(true);
-  const {
-    noLoading = false,
-    newTalk,
-    messageList = [
-      { snickName: 'jhhhhh', content: 'nisyhsziiiiid', mtype: '34', type: 1 },
-      { snickName: 'jhhhhh', content: 'nisyhsziiiii', mtype: '34', type: 0 },
-      {
-        snickName: 'jhhhhh',
-        content:
-          'nisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiidddddnisyhsziiiiiddddd',
-        type: 0,
-      },
-      { snickName: 'jhhhhh', content: 'nisyhsziiiii', type: 0 },
-      { snickName: 'jhhhhh', content: 'nisyhsziiiii', type: 1 },
-      { snickName: 'jhhhhh', content: 'nisyhsziiiii', type: 1 },
-    ],
-  } = chatrecord;
   const pathUrl = 'http://testimg.highso.com.cn/';
   function handleScroll() {
     // const clientHeight = ref.current.clientHeight;
     // const scrollHeight = ref.current.scrollHeight;
-    const { scrollTop } = ref.current;
-    if (noLoading) {
-      if (newTalk) {
-        setPageNo(0);
-      }
-      if (scrollTop === 0) {
-        dispatch({
-          type: 'chatrecord/getMessage',
-          payload: {
-            pageNo: pageNo + 1,
-            pageSize: 10,
-          },
-        });
-        dispatch({
-          type: 'chatrecord/save',
-          payload: {
-            newTalk: false,
-          },
-        });
-        if (pageNo > 0) {
-          setScroll(false);
-        }
-        setPageNo(pageNo + 1);
-      }
-    }
+    // const { scrollTop } = ref.current;
+    // if (noLoading) {
+    //   if (newTalk) {
+    //     setPageNo(0);
+    //   }
+    //   if (scrollTop === 0) {
+    //     dispatch({
+    //       type: 'chatrecord/getMessage',
+    //       payload: {
+    //         pageNo: pageNo + 1,
+    //         pageSize: 10,
+    //       },
+    //     });
+    //     dispatch({
+    //       type: 'chatrecord/save',
+    //       payload: {
+    //         newTalk: false,
+    //       },
+    //     });
+    //     if (pageNo > 0) {
+    //       setScroll(false);
+    //     }
+    //     setPageNo(pageNo + 1);
+    //   }
+    // }
   }
 
   useEffect(() => {
@@ -65,61 +51,64 @@ function RecordList({ dispatch, chatrecord = {} }) {
     }
   });
 
-  function typeComponent(type, value, mType) {
-    const obj = {
-      src:
-        'http://m8.music.126.net/20191127154612/0dd9cbdfd4c165e98274a3d02bc6a5e6/ymusic/a070/01e3/498c/17d6757b74ea1b5c8ef721e9a0653962.mp3',
-    };
+  function typeComponent(message, mType) {
+    const newMessage = JSON.parse(message);
+    const [[type, value]] = Object.entries(newMessage);
+
     switch (type) {
-      case '3':
-        return (
-          <img style={{ width: '50%', height: 'auto' }} src={`${pathUrl}${value}`} alt="图片" />
-        );
-      case '50':
-        return <div className={styles.chatText}>视频/语音通话</div>;
-      case '43':
-        return (
-          <video
-            style={{ marginTop: 2, width: '50%', height: 'auto' }}
-            src={`${pathUrl}${value}`}
-            controls="controls"
-          >
-            您的浏览器不支持 video 标签。
-          </video>
-        );
-      case '1':
+      // case '3':
+      //   return (
+      //     <img style={{ width: '50%', height: 'auto' }} src={`${pathUrl}${value}`} alt="图片" />
+      //   );
+      // case '50':
+      //   return <div className={styles.chatText}>视频/语音通话</div>;
+      // case '43':
+      //   return (
+      //     <video
+      //       style={{ marginTop: 2, width: '50%', height: 'auto' }}
+      //       src={`${pathUrl}${value}`}
+      //       controls="controls"
+      //     >
+      //       您的浏览器不支持 video 标签。
+      //     </video>
+      //   );
+      case 'text':
         return <div className={styles.chatText}>{value}</div>;
-      case '34':
-        return (
-          <Fragment>
-            {mType ? (
-              <div className={styles.chatText}>
-                <span>10“</span>
-                <NormalAudio sourceProps={obj} />
-              </div>
-            ) : (
-              <div className={styles.chatText}>
-                <NormalAudio sourceProps={obj} type={mType} />
-                <span>10“</span>
-              </div>
-            )}
-            <div style={{ marginLeft: 48, marginTop: 5 }}>您好！请问明天有时间过来面试吗？</div>
-          </Fragment>
-          // <audio controls src={`${pathUrl}${value}`}>
-          //   您的浏览器不支持 audio 标签
-          // </audio>
-        );
+      // case '34':
+      //   return (
+      //     <Fragment>
+      //       {mType ? (
+      //         <div className={styles.chatText}>
+      //           <span>10“</span>
+      //           <NormalAudio sourceProps={obj} />
+      //         </div>
+      //       ) : (
+      //         <div className={styles.chatText}>
+      //           <NormalAudio sourceProps={obj} type={mType} />
+      //           <span>10“</span>
+      //         </div>
+      //       )}
+      //       <div style={{ marginLeft: 48, marginTop: 5 }}>您好！请问明天有时间过来面试吗？</div>
+      //     </Fragment>
+      //     // <audio controls src={`${pathUrl}${value}`}>
+      //     //   您的浏览器不支持 audio 标签
+      //     // </audio>
+      //   );
       default:
         return <div className={styles.chatText}>{value}</div>;
     }
   }
 
   function chatList() {
-    if (messageList && messageList.length !== 0) {
+    const reg = /^JDGR/;
+    if (messageList && messageList.length) {
       return messageList.map((item, index) => {
         return (
-          <li key={index} className={item.type ? styles.chatItemMine : styles.chatItemJoysec}>
-            {item.username === item.suserName ? (
+          <li
+            key={`${item.bizId}-${index}`}
+            className={reg.test(item.from) ? styles.chatItemMine : styles.chatItemJoysec}
+          >
+            {reg.test(item.from) ? (
               <div>
                 {item.sheadUrl ? (
                   <Avatar
@@ -130,17 +119,17 @@ function RecordList({ dispatch, chatrecord = {} }) {
                   />
                 ) : (
                   <Avatar size="large" className={styles.avatar} shape="square">
-                    {item.snickName}
+                    {item.from}
                   </Avatar>
                 )}
                 <div>
                   <div className={styles.chatName}>
                     {/* <span className={styles.chatTime}>{item.snickName}</span> */}
                     {/* <span > */}
-                    {moment().format('YYYY-MM-DD HH:mm:ss')}
+                    {moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss')}
                     {/* </span> */}
                   </div>
-                  {typeComponent(`${item.mtype}`, item.content, item.type)}
+                  {typeComponent(item.message)}
                 </div>
               </div>
             ) : (
@@ -149,18 +138,17 @@ function RecordList({ dispatch, chatrecord = {} }) {
                   <Avatar size="large" shape="square" src={item.sheadUrl} />
                 ) : (
                   <Avatar size="large" shape="square">
-                    {item.snickName}
+                    {item.from}
                   </Avatar>
                 )}
-
                 <div>
                   <div style={{ marginLeft: 15 }} className={styles.chatName}>
                     {/* <span className={styles.chatTime}>{item.snickName}</span> */}
                     {/* <span > */}
-                    {moment().format('YYYY-MM-DD HH:mm:ss')}
+                    {moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss')}
                     {/* </span> */}
                   </div>
-                  {typeComponent(`${item.mtype}`, item.content, item.type)}
+                  {typeComponent(item.message)}
                 </div>
               </div>
             )}
@@ -171,13 +159,13 @@ function RecordList({ dispatch, chatrecord = {} }) {
     }
     return (
       <div className={styles.noContent}>
-        <span>没有数据</span>
+        <span>暂时没有沟通记录</span>
       </div>
     );
   }
 
   function bottomLoadingHtml() {
-    const { bottomLoading } = chatrecord;
+    // const {  } = chatrecord;
     if (bottomLoading) {
       return (
         <div className={styles.bottomLoading}>

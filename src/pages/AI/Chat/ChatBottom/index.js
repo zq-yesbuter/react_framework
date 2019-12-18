@@ -1,6 +1,17 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect, useRef } from 'react';
-import { Avatar, Spin, Col, Row, Form, DatePicker, Button, InputNumber, Steps } from 'antd';
+import {
+  Avatar,
+  Spin,
+  Col,
+  Row,
+  Form,
+  DatePicker,
+  Button,
+  InputNumber,
+  Steps,
+  message,
+} from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import PropTypes from 'prop-types';
@@ -9,47 +20,70 @@ import styles from './index.less';
 const { Item } = Form;
 const { Step } = Steps;
 const { RangePicker } = DatePicker;
-const result = [
-  {
-    title: moment().format('YYYY-MM-DD HH:mm'),
-    description: '发送短信',
-    id: '1',
-  },
-  {
-    title: moment().format('YYYY-MM-DD HH:mm'),
-    description: '发送短信',
-    id: '2',
-  },
-  {
-    title: moment().format('YYYY-MM-DD HH:mm'),
-    description: '发送短信',
-    id: '3',
-  },
-  {
-    title: moment().format('YYYY-MM-DD HH:mm'),
-    description: '发送短信',
-    id: '4',
-  },
-];
-function RecordBottom({ form }) {
+function formatStatus(status) {
+  switch (status) {
+    case 1:
+      return '邀约已接受';
+    case 2:
+      return '邀约已拒绝';
+    case 3:
+      return '邀约待确定';
+    case 4:
+      return '邀约异常';
+    default:
+      return '无';
+  }
+}
+function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId, flowList } }) {
   const { getFieldDecorator, validateFields } = form;
   function onSubmit() {
     validateFields((err, values) => {
       if (!err) {
-        // console.log('values====>', values);
+        const interviewStartTime = values.interviewStartTime.format('YYYY-MM-DD HH:mm:ss');
+        const interviewEndTime = values.interviewStartTime
+          .add(values.diff, 'minutes')
+          .format('YYYY-MM-DD HH:mm:ss');
+        const { id, applyId } = jobList.find(item => item.jobId === selectJobId);
+        dispatch({
+          type: 'chatrecord/addInvitation',
+          payload: {
+            applicantId: id,
+            applyId,
+            interviewStartTime,
+            interviewEndTime,
+            triggerTime: values.triggerTime.format('YYYY-MM-DD HH:mm:ss'),
+          },
+        })
+          .then(data => {
+            message.success('邀约成功');
+          })
+          .catch(e => message.error());
       }
     });
   }
+  function disabledDate(current) {
+    // Can not select days before today and today
+    return current && current < moment().endOf('day');
+  }
+
   return (
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
           <h3>计划邀约时间</h3>
           <div style={{ marginBottom: 10 }}>
-            {getFieldDecorator('name1')(<DatePicker showTime placeholder="选择计划邀约时间" />)}
+            {getFieldDecorator('interviewStartTime')(
+              <DatePicker
+                showTime
+                disabledDate={disabledDate}
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="请选择计划邀约面试时间"
+                style={{ display: 'block' }}
+              />
+            )}
           </div>
           <div style={{ marginBottom: 10 }}>
-            {getFieldDecorator('name2', {
+            {getFieldDecorator('diff', {
               initialValue: 100,
             })(
               <InputNumber
@@ -61,18 +95,38 @@ function RecordBottom({ form }) {
               />
             )}
           </div>
-          <Button onClick={onSubmit} block>
-            发送邀约短信
-          </Button>
+          <div style={{ marginBottom: 10 }}>
+            {getFieldDecorator('triggerTime')(
+              <DatePicker
+                showTime
+                disabledDate={disabledDate}
+                format="YYYY-MM-DD HH:mm:ss"
+                placeholder="请选择外呼时间"
+                style={{ display: 'block' }}
+              />
+            )}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Button onClick={onSubmit} disabled={!selectJobId}>
+              更新
+            </Button>
+            {/* <Button disabled={!selectJobId} onClick={onSubmit}>外呼</Button> */}
+          </div>
         </div>
       </Col>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
           <h3>邀约记录/结果</h3>
-          <Steps progressDot direction="vertical" current={5}>
-            {result.map(({ title, description, id }) => (
-              <Step title={title} description={description} key={id} />
-            ))}
+          <Steps progressDot direction="vertical" current={100}>
+            {flowList &&
+              flowList.length &&
+              flowList.map(({ status, roundStartTime, remark }, index) => (
+                <Step
+                  title={`【${formatStatus(status)}】${roundStartTime}`}
+                  description={remark}
+                  key={index}
+                />
+              ))}
           </Steps>
         </div>
       </Col>

@@ -21,63 +21,48 @@ import _ from 'lodash';
 import ListItem from './ListItem';
 import ImportModal from './ImportModal';
 import SetModal from './SetModal';
+import FilterModal from './FilterModal';
 import styles from './index.less';
 
 const { Option } = Select;
 const { Search } = Input;
 const { Item } = Form;
-const sort = [{ key: '1', name: '按邀约时间排序' }, { key: '2', name: '按导入时间排序' }];
+const sort = [
+  { key: 'ASC', name: '按导入时间升序排序' },
+  { key: 'DESC', name: '按导入时间降序排序' },
+]; // { key: '1', name: '按邀约时间排序' },
 const filter = [
-  { key: '1', name: '邀约状态' },
+  // { key: '1', name: '邀约状态' },
   { key: '2', name: '岗位' },
-  { key: '3', name: '导入erp' },
+  // { key: '3', name: '导入erp' },
   { key: '4', name: '导入时间' },
-  { key: '5', name: '渠道' },
+  // { key: '5', name: '渠道' },
 ];
 const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
-const data = [
-  {
-    id: '1',
-    name: '胡彦斌',
-    content: '邀约成功',
-  },
-  {
-    id: '2',
-    name: '胡彦',
-    content: '邀约失败',
-  },
-  {
-    id: '3',
-    name: '胡',
-    content: '待邀约',
-  },
-  {
-    id: '5',
-    name: '胡d',
-    content: '待邀约',
-  },
-  {
-    id: '4',
-    name: '胡dd',
-    content: '待邀约',
-  },
-];
-function ChatList({ dispatch, chatrecord = {}, form }) {
-  const { talker = '二傻' } = chatrecord;
+
+function ChatList({
+  dispatch,
+  chatrecord: { jobList = [], tableListLoading, selectJobId, timeList = [] },
+  form,
+}) {
   const [value, setValue] = useState();
   const [loading, setLoading] = useState([false]);
-  const [checkUsername, setCheckUsername] = useState(talker);
   const [selectedKeys, hadleSelectedKeys] = useState([]);
-  const [selectId, setSelectId] = useState();
   const [sortTitle, setSortTitle] = useState('排序');
   const [filterTitle, setFilterTitle] = useState('筛选');
-  const [dataSource, setDataSource] = useState(data);
   const [allChecked, setAllChecked] = useState(false);
   const [visible, setVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
+  const [filterVisible, setFilterVisible] = useState(false);
+  const [orderBy, setOrderBy] = useState('');
 
+  useEffect(() => {
+    dispatch({
+      type: 'chatrecord/jobAppliedAsPostAll',
+    });
+  }, []);
   function handleTabs(e) {
     setValue(e.target.value);
     setLoading(true);
@@ -95,10 +80,19 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
     });
   }
 
-  function onSubmit() {
+  function onSubmit(orderBy) {
     form.validateFields((err, values) => {
       if (!err) {
-        console.log('values===>', values);
+        console.log('values===>11111111', values);
+        const { name } = values;
+        let requestValue = {};
+        if (orderBy) {
+          requestValue = {};
+        }
+        dispatch({
+          type: 'chatrecord/jobAppliedAsPostAll',
+          payload: { name, orderBy: { applyDate: orderBy } },
+        });
       }
     });
   }
@@ -128,12 +122,16 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
     }
     form.setFieldsValue({ name2: selectedKeys[0] });
   }
+  function sortSelect(e) {
+    console.log('eeeeee', e);
+    setOrderBy(e.target);
+  }
   function header() {
     const { getFieldDecorator } = form;
     const sortMenu = (
       <Fragment>
-        {getFieldDecorator('name1')(
-          <Menu onSelect={onSelect}>
+        {getFieldDecorator('orderBy')(
+          <Menu onSelect={sortSelect}>
             {sort.map(({ key, name }) => (
               <Menu.Item key={key}>{name}</Menu.Item>
             ))}
@@ -157,38 +155,17 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
         <Dropdown overlay={sortMenu} trigger={['hover']} placement="bottomCenter">
           <div className={styles.common}>{sortTitle}</div>
         </Dropdown>
-        <Dropdown overlay={filterMenu} trigger={['hover']} placement="bottomCenter">
-          <div className={styles.common} style={{ marginLeft: 1 }}>
-            {filterTitle}
-          </div>
-        </Dropdown>
+        {/* <Dropdown overlay={filterMenu} trigger={['hover']} placement="bottomCenter"> */}
+        <div
+          className={styles.common}
+          style={{ marginLeft: 1 }}
+          onClick={() => setFilterVisible(true)}
+        >
+          {filterTitle}
+        </div>
+        {/* </Dropdown> */}
       </div>
     );
-  }
-  function getMessage(username) {
-    if (username === chatrecord.talker) {
-      setCheckUsername(username);
-      return;
-    }
-    dispatch({
-      type: 'chatrecord/save',
-      payload: {
-        messageList: [],
-        noLoading: true,
-        newTalk: true,
-      },
-    });
-    dispatch({
-      type: 'chatrecord/getMessage',
-      payload: { talker: username },
-    });
-    dispatch({
-      type: 'chatrecord/save',
-      payload: {
-        talker: username,
-      },
-    });
-    setCheckUsername(username);
   }
 
   const onSelectChange = selectedRowKeys => {
@@ -196,26 +173,40 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
     // hadleSelectedRowKeys(selectedRowKeys);
   };
 
-  function onSelectItem(id) {
-    // console.log(id);
-    setSelectId(id);
+  function onSelectItem(selectJobId) {
+    dispatch({
+      type: 'chatrecord/save',
+      payload: {
+        selectJobId,
+      },
+    });
+    dispatch({
+      type: 'chatrecord/getFlowList',
+      payload: {
+        selectJobId,
+      },
+    });
+    dispatch({
+      type: 'chatrecord/getMessage',
+      payload: {
+        group: selectJobId,
+      },
+    });
   }
-  useEffect(() => {
-    setCheckUsername(talker);
-  }, [talker]);
+
   // 单选按钮
-  function onChange(e, id) {
+  function onChange(e, applyId) {
     let newSelectedKeys = [...selectedKeys];
     let newDataSource = [];
     if (e.target.checked) {
-      newSelectedKeys.push(id);
-      newDataSource = dataSource.map(item => {
-        return item.id === id ? { ...item, checked: true } : item;
+      newSelectedKeys.push(applyId);
+      newDataSource = jobList.map(item => {
+        return item.applyId === applyId ? { ...item, checked: true } : item;
       });
     } else {
-      newSelectedKeys = newSelectedKeys.filter(item => item !== id);
-      newDataSource = dataSource.map(item => {
-        return item.id === id ? { ...item, checked: false } : item;
+      newSelectedKeys = newSelectedKeys.filter(item => item !== applyId);
+      newDataSource = jobList.map(item => {
+        return item.applyId === applyId ? { ...item, checked: false } : item;
       });
     }
     if (newSelectedKeys && !newSelectedKeys.length) {
@@ -224,50 +215,60 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
     if (newSelectedKeys && newSelectedKeys.length === newDataSource.length) {
       setAllChecked(true);
     }
-    setDataSource(newDataSource);
+    dispatch({
+      type: 'chatrecord/save',
+      payload: {
+        jobList: newDataSource,
+      },
+    });
     hadleSelectedKeys(newSelectedKeys);
   }
+
   // 全选按钮
   function onAllChange(e) {
-    // console.log('e.target===>', e.target);
     let newSelectedKeys = [...selectedKeys];
     let newDataSource = [];
     if (e.target.checked) {
-      newDataSource = dataSource.map(item => ({ ...item, checked: true }));
-      newSelectedKeys = dataSource.map(item => item.id);
-      console.log('全选==》666', newSelectedKeys);
+      newDataSource = jobList.map(item => ({ ...item, checked: true }));
+      newSelectedKeys = jobList.map(item => item.applyId);
       setAllChecked(true);
     } else {
       newSelectedKeys = [];
-      newDataSource = dataSource.map(item => ({ ...item, checked: false }));
+      newDataSource = jobList.map(item => ({ ...item, checked: false }));
       setAllChecked(false);
     }
-    setDataSource(newDataSource);
+    dispatch({
+      type: 'chatrecord/save',
+      payload: {
+        jobList: newDataSource,
+      },
+    });
     hadleSelectedKeys(newSelectedKeys);
   }
   function component() {
-    const { chatList, tableListLoading } = chatrecord;
     let chatComponent;
-    if (tableListLoading) {
-      chatComponent = (
-        <div className={styles.tableLoading}>
-          <Spin tip="加载中..." />
-        </div>
-      );
-    } else if (!loading && !chatList.length) {
+    // if (tableListLoading) {
+    //   chatComponent = (
+    //     <div className={styles.tableLoading}>
+    //       <Spin tip="加载中..." />
+    //     </div>
+    //   );
+    // // } else
+    if (!jobList.length) {
       chatComponent = (
         <div className={styles.noContent}>
           <span>没有数据</span>
         </div>
       );
     } else {
-      chatComponent = dataSource.map(item => (
+      chatComponent = jobList.map(item => (
         <ListItem
-          key={item.id}
+          key={item.applyId}
           {...item}
           onChange={onChange}
           onSelectItem={onSelectItem}
-          selectId={selectId}
+          selectJobId={selectJobId}
+          timeList={timeList}
         />
       ));
     }
@@ -280,9 +281,9 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
   function bottom() {
     const importMenu = (
       <Menu onClick={onExportChange}>
-        <Menu.Item key={1}>导出简历</Menu.Item>
-        <Menu.Item key={2}>导出邀约</Menu.Item>
-        <Menu.Item key={3}>导出简历+邀约</Menu.Item>
+        {/* <Menu.Item key={1}>导出简历</Menu.Item> */}
+        {/* <Menu.Item key={2}>导出邀约</Menu.Item> */}
+        {/* <Menu.Item key={3}>导出简历+邀约</Menu.Item> */}
         <Menu.Item key={4}>分配邀约时间</Menu.Item>
       </Menu>
     );
@@ -297,7 +298,7 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
           placement="bottomCenter"
           disabled={!selectedKeys.length}
         >
-          <Button style={{ width: 200 }}>导出邀约</Button>
+          <Button style={{ width: 200 }}>分配邀约时间</Button>
         </Dropdown>
       </div>
     );
@@ -309,7 +310,12 @@ function ChatList({ dispatch, chatrecord = {}, form }) {
       <div className={styles.listContent}>{component()}</div>
       {bottom()}
       <ImportModal visible={visible} close={() => setVisible(false)} />
-      <SetModal visible={settingVisible} close={() => setSettingVisible(false)} />
+      <SetModal
+        visible={settingVisible}
+        selectedKeys={selectedKeys}
+        close={() => setSettingVisible(false)}
+      />
+      <FilterModal visible={filterVisible} close={() => setFilterVisible(false)} />
     </Fragment>
   );
 }

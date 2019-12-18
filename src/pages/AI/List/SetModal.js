@@ -37,12 +37,12 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-function ImportModal({ dispatch, visible, form, close }) {
+function ImportModal({ dispatch, visible, form, close, selectedKeys }) {
   const { getFieldDecorator, validateFields, resetFields } = form;
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
-        // console.log('values===>', values);
+        console.log('values===>', values);
         // dispatch({
         //   type: 'planControl/saveWxUser',
         //   payload: {
@@ -56,6 +56,11 @@ function ImportModal({ dispatch, visible, form, close }) {
       }
     });
   }
+  function disabledDate(current) {
+    // Can not select days before today and today
+    return current && current < moment().endOf('day');
+  }
+  function addTime() {}
   return (
     <Modal
       title="设置邀约时间"
@@ -67,17 +72,52 @@ function ImportModal({ dispatch, visible, form, close }) {
       }}
     >
       <Form {...formItemLayout}>
-        <Item label="邀约人数" required>
+        <Item label="面试邀约人" required>
           <Fragment>
-            <Tag color="cyan">cyan</Tag>
+            {selectedKeys.length &&
+              selectedKeys.map((item, index) => (
+                <Tag color="cyan" key={index}>
+                  {item}
+                </Tag>
+              ))}
           </Fragment>
         </Item>
         <Item label="可选时段" required>
-          {getFieldDecorator('type', {
-            rules: [{ required: true, message: '请选择时段!' }],
+          <div style={{ display: 'flex', marginLeft: 5 }}>
+            <RangePicker
+              disabledDate={disabledDate}
+              // disabledTime={disabledRangeTime}
+              showTime={{
+                hideDisabledOptions: true,
+                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')],
+              }}
+              format="YYYY-MM-DD HH:mm:ss"
+            />
+            <Button type="primary" style={{ marginLeft: 5 }} onClick={addTime}>
+              +
+            </Button>
+          </div>
+        </Item>
+        <Item label="面试时长">
+          {getFieldDecorator('name2', {
+            initialValue: 100,
+            rules: [{ required: true, message: '请选择面试时长!' }],
+          })(
+            <InputNumber
+              style={{ flex: 1 }}
+              min={0}
+              max={160}
+              formatter={value => `${value}分钟`}
+              parser={value => value.replace('分钟', '')}
+            />
+          )}
+        </Item>
+        <Item label="外呼时间" required>
+          {getFieldDecorator('triggerTime', {
+            rules: [{ required: true, message: '请选择外呼时间!' }],
           })(
             <RangePicker
-              // disabledDate={disabledDate}
+              disabledDate={disabledDate}
               // disabledTime={disabledRangeTime}
               showTime={{
                 hideDisabledOptions: true,
@@ -87,20 +127,7 @@ function ImportModal({ dispatch, visible, form, close }) {
             />
           )}
         </Item>
-        <Item label="面试时长">
-          {getFieldDecorator('name2', {
-            initialValue: 100,
-          })(
-            <InputNumber
-              style={{ flex: 1 }}
-              min={0}
-              max={100}
-              formatter={value => `${value}分钟`}
-              parser={value => value.replace('分钟', '')}
-            />
-          )}
-        </Item>
-        <Item label="短信发送" required>
+        {/* <Item label="短信发送" required>
           {getFieldDecorator('name', {
             defaultValue: 1,
             rules: [{ required: true, message: '请输入导入人!' }],
@@ -109,7 +136,7 @@ function ImportModal({ dispatch, visible, form, close }) {
               <Option value="1">立即发送</Option>
             </Select>
           )}
-        </Item>
+        </Item> */}
       </Form>
     </Modal>
   );

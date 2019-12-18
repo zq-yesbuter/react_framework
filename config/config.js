@@ -12,18 +12,19 @@ const { proxyUrl = '', proxyPort = '', proxyPath = '', pathRewrite = {} } = {
   MOCK: {
     proxyUrl: 'yapi.cbpmgt.com',
     proxyPort: '80',
-    proxyPath: '/mock/78',
+    proxyPath: '/mock/276',
     pathRewrite: {
-      '^/api': '/api/autotest',
+      '/api': '/',
     },
   },
   DEV: {
-    proxyUrl: 'yapi.cbpmgt.com',
-    proxyPort: '80',
-    proxyPath: '/mock/78',
-    pathRewrite: {
-      '^/api': '/api',
-    },
+    proxyUrl: 'jddai.jd.com',
+    proxyPort: '8088',
+    proxyPath: '',
+    Host: 'jddai.jd.com',
+    pathRewrite: { '^/api': '' },
+    domain: 'jddai.jd.com',
+    domainPort: '8088',
   },
 }[API];
 const plugins = [
@@ -87,7 +88,6 @@ const plugins = [
 //     },
 //   ]);
 // }
-
 export default {
   plugins,
   block: {
@@ -189,13 +189,11 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  /*
   proxy: {
-    '/server/api/': {
-      target: 'https://preview.pro.ant.design/',
+    '/api': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
       changeOrigin: true,
-      pathRewrite: { '^/server': '' },
+      pathRewrite,
     },
   },
-  */
 };

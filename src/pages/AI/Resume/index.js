@@ -105,12 +105,11 @@ function showResume() {
   }
 }
 
-function Resume({ dispatch, chatrecord = {}, form }) {
+function Resume({ dispatch, chatrecord: { resumeObj = {} }, form }) {
   const CRef = useRef(null);
   const PRef = useRef(null);
   const cContent = useRef(null);
   const pContent = useRef(null);
-  const { talker = '二傻' } = chatrecord;
   const [value, setValue] = useState();
   const [cExpand, setCExpand] = useState(0);
   const [pExpand, setPExpand] = useState(0);

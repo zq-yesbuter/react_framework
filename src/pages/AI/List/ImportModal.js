@@ -58,24 +58,40 @@ function ImportModal({ dispatch, visible, form, close }) {
     });
   }
   function beforeUpload(file) {
-    // console.log('文件格式==》', file.type);
-    const fileType = ['pdf', 'word', 'excel', 'doc', 'docs', 'xlsx', 'image/png', 'image/jpeg'];
+    console.log('文件格式==》', file.type);
+    const fileType = ['pdf', 'word', 'excel', 'doc', 'docs'];
     const currentType = fileType.includes(file.type);
     if (!currentType) {
       message.error('请上传正确格式!');
+      const files = form.getFieldValue('file');
+      console.log('files===>', files);
+      form.setFields({
+        file: {
+          value: files,
+          // errors: [new Error('forbid ha')],
+        },
+      });
     }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-      message.error('Image must smaller than 2MB!');
-    }
-    return currentType && isLt2M;
+    // const isLt2M = file.size / 1024 / 1024 < 2;
+    // if (!isLt2M) {
+    //   message.error('Image must smaller than 2MB!');
+    // }
+    // return currentType && isLt2M;
   }
   function uploadChange({ file, fileList }) {
-    if (file.status !== 'uploading') {
-      // console.log('notuploading===>', file, fileList);
+    if (file.status === 'uploading') {
+      const files = form.getFieldValue('file');
+      console.log('files===>', files);
+      form.setFields({
+        file: {
+          value: files,
+          // errors: [new Error('forbid ha')],
+        },
+      });
+      console.log('notuploading===>', file, fileList, [...fileList, file]);
     }
     if (file.status === 'done') {
-      // console.log('notuploading===>', file, fileList, [...fileList, file]);
+      console.log('done====>', file, fileList, [...fileList, file]);
     }
   }
   const uploadProps = {
@@ -135,7 +151,7 @@ function ImportModal({ dispatch, visible, form, close }) {
           )}
         </Item>
         <Item label="导入文件" required>
-          {getFieldDecorator('file', {
+          {/* {getFieldDecorator('file', {
             valuePropName: 'fileList',
             getValueFromEvent: normFile,
             rules: [
@@ -144,14 +160,14 @@ function ImportModal({ dispatch, visible, form, close }) {
                 message: '请选择导入文件!',
               },
             ],
-          })(
-            <Upload {...uploadProps} multiple>
-              <Button>
-                <Icon type="upload" />
-                选择文件
-              </Button>
-            </Upload>
-          )}
+          })( */}
+          <Upload {...uploadProps} multiple>
+            <Button>
+              <Icon type="upload" />
+              选择文件
+            </Button>
+          </Upload>
+          {/* )} */}
         </Item>
         <Item label="导入人" required>
           {getFieldDecorator('name', {

@@ -1,5 +1,5 @@
 import fetch from 'dva/fetch';
-import { notification } from 'antd';
+import { notification, message } from 'antd';
 import { parse, stringify } from 'qs';
 import { routerRedux } from 'dva/router';
 // import store from '../index';
@@ -41,15 +41,16 @@ function checkStatus(response) {
  * @param {} response
  */
 function checkResult(response, options) {
-  if (response.code === 'SUCCESS') {
-    return response.obj;
+  if (response.code === 0) {
+    return response.data;
   } else if (response.code === 'NOT_LOGIN') {
     const error = new Error('未登录');
     error.name = 401;
     error.response = response;
     throw error;
   }
-  const message = response.message || '未知错误';
+  const message = response.message || response.msg || '未知错误';
+  message.error(message);
   // if (!options.ignoreError) {
   //   notification.error({
   //     message: '服务错误',
@@ -119,6 +120,7 @@ export default function request(url, options) {
         return;
       }
       if (status === 403) {
+        loginRedirect();
         // window.g_app._store.dispatch(routerRedux.push('/exception/403'));
         return;
       }
@@ -134,8 +136,8 @@ export default function request(url, options) {
 }
 
 export function loginRedirect() {
-  const returnUrl = `http://jmis.jd.com/remote/index.htm?callBack=${encodeURIComponent(
-    `${location.origin}/`
-  )}&appCode=OMS`;
+  const returnUrl = `http://jddai.jd.com:8088/authenticate/erp?callback=${encodeURIComponent(
+    `${location.origin}/AI`
+  )}`;
   window.location.href = returnUrl;
 }
