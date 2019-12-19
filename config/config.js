@@ -210,5 +210,10 @@ export default {
       changeOrigin: true,
       pathRewrite,
     },
+    '/authenticate': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
   },
 };

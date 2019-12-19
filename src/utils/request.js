@@ -136,8 +136,6 @@ export default function request(url, options) {
 }
 
 export function loginRedirect() {
-  const returnUrl = `http://jddai.jd.com:8088/authenticate/erp?callback=${encodeURIComponent(
-    `${location.origin}/AI`
-  )}`;
+  const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}/AI`)}`;
   window.location.href = returnUrl;
 }

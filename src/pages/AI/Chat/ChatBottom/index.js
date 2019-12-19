@@ -115,8 +115,8 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
         </div>
       </Col>
       <Col className={styles['gutter-row']} span={8}>
-        <div className={styles['gutter-box']}>
-          <h3>邀约记录/结果</h3>
+        <div className={styles['gutter-box']} style={{ display: 'relative' }}>
+          <h3 style={{ display: 'fixed', zIndex: 100 }}>邀约记录/结果</h3>
           <Steps progressDot direction="vertical" current={100}>
             {flowList &&
               flowList.length &&
