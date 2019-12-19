@@ -41,7 +41,7 @@ function checkStatus(response) {
  * @param {} response
  */
 function checkResult(response, options) {
-  if (response.code === 0) {
+  if (response.code === 0 || response.success) {
     return response.data;
   } else if (response.code === 'NOT_LOGIN') {
     const error = new Error('未登录');

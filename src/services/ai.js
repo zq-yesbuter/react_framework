@@ -1,6 +1,44 @@
 import { stringify } from 'qs';
 import request from '../utils/request';
 
+// 查询岗位下申请信息所有
+export async function jobAppliedAsPostAll(params) {
+  return request(`/tenant/job/applicants/all?${stringify(params)}`, {
+    method: 'GET',
+  });
+}
+
+// 邀约申请
+export async function addInvitation(body) {
+  return request('/interview/invitation', {
+    method: 'POST',
+    body,
+  });
+}
+
+// 邀约信息修改
+export async function editInvitation(body) {
+  const { updateId } = body;
+  return request(`/interview/invitation/${updateId}`, {
+    method: 'POST',
+    body,
+  });
+}
+
+// 邀约信息查询
+export async function fetchInvitation(params) {
+  return request(`/interview/invitation?${stringify(params)}`, {
+    method: 'GET',
+  });
+}
+
+// 消息记录信息查询
+export async function fetchMessage(params) {
+  return request(`/messages?${stringify(params)}`, {
+    method: 'GET',
+  });
+}
+
 // 岗位创建
 export async function addJob(body) {
   return request('/tenant/job', {
@@ -90,44 +128,6 @@ export async function jobAppliedAsPost(params) {
   });
 }
 
-// 查询岗位下申请信息所有
-export async function jobAppliedAsPostAll(params) {
-  return request(`/api/tenant/job/applicants/all?${stringify(params)}`, {
-    method: 'GET',
-  });
-}
-
-// 邀约申请
-export async function addInvitation(body) {
-  return request('/api/interview/invitation', {
-    method: 'POST',
-    body,
-  });
-}
-
-// 邀约信息修改
-export async function editInvitation(body) {
-  const { updateId } = body;
-  return request(`/api/interview/invitation/${updateId}`, {
-    method: 'POST',
-    body,
-  });
-}
-
-// 邀约信息查询
-export async function fetchInvitation(params) {
-  return request(`/api/interview/invitation?${stringify(params)}`, {
-    method: 'GET',
-  });
-}
-
-// 消息记录信息查询
-export async function fetchMessage(params) {
-  return request(`api/messages?${stringify(params)}`, {
-    method: 'GET',
-  });
-}
-
 // 账号鉴权
 export async function auth(body) {
   return request('/authenticate', {
@@ -164,6 +164,14 @@ export async function operator(body) {
 export async function operatorPersonnel(body) {
   const { id } = body;
   return request(`url/organization/operator/${id}`, {
+    method: 'POST',
+    body,
+  });
+}
+
+// 批量邀约申请
+export async function batchInvent(body) {
+  return request('/api/interview/invitations', {
     method: 'POST',
     body,
   });

@@ -7,11 +7,10 @@ import styles from './index.less';
 
 function Index() {
   function logout() {
-    // console.log('location===>', location.origin);
-    // const logoutUrl = `https://ssa.jd.com/sso/logout?ReturnUrl=${encodeURIComponent(
-    //   location.origin
-    // )}`;
-    // window.location.href = logoutUrl;
+    const logoutUrl = `http://jddai.jd.com:8088/authenticate/erp/logout?callback=${encodeURIComponent(
+      `${location.origin}/AI`
+    )}`;
+    window.location.href = logoutUrl;
   }
   return (
     <Fragment>

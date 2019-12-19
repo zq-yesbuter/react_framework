@@ -22,7 +22,7 @@ const { proxyUrl = '', proxyPort = '', proxyPath = '', pathRewrite = {} } = {
     proxyPort: '8088',
     proxyPath: '',
     Host: 'jddai.jd.com',
-    pathRewrite: { '^/api': '' },
+    // pathRewrite: { '^/api': '' },
     domain: 'jddai.jd.com',
     domainPort: '8088',
   },
@@ -190,7 +190,22 @@ export default {
   },
   chainWebpack: webpackPlugin,
   proxy: {
-    '/api': {
+    '/tenant': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/messages': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/interview': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/resume': {
       target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
       changeOrigin: true,
       pathRewrite,

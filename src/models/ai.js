@@ -45,6 +45,7 @@ export default {
     resumeObj: {},
     selectJobId: null,
     flowList: [],
+    tableLoading: false,
   },
   effects: {
     // 获取微信聊天记录
@@ -58,6 +59,12 @@ export default {
       });
     },
     *jobAppliedAsPostAll({ payload }, { call, put, select }) {
+      yield put({
+        type: 'save',
+        payload: {
+          tableLoading: true,
+        },
+      });
       const jobList = yield call(jobAppliedAsPostAll, payload);
       const selectJobId = jobList[0].applyId;
       yield put({
@@ -65,6 +72,12 @@ export default {
         payload: {
           jobList,
           selectJobId,
+        },
+      });
+      yield put({
+        type: 'save',
+        payload: {
+          tableLoading: false,
         },
       });
       // const applyIds = jobList.filter(item => item.status > 20).map(item => item.applyId);

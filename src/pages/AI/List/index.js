@@ -44,11 +44,10 @@ const filterName = (key, arr) => {
 
 function ChatList({
   dispatch,
-  chatrecord: { jobList = [], tableListLoading, selectJobId, timeList = [] },
+  chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading },
   form,
 }) {
   const [value, setValue] = useState();
-  const [loading, setLoading] = useState([false]);
   const [selectedKeys, hadleSelectedKeys] = useState([]);
   const [sortTitle, setSortTitle] = useState('排序');
   const [filterTitle, setFilterTitle] = useState('筛选');
@@ -57,41 +56,39 @@ function ChatList({
   const [settingVisible, setSettingVisible] = useState(false);
   const [filterVisible, setFilterVisible] = useState(false);
   const [orderBy, setOrderBy] = useState('');
+  const [dateStart, setDateStart] = useState();
+  const [status, setStatus] = useState();
+  const [dateEnd, setDateEnd] = useState();
 
   useEffect(() => {
     dispatch({
       type: 'chatrecord/jobAppliedAsPostAll',
     });
   }, []);
-  function handleTabs(e) {
-    setValue(e.target.value);
-    setLoading(true);
-    dispatch({
-      type: 'chatrecord/save',
-      payload: {
-        messageList: [],
-        type: e.target.value,
-        newTalk: true,
-      },
-    });
-    dispatch({
-      type: 'chatrecord/getChatList',
-      payload: { type: e.target.value },
-    });
-  }
 
-  function onSubmit(orderBy) {
+  function onSubmit(paramOrderBy, newDateStart, newStatus, newDateEnd) {
     form.validateFields((err, values) => {
       if (!err) {
-        console.log('values===>11111111', values);
         const { name } = values;
-        let requestValue = {};
+        let requestValue = { dateStart, status, dateEnd };
         if (orderBy) {
-          requestValue = {};
+          requestValue = { ...requestValue, orderBy: { applyDate: orderBy } };
+        }
+        if (paramOrderBy) {
+          requestValue = { ...requestValue, orderBy: { applyDate: paramOrderBy } };
+        }
+        if (newDateStart) {
+          requestValue = { ...requestValue, dateStart: newDateStart.format('YYYY-MM-DD HH:mm:ss') };
+        }
+        if (newDateEnd) {
+          requestValue = { ...requestValue, dateEnd: newDateEnd.format('YYYY-MM-DD HH:mm:ss') };
+        }
+        if (newStatus) {
+          requestValue = { ...requestValue, status: newStatus };
         }
         dispatch({
           type: 'chatrecord/jobAppliedAsPostAll',
-          payload: { name, orderBy: { applyDate: orderBy } },
+          payload: { name, ...requestValue },
         });
       }
     });
@@ -123,8 +120,8 @@ function ChatList({
     form.setFieldsValue({ name2: selectedKeys[0] });
   }
   function sortSelect(e) {
-    console.log('eeeeee', e);
-    setOrderBy(e.target);
+    setOrderBy(e.key);
+    onSubmit(e.key);
   }
   function header() {
     const { getFieldDecorator } = form;
@@ -167,11 +164,6 @@ function ChatList({
       </div>
     );
   }
-
-  const onSelectChange = selectedRowKeys => {
-    // console.log('selectedRowKeys changed: ', selectedRowKeys);
-    // hadleSelectedRowKeys(selectedRowKeys);
-  };
 
   function onSelectItem(selectJobId) {
     dispatch({
@@ -247,14 +239,13 @@ function ChatList({
   }
   function component() {
     let chatComponent;
-    // if (tableListLoading) {
-    //   chatComponent = (
-    //     <div className={styles.tableLoading}>
-    //       <Spin tip="加载中..." />
-    //     </div>
-    //   );
-    // // } else
-    if (!jobList.length) {
+    if (tableLoading) {
+      chatComponent = (
+        <div className={styles.noContent}>
+          <Spin tip="加载中..." />
+        </div>
+      );
+    } else if (!jobList.length) {
       chatComponent = (
         <div className={styles.noContent}>
           <span>没有数据</span>
@@ -303,6 +294,13 @@ function ChatList({
       </div>
     );
   }
+  function handleOk(dateStart, status, dateEnd) {
+    setDateEnd(dateEnd ? dateEnd.format('YYYY-MM-DD HH:mm:ss') : dateEnd);
+    setDateStart(dateStart ? dateStart.format('YYYY-MM-DD HH:mm:ss') : dateStart);
+    setStatus(status);
+    setStatus(status);
+    onSubmit(undefined, dateStart, status, dateEnd);
+  }
   return (
     <Fragment>
       {search()}
@@ -314,8 +312,13 @@ function ChatList({
         visible={settingVisible}
         selectedKeys={selectedKeys}
         close={() => setSettingVisible(false)}
+        jobList={jobList}
       />
-      <FilterModal visible={filterVisible} close={() => setFilterVisible(false)} />
+      <FilterModal
+        visible={filterVisible}
+        close={() => setFilterVisible(false)}
+        handleOk={handleOk}
+      />
     </Fragment>
   );
 }

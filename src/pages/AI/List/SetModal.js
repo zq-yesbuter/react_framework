@@ -17,10 +17,12 @@ import {
   InputNumber,
   DatePicker,
   Tag,
+  message,
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
 import moment from 'moment';
+import { batchInvent } from '@/services/ai';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -37,22 +39,90 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-function ImportModal({ dispatch, visible, form, close, selectedKeys }) {
-  const { getFieldDecorator, validateFields, resetFields } = form;
+const formatSelectedKeys = (selectedKeys, jobList) => {
+  let arr = [];
+  selectedKeys.forEach(val => {
+    const arrItem = jobList.find(item => item.applyId === val);
+    arr.push(arrItem);
+  });
+  return arr;
+};
+const formatTime = (diffTimeList, selectedKeys, diff) => {
+  let list = [];
+  const newData = _.cloneDeep(diffTimeList);
+  newData.forEach(item => {
+    const [begin, end] = item;
+    const diffTime = end.diff(begin, 'minutes');
+    // eslint-disable-next-line radix
+    const len = parseInt(diffTime / diff);
+    const show =
+      len > 0
+        ? Array(len)
+            .fill(0)
+            .reduce(acc => {
+              acc.push({
+                interviewStartTime: begin.format('YYYY-MM-DD HH:mm:ss'),
+                interviewEndTime: begin.add(diff, 'minutes').format('YYYY-MM-DD HH:mm:ss'),
+              });
+              return acc;
+            }, [])
+        : [];
+    list.push(...show);
+  });
+  return list;
+};
+function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) {
+  const [diffTimeList, setDiffTimeList] = useState([]);
+
+  const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
-        console.log('values===>', values);
-        // dispatch({
-        //   type: 'planControl/saveWxUser',
-        //   payload: {
-        //     operatorId,
-        //     type,
-        //     userIds,
-        //   },
-        // }).then(() => {
-        //   handleOk();
-        // }).catch(() => {});
+        if (!diffTimeList.length) {
+          message.warn('选择了时间段需要点击添加按钮哦！');
+          return;
+        }
+        const { diff, triggerTime } = values;
+        let allTime = 0;
+        diffTimeList.forEach(([begin, end]) => {
+          const diffTime = end.diff(begin, 'minutes');
+          allTime += diffTime / diff;
+        });
+        if (allTime < selectedKeys.length) {
+          message.warn('请选择足够批量人数的面试时间的时间段！');
+          return;
+        }
+        const timeList = formatTime(diffTimeList, selectedKeys, diff);
+        // console.log('formatTime====>',timeList);
+        const nameList = formatSelectedKeys(selectedKeys, jobList);
+        let batch = [];
+        nameList.forEach(({ id, applyId }, index) => {
+          batch.push({
+            applicantId: id,
+            applyId,
+            triggerTime: triggerTime.format('YYYY-MM-DD HH:mm:ss'),
+            ...timeList[index],
+          });
+        });
+        // console.log('batch===>', batch);
+        batchInvent({ batch })
+          .then(data => {
+            // Modal.info({
+            //   title: '批量邀约成功',
+            //   content: (
+            //     <div>
+            //       {formatSelectedKeys(data,jobList).map(({name}) =>
+            //         <p>{`${name}邀约成功`}</p>
+            //       )}
+            //     </div>
+            //   ),
+            //   onOk() {() => close()},
+            // });
+            message.success('批量邀约成功');
+            setDiffTimeList([]);
+            close();
+          })
+          .catch(e => message.error());
       }
     });
   }
@@ -60,7 +130,19 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys }) {
     // Can not select days before today and today
     return current && current < moment().endOf('day');
   }
-  function addTime() {}
+  function addTime() {
+    if (!getFieldValue('time')) {
+      message.warn('请选择时间段再添加！');
+      return;
+    }
+    setDiffTimeList([...diffTimeList, getFieldValue('time')]);
+    setFieldsValue({ time: '' });
+  }
+  function handleClose(index) {
+    const newDiffTimeList = [...diffTimeList];
+    newDiffTimeList.splice(index, 1);
+    setDiffTimeList(newDiffTimeList);
+  }
   return (
     <Modal
       title="设置邀约时间"
@@ -69,38 +151,56 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys }) {
       onCancel={() => {
         resetFields();
         close();
+        setDiffTimeList([]);
       }}
     >
       <Form {...formItemLayout}>
         <Item label="面试邀约人" required>
-          <Fragment>
-            {selectedKeys.length &&
-              selectedKeys.map((item, index) => (
+          <div style={{ marginLeft: 10 }}>
+            {formatSelectedKeys(selectedKeys, jobList).length &&
+              formatSelectedKeys(selectedKeys, jobList).map(({ name }, index) => (
                 <Tag color="cyan" key={index}>
-                  {item}
+                  {name}
                 </Tag>
               ))}
-          </Fragment>
+          </div>
         </Item>
         <Item label="可选时段" required>
           <div style={{ display: 'flex', marginLeft: 5 }}>
-            <RangePicker
-              disabledDate={disabledDate}
-              // disabledTime={disabledRangeTime}
-              showTime={{
-                hideDisabledOptions: true,
-                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')],
-              }}
-              format="YYYY-MM-DD HH:mm:ss"
-            />
+            {getFieldDecorator('time')(
+              <RangePicker
+                disabledDate={disabledDate}
+                // disabledTime={disabledRangeTime}
+                showTime={{
+                  hideDisabledOptions: true,
+                  // defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')],
+                }}
+                format="YYYY-MM-DD HH:mm:ss"
+              />
+            )}
             <Button type="primary" style={{ marginLeft: 5 }} onClick={addTime}>
               +
             </Button>
           </div>
         </Item>
+        {diffTimeList.length ? (
+          <div style={{ marginLeft: 80, marginBottom: 10 }}>
+            {diffTimeList.map(([begin, end], index) => (
+              <Tag
+                key={index}
+                closable
+                color="cyan"
+                onClose={() => handleClose(index)}
+                style={{ marginBottom: 5 }}
+              >
+                {`${begin.format('YYYY-MM-DD HH:mm:ss')}  ~   ${end.format('YYYY-MM-DD HH:mm:ss')}`}
+              </Tag>
+            ))}
+          </div>
+        ) : null}
         <Item label="面试时长">
-          {getFieldDecorator('name2', {
-            initialValue: 100,
+          {getFieldDecorator('diff', {
+            initialValue: 60,
             rules: [{ required: true, message: '请选择面试时长!' }],
           })(
             <InputNumber
@@ -116,14 +216,12 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys }) {
           {getFieldDecorator('triggerTime', {
             rules: [{ required: true, message: '请选择外呼时间!' }],
           })(
-            <RangePicker
+            <DatePicker
+              showTime
               disabledDate={disabledDate}
-              // disabledTime={disabledRangeTime}
-              showTime={{
-                hideDisabledOptions: true,
-                defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')],
-              }}
               format="YYYY-MM-DD HH:mm:ss"
+              placeholder="请选择外呼时间"
+              style={{ display: 'block' }}
             />
           )}
         </Item>

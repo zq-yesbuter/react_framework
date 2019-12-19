@@ -156,7 +156,6 @@ function Resume({ dispatch, chatrecord: { resumeObj = {} }, form }) {
     setPExpand(pExpand === 2 ? 1 : 2);
   }
   // console.log('render===>', pExpand);
-  console.log('window==>', <PDF file={pdfurl} />);
   function expand(e) {
     console.log('eee==>', e);
   }

@@ -43,7 +43,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
         const interviewEndTime = values.interviewStartTime
           .add(values.diff, 'minutes')
           .format('YYYY-MM-DD HH:mm:ss');
-        const { id, applyId } = jobList.find(item => item.jobId === selectJobId);
+        const { id, applyId } = jobList.find(item => item.applyId === selectJobId) || {};
         dispatch({
           type: 'chatrecord/addInvitation',
           payload: {
@@ -84,12 +84,12 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
           </div>
           <div style={{ marginBottom: 10 }}>
             {getFieldDecorator('diff', {
-              initialValue: 100,
+              initialValue: 60,
             })(
               <InputNumber
                 style={{ width: '100%' }}
                 min={0}
-                max={100}
+                max={160}
                 formatter={value => `${value}分钟`}
                 parser={value => value.replace('分钟', '')}
               />
