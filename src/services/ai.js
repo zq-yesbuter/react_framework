@@ -54,7 +54,7 @@ export async function queryJobs(props) {
   });
 }
 
-// 岗位信息查询
+// 岗位信息查询（包含子类组织旗下岗位）
 export async function queryInformation(params) {
   return request(`/tenant/jobs/all/${stringify(params)}`, {
     method: 'GET',
@@ -107,7 +107,7 @@ export async function jobApplyAsNewResume(body) {
 }
 
 // 通过文件简历申请岗位
-export async function jobApplyAsFile(body) {
+export async function resumeApplyAsFile(body) {
   return request('/tenant/job/apply/resume/attachment', {
     method: 'POST',
     body,

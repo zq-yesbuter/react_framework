@@ -71,68 +71,79 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
           <h3>计划邀约时间</h3>
-          <div style={{ marginBottom: 10 }}>
-            {getFieldDecorator('interviewStartTime')(
-              <DatePicker
-                showTime
-                disabledDate={disabledDate}
-                format="YYYY-MM-DD HH:mm:ss"
-                placeholder="请选择计划邀约面试时间"
-                style={{ display: 'block' }}
-              />
-            )}
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            {getFieldDecorator('diff', {
-              initialValue: 60,
-            })(
-              <InputNumber
-                style={{ width: '100%' }}
-                min={0}
-                max={160}
-                formatter={value => `${value}分钟`}
-                parser={value => value.replace('分钟', '')}
-              />
-            )}
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            {getFieldDecorator('triggerTime')(
-              <DatePicker
-                showTime
-                disabledDate={disabledDate}
-                format="YYYY-MM-DD HH:mm:ss"
-                placeholder="请选择外呼时间"
-                style={{ display: 'block' }}
-              />
-            )}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <Button onClick={onSubmit} disabled={!selectJobId}>
-              更新
-            </Button>
-            {/* <Button disabled={!selectJobId} onClick={onSubmit}>外呼</Button> */}
+          <div className={styles.scroll}>
+            <div style={{ marginBottom: 10 }}>
+              {getFieldDecorator('interviewStartTime')(
+                <DatePicker
+                  showTime
+                  disabledDate={disabledDate}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="请选择计划邀约面试时间"
+                  style={{ display: 'block' }}
+                />
+              )}
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              {getFieldDecorator('diff', {
+                initialValue: 60,
+              })(
+                <InputNumber
+                  style={{ width: '100%' }}
+                  min={0}
+                  max={160}
+                  formatter={value => `${value}分钟`}
+                  parser={value => value.replace('分钟', '')}
+                />
+              )}
+            </div>
+            <div style={{ marginBottom: 10 }}>
+              {getFieldDecorator('triggerTime')(
+                <DatePicker
+                  showTime
+                  disabledDate={disabledDate}
+                  format="YYYY-MM-DD HH:mm:ss"
+                  placeholder="请选择外呼时间"
+                  style={{ display: 'block' }}
+                />
+              )}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Button onClick={onSubmit} disabled={!selectJobId}>
+                更新
+              </Button>
+              {/* <Button disabled={!selectJobId} onClick={onSubmit}>外呼</Button> */}
+            </div>
           </div>
         </div>
       </Col>
       <Col className={styles['gutter-row']} span={8}>
-        <div className={styles['gutter-box']} style={{ display: 'relative' }}>
-          <h3 style={{ display: 'fixed', zIndex: 100 }}>邀约记录/结果</h3>
-          <Steps progressDot direction="vertical" current={100}>
-            {flowList &&
-              flowList.length &&
-              flowList.map(({ status, roundStartTime, remark }, index) => (
-                <Step
-                  title={`【${formatStatus(status)}】${roundStartTime}`}
-                  description={remark}
-                  key={index}
-                />
-              ))}
-          </Steps>
+        <div className={styles['gutter-box']}>
+          <h3>邀约记录/结果</h3>
+          <div className={styles.scroll}>
+            <Steps progressDot direction="vertical" current={100}>
+              {flowList &&
+                flowList.length &&
+                flowList.map(({ status, roundStartTime, remark }, index) => (
+                  <Step
+                    title={`【${formatStatus(status)}】`}
+                    description={
+                      <p>
+                        <p>{`邀约外呼开始时间： ${roundStartTime}`}</p>
+                        <p>{`邀约外呼结束时间： ${roundStartTime}`}</p>
+                        <p>{remark}</p>
+                      </p>
+                      }
+                    key={index}
+                  />
+                ))}
+            </Steps>
+          </div>
         </div>
       </Col>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
           <h3>简历测评/人才标签</h3>
+          <div className={styles.scroll} />
         </div>
       </Col>
     </Row>

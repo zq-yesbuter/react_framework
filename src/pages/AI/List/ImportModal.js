@@ -36,7 +36,7 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-function ImportModal({ dispatch, visible, form, close }) {
+function ImportModal({ dispatch, visible, form, close, postList }) {
   const { getFieldDecorator, validateFields, resetFields } = form;
   const { fileList, setFileList } = useState([]);
 
@@ -142,7 +142,7 @@ function ImportModal({ dispatch, visible, form, close }) {
     >
       <Form {...formItemLayout}>
         <Item label="简历渠道" required>
-          {getFieldDecorator('type', {
+          {getFieldDecorator('channel', {
             rules: [{ required: true, message: '请选简历渠道!' }],
           })(
             <Select allowClear placeholder="请选择简历渠道">
@@ -169,15 +169,18 @@ function ImportModal({ dispatch, visible, form, close }) {
           </Upload>
           {/* )} */}
         </Item>
-        <Item label="导入人" required>
+        {/* <Item label="导入人" required>
           {getFieldDecorator('name', {
             rules: [{ required: true, message: '请输入导入人!' }],
           })(<Input placeholder="请输入导入人" />)}
-        </Item>
+        </Item> */}
         <Item label="简历岗位" required>
-          {getFieldDecorator('name1', {
+          {getFieldDecorator('jobId', {
             rules: [{ required: true, message: '请输入部门和岗位名!' }],
-          })(<Input placeholder="请输入部门和岗位名" />)}
+          })(
+            <Select allowClear placeholder="请输入岗位">
+              {postList.length && postList.map(({jobId,name}) => <Option key={jobId}>{name}</Option>)}
+            </Select>)}
         </Item>
       </Form>
     </Modal>

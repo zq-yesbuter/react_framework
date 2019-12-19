@@ -7,6 +7,15 @@ const { pwa, primaryColor } = defaultSettings; // preview.pro.ant.design only do
 const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION, API = 'MOCK' } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
+const buildEnv = process.env.BUILD_ENV;
+
+let publicPath = '//static-cdjr.jd.com/human_resources_platform/';
+if (process.env.BUILD_ENV === 'development') {
+  publicPath = '//dev-static-cdjr.jd.com/human_resources_platform/';
+} else if (process.env.BUILD_ENV === 'beta' || process.env.BUILD_ENV === 'betahuangcun') {
+  publicPath = '//test-static-cdjr.jd.com/human_resources_platform/';
+}
+
 // proxy control
 const { proxyUrl = '', proxyPort = '', proxyPath = '', pathRewrite = {} } = {
   MOCK: {
@@ -185,6 +194,7 @@ export default {
       return localName;
     },
   },
+  publicPath,
   manifest: {
     basePath: '/',
   },

@@ -5,12 +5,14 @@
     background: hsl(0, 0%, 97%);
     border-radius: 10px;
     padding: 10px;
-    height: calc(~'40vh - 80px');
-    overflow-y: auto;
     text-align: center;
-    &::-webkit-scrollbar {
-      width: 4px;
-      /*height: 4px;*/
+    .scroll{
+      height: calc(~'40vh - 135px');
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        width: 4px;
+        /*height: 4px;*/
+      }
     }
     :global {
       .ant-steps-item-title {

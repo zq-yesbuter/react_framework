@@ -9,7 +9,7 @@ import {
   fetchResume,
   jobApply,
   jobApplyAsNewResume,
-  jobApplyAsFile,
+  resumeApplyAsFile,
   jobApplied,
   jobAppliedAsPost,
   jobAppliedAsPostAll,
@@ -46,6 +46,7 @@ export default {
     selectJobId: null,
     flowList: [],
     tableLoading: false,
+    postList: [],
   },
   effects: {
     // 获取微信聊天记录
@@ -128,6 +129,24 @@ export default {
     },
     *addInvitation({ payload }, { call, put, select }) {
       return yield call(addInvitation, payload);
+    },
+    *queryInformation({ payload }, { call, put, select }) {
+      const postList = yield call(queryInformation, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          postList,
+        },
+      });
+    },
+    *resumeApplyAsFile({ payload }, { call, put, select }) {
+      const postList = yield call(resumeApplyAsFile, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          postList,
+        },
+      });
     },
   },
   reducers: {

@@ -14,6 +14,7 @@ import {
   Dropdown,
   Form,
   Modal,
+  Pagination,
 } from 'antd';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
@@ -44,7 +45,7 @@ const filterName = (key, arr) => {
 
 function ChatList({
   dispatch,
-  chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading },
+  chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading, postList },
   form,
 }) {
   const [value, setValue] = useState();
@@ -106,7 +107,12 @@ function ChatList({
       </div>
     );
   }
-  const importResume = () => setVisible(true);
+  const importResume = () => {
+    dispatch({
+      type: 'chatrecord/queryInformation',
+    });
+    setVisible(true)
+  };
   function onSelect({ selectedKeys }) {
     if (selectedKeys && selectedKeys.length) {
       setSortTitle(filterName(selectedKeys[0], sort));
@@ -242,7 +248,7 @@ function ChatList({
     if (tableLoading) {
       chatComponent = (
         <div className={styles.noContent}>
-          <Spin tip="加载中..." />
+          <Spin />
         </div>
       );
     } else if (!jobList.length) {
@@ -269,6 +275,9 @@ function ChatList({
     // console.log('xxxxxx');
     setSettingVisible(true);
   }
+  function onShowSizeChange(current, pageSize) {
+    console.log(current, pageSize);
+  }
   function bottom() {
     const importMenu = (
       <Menu onClick={onExportChange}>
@@ -279,19 +288,28 @@ function ChatList({
       </Menu>
     );
     return (
-      <div className={styles.bottom}>
-        <Checkbox onChange={onAllChange} checked={allChecked}>
-          全选
-        </Checkbox>
-        <Dropdown
-          overlay={importMenu}
-          trigger={['hover']}
-          placement="bottomCenter"
-          disabled={!selectedKeys.length}
-        >
-          <Button style={{ width: 200 }}>分配邀约时间</Button>
-        </Dropdown>
-      </div>
+      <Fragment>
+        {/* <Pagination
+          style={{position:'fixed',bottom:60,backgroundColor:'#fff'}}
+          showSizeChanger
+          onShowSizeChange={onShowSizeChange}
+          defaultCurrent={3}
+          total={500}
+        /> */}
+        <div className={styles.bottom}>
+          <Checkbox onChange={onAllChange} checked={allChecked}>
+            全选
+          </Checkbox>
+          <Dropdown
+            overlay={importMenu}
+            trigger={['hover']}
+            placement="bottomCenter"
+            disabled={!selectedKeys.length}
+          >
+            <Button style={{ width: 200 }}>分配邀约时间</Button>
+          </Dropdown>
+        </div>
+      </Fragment>
     );
   }
   function handleOk(dateStart, status, dateEnd) {
@@ -307,7 +325,11 @@ function ChatList({
       {header()}
       <div className={styles.listContent}>{component()}</div>
       {bottom()}
-      <ImportModal visible={visible} close={() => setVisible(false)} />
+      <ImportModal
+        visible={visible}
+        close={() => setVisible(false)} 
+        postList={postList}
+      />
       <SetModal
         visible={settingVisible}
         selectedKeys={selectedKeys}
