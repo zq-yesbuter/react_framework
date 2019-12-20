@@ -20,7 +20,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
-
+import { resumeApplyAsFile } from '@/services/ai';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -37,99 +37,85 @@ const formItemLayout = {
   },
 };
 function ImportModal({ dispatch, visible, form, close, postList }) {
-  const { getFieldDecorator, validateFields, resetFields } = form;
-  const { fileList, setFileList } = useState([]);
+  const { getFieldDecorator, validateFields, resetFields, setFields } = form;
+  const [fileList, setFileList] = useState([]);
 
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
-        // console.log('values===>', values);
-        // dispatch({
-        //   type: 'planControl/saveWxUser',
-        //   payload: {
-        //     operatorId,
-        //     type,
-        //     userIds,
-        //   },
-        // }).then(() => {
-        //   handleOk();
-        // }).catch(() => {});
+        console.log('values===>', values);
+        const { jobId, channel } = values;
+        if (!fileList.length) {
+          setFields({
+            fileName: {
+              errors: [new Error('请上传简历文件')],
+            },
+          });
+          return;
+        }
+        setFields({
+          fileName: {
+            errors: null,
+          },
+        });
+        const formData = new FormData();
+        fileList.forEach((file, index) => {
+          formData.append(`resumeAttach${index}`, file);
+        });
+        // const params = {
+        //   jobId,
+        //   channel,
+        //   resumeAttach:formData,
+        // };
+        formData.append('jobId', jobId);
+        formData.append('channel', channel);
+        resumeApplyAsFile(formData)
+          .then(data => {
+            message.success('简历导入成功');
+            close();
+          })
+          .catch(e => message.error(e.message));
       }
     });
   }
   function beforeUpload(file) {
-    console.log('文件格式==》', file.type);
-    const fileType = ['pdf', 'word', 'excel', 'doc', 'docs'];
+    console.log('文件格式==》', file.type, file.size);
+    const fileType = [
+      '.doc',
+      '.docx',
+      '.pdf',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'application/msword',
+      'application/pdf',
+    ];
     const currentType = fileType.includes(file.type);
     if (!currentType) {
-      message.error('请上传正确格式!');
-      const files = form.getFieldValue('file');
-      console.log('files===>', files);
-      form.setFields({
-        file: {
-          value: files,
-          // errors: [new Error('forbid ha')],
-        },
-      });
+      message.error('只支持word或pdf格式，请上传正确格式!');
+      return false;
     }
-    // const isLt2M = file.size / 1024 / 1024 < 2;
-    // if (!isLt2M) {
-    //   message.error('Image must smaller than 2MB!');
-    // }
-    // return currentType && isLt2M;
+    return true;
   }
-  function uploadChange({ file, fileList }) {
-    if (file.status === 'uploading') {
-      const files = form.getFieldValue('file');
-      console.log('files===>', files);
-      form.setFields({
-        file: {
-          value: files,
-          // errors: [new Error('forbid ha')],
-        },
-      });
-      console.log('notuploading===>', file, fileList, [...fileList, file]);
-    }
-    if (file.status === 'done') {
-      console.log('done====>', file, fileList, [...fileList, file]);
+
+  function uploadChange({ fileList, file }) {
+    if (file.status === 'error') {
+      const error = file.error.message || '未知错误';
+      message.error(error);
+      // setFileList(fileList)
+    } else if (file.status === 'removed') {
+      // setFileList(fileList)
+    } else if (file.status !== undefined) {
+      console.log('file.status==>', file.status);
+      fileList = fileList.map(item => ({ ...item, status: 'done' }));
+      setFileList(fileList);
     }
   }
+
   const uploadProps = {
     customRequest: () => {},
     beforeUpload,
     onChange: uploadChange,
-    // defaultFileList: [
-    //   {
-    //     uid: '1',
-    //     name: 'xxx.png',
-    //     status: 'done',
-    //     response: 'Server Error 500', // custom error message to show
-    //     url: 'http://www.baidu.com/xxx.png',
-    //   },
-    //   {
-    //     uid: '2',
-    //     name: 'yyy.png',
-    //     status: 'done',
-    //     url: 'http://www.baidu.com/yyy.png',
-    //   },
-    //   {
-    //     uid: '3',
-    //     name: 'zzz.png',
-    //     // status: 'error',
-    //     response: 'Server Error 500', // custom error message to show
-    //     url: 'http://www.baidu.com/zzz.png',
-    //   },
-    // ],
-    // fileList,
-    // directory: true,
+    fileList,
   };
-  function normFile(e) {
-    // console.log('Upload event:===>', e);
-    if (Array.isArray(e)) {
-      return e;
-    }
-    return e && e.fileList;
-  }
   return (
     <Modal
       title="导入简历"
@@ -146,42 +132,40 @@ function ImportModal({ dispatch, visible, form, close, postList }) {
             rules: [{ required: true, message: '请选简历渠道!' }],
           })(
             <Select allowClear placeholder="请选择简历渠道">
-              <Option key={1}>猎聘网</Option>
+              <Option key="liepin">猎聘网</Option>
             </Select>
           )}
         </Item>
         <Item label="导入文件" required>
-          {/* {getFieldDecorator('file', {
-            valuePropName: 'fileList',
-            getValueFromEvent: normFile,
-            rules: [
-              {
-                required: true,
-                message: '请选择导入文件!',
-              },
-            ],
-          })( */}
-          <Upload {...uploadProps} multiple>
-            <Button>
-              <Icon type="upload" />
-              选择文件
-            </Button>
-          </Upload>
-          {/* )} */}
+          {getFieldDecorator('fileName')(
+            <Upload {...uploadProps}>
+              {/* <Spin
+                spinning={uploading}
+                indicator={<Icon type="loading" style={{ fontSize: 24 }} />}
+              > */}
+              <Button>
+                <Icon type="upload" />
+                选择文件
+              </Button>
+              {/* </Spin> */}
+            </Upload>
+          )}
+        </Item>
+        <Item label="简历岗位" required>
+          {getFieldDecorator('jobId', {
+            rules: [{ required: true, message: '请输入部门和岗位名!' }],
+          })(
+            <Select allowClear placeholder="请选择岗位">
+              {postList.length &&
+                postList.map(({ jobId, name }) => <Option key={jobId}>{name}</Option>)}
+            </Select>
+          )}
         </Item>
         {/* <Item label="导入人" required>
           {getFieldDecorator('name', {
             rules: [{ required: true, message: '请输入导入人!' }],
           })(<Input placeholder="请输入导入人" />)}
         </Item> */}
-        <Item label="简历岗位" required>
-          {getFieldDecorator('jobId', {
-            rules: [{ required: true, message: '请输入部门和岗位名!' }],
-          })(
-            <Select allowClear placeholder="请输入岗位">
-              {postList.length && postList.map(({jobId,name}) => <Option key={jobId}>{name}</Option>)}
-            </Select>)}
-        </Item>
       </Form>
     </Modal>
   );

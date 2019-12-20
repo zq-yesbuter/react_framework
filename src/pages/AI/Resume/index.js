@@ -34,49 +34,17 @@ PDFJS.GlobalWorkerOptions.workerSrc = 'pdfjs-dist/build/pdf.worker.js';
 const { Option } = Select;
 const { Search } = Input;
 const { Item } = Form;
-const { Paragraph } = Typography;
+const { Paragraph, Title, Text } = Typography;
 
 const pdfurl = require('./1.pdf');
 
-const basicData = [
-  { name: '姓名', value: '张三', id: '1' },
-  { name: '年龄', value: '33', id: '2' },
-  { name: '性别', value: '男', id: '3' },
-  { name: '民族', value: '汉', id: '4' },
-  { name: '婚姻', value: '已婚', id: '5' },
-  { name: '小孩', value: '无', id: '6' },
-  { name: '学历', value: '本科', id: '7' },
-  { name: '电话', value: '18600000000', id: '8' },
-];
 const eduData = [
   { name: '时间', value: '2019.09.06-2019.09.06', type: 0 },
   { name: '大学', value: '清华大学', type: 1 },
   { name: '学历', value: '本科', type: 1 },
   { name: '专业', value: '电子商务', type: 0 },
 ];
-const workContent = [
-  {
-    time: '2019.09.06-2019.09.06',
-    name: 'XXXX',
-    name1: 'XXXXXXXX',
-    name2:
-      '人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人',
-  },
-  {
-    time: '2019.09.06-2019.09.06',
-    name: 'XXXX',
-    name1: 'XXXXXXXX',
-    name2:
-      '人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人',
-  },
-  {
-    time: '2019.09.06-2019.09.06',
-    name: 'XXXX',
-    name1: 'XXXXXXXX',
-    name2:
-      '人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人183ren人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人人',
-  },
-];
+
 const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
@@ -105,7 +73,13 @@ function showResume() {
   }
 }
 
-function Resume({ dispatch, chatrecord: { resumeObj = {} }, form }) {
+function Resume({
+  dispatch,
+  chatrecord: {
+    resumeObj: { name, tel, skills, projects, educations, companys },
+  },
+  form,
+}) {
   const CRef = useRef(null);
   const PRef = useRef(null);
   const cContent = useRef(null);
@@ -114,12 +88,23 @@ function Resume({ dispatch, chatrecord: { resumeObj = {} }, form }) {
   const [cExpand, setCExpand] = useState(0);
   const [pExpand, setPExpand] = useState(0);
 
+  const basicData = [
+    { name: '姓名', value: name, id: '1' },
+    // { name: '年龄', value: '33', id: '2' },
+    // { name: '性别', value: '男', id: '3' },
+    // { name: '民族', value: '汉', id: '4' },
+    // { name: '婚姻', value: '已婚', id: '5' },
+    // { name: '小孩', value: '无', id: '6' },
+    // { name: '学历', value: '本科', id: '7' },
+    { name: '电话', value: tel, id: '8' },
+  ];
   useLayoutEffect(() => {
-    // console.log('content=>', pContent.current.offsetHeight);
-    if (cContent.current.offsetHeight > 59) {
+    // console.log('content=>', pContent.current && pContent.current.offsetHeight);
+    // console.log('content=>11111', cContent.current && cContent.current.offsetHeight,);
+    if (cContent.current && cContent.current.offsetHeight > 65) {
       setCExpand(1);
     }
-    if (pContent.current.offsetHeight > 59) {
+    if (pContent.current && pContent.current.offsetHeight > 65) {
       setPExpand(1);
     }
   }, []);
@@ -134,19 +119,31 @@ function Resume({ dispatch, chatrecord: { resumeObj = {} }, form }) {
   }
   function prev() {
     CRef.current.prev();
-    setCExpand(1);
+    // setCExpand(1);
+    if (cContent.current && cContent.current.offsetHeight > 65) {
+      setCExpand(1);
+    }
   }
   function next() {
     CRef.current.next();
-    setCExpand(1);
+    // setCExpand(1);
+    if (cContent.current && cContent.current.offsetHeight > 65) {
+      setCExpand(1);
+    }
   }
   function proPrev() {
     PRef.current.prev();
-    setPExpand(1);
+    // setPExpand(1);
+    if (pContent.current && pContent.current.offsetHeight > 65) {
+      setPExpand(1);
+    }
   }
   function proNext() {
     PRef.current.next();
-    setPExpand(1);
+    // setPExpand(1);
+    if (pContent.current && pContent.current.offsetHeight > 65) {
+      setPExpand(1);
+    }
   }
   function cContentExpand() {
     setCExpand(cExpand === 1 ? 2 : 1);
@@ -184,7 +181,10 @@ function Resume({ dispatch, chatrecord: { resumeObj = {} }, form }) {
             <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
               {basicData.map(({ name, value, id }) => (
                 <Col span={12} key={id}>
-                  <div>{`${name}:${value}`}</div>
+                  <div>
+                    <Text strong>{`${name}：`}</Text>
+                    {value || '无'}
+                  </div>
                 </Col>
               ))}
             </Row>
@@ -192,52 +192,83 @@ function Resume({ dispatch, chatrecord: { resumeObj = {} }, form }) {
         </Row>
       </li>
       <li className={styles.chanceItem} style={{ position: 'relative' }}>
-        <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={prev} />
-        <span className={classnames(styles.arrow, styles.arrowRight)} onClick={next} />
         <h4 className={styles.resumeTitle}>工作经历</h4>
-        <Carousel className={styles.mycarousel} ref={CRef}>
-          {workContent.map((item, index) => (
-            <div className={styles.carousel} key={index}>
-              <div>{item.time}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>{`公司：${item.name}`}</span>
-                <span>{`职位：${item.name1}`}</span>
-              </div>
-              <p className={cExpand === 1 ? styles.expand : null} ref={cContent}>
-                {item.name2}
-              </p>
-              {pExpand ? (
-                <span onClick={cContentExpand} className={styles.button}>
-                  {cExpand === 1 ? '展开' : '收起'}
-                </span>
-              ) : null}
-            </div>
-          ))}
-        </Carousel>
+        {companys && companys.length ? (
+          <Fragment>
+            {companys && companys.length > 1 ? (
+              <Fragment>
+                <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={prev} />
+                <span className={classnames(styles.arrow, styles.arrowRight)} onClick={next} />
+              </Fragment>
+            ) : null}
+            <Carousel className={styles.mycarousel} ref={CRef}>
+              {companys.map((item, index) => (
+                <div className={styles.carousel} key={index}>
+                  <Paragraph>{`起止时间： ${item.startDate} ~ ${item.endDate}`}</Paragraph>
+                  <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Paragraph style={{ flex: 1, marginRight: 5 }}>
+                      {`公司：  ${item.name}`}
+                    </Paragraph>
+                    <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position}`}</Paragraph>
+                  </Paragraph>
+                  <p className={cExpand === 1 ? styles.expand : null} ref={cContent}>
+                    {item.content}
+                  </p>
+                  {cExpand ? (
+                    <span onClick={cContentExpand} className={styles.button}>
+                      {cExpand === 1 ? '展开' : '收起'}
+                    </span>
+                  ) : null}
+                </div>
+              ))}
+            </Carousel>
+          </Fragment>
+        ) : (
+          <div className={styles.noContent}>暂无</div>
+        )}
       </li>
       <li className={styles.chanceItem} style={{ position: 'relative' }}>
-        <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={proPrev} />
-        <span className={classnames(styles.arrow, styles.arrowRight)} onClick={proNext} />
         <h4 className={styles.resumeTitle}>项目经历</h4>
-        <Carousel className={styles.mycarousel} ref={PRef}>
-          {workContent.map((item, index) => (
-            <div className={styles.carousel} key={index}>
-              <div>{item.time}</div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span>{`公司：${item.name}`}</span>
-                <span>{`职位：${item.name1}`}</span>
-              </div>
-              <p className={pExpand === 1 ? styles.expand : null} ref={pContent}>
-                {item.name2}
-              </p>
-              {pExpand ? (
-                <span onClick={pContentExpand} className={styles.button}>
-                  {pExpand === 1 ? '展开' : '收起'}
-                </span>
-              ) : null}
-            </div>
-          ))}
-        </Carousel>
+        {projects && projects.length ? (
+          <Fragment>
+            {projects && projects.length > 1 ? (
+              <Fragment>
+                <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={proPrev} />
+                <span className={classnames(styles.arrow, styles.arrowRight)} onClick={proNext} />
+              </Fragment>
+            ) : null}
+            <Carousel className={styles.mycarousel} ref={PRef}>
+              {projects.map((item, index) => (
+                <div className={styles.carousel} key={index}>
+                  <Paragraph style={{ marginBottom: 5 }}>
+                    {`起止时间： ${item.startDate} ~ ${item.endDate}`}
+                  </Paragraph>
+                  <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Paragraph style={{ flex: 1, marginRight: 5 }}>
+                      {`公司：  ${item.name}`}
+                    </Paragraph>
+                    <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position}`}</Paragraph>
+                  </Paragraph>
+                  {/* <div>{item.time}</div>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span>{`公司：${item.name || '无'} `}</span>
+                    <span>{`职位：${item.position || '无'}`}</span>
+                  </div> */}
+                  <p className={pExpand === 1 ? styles.expand : null} ref={pContent}>
+                    {item.content}
+                  </p>
+                  {pExpand ? (
+                    <span onClick={pContentExpand} className={styles.button}>
+                      {pExpand === 1 ? '展开' : '收起'}
+                    </span>
+                  ) : null}
+                </div>
+              ))}
+            </Carousel>
+          </Fragment>
+        ) : (
+          <div className={styles.noContent}>暂无</div>
+        )}
       </li>
       <li className={styles.chanceItem}>
         <h4 className={styles.resumeTitle}>教育经历</h4>
@@ -245,11 +276,26 @@ function Resume({ dispatch, chatrecord: { resumeObj = {} }, form }) {
           gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}
           style={{ paddingLeft: 20, paddingRight: 20, marginTop: 10 }}
         >
-          {eduData.map(({ name, value, type }, index) => (
-            <Col className="gutter-row" span={24} key={index}>
-              <div className="gutter-box">{`${name}:${value}`}</div>
-            </Col>
-          ))}
+          {educations && educations.length ? (
+            <Carousel className={styles.mycarousel}>
+              {educations.map((item, index) => (
+                <div className={styles.carousel} key={index}>
+                  <Paragraph style={{ marginBottom: 5 }}>
+                    {`起止时间： ${item.startDate} ~ ${item.endDate}`}
+                  </Paragraph>
+                  <Paragraph style={{ marginBottom: 5 }}>{`学校名称：  ${item.school}`}</Paragraph>
+                  <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Paragraph style={{ flex: 1 }}>{`学历：  ${item.diploma}`}</Paragraph>
+                    <Paragraph style={{ flex: 1, marginRight: 5 }}>
+                      {`专业：  ${item.major}`}
+                    </Paragraph>
+                  </Paragraph>
+                </div>
+              ))}
+            </Carousel>
+          ) : (
+            <div className={styles.noContent}>暂无</div>
+          )}
         </Row>
       </li>
     </div>

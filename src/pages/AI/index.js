@@ -7,7 +7,7 @@ import styles from './index.less';
 
 function Index() {
   function logout() {
-    const logoutUrl = `http://jddai.jd.com:8088/authenticate/erp/logout?callback=${encodeURIComponent(
+    const logoutUrl = `/authenticate/erp/logout?callback=${encodeURIComponent(
       `${location.origin}/AI`
     )}`;
     window.location.href = logoutUrl;

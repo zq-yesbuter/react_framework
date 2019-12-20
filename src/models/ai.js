@@ -91,7 +91,6 @@ export default {
           },
         });
       }
-
       const resumeId = jobList[0].resumeId;
       yield put({
         type: 'getMessage',
@@ -139,15 +138,15 @@ export default {
         },
       });
     },
-    *resumeApplyAsFile({ payload }, { call, put, select }) {
-      const postList = yield call(resumeApplyAsFile, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          postList,
-        },
-      });
-    },
+    // *resumeApplyAsFile({ payload }, { call, put, select }) {
+    //   const postList = yield call(resumeApplyAsFile, payload);
+    //   yield put({
+    //     type: 'save',
+    //     payload: {
+    //       postList,
+    //     },
+    //   });
+    // },
   },
   reducers: {
     save(state, { payload }) {

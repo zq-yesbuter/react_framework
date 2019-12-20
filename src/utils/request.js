@@ -98,6 +98,7 @@ export default function request(url, options) {
       // newOptions.body is FormData
       newOptions.headers = {
         Accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
       };
     }
   }
@@ -120,8 +121,13 @@ export default function request(url, options) {
         return;
       }
       if (status === 403) {
+        const reg = /^\?error/;
+        if (reg.test(location.search)) {
+          // eslint-disable-next-line no-underscore-dangle
+          window.g_app._store.dispatch(routerRedux.push('/403'));
+          return;
+        }
         loginRedirect();
-        // window.g_app._store.dispatch(routerRedux.push('/exception/403'));
         return;
       }
       throw e;

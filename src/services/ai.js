@@ -49,14 +49,14 @@ export async function addJob(body) {
 
 // 岗位信息查询
 export async function queryJobs(props) {
-  return request('/api/tenant/jobs', {
+  return request('/tenant/jobs', {
     method: 'GET',
   });
 }
 
 // 岗位信息查询（包含子类组织旗下岗位）
 export async function queryInformation(params) {
-  return request(`/tenant/jobs/all/${stringify(params)}`, {
+  return request(`/tenant/jobs/all?${stringify(params)}`, {
     method: 'GET',
   });
 }
@@ -85,7 +85,7 @@ export async function fetchAllResume(params) {
 
 // 查询简历信息
 export async function fetchResume({ resumeId }) {
-  return request(`/api/resume/${resumeId}`, {
+  return request(`/resume/${resumeId}`, {
     method: 'GET',
   });
 }
@@ -111,6 +111,9 @@ export async function resumeApplyAsFile(body) {
   return request('/tenant/job/apply/resume/attachment', {
     method: 'POST',
     body,
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
   });
 }
 
@@ -171,8 +174,18 @@ export async function operatorPersonnel(body) {
 
 // 批量邀约申请
 export async function batchInvent(body) {
-  return request('/api/interview/invitations', {
+  return request('/interview/invitations', {
     method: 'POST',
     body,
+  });
+}
+// 批量下载简历文件
+export async function batchExportResume(body) {
+  return request('/tenant/job/apply/resume/attachment/download', {
+    method: 'POST',
+    body,
+    // headers: {
+    //   'Content-Type': 'application/octet-stream',
+    // },
   });
 }

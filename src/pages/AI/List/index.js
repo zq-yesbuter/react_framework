@@ -15,6 +15,7 @@ import {
   Form,
   Modal,
   Pagination,
+  message,
 } from 'antd';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
@@ -23,6 +24,7 @@ import ListItem from './ListItem';
 import ImportModal from './ImportModal';
 import SetModal from './SetModal';
 import FilterModal from './FilterModal';
+import { batchExportResume } from '@/services/ai';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -64,6 +66,9 @@ function ChatList({
   useEffect(() => {
     dispatch({
       type: 'chatrecord/jobAppliedAsPostAll',
+    });
+    dispatch({
+      type: 'chatrecord/queryInformation',
     });
   }, []);
 
@@ -108,10 +113,7 @@ function ChatList({
     );
   }
   const importResume = () => {
-    dispatch({
-      type: 'chatrecord/queryInformation',
-    });
-    setVisible(true)
+    setVisible(true);
   };
   function onSelect({ selectedKeys }) {
     if (selectedKeys && selectedKeys.length) {
@@ -188,6 +190,13 @@ function ChatList({
       type: 'chatrecord/getMessage',
       payload: {
         group: selectJobId,
+      },
+    });
+    const { resumeId } = jobList.find(item => item.applyId === selectJobId);
+    dispatch({
+      type: 'chatrecord/fetchResume',
+      payload: {
+        resumeId,
       },
     });
   }
@@ -280,11 +289,37 @@ function ChatList({
   }
   function bottom() {
     const importMenu = (
-      <Menu onClick={onExportChange}>
-        {/* <Menu.Item key={1}>导出简历</Menu.Item> */}
+      <Menu>
+        <Menu.Item
+          key={1}
+          onClick={() => {
+            batchExportResume({ applyIds: selectedKeys })
+              .then(res => {
+                console.log('res', res);
+                const blob = res.data;
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onload = e => {
+                  const a = document.createElement('a');
+                  a.download = '文件名称.zip';
+                  // 后端设置的文件名称在res.headers的 "content-disposition": "form-data; name=\"attachment\"; filename=\"20181211191944.zip\"",
+                  a.href = e.target.result;
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                };
+                message.success('导出简历成功！');
+              })
+              .catch(e => message.error(e.message));
+          }}
+        >
+          批量导出简历
+        </Menu.Item>
         {/* <Menu.Item key={2}>导出邀约</Menu.Item> */}
         {/* <Menu.Item key={3}>导出简历+邀约</Menu.Item> */}
-        <Menu.Item key={4}>分配邀约时间</Menu.Item>
+        <Menu.Item key={4} onClick={onExportChange}>
+          分配邀约时间
+        </Menu.Item>
       </Menu>
     );
     return (
@@ -306,7 +341,7 @@ function ChatList({
             placement="bottomCenter"
             disabled={!selectedKeys.length}
           >
-            <Button style={{ width: 200 }}>分配邀约时间</Button>
+            <Button style={{ width: 200 }}>批量操作</Button>
           </Dropdown>
         </div>
       </Fragment>
@@ -325,11 +360,7 @@ function ChatList({
       {header()}
       <div className={styles.listContent}>{component()}</div>
       {bottom()}
-      <ImportModal
-        visible={visible}
-        close={() => setVisible(false)} 
-        postList={postList}
-      />
+      <ImportModal visible={visible} close={() => setVisible(false)} postList={postList} />
       <SetModal
         visible={settingVisible}
         selectedKeys={selectedKeys}

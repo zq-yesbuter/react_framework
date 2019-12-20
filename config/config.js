@@ -142,6 +142,12 @@ export default {
               component: './AI',
             },
             {
+              path: '/403',
+              name: '403',
+              icon: 'smile',
+              component: './403',
+            },
+            {
               component: './404',
             },
           ],
