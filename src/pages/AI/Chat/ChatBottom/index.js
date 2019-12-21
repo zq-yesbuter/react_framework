@@ -1,25 +1,14 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState, useEffect, useRef } from 'react';
-import {
-  Avatar,
-  Spin,
-  Col,
-  Row,
-  Form,
-  DatePicker,
-  Button,
-  InputNumber,
-  Steps,
-  message,
-} from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Col, Row, Form, DatePicker, Button, InputNumber, Steps, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-import PropTypes from 'prop-types';
 import styles from './index.less';
 
 const { Item } = Form;
 const { Step } = Steps;
 const { RangePicker } = DatePicker;
+const format = 'YYYY-MM-DD HH:mm:ss';
 function formatStatus(status) {
   switch (status) {
     case 1:
@@ -39,10 +28,10 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
   function onSubmit() {
     validateFields((err, values) => {
       if (!err) {
-        const interviewStartTime = values.interviewStartTime.format('YYYY-MM-DD HH:mm:ss');
+        const interviewStartTime = values.interviewStartTime.format(format);
         const interviewEndTime = values.interviewStartTime
           .add(values.diff, 'minutes')
-          .format('YYYY-MM-DD HH:mm:ss');
+          .format(format);
         const { id, applyId } = jobList.find(item => item.applyId === selectJobId) || {};
         dispatch({
           type: 'chatrecord/addInvitation',
@@ -51,7 +40,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
             applyId,
             interviewStartTime,
             interviewEndTime,
-            triggerTime: values.triggerTime.format('YYYY-MM-DD HH:mm:ss'),
+            triggerTime: values.triggerTime.format(format),
           },
         })
           .then(data => {
@@ -77,7 +66,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}
-                  format="YYYY-MM-DD HH:mm:ss"
+                  format={format}
                   placeholder="请选择计划邀约面试时间"
                   style={{ display: 'block' }}
                 />
@@ -101,7 +90,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}
-                  format="YYYY-MM-DD HH:mm:ss"
+                  format={format}
                   placeholder="请选择外呼时间"
                   style={{ display: 'block' }}
                 />
@@ -127,12 +116,12 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                   <Step
                     title={`【${formatStatus(status)}】`}
                     description={
-                      <p>
+                      <div>
                         <p>{`邀约外呼开始时间： ${roundStartTime}`}</p>
                         <p>{`邀约外呼结束时间： ${roundStartTime}`}</p>
                         <p>{remark}</p>
-                      </p>
-                      }
+                      </div>
+                    }
                     key={index}
                   />
                 ))}

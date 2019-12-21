@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, Fragment, useRef } from 'react';
 import {
   Radio,
   List,
@@ -16,8 +16,10 @@ import {
   Modal,
   Pagination,
   message,
+  Alert,
 } from 'antd';
 import { connect } from 'dva';
+import fetch from 'dva/fetch';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import ListItem from './ListItem';
@@ -62,6 +64,8 @@ function ChatList({
   const [dateStart, setDateStart] = useState();
   const [status, setStatus] = useState();
   const [dateEnd, setDateEnd] = useState();
+  const [bottomLoading, setBottomLoading] = useState(false);
+  const listRef = useRef(null);
 
   useEffect(() => {
     dispatch({
@@ -99,6 +103,18 @@ function ChatList({
       }
     });
   }
+  function handleScroll() {
+    const { clientHeight } = listRef.current;
+    const { scrollHeight } = listRef.current;
+    const { scrollTop } = listRef.current;
+    // if (scrollHeight - (scrollTop + clientHeight) < 10) {
+    //   console.log('滚动到底部了===》');
+    //   setBottomLoading(true);
+    // } else {
+    //   setBottomLoading(false);
+    // }
+  }
+
   function search() {
     const { getFieldDecorator } = form;
     return (
@@ -267,16 +283,23 @@ function ChatList({
         </div>
       );
     } else {
-      chatComponent = jobList.map(item => (
-        <ListItem
-          key={item.applyId}
-          {...item}
-          onChange={onChange}
-          onSelectItem={onSelectItem}
-          selectJobId={selectJobId}
-          timeList={timeList}
-        />
-      ));
+      chatComponent = (
+        <Fragment>
+          {jobList.map(item => (
+            <ListItem
+              key={item.applyId}
+              {...item}
+              onChange={onChange}
+              onSelectItem={onSelectItem}
+              selectJobId={selectJobId}
+              timeList={timeList}
+            />
+          ))}
+          <div className={styles.noBottomContent}>
+            {bottomLoading ? <Spin /> : '没有更多数据了！'}
+          </div>
+        </Fragment>
+      );
     }
     return chatComponent;
   }
@@ -284,35 +307,105 @@ function ChatList({
     // console.log('xxxxxx');
     setSettingVisible(true);
   }
-  function onShowSizeChange(current, pageSize) {
-    console.log(current, pageSize);
+  const savingFile = (response, fileName) => {
+    const that = this;
+    response.blob().then(blob => {
+      if (typeof FileReader === 'undefined') {
+        message.error('您的浏览器不支持 FileReader，请升级浏览器');
+      }
+      const reader = new FileReader();
+      reader.addEventListener('loadend', () => {
+        let resu = '';
+        try {
+          resu = JSON.parse(reader.result);
+          // resu = eval('('+ reader.result + ')')
+          if (resu.code === 500) {
+            message.error(resu.msg);
+          } else if (resu.code === 401) {
+            message.error(resu.msg);
+          }
+        } catch (e) {
+          // 捕获错误 说明是文本字符串
+          resu = reader.result;
+          downloadBlob(blob, fileName);
+        }
+      });
+      reader.readAsText(blob);
+      // 下载
+      function downloadBlob(blob, fileName) {
+        let blobUrl = window.URL.createObjectURL(blob);
+        let a = document.createElement('a');
+        a.href = blobUrl;
+        a.target = '_blank';
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.download = fileName;
+        a.click();
+        window.URL.revokeObjectURL(blobUrl);
+        document.body.removeChild(a);
+      }
+    });
+  };
+  function downloadResumes() {
+    const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
+    const resumeIds = resumeList.map(item => item.resumeId);
+    const fileName = '导出简历信息.zip';
+    let size = 0;
+    fetch('/tenant/job/apply/resume/attachment/download', {
+      method: 'POST',
+      body: JSON.stringify({ resumeIds }),
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+    })
+      .then(response => {
+        if (response.status >= 200 && response.status < 300) {
+          return response;
+        }
+        return message.error(`请求错误 ${response.status}: 导出简历时发生错误！`);
+      }) // 取出body
+      .then(response => response.body)
+      .then(body => {
+        const reader = body.getReader();
+        return new ReadableStream({
+          start(controller) {
+            return pump();
+            function pump() {
+              return reader.read().then(res => {
+                // res  ({ done, value })
+                // 读不到更多数据就关闭流
+                // console.log(res,'res');
+                const { done, value } = res;
+                if (done) {
+                  // console.log('end')
+                  controller.close();
+                  // return;
+                }
+                size += value.length || 0;
+                // console.log(size,"size")
+                // 将下一个数据块置入流中
+                controller.enqueue(value);
+                return pump();
+              });
+            }
+          },
+        });
+      })
+      .then(stream => new Response(stream))
+      .then(response => savingFile(response, fileName))
+      .catch(err => message.error(err.message));
+  }
+  function onSizeChange(page, pageSize) {
+    console.log('page===>', page, 'pageSize==>', pageSize);
+  }
+  function onShowSizeChange(page, pageSize) {
+    console.log('page===>', page, 'pageSize==>', pageSize);
   }
   function bottom() {
     const importMenu = (
       <Menu>
-        <Menu.Item
-          key={1}
-          onClick={() => {
-            batchExportResume({ applyIds: selectedKeys })
-              .then(res => {
-                console.log('res', res);
-                const blob = res.data;
-                const reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onload = e => {
-                  const a = document.createElement('a');
-                  a.download = '文件名称.zip';
-                  // 后端设置的文件名称在res.headers的 "content-disposition": "form-data; name=\"attachment\"; filename=\"20181211191944.zip\"",
-                  a.href = e.target.result;
-                  document.body.appendChild(a);
-                  a.click();
-                  document.body.removeChild(a);
-                };
-                message.success('导出简历成功！');
-              })
-              .catch(e => message.error(e.message));
-          }}
-        >
+        <Menu.Item key={1} onClick={downloadResumes}>
           批量导出简历
         </Menu.Item>
         {/* <Menu.Item key={2}>导出邀约</Menu.Item> */}
@@ -328,8 +421,18 @@ function ChatList({
           style={{position:'fixed',bottom:60,backgroundColor:'#fff'}}
           showSizeChanger
           onShowSizeChange={onShowSizeChange}
-          defaultCurrent={3}
-          total={500}
+          defaultCurrent={1}
+          total={50}
+        /> */}
+        {/* <Pagination
+          size="small"
+          total={50}
+          showSizeChanger
+          showQuickJumper
+          style={{ position: 'fixed', bottom: 60, backgroundColor: '#fff' }}
+          pageSize={20}
+          onChange={onSizeChange}
+          onShowSizeChange={onShowSizeChange}
         /> */}
         <div className={styles.bottom}>
           <Checkbox onChange={onAllChange} checked={allChecked}>
@@ -358,7 +461,9 @@ function ChatList({
     <Fragment>
       {search()}
       {header()}
-      <div className={styles.listContent}>{component()}</div>
+      <div className={styles.listContent} ref={listRef} onScroll={_.throttle(handleScroll, 1000)}>
+        {component()}
+      </div>
       {bottom()}
       <ImportModal visible={visible} close={() => setVisible(false)} postList={postList} />
       <SetModal

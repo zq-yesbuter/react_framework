@@ -43,7 +43,6 @@ function ImportModal({ dispatch, visible, form, close, postList }) {
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
-        console.log('values===>', values);
         const { jobId, channel } = values;
         if (!fileList.length) {
           setFields({
@@ -59,17 +58,12 @@ function ImportModal({ dispatch, visible, form, close, postList }) {
           },
         });
         const formData = new FormData();
-        fileList.forEach((file, index) => {
-          formData.append(`resumeAttach${index}`, file);
+        console.log('fileList===>', fileList);
+        fileList.forEach(file => {
+          formData.append('resumeAttach', file);
         });
-        // const params = {
-        //   jobId,
-        //   channel,
-        //   resumeAttach:formData,
-        // };
-        formData.append('jobId', jobId);
-        formData.append('channel', channel);
-        resumeApplyAsFile(formData)
+        const urlParams = { jobId, channel };
+        resumeApplyAsFile({ formData, urlParams })
           .then(data => {
             message.success('简历导入成功');
             close();
@@ -93,27 +87,13 @@ function ImportModal({ dispatch, visible, form, close, postList }) {
       message.error('只支持word或pdf格式，请上传正确格式!');
       return false;
     }
-    return true;
-  }
-
-  function uploadChange({ fileList, file }) {
-    if (file.status === 'error') {
-      const error = file.error.message || '未知错误';
-      message.error(error);
-      // setFileList(fileList)
-    } else if (file.status === 'removed') {
-      // setFileList(fileList)
-    } else if (file.status !== undefined) {
-      console.log('file.status==>', file.status);
-      fileList = fileList.map(item => ({ ...item, status: 'done' }));
-      setFileList(fileList);
-    }
+    setFileList([...fileList, file]);
+    return false;
   }
 
   const uploadProps = {
     customRequest: () => {},
     beforeUpload,
-    onChange: uploadChange,
     fileList,
   };
   return (

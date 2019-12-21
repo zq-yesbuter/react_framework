@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Radio, List, Spin, Input, Button, Table, Card, Checkbox } from 'antd';
+import { Radio, List, Spin, Input, Button, Table, Card, Checkbox, Tooltip } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import user from '@/assets/user.svg';
@@ -79,9 +79,11 @@ function ListItem({
           <div>{formatStatus(status) || '无'}</div>
         </div>
         <div className={styles.itemTimeInfo}>
+          {/* <Tooltip title="邀约时间" placement="topRight"> */}
           <div title="邀约时间" className={styles.inventTime} style={formatBackground(status)}>
             {formatInventTime(timeList, applyId) || null}
           </div>
+          {/* </Tooltip> */}
           <div title="导入时间">{applyDate}</div>
         </div>
       </div>

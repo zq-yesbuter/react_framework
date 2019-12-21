@@ -107,13 +107,13 @@ export async function jobApplyAsNewResume(body) {
 }
 
 // 通过文件简历申请岗位
-export async function resumeApplyAsFile(body) {
-  return request('/tenant/job/apply/resume/attachment', {
+export async function resumeApplyAsFile({ formData, urlParams }) {
+  return request(`/tenant/job/apply/resume/attachment?${stringify(urlParams)}`, {
     method: 'POST',
-    body,
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
+    body: formData,
+    // headers: {
+    //   'Content-Type': 'multipart/form-data',
+    // },
   });
 }
 

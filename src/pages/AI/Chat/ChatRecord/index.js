@@ -11,14 +11,13 @@ function RecordList({
   dispatch,
   chatrecord: { messageList = [], newTalk, noLoading = false, bottomLoading = false },
 }) {
-  const ref = useRef(null);
+  const chatRef = useRef(null);
   const [pageNo, setPageNo] = useState(0);
   const [scroll, setScroll] = useState(true);
-  const pathUrl = 'http://testimg.highso.com.cn/';
   function handleScroll() {
-    // const clientHeight = ref.current.clientHeight;
-    // const scrollHeight = ref.current.scrollHeight;
-    // const { scrollTop } = ref.current;
+    const clientHeight = chatRef.current.clientHeight;
+    const scrollHeight = chatRef.current.scrollHeight;
+    const { scrollTop } = chatRef.current;
     // if (noLoading) {
     //   if (newTalk) {
     //     setPageNo(0);
@@ -45,11 +44,11 @@ function RecordList({
     // }
   }
 
-  useEffect(() => {
-    if (scroll || newTalk) {
-      ref.current.scrollTop = ref.current.scrollHeight;
-    }
-  });
+  // useEffect(() => {
+  //   if (scroll || newTalk) {
+  //     ref.current.scrollTop = ref.current.scrollHeight;
+  //   }
+  // });
 
   function typeComponent(message, mType) {
     const newMessage = JSON.parse(message);
@@ -181,7 +180,7 @@ function RecordList({
       {/* <div className={styles.recordHeader}>沟通记录</div> */}
       {bottomLoadingHtml()}
       <div className={styles.chatPanel}>
-        <div className={styles.chatPanelContainer} ref={ref} onScroll={handleScroll}>
+        <div className={styles.chatPanelContainer} ref={chatRef} onScroll={handleScroll}>
           <ul className={styles.chatList}>{chatList()}</ul>
         </div>
       </div>

@@ -1,5 +1,5 @@
-import React, { Component, Fragment, useState, useEffect, useRef } from 'react';
-import { Icon, Slider, Spin } from 'antd';
+import React, { Fragment, useState, useEffect, useRef } from 'react';
+import { Icon, Spin } from 'antd';
 import moment from 'moment';
 import { throttle, debounce } from 'lodash-decorators';
 import classnames from 'classnames';

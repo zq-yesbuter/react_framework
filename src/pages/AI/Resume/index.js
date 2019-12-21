@@ -82,6 +82,7 @@ function Resume({
 }) {
   const CRef = useRef(null);
   const PRef = useRef(null);
+  const eduRef = useRef(null);
   const cContent = useRef(null);
   const pContent = useRef(null);
   const [value, setValue] = useState();
@@ -145,6 +146,12 @@ function Resume({
       setPExpand(1);
     }
   }
+  function eduPrev() {
+    eduRef.current.prev();
+  }
+  function eduNext() {
+    eduRef.current.next();
+  }
   function cContentExpand() {
     setCExpand(cExpand === 1 ? 2 : 1);
   }
@@ -162,7 +169,6 @@ function Resume({
       <li className={styles.chanceItem}>
         <h4 className={styles.resumeTitle}>基本信息</h4>
         {/* <PDF file={pdfurl} /> */}
-
         <Row type="flex">
           <Col
             // className="gutter-row"
@@ -272,12 +278,15 @@ function Resume({
       </li>
       <li className={styles.chanceItem}>
         <h4 className={styles.resumeTitle}>教育经历</h4>
-        <Row
-          gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}
-          style={{ paddingLeft: 20, paddingRight: 20, marginTop: 10 }}
-        >
-          {educations && educations.length ? (
-            <Carousel className={styles.mycarousel}>
+        {educations && educations.length ? (
+          <Fragment>
+            {educations.length > 1 ? (
+              <Fragment>
+                <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={eduPrev} />
+                <span className={classnames(styles.arrow, styles.arrowRight)} onClick={eduNext} />
+              </Fragment>
+            ) : null}
+            <Carousel className={styles.mycarousel} ref={eduRef}>
               {educations.map((item, index) => (
                 <div className={styles.carousel} key={index}>
                   <Paragraph style={{ marginBottom: 5 }}>
@@ -293,10 +302,10 @@ function Resume({
                 </div>
               ))}
             </Carousel>
-          ) : (
-            <div className={styles.noContent}>暂无</div>
-          )}
-        </Row>
+          </Fragment>
+        ) : (
+          <div className={styles.noContent}>暂无</div>
+        )}
       </li>
     </div>
   );
