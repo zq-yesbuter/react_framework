@@ -65,6 +65,7 @@ function ChatList({
   const [status, setStatus] = useState();
   const [dateEnd, setDateEnd] = useState();
   const [bottomLoading, setBottomLoading] = useState(false);
+  const [showMore, setShowMore] = useState(false);
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -114,6 +115,11 @@ function ChatList({
     const { clientHeight } = listRef.current;
     const { scrollHeight } = listRef.current;
     const { scrollTop } = listRef.current;
+    if(clientHeight < scrollHeight){
+      setShowMore(true);
+    }else{
+      setShowMore(false);
+    }
     // if (scrollHeight - (scrollTop + clientHeight) < 10) {
     //   console.log('滚动到底部了===》');
     //   setBottomLoading(true);
@@ -204,7 +210,7 @@ function ChatList({
       },
     });
     dispatch({
-      type: 'chatrecord/getFlowList',
+      type: 'chatrecord/queryTimeList',
       payload: {
         selectJobId,
       },
@@ -302,9 +308,12 @@ function ChatList({
               timeList={timeList}
             />
           ))}
-          <div className={styles.noBottomContent}>
-            {bottomLoading ? <Spin /> : '没有更多数据了！'}
-          </div>
+          {showMore ? (
+            <div className={styles.noBottomContent}>
+              {bottomLoading ? <Spin /> : '没有更多数据了！'}
+            </div>
+          ): null
+          }
         </Fragment>
       );
     }

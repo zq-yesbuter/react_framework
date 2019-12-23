@@ -68,13 +68,22 @@ export default {
       });
       const jobList = yield call(jobAppliedAsPostAll, payload);
       const selectJobId = jobList[0] && jobList[0].applyId || undefined;
-      if(!selectJobId) { yield put({
-        type: 'save',
-        payload: {
-          tableLoading: false,
-        },
-      });
-      return;}
+      if(!selectJobId) { 
+        yield put({
+          type: 'save',
+          payload: {
+            tableLoading: false,
+          },
+        });
+        yield put({
+          type: 'save',
+          payload: {
+            jobList,
+            selectJobId,
+          },
+        });
+        return;
+      }
       yield put({
         type: 'save',
         payload: {
@@ -131,6 +140,7 @@ export default {
       });
       yield put({
         type: 'getFlowList',
+        payload: {timeList},
       });
     },
     *addInvitation({ payload }, { call, put, select }) {
@@ -145,15 +155,18 @@ export default {
         },
       });
     },
-    // *resumeApplyAsFile({ payload }, { call, put, select }) {
-    //   const postList = yield call(resumeApplyAsFile, payload);
-    //   yield put({
-    //     type: 'save',
-    //     payload: {
-    //       postList,
-    //     },
-    //   });
-    // },
+    *queryTimeList({ payload }, { call, put, select }) {
+      const jobList = yield select(({ chatrecord: { jobList } }) => jobList);
+      const applyIds = jobList.map(item => item.applyId) || [];
+      if (applyIds.length) {
+        const timeList = yield call(fetchInvitation, { applyIds });
+        const { selectJobId } = payload;
+        yield put({
+          type: 'getFlowList',
+          payload: {selectJobId,timeList},
+        });
+      }
+    },
   },
   reducers: {
     save(state, { payload }) {
@@ -168,6 +181,9 @@ export default {
       let { timeList, selectJobId } = state;
       if (payload && payload.selectJobId) {
         selectJobId = payload.selectJobId;
+      }
+      if(payload && payload.timeList) {
+        timeList = payload.timeList;
       }
       let flowList = [];
       if (!selectJobId || !timeList.length) {

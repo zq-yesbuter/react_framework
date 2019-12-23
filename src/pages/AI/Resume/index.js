@@ -18,6 +18,7 @@ import {
   Carousel,
   Icon,
   Typography,
+  message,
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
@@ -26,6 +27,7 @@ import classnames from 'classnames';
 import PDF from 'react-pdf-js';
 import PDFJS from 'pdfjs-dist';
 import moment from 'moment';
+import { inlineShowResume } from '@/services/ai'
 // import { TextLayerBuilder } from '@/pdfjs-dist/web/pdf_viewer.js';
 // import '@/pdfjs-dist/web/pdf_viewer.css';
 import styles from './index.less';
@@ -49,35 +51,13 @@ const eduData = [
 const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
-function showResume() {
-  let iframe = document.createElement('iframe');
-  iframe.id = 1;
-  iframe.width = '100%';
-  iframe.height = '100%';
-  iframe.src = 'http://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
-  // 'https://view.officeapps.live.com/op/view.aspx?src=http://storage.xuetangx.com/public_assets/xuetangx/PDF/1.xls';
-  const win = window.open();
-  // let loadingDiv = document.createElement('div');
-  // loadingDiv.width='100%';
-  // loadingDiv.height='100%';
-  // loadingDiv.innerHTML='eeeeeeee';
-  // win.document.body.appendChild(loadingDiv);
-
-  // win.document.body.appendChild();
-  win.document.body.appendChild(iframe);
-  if (iframe.attachEvent) {
-    iframe.attachEvent('onload', () => {});
-  } else {
-    iframe.onload = () => {
-      // win.document.body.removeChild(loadingDiv);
-    };
-  }
-}
 
 function Resume({
   dispatch,
   chatrecord: {
     resumeObj: { name, tel, skills, projects, educations, companys },
+    selectJobId,
+    jobList,
   },
   form,
 }) {
@@ -116,6 +96,45 @@ function Resume({
         <Button onClick={showResume}>查看原简历</Button>
       </div>
     );
+  }
+  function showResume() {
+    const { resumeId } = jobList.find(item => item.applyId === selectJobId) || {};
+    let iframe = document.createElement('iframe');
+    iframe.id = 1;
+    iframe.width = '100%';
+    iframe.height = '100%';
+    inlineShowResume({resumeId})
+      .then(res => {
+        if(!res) return;
+        console.log('res===>',res);
+        const { attachmentFileName, attachmentUrl } = res;
+        const index= attachmentFileName.lastIndexOf('.');
+        const ext = attachmentFileName.substr(index+1);
+        if(ext === 'doc' || ext ==='docx'){
+          iframe.src = `https://view.officeapps.live.com/op/view.aspx?src=${attachmentUrl}`;
+        }
+        iframe.src = `http://mozilla.github.io/pdf.js/web/${attachmentUrl}`;
+
+        // iframe.src = 'http://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
+    // 'https://view.officeapps.live.com/op/view.aspx?src=http://storage.xuetangx.com/public_assets/xuetangx/PDF/1.xls';
+    const win = window.open();
+    // let loadingDiv = document.createElement('div');
+    // loadingDiv.width='100%';
+    // loadingDiv.height='100%';
+    // loadingDiv.innerHTML='eeeeeeee';
+    // win.document.body.appendChild(loadingDiv);
+  
+    // win.document.body.appendChild();
+    win.document.body.appendChild(iframe);
+    if (iframe.attachEvent) {
+      iframe.attachEvent('onload', () => {});
+    } else {
+      iframe.onload = () => {
+        // win.document.body.removeChild(loadingDiv);
+      };
+    }
+      })
+      .catch(error => message.error(error.message));
   }
   function prev() {
     CRef.current.prev();

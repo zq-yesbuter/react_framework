@@ -189,3 +189,10 @@ export async function batchExportResume(body) {
     // },
   });
 }
+
+// 获取简历在线展示
+export async function inlineShowResume({resumeId}) {
+  return request(`/tenant/resume/attachment/${resumeId}`, {
+    method: 'GET',
+  });
+}

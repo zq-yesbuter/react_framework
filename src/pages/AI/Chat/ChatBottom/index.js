@@ -62,12 +62,12 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
           <h3>计划邀约时间</h3>
           <div className={styles.scroll}>
             <div style={{ marginBottom: 10 }}>
-              {getFieldDecorator('interviewStartTime')(
+              {getFieldDecorator('triggerTime')(
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}
                   format={format}
-                  placeholder="请选择计划邀约面试时间"
+                  placeholder="请选择外呼时间"
                   style={{ display: 'block' }}
                 />
               )}
@@ -86,12 +86,12 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
               )}
             </div>
             <div style={{ marginBottom: 10 }}>
-              {getFieldDecorator('triggerTime')(
+              {getFieldDecorator('interviewStartTime')(
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}
                   format={format}
-                  placeholder="请选择外呼时间"
+                  placeholder="请选择计划邀约面试时间"
                   style={{ display: 'block' }}
                 />
               )}
@@ -112,13 +112,14 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
             <Steps progressDot direction="vertical" current={10000}>
               {flowList &&
                 flowList.length &&
-                flowList.map(({ status, roundStartTime, remark }, index) => (
+                flowList.map(({ status, roundStartTime, remark,interviewConfirmTime }, index) => (
                   <Step
                     title={`【${formatStatus(status)}】`}
                     description={
                       <div>
                         <p>{`邀约外呼开始时间： ${roundStartTime}`}</p>
                         <p>{`邀约外呼结束时间： ${roundStartTime}`}</p>
+                        {interviewConfirmTime ? <p>{`邀约用户反馈的面试时间： ${interviewConfirmTime}`}</p> : null }
                         <p>{remark}</p>
                       </div>
                     }

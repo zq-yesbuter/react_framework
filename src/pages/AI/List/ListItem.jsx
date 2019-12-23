@@ -17,6 +17,7 @@ function ListItem({
   applyDate,
   applyId,
   timeList,
+  jobName,
 }) {
   const itemStyle = String(selectJobId) === applyId ? 'active' : 'normal';
   function formatStatus(status) {
@@ -75,7 +76,10 @@ function ListItem({
           <img src={headImage || user} alt="avatar" />
         </div>
         <div className={styles.itemBaseInfo}>
-          <div className={styles.name}>{name || '张三'}</div>
+          <div>
+            <span className={styles.name}>{name|| '无'}</span>
+            <span>{`(${jobName || '无'})`}</span>
+          </div>
           <div>{formatStatus(status) || '无'}</div>
         </div>
         <div className={styles.itemTimeInfo}>

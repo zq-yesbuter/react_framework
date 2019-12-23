@@ -165,7 +165,34 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) 
               ))}
           </div>
         </Item>
-        <Item label="可选时段" required>
+        <Item label="外呼时间" required>
+          {getFieldDecorator('triggerTime', {
+            rules: [{ required: true, message: '请选择外呼时间!' }],
+          })(
+            <DatePicker
+              showTime
+              disabledDate={disabledDate}
+              format="YYYY-MM-DD HH:mm:ss"
+              placeholder="请选择外呼时间"
+              style={{ display: 'block' }}
+            />
+          )}
+        </Item>
+        <Item label="面试时长">
+          {getFieldDecorator('diff', {
+            initialValue: 60,
+            rules: [{ required: true, message: '请选择面试时长!' }],
+          })(
+            <InputNumber
+              style={{ flex: 1 }}
+              min={0}
+              max={160}
+              formatter={value => `${value}分钟`}
+              parser={value => value.replace('分钟', '')}
+            />
+          )}
+        </Item>
+        <Item label="面试时段" required>
           <div style={{ display: 'flex', marginLeft: 5 }}>
             {getFieldDecorator('time')(
               <RangePicker
@@ -197,34 +224,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) 
               </Tag>
             ))}
           </div>
-        ) : null}
-        <Item label="面试时长">
-          {getFieldDecorator('diff', {
-            initialValue: 60,
-            rules: [{ required: true, message: '请选择面试时长!' }],
-          })(
-            <InputNumber
-              style={{ flex: 1 }}
-              min={0}
-              max={160}
-              formatter={value => `${value}分钟`}
-              parser={value => value.replace('分钟', '')}
-            />
-          )}
-        </Item>
-        <Item label="外呼时间" required>
-          {getFieldDecorator('triggerTime', {
-            rules: [{ required: true, message: '请选择外呼时间!' }],
-          })(
-            <DatePicker
-              showTime
-              disabledDate={disabledDate}
-              format="YYYY-MM-DD HH:mm:ss"
-              placeholder="请选择外呼时间"
-              style={{ display: 'block' }}
-            />
-          )}
-        </Item>
+        ) : null}        
         {/* <Item label="短信发送" required>
           {getFieldDecorator('name', {
             defaultValue: 1,
