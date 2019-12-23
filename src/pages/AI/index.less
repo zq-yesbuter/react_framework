@@ -21,17 +21,20 @@
   flex-flow: nowrap;
   background: hsl(0, 0%, 97%);
   min-height: calc(100vh - 60px);
+  box-sizing: border-box;
   .left {
     padding: 10px 6px 10px 10px;
     min-height: calc(100vh - 60px);
     flex: 1;
     background: #fff;
+    box-sizing: border-box;
   }
   .center {
     flex: 2;
     min-height: calc(100vh - 60px);
     background: #fff;
     margin-left: 2px;
+    box-sizing: border-box;
   }
   .right {
     margin-left: 2px;
@@ -39,6 +42,7 @@
     height: calc(100vh - 60px);
     overflow-y: auto;
     background: #fff;
+    box-sizing: border-box;
     &::-webkit-scrollbar {
       width: 4px;
     }

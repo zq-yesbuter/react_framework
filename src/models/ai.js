@@ -36,6 +36,7 @@ function flatten(arr) {
   }
   return res;
 }
+
 export default {
   namespace: 'chatrecord',
   state: {
@@ -47,6 +48,7 @@ export default {
     flowList: [],
     tableLoading: false,
     postList: [],
+    backShowTime: {},
   },
   effects: {
     // 获取微信聊天记录
@@ -189,12 +191,14 @@ export default {
       if (!selectJobId || !timeList.length) {
         return { ...state, flowList };
       }
+      const list = timeList.filter(item => item.applyId === selectJobId);
+      const backShowTime = list.length ? list.slice(-1)[0] : {};
       flowList = timeList
         .filter(item => item.applyId === selectJobId)
         .filter(item => item.flow.length > 0)
         .map(item => item.flow);
       flowList = flatten(flowList);
-      return { ...state, flowList };
+      return { ...state, flowList,backShowTime };
     },
   },
   subscriptions: {

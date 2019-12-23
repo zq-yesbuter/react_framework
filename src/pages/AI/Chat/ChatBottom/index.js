@@ -23,7 +23,7 @@ function formatStatus(status) {
       return '无';
   }
 }
-function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId, flowList } }) {
+function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId, flowList, backShowTime } }) {
   const { getFieldDecorator, validateFields } = form;
   function onSubmit() {
     validateFields((err, values) => {
@@ -53,7 +53,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
   function disabledDate(current) {
     // Can not select days before today and today
     return current && current < moment().endOf('day');
-  }
+  } 
 
   return (
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
@@ -62,7 +62,9 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
           <h3>计划邀约时间</h3>
           <div className={styles.scroll}>
             <div style={{ marginBottom: 10 }}>
-              {getFieldDecorator('triggerTime')(
+              {getFieldDecorator('triggerTime',{
+                initialValue:Object.keys(backShowTime).length ? moment(backShowTime.triggerTime) : null,
+              })(
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}
@@ -86,7 +88,9 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
               )}
             </div>
             <div style={{ marginBottom: 10 }}>
-              {getFieldDecorator('interviewStartTime')(
+              {getFieldDecorator('interviewStartTime',{
+                initialValue:Object.keys(backShowTime).length ? moment(backShowTime.interviewTime) : null,
+              })(
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}

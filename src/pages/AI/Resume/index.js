@@ -19,6 +19,7 @@ import {
   Icon,
   Typography,
   message,
+  Badge,
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
@@ -69,6 +70,9 @@ function Resume({
   const [value, setValue] = useState();
   const [cExpand, setCExpand] = useState(0);
   const [pExpand, setPExpand] = useState(0);
+  const [workIndex,setWorkIndex] = useState(1);
+  const [projectIndex, setProjectIndex] = useState(1);
+  const [eduIndex, setEduIndex] = useState(1);
 
   const basicData = [
     { name: '姓名', value: name, id: '1' },
@@ -180,6 +184,18 @@ function Resume({
   function pContentExpand() {
     setPExpand(pExpand === 1 ? 2 : 1);
   }
+  function workSelect(page){
+    setWorkIndex(page);
+    CRef.current.goTo(page,false);
+  }
+  function projectSelect(page){
+    setProjectIndex(page);
+    PRef.current.goTo(page,false);
+  }
+  function eduSelect(page){
+    setEduIndex(page);
+    eduRef.current.goTo(page,false);
+  }
   return (
     <div>
       {header()}
@@ -214,17 +230,17 @@ function Resume({
           </Col>
         </Row>
       </li>
-      <li className={styles.chanceItem} style={{ position: 'relative' }}>
+      <li className={styles.chanceItem}>
         <h4 className={styles.resumeTitle}>工作经历</h4>
         {companys && companys.length ? (
           <Fragment>
-            {companys && companys.length > 1 ? (
+            {/* {companys && companys.length > 1 ? (
               <Fragment>
                 <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={prev} />
                 <span className={classnames(styles.arrow, styles.arrowRight)} onClick={next} />
               </Fragment>
-            ) : null}
-            <Carousel className={styles.mycarousel} ref={CRef}>
+            ) : null} */}
+            <Carousel className={styles.mycarousel} ref={CRef} dots={false}>
               {companys.map((item, index) => (
                 <div className={styles.carousel} key={index}>
                   <Paragraph>{`起止时间：${moment(item.startDate).format(format)} ~ ${item.endDate ? moment(item.endDate).format(format) : '至今'}`}</Paragraph>
@@ -245,6 +261,14 @@ function Resume({
                 </div>
               ))}
             </Carousel>
+            <div style={{display:'flex',justifyContent:'center'}}>
+              {companys.map((_, index) => {
+                const page = index+1;
+                const cls = workIndex === page ? classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
+                return (<span onClick={() => workSelect(page)} className={cls} key={index}>{page}</span>)
+              }
+              )}
+            </div>
           </Fragment>
         ) : (
           <div className={styles.noContent}>暂无</div>
@@ -254,13 +278,13 @@ function Resume({
         <h4 className={styles.resumeTitle}>项目经历</h4>
         {projects && projects.length ? (
           <Fragment>
-            {projects && projects.length > 1 ? (
+            {/* {projects && projects.length > 1 ? (
               <Fragment>
                 <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={proPrev} />
                 <span className={classnames(styles.arrow, styles.arrowRight)} onClick={proNext} />
               </Fragment>
-            ) : null}
-            <Carousel className={styles.mycarousel} ref={PRef}>
+            ) : null} */}
+            <Carousel className={styles.mycarousel} ref={PRef} dots={false}>
               {projects.map((item, index) => (
                 <div className={styles.carousel} key={index}>
                   <Paragraph style={{ marginBottom: 5 }}>
@@ -288,6 +312,14 @@ function Resume({
                 </div>
               ))}
             </Carousel>
+            <div style={{display:'flex',justifyContent:'center'}}>
+              {projects.map((_, index) => {
+                const page = index+1;
+                const cls = projectIndex === page ?classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
+                return (<span onClick={() => projectSelect(page)} className={cls} key={index}>{page}</span>)
+              }
+              )}
+            </div>
           </Fragment>
         ) : (
           <div className={styles.noContent}>暂无</div>
@@ -297,13 +329,13 @@ function Resume({
         <h4 className={styles.resumeTitle}>教育经历</h4>
         {educations && educations.length ? (
           <Fragment>
-            {educations.length > 1 ? (
+            {/* {educations.length > 1 ? (
               <Fragment>
                 <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={eduPrev} />
                 <span className={classnames(styles.arrow, styles.arrowRight)} onClick={eduNext} />
               </Fragment>
-            ) : null}
-            <Carousel className={styles.mycarousel} ref={eduRef}>
+            ) : null} */}
+            <Carousel className={styles.mycarousel} ref={eduRef} dots={false}>
               {educations.map((item, index) => (
                 <div className={styles.carousel} key={index}>
                   <Paragraph style={{ marginBottom: 5 }}>
@@ -319,6 +351,14 @@ function Resume({
                 </div>
               ))}
             </Carousel>
+            <div style={{display:'flex',justifyContent:'center'}}>
+              {educations.map((_, index) => {
+                const page = index+1;
+                const cls = eduIndex === page ?classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
+                return (<span onClick={() => eduSelect(page)} className={cls} key={index}>{page}</span>)
+              }
+              )}
+            </div>
           </Fragment>
         ) : (
           <div className={styles.noContent}>暂无</div>

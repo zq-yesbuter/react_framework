@@ -26,9 +26,10 @@ export async function editInvitation(body) {
 }
 
 // 邀约信息查询
-export async function fetchInvitation(params) {
-  return request(`/interview/invitation?${stringify(params)}`, {
-    method: 'GET',
+export async function fetchInvitation(body) {
+  return request('/interview/invitations/all', {
+    method: 'POST',
+    body,
   });
 }
 

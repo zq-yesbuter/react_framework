@@ -28,12 +28,12 @@ const { proxyUrl = '', proxyPort = '', proxyPath = '', pathRewrite = {} } = {
   },
   DEV: {
     proxyUrl: 'jddai.jd.com',
-    proxyPort: '8081',
+    proxyPort: '8088',
     proxyPath: '',
     Host: 'jddai.jd.com',
     // pathRewrite: { '^/api': '' },
     domain: 'jddai.jd.com',
-    domainPort: '8081',
+    domainPort: '8088',
   },
 }[API];
 const plugins = [

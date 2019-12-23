@@ -121,6 +121,9 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) 
             message.success('批量邀约成功');
             setDiffTimeList([]);
             close();
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
           })
           .catch(e => message.error());
       }

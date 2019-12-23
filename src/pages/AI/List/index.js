@@ -97,7 +97,7 @@ function ChatList({
         if (newStatus) {
           requestValue = { ...requestValue, status: newStatus };
         }
-        const reg=/^\d$/;
+        const reg=/^\d{1,11}$/;
         let nameObj = {};
         if(reg.test(name)) {
           nameObj = {tel:name}
@@ -112,9 +112,7 @@ function ChatList({
     });
   }
   function handleScroll() {
-    const { clientHeight } = listRef.current;
-    const { scrollHeight } = listRef.current;
-    const { scrollTop } = listRef.current;
+    const { clientHeight,scrollHeight} = listRef && listRef.current || {};
     if(clientHeight < scrollHeight){
       setShowMore(true);
     }else{
