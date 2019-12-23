@@ -109,7 +109,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
         <div className={styles['gutter-box']}>
           <h3>邀约记录/结果</h3>
           <div className={styles.scroll}>
-            <Steps progressDot direction="vertical" current={100}>
+            <Steps progressDot direction="vertical" current={10000}>
               {flowList &&
                 flowList.length &&
                 flowList.map(({ status, roundStartTime, remark }, index) => (

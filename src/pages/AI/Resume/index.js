@@ -100,15 +100,13 @@ function Resume({
     { name: '电话', value: tel, id: '8' },
   ];
   useLayoutEffect(() => {
-    // console.log('content=>', pContent.current && pContent.current.offsetHeight);
-    // console.log('content=>11111', cContent.current && cContent.current.offsetHeight,);
     if (cContent.current && cContent.current.offsetHeight > 65) {
       setCExpand(1);
     }
-    if (pContent.current && pContent.current.offsetHeight > 65) {
+    if (pContent.current && (pContent.current.offsetHeight > 65)) {
       setPExpand(1);
     }
-  }, []);
+  },[]);
 
   function header() {
     return (
@@ -120,6 +118,7 @@ function Resume({
   }
   function prev() {
     CRef.current.prev();
+    // console.log('pContent.current===>',cContent.current)
     // setCExpand(1);
     if (cContent.current && cContent.current.offsetHeight > 65) {
       setCExpand(1);
@@ -127,6 +126,7 @@ function Resume({
   }
   function next() {
     CRef.current.next();
+    // console.log('pContent.current===>',cContent.current && cContent.current.offsetHeight)
     // setCExpand(1);
     if (cContent.current && cContent.current.offsetHeight > 65) {
       setCExpand(1);
@@ -134,12 +134,14 @@ function Resume({
   }
   function proPrev() {
     PRef.current.prev();
+    // console.log('pContent.current===>',pContent.current)
     // setPExpand(1);
     if (pContent.current && pContent.current.offsetHeight > 65) {
       setPExpand(1);
     }
   }
   function proNext() {
+    // console.log('pContent.current===>',pContent.current) 
     PRef.current.next();
     // setPExpand(1);
     if (pContent.current && pContent.current.offsetHeight > 65) {
@@ -156,12 +158,7 @@ function Resume({
     setCExpand(cExpand === 1 ? 2 : 1);
   }
   function pContentExpand() {
-    // console.log('expand===>', pExpand);
-    setPExpand(pExpand === 2 ? 1 : 2);
-  }
-  // console.log('render===>', pExpand);
-  function expand(e) {
-    console.log('eee==>', e);
+    setPExpand(pExpand === 1 ? 2 : 1);
   }
   return (
     <div>
@@ -210,7 +207,7 @@ function Resume({
             <Carousel className={styles.mycarousel} ref={CRef}>
               {companys.map((item, index) => (
                 <div className={styles.carousel} key={index}>
-                  <Paragraph>{`起止时间： ${item.startDate} ~ ${item.endDate}`}</Paragraph>
+                  <Paragraph>{`起止时间：${item.startDate} ~ ${item.endDate}`}</Paragraph>
                   <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Paragraph style={{ flex: 1, marginRight: 5 }}>
                       {`公司：  ${item.name}`}
@@ -251,9 +248,9 @@ function Resume({
                   </Paragraph>
                   <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Paragraph style={{ flex: 1, marginRight: 5 }}>
-                      {`公司：  ${item.name}`}
+                      {`公司：  ${item.name  || '无'}`}
                     </Paragraph>
-                    <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position}`}</Paragraph>
+                    <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position || '无'}`}</Paragraph>
                   </Paragraph>
                   {/* <div>{item.time}</div>
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>

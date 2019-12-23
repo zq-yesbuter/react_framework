@@ -67,7 +67,14 @@ export default {
         },
       });
       const jobList = yield call(jobAppliedAsPostAll, payload);
-      const selectJobId = jobList[0].applyId;
+      const selectJobId = jobList[0] && jobList[0].applyId || undefined;
+      if(!selectJobId) { yield put({
+        type: 'save',
+        payload: {
+          tableLoading: false,
+        },
+      });
+      return;}
       yield put({
         type: 'save',
         payload: {
@@ -82,7 +89,7 @@ export default {
         },
       });
       // const applyIds = jobList.filter(item => item.status > 20).map(item => item.applyId);
-      const applyIds = jobList.map(item => item.applyId);
+      const applyIds = jobList.map(item => item.applyId) || [];
       if (applyIds.length) {
         yield put({
           type: 'fetchInvitation',
