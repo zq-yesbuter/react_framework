@@ -58,7 +58,7 @@ function ImportModal({ dispatch, visible, form, close, postList }) {
           },
         });
         const formData = new FormData();
-        console.log('fileList===>', fileList);
+        // console.log('fileList===>', fileList);
         fileList.forEach(file => {
           formData.append('resumeAttach', file);
         });
@@ -66,14 +66,19 @@ function ImportModal({ dispatch, visible, form, close, postList }) {
         resumeApplyAsFile({ formData, urlParams })
           .then(data => {
             message.success('简历导入成功');
+            resetFields();
+            setFileList([]);
             close();
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
           })
           .catch(e => message.error(e.message));
       }
     });
   }
   function beforeUpload(file) {
-    console.log('文件格式==》', file.type, file.size);
+    // console.log('文件格式==》', file.type, file.size);
     const fileType = [
       '.doc',
       '.docx',
@@ -91,11 +96,20 @@ function ImportModal({ dispatch, visible, form, close, postList }) {
     return false;
   }
 
+  function onRemove(file) {
+    const index = fileList.indexOf(file);
+    const newFileList = fileList.slice();
+    newFileList.splice(index, 1);
+    setFileList(newFileList)
+  }
+
   const uploadProps = {
     customRequest: () => {},
+    onRemove,
     beforeUpload,
     fileList,
   };
+  
   return (
     <Modal
       title="导入简历"
@@ -103,6 +117,7 @@ function ImportModal({ dispatch, visible, form, close, postList }) {
       onOk={handleOk}
       onCancel={() => {
         resetFields();
+        setFileList([]);
         close();
       }}
     >

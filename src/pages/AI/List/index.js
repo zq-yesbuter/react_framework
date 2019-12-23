@@ -96,9 +96,16 @@ function ChatList({
         if (newStatus) {
           requestValue = { ...requestValue, status: newStatus };
         }
+        const reg=/^\d$/;
+        let nameObj = {};
+        if(reg.test(name)) {
+          nameObj = {tel:name}
+        }else{
+          nameObj = {name}
+        }
         dispatch({
           type: 'chatrecord/jobAppliedAsPostAll',
-          payload: { name, ...requestValue },
+          payload: { ...nameObj, ...requestValue },
         });
       }
     });
@@ -120,7 +127,7 @@ function ChatList({
     return (
       <div className={styles.search}>
         {getFieldDecorator('name')(
-          <Search placeholder="请根据姓名、手机号搜索" onSearch={onSubmit} />
+          <Search placeholder="请根据姓名、手机号搜索" onSearch={() => onSubmit(undefined,undefined,undefined,undefined)} />
         )}
         <Button icon="plus" style={{ marginLeft: 10 }} onClick={importResume}>
           导入简历
@@ -145,7 +152,7 @@ function ChatList({
   }
   function sortSelect(e) {
     setOrderBy(e.key);
-    onSubmit(e.key);
+    onSubmit(e.key,undefined,undefined,undefined);
   }
   function header() {
     const { getFieldDecorator } = form;

@@ -25,6 +25,7 @@ import user from '@/assets/user.svg';
 import classnames from 'classnames';
 import PDF from 'react-pdf-js';
 import PDFJS from 'pdfjs-dist';
+import moment from 'moment';
 // import { TextLayerBuilder } from '@/pdfjs-dist/web/pdf_viewer.js';
 // import '@/pdfjs-dist/web/pdf_viewer.css';
 import styles from './index.less';
@@ -35,7 +36,7 @@ const { Option } = Select;
 const { Search } = Input;
 const { Item } = Form;
 const { Paragraph, Title, Text } = Typography;
-
+const format = 'YYYY-MM-DD';
 const pdfurl = require('./1.pdf');
 
 const eduData = [
@@ -207,7 +208,7 @@ function Resume({
             <Carousel className={styles.mycarousel} ref={CRef}>
               {companys.map((item, index) => (
                 <div className={styles.carousel} key={index}>
-                  <Paragraph>{`起止时间：${item.startDate} ~ ${item.endDate}`}</Paragraph>
+                  <Paragraph>{`起止时间：${moment(item.startDate).format(format)} ~ ${moment(item.endDate).format(format)}`}</Paragraph>
                   <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Paragraph style={{ flex: 1, marginRight: 5 }}>
                       {`公司：  ${item.name}`}
@@ -244,7 +245,7 @@ function Resume({
               {projects.map((item, index) => (
                 <div className={styles.carousel} key={index}>
                   <Paragraph style={{ marginBottom: 5 }}>
-                    {`起止时间： ${item.startDate} ~ ${item.endDate}`}
+                    {`起止时间： ${moment(item.startDate).format(format)} ~ ${moment(item.endDate).format(format)}`}
                   </Paragraph>
                   <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Paragraph style={{ flex: 1, marginRight: 5 }}>
@@ -287,7 +288,7 @@ function Resume({
               {educations.map((item, index) => (
                 <div className={styles.carousel} key={index}>
                   <Paragraph style={{ marginBottom: 5 }}>
-                    {`起止时间： ${item.startDate} ~ ${item.endDate}`}
+                    {`起止时间： ${moment(item.startDate).format(format)} ~ ${moment(item.endDate).format(format)}`}
                   </Paragraph>
                   <Paragraph style={{ marginBottom: 5 }}>{`学校名称：  ${item.school}`}</Paragraph>
                   <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
