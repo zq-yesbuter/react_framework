@@ -49,7 +49,7 @@ const filterName = (key, arr) => {
 
 function ChatList({
   dispatch,
-  chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading, postList,bottomLoading,notData },
+  chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading, postList,bottomLoading,notData,pageNum },
   form,
 }) {
   const [value, setValue] = useState();
@@ -65,7 +65,7 @@ function ChatList({
   const [status, setStatus] = useState();
   const [dateEnd, setDateEnd] = useState();
   const [showMore, setShowMore] = useState(false);
-  const [pageNum,setPageNum] = useState(1);
+  // const [pageNum,setPageNum] = useState(1);
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -115,6 +115,12 @@ function ChatList({
           type: 'chatrecord/jobAppliedAsPostAll',
           payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
         });
+        dispatch({
+          type: 'chatrecord/save',
+          payload: {
+            pageNum:1,
+          },
+        });
       }
     });
   }
@@ -128,7 +134,12 @@ function ChatList({
     if (scrollHeight - (scrollTop + clientHeight) < 10) {
       if(!notData){
         onSubmit(undefined,undefined,undefined,undefined,pageNum+1);
-        setPageNum(pageNum => pageNum+1);
+        dispatch({
+          type: 'chatrecord/save',
+          payload: {
+            pageNum:pageNum+1,
+          },
+        });
       }
     } 
   }

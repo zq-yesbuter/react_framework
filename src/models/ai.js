@@ -51,6 +51,7 @@ export default {
     backShowTime: {},
     bottomLoading: false,
     notData: false,
+    pageNum: 1,
   },
   effects: {
     // 获取微信聊天记录
@@ -93,6 +94,7 @@ export default {
         payload: {
           jobList,
           selectJobId,
+          notData: false,
         },
       });
       yield put({
@@ -185,6 +187,7 @@ export default {
           payload: {
             bottomLoading: false,
             notData: true,
+            pageNum: 1,
           },
         });
         return;
