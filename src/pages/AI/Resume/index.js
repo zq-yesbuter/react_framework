@@ -70,9 +70,9 @@ function Resume({
   const [value, setValue] = useState();
   const [cExpand, setCExpand] = useState(0);
   const [pExpand, setPExpand] = useState(0);
-  const [workIndex,setWorkIndex] = useState(1);
-  const [projectIndex, setProjectIndex] = useState(1);
-  const [eduIndex, setEduIndex] = useState(1);
+  const [workIndex,setWorkIndex] = useState(0);
+  const [projectIndex, setProjectIndex] = useState(0);
+  const [eduIndex, setEduIndex] = useState(0);
 
   const basicData = [
     { name: '姓名', value: name, id: '1' },
@@ -85,12 +85,18 @@ function Resume({
     { name: '电话', value: tel, id: '8' },
   ];
   useLayoutEffect(() => {
-    if (cContent.current && cContent.current.offsetHeight > 65) {
-      setCExpand(1);
-    }
-    if (pContent.current && (pContent.current.offsetHeight > 65)) {
-      setPExpand(1);
-    }
+    // if (document.getElementById('workContent-0') && document.getElementById('workContent-0').offsetHeight && workIndex===0) {
+    //   setCExpand(1);
+    // }
+    // if (document.getElementById('workContent-0') && document.getElementById('workContent-0').offsetHeight && workIndex===0) {
+    //   setCExpand(1);
+    // }
+    // if (cContent.current && cContent.current.offsetHeight > 65) {
+    //   setCExpand(1);
+    // }
+    // if (pContent.current && (pContent.current.offsetHeight > 65)) {
+    //   setPExpand(1);
+    // }
   },[]);
 
   function header() {
@@ -140,57 +146,35 @@ function Resume({
       })
       .catch(error => message.error(error.message));
   }
-  function prev() {
-    CRef.current.prev();
-    // console.log('pContent.current===>',cContent.current)
-    // setCExpand(1);
-    if (cContent.current && cContent.current.offsetHeight > 65) {
-      setCExpand(1);
-    }
-  }
-  function next() {
-    CRef.current.next();
-    // console.log('pContent.current===>',cContent.current && cContent.current.offsetHeight)
-    // setCExpand(1);
-    if (cContent.current && cContent.current.offsetHeight > 65) {
-      setCExpand(1);
-    }
-  }
-  function proPrev() {
-    PRef.current.prev();
-    // console.log('pContent.current===>',pContent.current)
-    // setPExpand(1);
-    if (pContent.current && pContent.current.offsetHeight > 65) {
-      setPExpand(1);
-    }
-  }
-  function proNext() {
-    // console.log('pContent.current===>',pContent.current) 
-    PRef.current.next();
-    // setPExpand(1);
-    if (pContent.current && pContent.current.offsetHeight > 65) {
-      setPExpand(1);
-    }
-  }
-  function eduPrev() {
-    eduRef.current.prev();
-  }
-  function eduNext() {
-    eduRef.current.next();
-  }
-  function cContentExpand() {
+
+  function cContentExpand(page) {
     setCExpand(cExpand === 1 ? 2 : 1);
+    // if (document.getElementById(`workContent-${page}`) && document.getElementById(`workContent-${page}`).offsetHeight) {
+    //   const height = document.getElementById(`workContent-${page}`).offsetHeight;
+    //   console.log('height===>',height);
+    //   document.getElementById(`workContent-${page}`).height = `${height}px`;
+    // }
   }
   function pContentExpand() {
     setPExpand(pExpand === 1 ? 2 : 1);
   }
   function workSelect(page){
     setWorkIndex(page);
-    CRef.current.goTo(page,false);
+    CRef.current.goTo(page,true);
+    // console.log('讨厌===》',document.querySelectorAll('[id^=\'workContent-\']'));
+    // console.log('喜欢==》',document.getElementById(`workContent-${page}`),document.getElementById(`workContent-${page}`).offsetHeight);
+    if (document.getElementById(`workContent-${page}`) && document.getElementById(`workContent-${page}`).offsetHeight > 65) {
+      setCExpand(1);
+    }
   }
   function projectSelect(page){
     setProjectIndex(page);
-    PRef.current.goTo(page,false);
+    PRef.current.goTo(page,true);
+    // console.log('讨厌===》111111',document.querySelectorAll('[id^=\'projectContent-\']'));
+    // console.log('喜欢==》11111',document.getElementById(`projectContent-${page}`),document.getElementById(`projectContent-${page}`).offsetHeight);
+    if (document.getElementById(`projectContent-${page}`) && document.getElementById(`projectContent-${page}`).offsetHeight > 65) {
+      setPExpand(1);
+    }
   }
   function eduSelect(page){
     setEduIndex(page);
@@ -240,7 +224,7 @@ function Resume({
                 <span className={classnames(styles.arrow, styles.arrowRight)} onClick={next} />
               </Fragment>
             ) : null} */}
-            <Carousel className={styles.mycarousel} ref={CRef} dots={false}>
+            <Carousel className={styles.mycarousel} ref={CRef} dots={false} slidesToShow={1}>
               {companys.map((item, index) => (
                 <div className={styles.carousel} key={index}>
                   <Paragraph>{`起止时间：${moment(item.startDate).format(format)} ~ ${item.endDate ? moment(item.endDate).format(format) : '至今'}`}</Paragraph>
@@ -250,11 +234,11 @@ function Resume({
                     </Paragraph>
                     <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position}`}</Paragraph>
                   </Paragraph>
-                  <p className={cExpand === 1 ? styles.expand : null} ref={cContent}>
+                  <p className={cExpand === 1 ? styles.expand : null} ref={cContent} id={`workContent-${index}`}>
                     {item.content}
                   </p>
                   {cExpand ? (
-                    <span onClick={cContentExpand} className={styles.button}>
+                    <span onClick={() => cContentExpand(index)} className={styles.button}>
                       {cExpand === 1 ? '展开' : '收起'}
                     </span>
                   ) : null}
@@ -263,9 +247,10 @@ function Resume({
             </Carousel>
             <div style={{display:'flex',justifyContent:'center'}}>
               {companys.map((_, index) => {
-                const page = index+1;
-                const cls = workIndex === page ? classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
-                return (<span onClick={() => workSelect(page)} className={cls} key={index}>{page}</span>)
+                let page = index;
+                page += 1; 
+                const cls = workIndex === index ? classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
+                return (<span onClick={() => workSelect(index)} className={cls} key={index}>{page}</span>)
               }
               )}
             </div>
@@ -284,7 +269,7 @@ function Resume({
                 <span className={classnames(styles.arrow, styles.arrowRight)} onClick={proNext} />
               </Fragment>
             ) : null} */}
-            <Carousel className={styles.mycarousel} ref={PRef} dots={false}>
+            <Carousel className={styles.mycarousel} ref={PRef} dots={false} slidesToShow={1}>
               {projects.map((item, index) => (
                 <div className={styles.carousel} key={index}>
                   <Paragraph style={{ marginBottom: 5 }}>
@@ -301,7 +286,7 @@ function Resume({
                     <span>{`公司：${item.name || '无'} `}</span>
                     <span>{`职位：${item.position || '无'}`}</span>
                   </div> */}
-                  <p className={pExpand === 1 ? styles.expand : null} ref={pContent}>
+                  <p className={pExpand === 1 ? styles.expand : null} ref={pContent} id={`projectContent-${index}`}>
                     {item.content}
                   </p>
                   {pExpand ? (
@@ -314,9 +299,10 @@ function Resume({
             </Carousel>
             <div style={{display:'flex',justifyContent:'center'}}>
               {projects.map((_, index) => {
-                const page = index+1;
-                const cls = projectIndex === page ?classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
-                return (<span onClick={() => projectSelect(page)} className={cls} key={index}>{page}</span>)
+                let page = index;
+                page += 1; 
+                const cls = projectIndex === index ?classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
+                return (<span onClick={() => projectSelect(index)} className={cls} key={index}>{page}</span>)
               }
               )}
             </div>
@@ -353,9 +339,10 @@ function Resume({
             </Carousel>
             <div style={{display:'flex',justifyContent:'center'}}>
               {educations.map((_, index) => {
-                const page = index+1;
-                const cls = eduIndex === page ?classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
-                return (<span onClick={() => eduSelect(page)} className={cls} key={index}>{page}</span>)
+                 let page = index;
+                 page += 1; 
+                const cls = eduIndex === index ?classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
+                return (<span onClick={() => eduSelect(index)} className={cls} key={index}>{page}</span>)
               }
               )}
             </div>
