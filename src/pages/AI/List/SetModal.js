@@ -119,6 +119,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) 
             //   onOk() {() => close()},
             // });
             message.success('批量邀约成功');
+            resetFields();
             setDiffTimeList([]);
             close();
             dispatch({

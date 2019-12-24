@@ -56,76 +56,84 @@ export default {
   effects: {
     // 获取微信聊天记录
     *getMessage({ payload }, { call, put, select }) {
-      const messageList = yield call(fetchMessage, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          messageList,
-        },
-      });
+      try {
+        const messageList = yield call(fetchMessage, payload);
+        yield put({
+          type: 'save',
+          payload: {
+            messageList,
+          },
+        });
+      } catch (e) {
+        return Promise.reject(e);
+      }
     },
     *jobAppliedAsPostAll({ payload }, { call, put, select }) {
-      yield put({
-        type: 'save',
-        payload: {
-          tableLoading: true,
-        },
-      });
-      const jobList = yield call(jobAppliedAsPostAll, payload);
-      const selectJobId = jobList[0] && jobList[0].applyId || undefined;
-      if(!selectJobId) { 
+      try {
+        yield put({
+          type: 'save',
+          payload: {
+            tableLoading: true,
+          },
+        });
+        const jobList = yield call(jobAppliedAsPostAll, payload);
+        const selectJobId = jobList[0] && jobList[0].applyId || undefined;
+        if(!selectJobId) { 
+          yield put({
+            type: 'save',
+            payload: {
+              tableLoading: false,
+            },
+          });
+          yield put({
+            type: 'save',
+            payload: {
+              jobList,
+              selectJobId,
+            },
+          });
+          return;
+        }
+        yield put({
+          type: 'save',
+          payload: {
+            jobList,
+            selectJobId,
+            notData: false,
+          },
+        });
         yield put({
           type: 'save',
           payload: {
             tableLoading: false,
           },
         });
+        // const applyIds = jobList.filter(item => item.status > 20).map(item => item.applyId);
+        const applyIds = jobList.map(item => item.applyId) || [];
+        if (applyIds.length) {
+          yield put({
+            type: 'fetchInvitation',
+            payload: {
+              applyIds,
+            },
+          });
+        }
+        const resumeId = jobList[0].resumeId;
         yield put({
-          type: 'save',
+          type: 'getMessage',
           payload: {
-            jobList,
-            selectJobId,
+            group: selectJobId,
           },
         });
-        return;
-      }
-      yield put({
-        type: 'save',
-        payload: {
-          jobList,
-          selectJobId,
-          notData: false,
-        },
-      });
-      yield put({
-        type: 'save',
-        payload: {
-          tableLoading: false,
-        },
-      });
-      // const applyIds = jobList.filter(item => item.status > 20).map(item => item.applyId);
-      const applyIds = jobList.map(item => item.applyId) || [];
-      if (applyIds.length) {
         yield put({
-          type: 'fetchInvitation',
+          type: 'fetchResume',
           payload: {
-            applyIds,
+            resumeId,
           },
         });
+      } catch (e) {
+        return Promise.reject(e);
       }
-      const resumeId = jobList[0].resumeId;
-      yield put({
-        type: 'getMessage',
-        payload: {
-          group: selectJobId,
-        },
-      });
-      yield put({
-        type: 'fetchResume',
-        payload: {
-          resumeId,
-        },
-      });
     },
     *fetchResume({ payload }, { call, put, select }) {
       const resumeObj = yield call(fetchResume, payload);
@@ -137,29 +145,37 @@ export default {
       });
     },
     *fetchInvitation({ payload }, { call, put }) {
-      const timeList = yield call(fetchInvitation, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          timeList,
-        },
-      });
-      yield put({
-        type: 'getFlowList',
-        payload: {timeList},
-      });
+      try {
+        const timeList = yield call(fetchInvitation, payload);
+        yield put({
+          type: 'save',
+          payload: {
+            timeList,
+          },
+        });
+        yield put({
+          type: 'getFlowList',
+          payload: {timeList},
+        });
+      } catch (e) {
+        return Promise.reject(e);
+      }
     },
     *addInvitation({ payload }, { call, put, select }) {
       return yield call(addInvitation, payload);
     },
     *queryInformation({ payload }, { call, put, select }) {
-      const postList = yield call(queryInformation, payload);
-      yield put({
-        type: 'save',
-        payload: {
-          postList,
-        },
-      });
+      try {
+        const postList = yield call(queryInformation, payload);
+        yield put({
+          type: 'save',
+          payload: {
+            postList,
+          },
+        });
+      } catch (e) {
+        return Promise.reject(e);
+      }
     },
     *queryTimeList({ payload }, { call, put, select }) {
       const jobList = yield select(({ chatrecord: { jobList } }) => jobList);
@@ -174,47 +190,51 @@ export default {
       }
     },
     *loadMoreList({ payload }, { call, put, select }) {
-      yield put({
-        type: 'save',
-        payload: {
-          bottomLoading: true,
-        },
-      });
-      const moreJobList = yield call(jobAppliedAsPostAll, payload);
-      if(!moreJobList.length) { 
+      try {
+        yield put({
+          type: 'save',
+          payload: {
+            bottomLoading: true,
+          },
+        });
+        const moreJobList = yield call(jobAppliedAsPostAll, payload);
+        if(!moreJobList.length) { 
+          yield put({
+            type: 'save',
+            payload: {
+              bottomLoading: false,
+              notData: true,
+              pageNum: 1,
+            },
+          });
+          return;
+        }
         yield put({
           type: 'save',
           payload: {
             bottomLoading: false,
-            notData: true,
-            pageNum: 1,
           },
         });
-        return;
-      }
-      yield put({
-        type: 'save',
-        payload: {
-          bottomLoading: false,
-        },
-      });
-      const jobList = yield select(({ chatrecord: { jobList } }) => jobList);
-      const newJobList = jobList.concat(moreJobList);
-      yield put({
-        type: 'save',
-        payload: {
-          jobList: newJobList,
-        },
-      });
-
-      const applyIds = newJobList.map(item => item.applyId) || [];
-      if (applyIds.length) {
+        const jobList = yield select(({ chatrecord: { jobList } }) => jobList);
+        const newJobList = jobList.concat(moreJobList);
         yield put({
-          type: 'fetchInvitation',
+          type: 'save',
           payload: {
-            applyIds,
+            jobList: newJobList,
           },
         });
+  
+        const applyIds = newJobList.map(item => item.applyId) || [];
+        if (applyIds.length) {
+          yield put({
+            type: 'fetchInvitation',
+            payload: {
+              applyIds,
+            },
+          });
+        }
+      } catch (e) {
+        return Promise.reject(e);
       }
     },
   },
@@ -236,7 +256,7 @@ export default {
         timeList = payload.timeList;
       }
       let flowList = [];
-      if (!selectJobId || !timeList.length) {
+      if (!selectJobId || !(timeList && timeList.length)) {
         return { ...state, flowList };
       }
       const list = timeList.filter(item => item.applyId === selectJobId);

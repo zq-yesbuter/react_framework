@@ -84,20 +84,6 @@ function Resume({
     // { name: '学历', value: '本科', id: '7' },
     { name: '电话', value: tel, id: '8' },
   ];
-  useLayoutEffect(() => {
-    // if (document.getElementById('workContent-0') && document.getElementById('workContent-0').offsetHeight && workIndex===0) {
-    //   setCExpand(1);
-    // }
-    // if (document.getElementById('workContent-0') && document.getElementById('workContent-0').offsetHeight && workIndex===0) {
-    //   setCExpand(1);
-    // }
-    // if (cContent.current && cContent.current.offsetHeight > 65) {
-    //   setCExpand(1);
-    // }
-    // if (pContent.current && (pContent.current.offsetHeight > 65)) {
-    //   setPExpand(1);
-    // }
-  },[]);
 
   function header() {
     return (
@@ -126,11 +112,6 @@ function Resume({
 
   function cContentExpand(page) {
     setCExpand(cExpand === 1 ? 2 : 1);
-    // if (document.getElementById(`workContent-${page}`) && document.getElementById(`workContent-${page}`).offsetHeight) {
-    //   const height = document.getElementById(`workContent-${page}`).offsetHeight;
-    //   console.log('height===>',height);
-    //   document.getElementById(`workContent-${page}`).height = `${height}px`;
-    // }
   }
   function pContentExpand() {
     setPExpand(pExpand === 1 ? 2 : 1);
@@ -138,7 +119,6 @@ function Resume({
   function workSelect(page){
     setWorkIndex(page);
     CRef.current.goTo(page,true);
-    // console.log('讨厌===》',document.querySelectorAll('[id^=\'workContent-\']'));
     // console.log('喜欢==》',document.getElementById(`workContent-${page}`),document.getElementById(`workContent-${page}`).offsetHeight);
     if (document.getElementById(`workContent-${page}`) && document.getElementById(`workContent-${page}`).offsetHeight > 65) {
       setCExpand(1);
@@ -147,7 +127,6 @@ function Resume({
   function projectSelect(page){
     setProjectIndex(page);
     PRef.current.goTo(page,true);
-    // console.log('讨厌===》111111',document.querySelectorAll('[id^=\'projectContent-\']'));
     // console.log('喜欢==》11111',document.getElementById(`projectContent-${page}`),document.getElementById(`projectContent-${page}`).offsetHeight);
     if (document.getElementById(`projectContent-${page}`) && document.getElementById(`projectContent-${page}`).offsetHeight > 65) {
       setPExpand(1);
@@ -195,12 +174,6 @@ function Resume({
         <h4 className={styles.resumeTitle}>工作经历</h4>
         {companys && companys.length ? (
           <Fragment>
-            {/* {companys && companys.length > 1 ? (
-              <Fragment>
-                <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={prev} />
-                <span className={classnames(styles.arrow, styles.arrowRight)} onClick={next} />
-              </Fragment>
-            ) : null} */}
             <Carousel className={styles.mycarousel} ref={CRef} dots={false} slidesToShow={1}>
               {companys.map((item, index) => (
                 <div className={styles.carousel} key={index}>
@@ -240,12 +213,6 @@ function Resume({
         <h4 className={styles.resumeTitle}>项目经历</h4>
         {projects && projects.length ? (
           <Fragment>
-            {/* {projects && projects.length > 1 ? (
-              <Fragment>
-                <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={proPrev} />
-                <span className={classnames(styles.arrow, styles.arrowRight)} onClick={proNext} />
-              </Fragment>
-            ) : null} */}
             <Carousel className={styles.mycarousel} ref={PRef} dots={false} slidesToShow={1}>
               {projects.map((item, index) => (
                 <div className={styles.carousel} key={index}>
@@ -258,11 +225,6 @@ function Resume({
                     </Paragraph>
                     <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position || '无'}`}</Paragraph>
                   </Paragraph>
-                  {/* <div>{item.time}</div>
-                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span>{`公司：${item.name || '无'} `}</span>
-                    <span>{`职位：${item.position || '无'}`}</span>
-                  </div> */}
                   <p className={pExpand === 1 ? styles.expand : null} ref={pContent} id={`projectContent-${index}`}>
                     {item.content}
                   </p>
@@ -292,12 +254,6 @@ function Resume({
         <h4 className={styles.resumeTitle}>教育经历</h4>
         {educations && educations.length ? (
           <Fragment>
-            {/* {educations.length > 1 ? (
-              <Fragment>
-                <span className={classnames(styles.arrow, styles.arrowLeft)} onClick={eduPrev} />
-                <span className={classnames(styles.arrow, styles.arrowRight)} onClick={eduNext} />
-              </Fragment>
-            ) : null} */}
             <Carousel className={styles.mycarousel} ref={eduRef} dots={false}>
               {educations.map((item, index) => (
                 <div className={styles.carousel} key={index}>

@@ -65,7 +65,6 @@ function ChatList({
   const [status, setStatus] = useState();
   const [dateEnd, setDateEnd] = useState();
   const [showMore, setShowMore] = useState(false);
-  // const [pageNum,setPageNum] = useState(1);
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -121,6 +120,7 @@ function ChatList({
             pageNum:1,
           },
         });
+        hadleSelectedKeys([]);
       }
     });
   }
@@ -133,11 +133,12 @@ function ChatList({
     }
     if (scrollHeight - (scrollTop + clientHeight) < 10) {
       if(!notData){
-        onSubmit(undefined,undefined,undefined,undefined,pageNum+1);
+        const newPageNum = pageNum+1;
+        onSubmit(undefined,undefined,undefined,undefined,newPageNum);
         dispatch({
           type: 'chatrecord/save',
           payload: {
-            pageNum:pageNum+1,
+            pageNum: newPageNum,
           },
         });
       }

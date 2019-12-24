@@ -50,18 +50,17 @@ function checkResult(response, options) {
     throw error;
   }
   const message = response.message || response.msg || '未知错误';
-  message.error(message);
-  // if (!options.ignoreError) {
-  //   notification.error({
-  //     message: '服务错误',
-  //     description: `message:${message},code:${response.code}`,
-  //   });
-  // }
-  const error = new Error(message);
-  error.name = 200;
-  error.response = response;
-  error.code = response.code;
-  throw error;
+  if (!options.ignoreError) {
+    notification.error({
+      message: '服务错误',
+      description: `message:${message},code:${response.code}`,
+    });
+  }
+  // const error = new Error(message);
+  // error.name = 200;
+  // error.response = response;
+  // error.code = response.code;
+  // throw error;
 }
 // try {
 //   await request().catch((e)=>{console.log(e.code)})
