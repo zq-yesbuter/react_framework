@@ -71,17 +71,20 @@ function ImportModal({ visible, form, close, handleOk }) {
           <Item>
             {getFieldDecorator('status')(
               <Radio.Group>
+                <Radio style={radioStyle} value={11}>
+                  已解析
+                </Radio>
                 <Radio style={radioStyle} value={21}>
-                  已申请（邀约阶段）
+                  待邀约
                 </Radio>
                 <Radio style={radioStyle} value={22}>
-                  已邀约（邀约阶段）
+                  已邀约（电话）
                 </Radio>
                 <Radio style={radioStyle} value={23}>
-                  已拒绝（邀约阶段）
+                  邀约未成功
                 </Radio>
                 <Radio style={radioStyle} value={24}>
-                  已接受（邀约阶段）
+                  已邀约（现场）
                 </Radio>
               </Radio.Group>
             )}

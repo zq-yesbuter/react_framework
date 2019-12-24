@@ -104,7 +104,6 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) 
             ...timeList[index],
           });
         });
-        // console.log('batch===>', batch);
         batchInvent({ batch })
           .then(data => {
             // Modal.info({
@@ -162,9 +161,9 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) 
         <Item label="面试邀约人" required>
           <div style={{ marginLeft: 10 }}>
             {formatSelectedKeys(selectedKeys, jobList).length &&
-              formatSelectedKeys(selectedKeys, jobList).map(({ name }, index) => (
+              formatSelectedKeys(selectedKeys, jobList).map((item, index) => (
                 <Tag color="cyan" key={index}>
-                  {name}
+                  {item && item.name || null}
                 </Tag>
               ))}
           </div>
