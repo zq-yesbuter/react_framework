@@ -23,7 +23,7 @@ function ListItem({
   function formatStatus(status) {
     switch (status) {
       case 11:
-        return '已申请（申请阶段）';
+        return '已解析';
       case 12:
         return '已评价（申请阶段）';
       case 13:
@@ -31,13 +31,13 @@ function ListItem({
       case 14:
         return '已拒绝（申请阶段）';
       case 21:
-        return '已申请（邀约阶段）';
+        return '待邀约';
       case 22:
-        return '已邀约（邀约阶段）';
+        return '已邀约（电话）';
       case 23:
-        return '已拒绝（邀约阶段）';
+        return '邀约未成功';
       case 24:
-        return '已接受（邀约阶段）';
+        return '已邀约（现场）';
       case 31:
         return '已面试（面试阶段）';
       case 32:
