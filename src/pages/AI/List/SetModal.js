@@ -160,12 +160,12 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) 
       <Form {...formItemLayout}>
         <Item label="面试邀约人" required>
           <div style={{ marginLeft: 10 }}>
-            {!!formatSelectedKeys(selectedKeys, jobList).length &&
+            {formatSelectedKeys(selectedKeys, jobList).length ?
               formatSelectedKeys(selectedKeys, jobList).map((item, index) => (
                 <Tag color="cyan" key={index}>
                   {item && item.name || null}
                 </Tag>
-              ))}
+              )) : null}
           </div>
         </Item>
         <Item label="外呼时间" required>
