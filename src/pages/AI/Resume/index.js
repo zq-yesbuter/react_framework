@@ -1,25 +1,15 @@
 import React, { useState, useEffect, Fragment, useRef, useLayoutEffect } from 'react';
 import {
-  Radio,
   List,
-  Spin,
   Input,
   Button,
-  Table,
-  Card,
-  Checkbox,
   Select,
-  Divider,
-  Menu,
-  Dropdown,
   Form,
   Col,
   Row,
   Carousel,
-  Icon,
   Typography,
   message,
-  Badge,
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
@@ -42,25 +32,16 @@ const { Paragraph, Title, Text } = Typography;
 const format = 'YYYY-MM-DD';
 const pdfurl = require('./1.pdf');
 
-const eduData = [
-  { name: '时间', value: '2019.09.06-2019.09.06', type: 0 },
-  { name: '大学', value: '清华大学', type: 1 },
-  { name: '学历', value: '本科', type: 1 },
-  { name: '专业', value: '电子商务', type: 0 },
-];
-
 const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
 
 function Resume({
-  dispatch,
   chatrecord: {
     resumeObj: { name, tel, skills, projects, educations, companys },
     selectJobId,
     jobList,
   },
-  form,
 }) {
   const CRef = useRef(null);
   const PRef = useRef(null);
@@ -68,8 +49,8 @@ function Resume({
   const cContent = useRef(null);
   const pContent = useRef(null);
   const [value, setValue] = useState();
-  const [cExpand, setCExpand] = useState(0);
-  const [pExpand, setPExpand] = useState(0);
+  const [cExpand, setCExpand] = useState(1);
+  const [pExpand, setPExpand] = useState(1);
   const [workIndex,setWorkIndex] = useState(0);
   const [projectIndex, setProjectIndex] = useState(0);
   const [eduIndex, setEduIndex] = useState(0);
@@ -110,7 +91,7 @@ function Resume({
       .catch(error => message.error(error.message));
   }
 
-  function cContentExpand(page) {
+  function cContentExpand() {
     setCExpand(cExpand === 1 ? 2 : 1);
   }
   function pContentExpand() {
@@ -119,23 +100,27 @@ function Resume({
   function workSelect(page){
     setWorkIndex(page);
     CRef.current.goTo(page,true);
-    // console.log('喜欢==》',document.getElementById(`workContent-${page}`),document.getElementById(`workContent-${page}`).offsetHeight);
-    if (document.getElementById(`workContent-${page}`) && document.getElementById(`workContent-${page}`).offsetHeight > 65) {
+    if (document.getElementById(`workContent-${page}`) && document.getElementById(`workContent-${page}`).offsetHeight > 62) {
       setCExpand(1);
+    }else{
+      setCExpand(0);
     }
   }
   function projectSelect(page){
     setProjectIndex(page);
     PRef.current.goTo(page,true);
     // console.log('喜欢==》11111',document.getElementById(`projectContent-${page}`),document.getElementById(`projectContent-${page}`).offsetHeight);
-    if (document.getElementById(`projectContent-${page}`) && document.getElementById(`projectContent-${page}`).offsetHeight > 65) {
+    if (document.getElementById(`projectContent-${page}`) && document.getElementById(`projectContent-${page}`).offsetHeight > 62) {
       setPExpand(1);
+    }else{
+      setPExpand(0);
     }
   }
   function eduSelect(page){
     setEduIndex(page);
     eduRef.current.goTo(page,false);
   }
+  const workCls = cExpand === 1 ? styles.expand : (cExpand === 0 ? styles.lessSixty :null)
   return (
     <div>
       {header()}
