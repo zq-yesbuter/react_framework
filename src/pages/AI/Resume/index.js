@@ -116,33 +116,10 @@ function Resume({
     inlineShowResume({resumeId})
       .then(res => {
         if(!res) return;
-        console.log('res===>',res);
         const { attachmentFileName, attachmentUrl } = res;
-        const index= attachmentFileName.lastIndexOf('.');
-        const ext = attachmentFileName.substr(index+1);
-        if(ext === 'doc' || ext ==='docx'){
-          iframe.src = `https://view.officeapps.live.com/op/view.aspx?src=${attachmentUrl}`;
-        }
-        iframe.src = `http://mozilla.github.io/pdf.js/web/${attachmentUrl}`;
-
-        // iframe.src = 'http://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf';
-    // 'https://view.officeapps.live.com/op/view.aspx?src=http://storage.xuetangx.com/public_assets/xuetangx/PDF/1.xls';
-    const win = window.open();
-    // let loadingDiv = document.createElement('div');
-    // loadingDiv.width='100%';
-    // loadingDiv.height='100%';
-    // loadingDiv.innerHTML='eeeeeeee';
-    // win.document.body.appendChild(loadingDiv);
-  
-    // win.document.body.appendChild();
-    win.document.body.appendChild(iframe);
-    if (iframe.attachEvent) {
-      iframe.attachEvent('onload', () => {});
-    } else {
-      iframe.onload = () => {
-        // win.document.body.removeChild(loadingDiv);
-      };
-    }
+        const a = document.createElement('a'); // 创建a标签
+        a.setAttribute('href', attachmentUrl);// href链接
+        a.click();
       })
       .catch(error => message.error(error.message));
   }

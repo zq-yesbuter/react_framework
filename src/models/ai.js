@@ -49,6 +49,8 @@ export default {
     tableLoading: false,
     postList: [],
     backShowTime: {},
+    bottomLoading: false,
+    notData: false,
   },
   effects: {
     // 获取微信聊天记录
@@ -166,6 +168,49 @@ export default {
         yield put({
           type: 'getFlowList',
           payload: {selectJobId,timeList},
+        });
+      }
+    },
+    *loadMoreList({ payload }, { call, put, select }) {
+      yield put({
+        type: 'save',
+        payload: {
+          bottomLoading: true,
+        },
+      });
+      const moreJobList = yield call(jobAppliedAsPostAll, payload);
+      if(!moreJobList.length) { 
+        yield put({
+          type: 'save',
+          payload: {
+            bottomLoading: false,
+            notData: true,
+          },
+        });
+        return;
+      }
+      yield put({
+        type: 'save',
+        payload: {
+          bottomLoading: false,
+        },
+      });
+      const jobList = yield select(({ chatrecord: { jobList } }) => jobList);
+      const newJobList = jobList.concat(moreJobList);
+      yield put({
+        type: 'save',
+        payload: {
+          jobList: newJobList,
+        },
+      });
+
+      const applyIds = newJobList.map(item => item.applyId) || [];
+      if (applyIds.length) {
+        yield put({
+          type: 'fetchInvitation',
+          payload: {
+            applyIds,
+          },
         });
       }
     },

@@ -49,7 +49,7 @@ const filterName = (key, arr) => {
 
 function ChatList({
   dispatch,
-  chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading, postList },
+  chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading, postList,bottomLoading,notData },
   form,
 }) {
   const [value, setValue] = useState();
@@ -64,8 +64,8 @@ function ChatList({
   const [dateStart, setDateStart] = useState();
   const [status, setStatus] = useState();
   const [dateEnd, setDateEnd] = useState();
-  const [bottomLoading, setBottomLoading] = useState(false);
   const [showMore, setShowMore] = useState(false);
+  const [pageNum,setPageNum] = useState(1);
   const listRef = useRef(null);
 
   useEffect(() => {
@@ -77,7 +77,7 @@ function ChatList({
     });
   }, []);
 
-  function onSubmit(paramOrderBy, newDateStart, newStatus, newDateEnd) {
+  function onSubmit(paramOrderBy, newDateStart, newStatus, newDateEnd,pageNum) {
     form.validateFields((err, values) => {
       if (!err) {
         const { name } = values;
@@ -104,26 +104,33 @@ function ChatList({
         }else{
           nameObj = {name}
         }
+        if(pageNum !== 1){
+          dispatch({
+            type: 'chatrecord/loadMoreList',
+            payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
+          });
+          return;
+        }
         dispatch({
           type: 'chatrecord/jobAppliedAsPostAll',
-          payload: { ...nameObj, ...requestValue },
+          payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
         });
       }
     });
   }
   function handleScroll() {
-    const { clientHeight,scrollHeight} = listRef && listRef.current || {};
+    const { clientHeight,scrollHeight,scrollTop} = listRef && listRef.current || {};
     if(clientHeight < scrollHeight){
       setShowMore(true);
     }else{
       setShowMore(false);
     }
-    // if (scrollHeight - (scrollTop + clientHeight) < 10) {
-    //   console.log('滚动到底部了===》');
-    //   setBottomLoading(true);
-    // } else {
-    //   setBottomLoading(false);
-    // }
+    if (scrollHeight - (scrollTop + clientHeight) < 10) {
+      if(!notData){
+        onSubmit(undefined,undefined,undefined,undefined,pageNum+1);
+        setPageNum(pageNum => pageNum+1);
+      }
+    } 
   }
 
   function search() {
@@ -131,7 +138,7 @@ function ChatList({
     return (
       <div className={styles.search}>
         {getFieldDecorator('name')(
-          <Search placeholder="请根据姓名、手机号搜索" onSearch={() => onSubmit(undefined,undefined,undefined,undefined)} />
+          <Search placeholder="请根据姓名、手机号搜索" onSearch={() => onSubmit(undefined,undefined,undefined,undefined,1)} />
         )}
         <Button icon="plus" style={{ marginLeft: 10 }} onClick={importResume}>
           导入简历
@@ -156,7 +163,7 @@ function ChatList({
   }
   function sortSelect(e) {
     setOrderBy(e.key);
-    onSubmit(e.key,undefined,undefined,undefined);
+    onSubmit(e.key,undefined,undefined,undefined,1);
   }
   function header() {
     const { getFieldDecorator } = form;
@@ -308,7 +315,7 @@ function ChatList({
           ))}
           {showMore ? (
             <div className={styles.noBottomContent}>
-              {bottomLoading ? <Spin /> : '没有更多数据了！'}
+              {bottomLoading ? <Spin /> : notData ? '没有更多数据了！' : null}
             </div>
           ): null
           }
@@ -469,7 +476,7 @@ function ChatList({
     setDateStart(dateStart ? dateStart.format('YYYY-MM-DD HH:mm:ss') : dateStart);
     setStatus(status);
     setStatus(status);
-    onSubmit(undefined, dateStart, status, dateEnd);
+    onSubmit(undefined, dateStart, status, dateEnd,1);
   }
   return (
     <Fragment>
