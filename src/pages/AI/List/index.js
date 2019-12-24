@@ -110,6 +110,7 @@ function ChatList({
           });
           return;
         }
+        hadleSelectedKeys([]);
         dispatch({
           type: 'chatrecord/jobAppliedAsPostAll',
           payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
@@ -120,7 +121,6 @@ function ChatList({
             pageNum:1,
           },
         });
-        hadleSelectedKeys([]);
       }
     });
   }

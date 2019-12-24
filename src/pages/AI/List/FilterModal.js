@@ -67,7 +67,7 @@ function ImportModal({ visible, form, close, handleOk }) {
       }}
     >
       <Tabs defaultActiveKey="1">
-        <TabPane tab="邀约状态" key="1">
+        <TabPane tab="状态" key="1">
           <Item>
             {getFieldDecorator('status')(
               <Radio.Group>
