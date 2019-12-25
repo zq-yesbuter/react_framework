@@ -89,8 +89,13 @@ export default {
           yield put({
             type: 'save',
             payload: {
-              jobList,
               selectJobId,
+            },
+          });
+          yield put({
+            type: 'formatJobList',
+            payload: {
+              jobList,
             },
           });
           return;
@@ -98,9 +103,14 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            jobList,
             selectJobId,
             notData: false,
+          },
+        });
+        yield put({
+          type: 'formatJobList',
+          payload: {
+            jobList,
           },
         });
         yield put({
@@ -222,12 +232,11 @@ export default {
         const jobList = yield select(({ chatrecord: { jobList } }) => jobList);
         const newJobList = jobList.concat(moreJobList);
         yield put({
-          type: 'save',
+          type: 'formatJobList',
           payload: {
             jobList: newJobList,
           },
         });
-  
         const applyIds = newJobList.map(item => item.applyId) || [];
         if (applyIds.length) {
           yield put({
@@ -271,6 +280,11 @@ export default {
         .map(item => item.flow);
       flowList = flatten(flowList);
       return { ...state, flowList,backShowTime };
+    },
+    formatJobList(state, { payload }) {
+      let { jobList:newJobList } = payload;
+      const jobList=newJobList.map(item => ({...item,disabled:(!!((item.status === 23 || item.status === 24))) }));
+      return { ...state, jobList }
     },
   },
   subscriptions: {

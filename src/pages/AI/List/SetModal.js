@@ -122,16 +122,41 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
             }
           );
         }
-        Promise.all([ editBatchInvitation({batch:editBatch}),batchInvent({ batch:addBatch })]).then(() => {
-          message.success('批量邀约成功');
-          resetFields();
-          setDiffTimeList([]);
-          close();
-          dispatch({
-            type: 'chatrecord/jobAppliedAsPostAll',
-          });
-          resetSelectList();
-        }).catch(e => message.error(e.message))
+        if(editBatch.length && addBatch.length){
+          Promise.all([ editBatchInvitation({batch:editBatch}),batchInvent({ batch:addBatch })]).then(() => {
+            message.success('批量邀约成功');
+            resetFields();
+            setDiffTimeList([]);
+            close();
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
+            resetSelectList();
+          }).catch(e => message.error(e.message))
+        }else if(editBatch.length){
+          editBatchInvitation({batch:editBatch}).then(() => {
+            message.success('批量修改邀约成功');
+            resetFields();
+            setDiffTimeList([]);
+            close();
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
+            resetSelectList();
+          }).catch(e => message.error(e.message))
+        }else if(addBatch.length){
+          batchInvent({ batch:addBatch }).then(() => {
+            message.success('批量新增邀约成功');
+            resetFields();
+            setDiffTimeList([]);
+            close();
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
+            resetSelectList();
+          }).catch(e => message.error(e.message))
+        }
+        
       }
     });
   }
