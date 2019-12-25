@@ -73,13 +73,13 @@ function ImportModal({ visible, form, close, handleOk }) {
                   待邀约
                 </Radio>
                 <Radio style={radioStyle} value={22}>
-                  已邀约（电话）
+                  邀约中断
                 </Radio>
                 <Radio style={radioStyle} value={23}>
                   邀约未成功
                 </Radio>
                 <Radio style={radioStyle} value={24}>
-                  已邀约（现场）
+                  邀约成功
                 </Radio>
               </Radio.Group>
             )}

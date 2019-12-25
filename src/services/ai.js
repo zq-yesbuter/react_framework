@@ -5,6 +5,7 @@ import request from '../utils/request';
 export async function jobAppliedAsPostAll(params) {
   return request(`/tenant/job/applicants/all?${stringify(params)}`, {
     method: 'GET',
+    ignoreError: true,
   });
 }
 
@@ -16,12 +17,35 @@ export async function addInvitation(body) {
   });
 }
 
+// 批量邀约申请
+export async function batchInvent(body) {
+  return request('/interview/invitations', {
+    method: 'POST',
+    body,
+  });
+}
+
 // 邀约信息修改
 export async function editInvitation(body) {
   const { updateId } = body;
   return request(`/interview/invitation/${updateId}`, {
     method: 'POST',
     body,
+  });
+}
+
+// 批量邀约信息修改
+export async function editBatchInvitation(body) {
+  return request('/interview/invitations/update', {
+    method: 'POST',
+    body,
+  });
+}
+
+// 获取单个邀约时间
+export async function getSingelInvent({applyId}) {
+  return request(`/interview/invitation/${applyId}`, {
+    method: 'GET',
   });
 }
 
@@ -173,13 +197,6 @@ export async function operatorPersonnel(body) {
   });
 }
 
-// 批量邀约申请
-export async function batchInvent(body) {
-  return request('/interview/invitations', {
-    method: 'POST',
-    body,
-  });
-}
 // 批量下载简历文件
 export async function batchExportResume(body) {
   return request('/tenant/job/apply/resume/attachment/download', {

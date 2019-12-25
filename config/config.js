@@ -31,7 +31,6 @@ const { proxyUrl = '', proxyPort = '', proxyPath = '', pathRewrite = {} } = {
     proxyPort: '8088',
     proxyPath: '',
     Host: 'jddai.jd.com',
-    // pathRewrite: { '^/api': '' },
     domain: 'jddai.jd.com',
     domainPort: '8088',
   },
@@ -146,6 +145,18 @@ export default {
               name: '403',
               icon: 'smile',
               component: './403',
+            },
+            {
+              path: '/500',
+              name: '500',
+              icon: 'smile',
+              component: './500',
+            },
+            {
+              path: '/404',
+              name: '404',
+              icon: 'smile',
+              component: './404',
             },
             {
               component: './404',

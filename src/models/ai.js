@@ -74,10 +74,11 @@ export default {
           type: 'save',
           payload: {
             tableLoading: true,
+            pageNum: 1,
           },
         });
         const jobList = yield call(jobAppliedAsPostAll, payload);
-        const selectJobId = jobList[0] && jobList[0].applyId || undefined;
+        const selectJobId = jobList && jobList[0] && jobList[0].applyId || undefined;
         if(!selectJobId) { 
           yield put({
             type: 'save',
@@ -132,7 +133,7 @@ export default {
           },
         });
       } catch (e) {
-        return Promise.reject(e);
+        message.error(e.message);
       }
     },
     *fetchResume({ payload }, { call, put, select }) {
@@ -163,6 +164,9 @@ export default {
     },
     *addInvitation({ payload }, { call, put, select }) {
       return yield call(addInvitation, payload);
+    },
+    *editInvitation({ payload }, { call, put, select }) {
+      return yield call(editInvitation, payload);
     },
     *queryInformation({ payload }, { call, put, select }) {
       try {
@@ -198,7 +202,7 @@ export default {
           },
         });
         const moreJobList = yield call(jobAppliedAsPostAll, payload);
-        if(!moreJobList.length) { 
+        if(!(moreJobList && moreJobList.length)) { 
           yield put({
             type: 'save',
             payload: {

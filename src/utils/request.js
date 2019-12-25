@@ -56,6 +56,7 @@ function checkResult(response, options) {
       description: `message:${message},code:${response.code}`,
     });
   }
+  // message.error(`message:${message},code:${response.code}`);
   // const error = new Error(message);
   // error.name = 200;
   // error.response = response;
@@ -129,14 +130,17 @@ export default function request(url, options) {
         loginRedirect();
         return;
       }
-      throw e;
       // if (status <= 504 && status >= 500) {
-      //   dispatch(routerRedux.push('/exception/500'));
+      //   // eslint-disable-next-line no-underscore-dangle
+      //   window.g_app._store.dispatch(routerRedux.push('/500'));
       //   return;
       // }
       // if (status >= 404 && status < 422) {
-      //   dispatch(routerRedux.push('/exception/404'));
+      //   // eslint-disable-next-line no-underscore-dangle
+      //   window.g_app._store.dispatch(routerRedux.push('/404'));
+      //   return;
       // }
+      throw e;
     });
 }
 

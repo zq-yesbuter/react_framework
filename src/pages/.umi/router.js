@@ -66,6 +66,34 @@ const routes = [
             exact: true,
           },
           {
+            path: '/500',
+            name: '500',
+            icon: 'smile',
+            component: __IS_BROWSER
+              ? _dvaDynamic({
+                  component: () =>
+                    import(/* webpackChunkName: "p__500" */ '../500'),
+                  LoadingComponent: require('/Users/zhangqing272/workspace/work/human_resources_platform/src/components/PageLoading/index')
+                    .default,
+                })
+              : require('../500').default,
+            exact: true,
+          },
+          {
+            path: '/404',
+            name: '404',
+            icon: 'smile',
+            component: __IS_BROWSER
+              ? _dvaDynamic({
+                  component: () =>
+                    import(/* webpackChunkName: "p__404" */ '../404'),
+                  LoadingComponent: require('/Users/zhangqing272/workspace/work/human_resources_platform/src/components/PageLoading/index')
+                    .default,
+                })
+              : require('../404').default,
+            exact: true,
+          },
+          {
             component: __IS_BROWSER
               ? _dvaDynamic({
                   component: () =>

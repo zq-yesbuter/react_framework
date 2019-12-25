@@ -115,12 +115,12 @@ function ChatList({
           type: 'chatrecord/jobAppliedAsPostAll',
           payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
         });
-        dispatch({
-          type: 'chatrecord/save',
-          payload: {
-            pageNum:1,
-          },
-        });
+        // dispatch({
+        //   type: 'chatrecord/save',
+        //   payload: {
+        //     pageNum:1,
+        //   },
+        // });
       }
     });
   }
@@ -490,6 +490,20 @@ function ChatList({
     setStatus(status);
     onSubmit(undefined, dateStart, status, dateEnd,1);
   }
+  function resetSelectList(){
+    let newSelectedKeys = [...selectedKeys];
+    let newDataSource = [];
+    newSelectedKeys = [];
+    newDataSource = jobList.map(item => ({ ...item, checked: false }));
+    setAllChecked(false);
+    dispatch({
+      type: 'chatrecord/save',
+      payload: {
+        jobList: newDataSource,
+      },
+    });
+    hadleSelectedKeys(newSelectedKeys);
+  }
   return (
     <Fragment>
       {search()}
@@ -504,6 +518,7 @@ function ChatList({
         selectedKeys={selectedKeys}
         close={() => setSettingVisible(false)}
         jobList={jobList}
+        resetSelectList={resetSelectList}
       />
       <FilterModal
         visible={filterVisible}

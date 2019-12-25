@@ -1,8 +1,9 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Col, Row, Form, DatePicker, Button, InputNumber, Steps, message } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
+import { batchInvent, editBatchInvitation,fetchInvitation } from '@/services/ai';
 import styles from './index.less';
 
 const { Item } = Form;
@@ -23,8 +24,38 @@ function formatStatus(status) {
       return '无';
   }
 }
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId, flowList, backShowTime } }) {
-  const { getFieldDecorator, validateFields } = form;
+  const { getFieldDecorator, validateFields,resetFields } = form;
+  const prevSelectJobId = usePrevious(selectJobId);
+  const mounted = useRef();
+  // useEffect (()  =>  {
+  //   resetFields();
+  //   // return ()  =>  {
+  //   //   resetFields()
+  //   // }
+  // });
+  useEffect(()  =>  {  
+    if  (!mounted.current) {
+      mounted.current = true;
+    }  else  {
+      // const prevSelectJobId = prevCountRef.current;
+      // console.log('shangyici===>',prevSelectJobId,'zheci===>',selectJobId);
+      // eslint-disable-next-line no-lonely-if
+      if(prevSelectJobId !== selectJobId) {
+        // console.log('butong=============>');
+        resetFields();
+      }
+    }
+  })
+
   function onSubmit() {
     validateFields((err, values) => {
       if (!err) {
@@ -32,19 +63,43 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
         const interviewEndTime = values.interviewStartTime
           .add(values.diff, 'minutes')
           .format(format);
-        const { id, applyId } = jobList.find(item => item.applyId === selectJobId) || {};
+        const { id, applyId, status } = jobList.find(item => item.applyId === selectJobId) || {};
+        let payload = {
+          applicantId: id,
+          applyId,
+          interviewStartTime,
+          interviewEndTime,
+          triggerTime: values.triggerTime.format(format),
+        };
+        if(status === 21) {
+          fetchInvitation({ applyIds:[applyId] }).then(
+            time=> {
+            const updateId = time.length ? time.slice(-1)[0].invitationId : null;
+            payload = {...payload,updateId}
+            dispatch({
+              type:'chatrecord/editInvitation',
+              payload,
+            })
+              .then(data => {
+                message.success('修改邀约成功');
+                dispatch({
+                  type: 'chatrecord/jobAppliedAsPostAll',
+                });
+              })
+              .catch(e => message.error());
+          }
+          );
+          return;
+        }
         dispatch({
-          type: 'chatrecord/addInvitation',
-          payload: {
-            applicantId: id,
-            applyId,
-            interviewStartTime,
-            interviewEndTime,
-            triggerTime: values.triggerTime.format(format),
-          },
+          type:'chatrecord/addInvitation',
+          payload,
         })
           .then(data => {
-            message.success('邀约成功');
+            message.success('新增邀约成功');
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
           })
           .catch(e => message.error());
       }
@@ -52,9 +107,26 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
   }
   function disabledDate(current) {
     // Can not select days before today and today
-    return current && current < moment().endOf('day');
+    return current &&  current < moment().subtract(1, 'days')
   } 
-
+  function range(start, end) {
+    const result = [];
+    for (let i = start; i < end; i++) {
+      result.push(i);
+    }
+    return result;
+  }
+  function disabledDateTime(current) {
+    // console.log('hourse===>', moment().hours());
+    return {
+      disabledHours: () => range(0, 24).splice(0,moment().hours()),
+      disabledMinutes: () => range(30, 60),
+      disabledSeconds: () => [55, 56],
+    };
+  }
+  
+  // console.log('status===>1111111',backShowTime,'=====>',moment(backShowTime.interviewEndTime).diff(backShowTime.interviewTime,'minutes')) 
+  const { status } = jobList.find(item => item.applyId === selectJobId) || {};
   return (
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
@@ -68,6 +140,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}
+                  // disabledDateTime={disabledDateTime}
                   format={format}
                   placeholder="请选择外呼时间"
                   style={{ display: 'block' }}
@@ -76,7 +149,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
             </div>
             <div style={{ marginBottom: 10 }}>
               {getFieldDecorator('diff', {
-                initialValue: 60,
+                initialValue: Object.keys(backShowTime).length ? moment(backShowTime.interviewEndTime).diff(backShowTime.interviewTime,'minutes') : 60,
               })(
                 <InputNumber
                   style={{ width: '100%' }}
@@ -101,7 +174,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
               )}
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button onClick={onSubmit} disabled={!selectJobId}>
+              <Button onClick={onSubmit} disabled={!selectJobId || status === 23 || status === 24}>
                 更新
               </Button>
               {/* <Button disabled={!selectJobId} onClick={onSubmit}>外呼</Button> */}

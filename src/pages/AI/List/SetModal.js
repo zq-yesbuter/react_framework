@@ -22,7 +22,7 @@ import {
 import { connect } from 'dva';
 import _ from 'lodash';
 import moment from 'moment';
-import { batchInvent } from '@/services/ai';
+import { batchInvent, editBatchInvitation,fetchInvitation } from '@/services/ai';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -71,10 +71,14 @@ const formatTime = (diffTimeList, selectedKeys, diff) => {
   });
   return list;
 };
-function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) {
+function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,resetSelectList }) {
   const [diffTimeList, setDiffTimeList] = useState([]);
-
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
+
+  function formatInventTime(timeList, applyId) {
+    const list = timeList.filter(item => item.applyId === applyId);
+    return list.length ? list.slice(-1)[0].invitationId : null;
+  }
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
@@ -96,43 +100,45 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList }) 
         // console.log('formatTime====>',timeList);
         const nameList = formatSelectedKeys(selectedKeys, jobList);
         let batch = [];
-        nameList.forEach(({ id, applyId }, index) => {
+        // console.log('nameList====>',nameList);
+        nameList.forEach(({ id, applyId, status }, index) => {
           batch.push({
             applicantId: id,
             applyId,
+            status,
             triggerTime: triggerTime.format('YYYY-MM-DD HH:mm:ss'),
             ...timeList[index],
           });
         });
-        batchInvent({ batch })
-          .then(data => {
-            // Modal.info({
-            //   title: '批量邀约成功',
-            //   content: (
-            //     <div>
-            //       {formatSelectedKeys(data,jobList).map(({name}) =>
-            //         <p>{`${name}邀约成功`}</p>
-            //       )}
-            //     </div>
-            //   ),
-            //   onOk() {() => close()},
-            // });
-            message.success('批量邀约成功');
-            resetFields();
-            setDiffTimeList([]);
-            close();
-            dispatch({
-              type: 'chatrecord/jobAppliedAsPostAll',
-            });
-          })
-          .catch(e => message.error());
+        const addBatch = batch.filter(item => item.status !== 21).map(({status,...item}) => item);
+        let editBatch = batch.filter(item => item.status === 21).map(({status,...item}) => item);
+        // console.log('add===>',addBatch,'editBatch===>',editBatch);
+        if(editBatch.length) {
+          const applyIds = editBatch.map(item => item.applyId) || [];
+          fetchInvitation({ applyIds }).then(
+            timeList=> {
+              editBatch = editBatch.map(item => ({...item,updateId:formatInventTime(timeList, item.applyId) || null}))
+              // console.log('editBatch===>',editBatch);
+            }
+          );
+        }
+        Promise.all([ editBatchInvitation({batch:editBatch}),batchInvent({ batch:addBatch })]).then(() => {
+          message.success('批量邀约成功');
+          resetFields();
+          setDiffTimeList([]);
+          close();
+          dispatch({
+            type: 'chatrecord/jobAppliedAsPostAll',
+          });
+          resetSelectList();
+        }).catch(e => message.error(e.message))
       }
     });
   }
   function disabledDate(current) {
     // Can not select days before today and today
-    return current && current < moment().endOf('day');
-  }
+    return current &&  current < moment().subtract(1, 'days')
+  } 
   function addTime() {
     if (!getFieldValue('time')) {
       message.warn('请选择时间段再添加！');

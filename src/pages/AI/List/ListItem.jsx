@@ -33,11 +33,11 @@ function ListItem({
       case 21:
         return '待邀约';
       case 22:
-        return '已邀约（电话）';
+        return '邀约中断';
       case 23:
         return '邀约未成功';
       case 24:
-        return '已邀约（现场）';
+        return '邀约成功';
       case 31:
         return '已面试（面试阶段）';
       case 32:
