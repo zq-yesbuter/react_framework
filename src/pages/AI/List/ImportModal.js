@@ -25,7 +25,7 @@ function ImportModal(props) {
       return;
     }
     fileRef.current.handleOk();
-    setTabKey('1');
+    // setTabKey('1');
   }
   function handleCancel() {
     if(tabKey ==='1'){

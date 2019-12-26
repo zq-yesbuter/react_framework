@@ -92,11 +92,13 @@ function ImportModal({ dispatch, visible, form, close, postList,fileRef }) {
   }));
 
   function beforeUpload(file) {
+    // console.log('tile===>',file,file.type, file.size)
     const fileType = [
     //   '.doc',
-    //   '.docx',
+      '.xls',
       '.xlsx',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      '',
     //   'application/msword',
     //   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];

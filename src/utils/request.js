@@ -2,7 +2,6 @@ import fetch from 'dva/fetch';
 import { notification, message } from 'antd';
 import { parse, stringify } from 'qs';
 import { routerRedux } from 'dva/router';
-// import store from '../index';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -30,7 +29,6 @@ function checkStatus(response) {
   //   message: `请求错误 ${response.status}: ${response.url}`,
   //   description: errortext,
   // });
-  message.error(`请求错误 ${response.status}: ${response.url}`);
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;
@@ -52,11 +50,10 @@ function checkResult(response, options) {
   }
   const message = response.message || response.msg || '未知错误';
   if (!options.ignoreError) {
-    message.error(`服务错误:message:${message},code:${response.code}`)
-    // notification.error({
-    //   message: '服务错误',
-    //   description: `message:${message},code:${response.code}`,
-    // });
+    notification.error({
+      message: '服务错误',
+      description: `message:${message},code:${response.code}`,
+    });
   }
   // message.error(`message:${message},code:${response.code}`);
   // const error = new Error(message);

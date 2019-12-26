@@ -11,7 +11,8 @@ const { Item } = Form;
 const { Step } = Steps;
 const { RangePicker } = DatePicker;
 const format = 'YYYY-MM-DD HH:mm:ss';
-const colors = ['cyan','blue','geekblue','lime','green','purple','magenta','red','volcano','orange','gold'];
+// const colors = ['cyan','blue','geekblue','lime','green','purple','magenta','red','volcano','orange','gold'];
+const colors = ['#f50','#2db7f5','#87d068','#108ee9','#1BB8A8','#f50','#2db7f5','#87d068','#108ee9','#1BB8A8'];
 
 function formatStatus(status) {
   switch (status) {
@@ -55,6 +56,11 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
   function onSubmit() {
     validateFields((err, values) => {
       if (!err) {
+        const { triggerTime } = values;
+        if(triggerTime.subtract(5, 'minutes')<moment()){
+          message.error('外呼时间请设置为大于当前时间5分钟以上哦！');
+          return;
+        }
         const interviewStartTime = values.interviewStartTime.format(format);
         const interviewEndTime = values.interviewStartTime
           .add(values.diff, 'minutes')
@@ -79,7 +85,13 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
               .then(data => {
                 message.success('修改邀约成功');
                 // dispatch({
-                //   type: 'chatrecord/updateSingleInvent',
+                //   type: 'chatrecord/queryTimeList',
+                //   payload: {
+                //     selectJobId:applyId,
+                //   },
+                // });
+                // dispatch({
+                //   type: 'chatrecord/fetchInvitation',
                 //   payload: {applyId},
                 // }); 
                 dispatch({
@@ -97,6 +109,12 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
         })
           .then(data => {
             message.success('新增邀约成功');
+            // dispatch({
+            //   type: 'chatrecord/queryTimeList',
+            //   payload: {
+            //     selectJobId:applyId,
+            //   },
+            // });
             dispatch({
               type: 'chatrecord/jobAppliedAsPostAll',
             });
@@ -117,11 +135,10 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
     return result;
   }
   function disabledDateTime(current) {
-    // console.log('hourse===>', moment().hours());
     return {
-      disabledHours: () => range(0, 24).splice(0,moment().hours()),
-      disabledMinutes: () => range(30, 60),
-      disabledSeconds: () => [55, 56],
+      disabledHours: () => range(0, 24).splice(0, moment().hours()),
+      disabledMinutes: () => range(0, 60).splice(0,moment().minutes()+5),
+      disabledSeconds: () => range(0, 60).splice(0,moment().seconds()),
     };
   }
   
@@ -132,7 +149,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
-          <h3>计划邀约时间</h3>
+          <h3>邀约/面试时间</h3>
           <div className={styles.scroll} style={{paddingTop:15}}>
             <div style={{ marginBottom: 15 }}>
               {getFieldDecorator('triggerTime',{
@@ -141,7 +158,6 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}
-                  // disabledDateTime={disabledDateTime}
                   format={format}
                   placeholder="请选择外呼时间"
                   style={{ display: 'block' }}
@@ -168,6 +184,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                 <DatePicker
                   showTime
                   disabledDate={disabledDate}
+                  // disabledTime={disabledDateTime}
                   format={format}
                   placeholder="请选择计划邀约面试时间"
                   style={{ display: 'block' }}
@@ -214,7 +231,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
           <div className={styles.scroll} style={{paddingTop:15}}>
             {labelList.length ?
               labelList.map((item, index) => (
-                <Tag color={colors[index]} key={index} style={{marginBttom:8}}>
+                <Tag color={colors[index]} key={index} style={{marginBottom:8}}>
                   {item}
                 </Tag>
               )) : null}

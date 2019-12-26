@@ -71,9 +71,6 @@ function ChatList({
     dispatch({
       type: 'chatrecord/jobAppliedAsPostAll',
     });
-    dispatch({
-      type: 'chatrecord/queryInformation',
-    });
   }, []);
 
   function onSubmit(paramOrderBy, newDateStart, newStatus, newDateEnd,pageNum) {
@@ -108,6 +105,10 @@ function ChatList({
             type: 'chatrecord/loadMoreList',
             payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
           });
+          dispatch({
+            type:'chatrecord/save',
+            payload: {requestFilter: { ...nameObj, ...requestValue}},
+          })
           return;
         }
         hadleSelectedKeys([]);
@@ -115,12 +116,10 @@ function ChatList({
           type: 'chatrecord/jobAppliedAsPostAll',
           payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
         });
-        // dispatch({
-        //   type: 'chatrecord/save',
-        //   payload: {
-        //     pageNum:1,
-        //   },
-        // });
+        dispatch({
+          type:'chatrecord/save',
+          payload: {requestFilter: { ...nameObj, ...requestValue}},
+        })
       }
     });
   }
@@ -450,13 +449,6 @@ function ChatList({
     );
     return (
       <Fragment>
-        {/* <Pagination
-          style={{position:'fixed',bottom:60,backgroundColor:'#fff'}}
-          showSizeChanger
-          onShowSizeChange={onShowSizeChange}
-          defaultCurrent={1}
-          total={50}
-        /> */}
         {/* <Pagination
           size="small"
           total={50}

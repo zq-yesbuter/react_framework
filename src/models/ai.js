@@ -40,6 +40,7 @@ export default {
     bottomLoading: false,
     notData: false,
     pageNum: 1,
+    requestFilter:{},
   },
   effects: {
     // 获取微信聊天记录
@@ -65,7 +66,8 @@ export default {
             pageNum: 1,
           },
         });
-        const jobList = yield call(jobAppliedAsPostAll, payload);
+        const requestFilter = yield select(({ chatrecord: { requestFilter } }) => requestFilter);
+        const jobList = yield call(jobAppliedAsPostAll, {...requestFilter,...payload});
         const selectJobId = jobList && jobList[0] && jobList[0].applyId || undefined;
         if(!selectJobId) { 
           yield put({
@@ -129,6 +131,9 @@ export default {
           payload: {
             resumeId,
           },
+        });
+        yield put({
+          type: 'queryInformation',
         });
       } catch (e) {
         message.error(e.message);
@@ -240,7 +245,9 @@ export default {
     },
     *updateSingleInvent({ payload }, { call, put, select }) {
       console.log('payload====>',payload)
-      const timeList = yield call(fetchInvitation, payload);
+      const { applyId } = payload;
+      const timeList = yield call(fetchInvitation, {applyIds:[applyId]});
+      console.log('timeList====>',timeList);
       
     },
   },
