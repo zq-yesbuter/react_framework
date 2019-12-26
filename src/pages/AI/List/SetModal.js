@@ -149,7 +149,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
               }).catch(e => message.error(e.message))  
             }
           ).catch(e => message.error(`出现错误：${e.message}`));
-        }else{
+        }else if(addBatch.length){
           batchInvent({ batch:addBatch }).then(data => {
             message.success('批量邀约成功');
             // Modal.info({

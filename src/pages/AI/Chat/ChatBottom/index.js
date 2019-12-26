@@ -190,13 +190,13 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
             <Steps progressDot direction="vertical" current={10000}>
               {flowList &&
                 flowList.length &&
-                flowList.map(({ status, roundStartTime, remark,interviewConfirmTime }, index) => (
+                flowList.map(({ status, roundStartTime, remark, interviewConfirmTime, roundEndTime }, index) => (
                   <Step
                     title={`【${formatStatus(status)}】`}
                     description={
                       <div>
                         <p>{`邀约外呼开始时间： ${roundStartTime}`}</p>
-                        <p>{`邀约外呼结束时间： ${roundStartTime}`}</p>
+                        <p>{`邀约外呼结束时间： ${roundEndTime}`}</p>
                         {interviewConfirmTime ? <p>{`邀约用户反馈的面试时间： ${interviewConfirmTime}`}</p> : null }
                         <p>{remark}</p>
                       </div>
