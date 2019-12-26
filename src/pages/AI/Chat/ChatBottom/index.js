@@ -78,6 +78,10 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
             })
               .then(data => {
                 message.success('修改邀约成功');
+                // dispatch({
+                //   type: 'chatrecord/updateSingleInvent',
+                //   payload: {applyId},
+                // }); 
                 dispatch({
                   type: 'chatrecord/jobAppliedAsPostAll',
                 });

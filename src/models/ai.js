@@ -238,6 +238,11 @@ export default {
         return Promise.reject(e);
       }
     },
+    *updateSingleInvent({ payload }, { call, put, select }) {
+      console.log('payload====>',payload)
+      const timeList = yield call(fetchInvitation, payload);
+      
+    },
   },
   reducers: {
     save(state, { payload }) {

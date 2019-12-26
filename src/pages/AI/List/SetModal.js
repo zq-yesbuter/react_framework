@@ -118,25 +118,28 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
           const applyIds = editBatch.map(item => item.applyId) || [];
           fetchInvitation({ applyIds }).then(
             timeList=> {
-              editBatch = editBatch.map(item => ({...item,updateId:formatInventTime(timeList, item.applyId) || null}))
+              editBatch = editBatch.map(item => { 
+                // console.log('timelist====>',timeList,formatInventTime(timeList, item.applyId))
+                return {...item,updateId:formatInventTime(timeList, item.applyId) || null}})
               // console.log('editBatch===>',editBatch);
+              resolvedPromisesArray.push(editBatchInvitation({batch:editBatch}));
+              if(addBatch.length){
+                resolvedPromisesArray.push(batchInvent({ batch:addBatch }));
+              }
+              Promise.all(resolvedPromisesArray).then(data => {
+                // console.log('data==>',data);
+                message.success('批量邀约成功');
+                resetFields();
+                setDiffTimeList([]);
+                close();
+                dispatch({
+                  type: 'chatrecord/jobAppliedAsPostAll',
+                });
+                resetSelectList();
+              }).catch(e => message.error(e.message))  
             }
           );
-          resolvedPromisesArray.push(editBatchInvitation({batch:editBatch}));
-        }
-        if(addBatch.length){
-          resolvedPromisesArray.push(batchInvent({ batch:addBatch }));
-        }
-        Promise.all(resolvedPromisesArray).then(() => {
-          message.success('批量邀约成功');
-          resetFields();
-          setDiffTimeList([]);
-          close();
-          dispatch({
-            type: 'chatrecord/jobAppliedAsPostAll',
-          });
-          resetSelectList();
-        }).catch(e => message.error(e.message))        
+        }   
       }
     });
   }
