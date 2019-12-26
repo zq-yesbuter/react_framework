@@ -127,8 +127,18 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
                 resolvedPromisesArray.push(batchInvent({ batch:addBatch }));
               }
               Promise.all(resolvedPromisesArray).then(data => {
-                // console.log('data==>',data);
                 message.success('批量邀约成功');
+                // Modal.info({
+                //   title: '批量邀约成功',
+                //   content: (
+                //     <div>
+                //       {formatSelectedKeys(data,jobList).map(({name}) =>
+                //         <p>{`${name}邀约成功`}</p>
+                //       )}
+                //     </div>
+                //   ),
+                //   onOk() {() => close()},
+                // });
                 resetFields();
                 setDiffTimeList([]);
                 close();
@@ -138,7 +148,29 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
                 resetSelectList();
               }).catch(e => message.error(e.message))  
             }
-          );
+          ).catch(e => message.error(`出现错误：${e.message}`));
+        }else{
+          batchInvent({ batch:addBatch }).then(data => {
+            message.success('批量邀约成功');
+            // Modal.info({
+            //   title: '批量邀约成功',
+            //   content: (
+            //     <div>
+            //       {formatSelectedKeys(data,jobList).map(({name}) =>
+            //         <p>{`${name}邀约成功`}</p>
+            //       )}
+            //     </div>
+            //   ),
+            //   onOk() {() => close()},
+            // });
+            resetFields();
+            setDiffTimeList([]);
+            close();
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
+            resetSelectList();
+          }).catch(e => message.error(e.message))  
         }   
       }
     });

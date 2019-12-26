@@ -26,10 +26,11 @@ function checkStatus(response) {
     return response;
   }
   const errortext = codeMessage[response.status] || response.statusText;
-  notification.error({
-    message: `请求错误 ${response.status}: ${response.url}`,
-    description: errortext,
-  });
+  // notification.error({
+  //   message: `请求错误 ${response.status}: ${response.url}`,
+  //   description: errortext,
+  // });
+  message.error(`请求错误 ${response.status}: ${response.url}`);
   const error = new Error(errortext);
   error.name = response.status;
   error.response = response;
@@ -51,10 +52,11 @@ function checkResult(response, options) {
   }
   const message = response.message || response.msg || '未知错误';
   if (!options.ignoreError) {
-    notification.error({
-      message: '服务错误',
-      description: `message:${message},code:${response.code}`,
-    });
+    message.error(`服务错误:message:${message},code:${response.code}`)
+    // notification.error({
+    //   message: '服务错误',
+    //   description: `message:${message},code:${response.code}`,
+    // });
   }
   // message.error(`message:${message},code:${response.code}`);
   // const error = new Error(message);
