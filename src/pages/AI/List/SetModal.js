@@ -87,7 +87,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
           return;
         }
         const { diff, triggerTime } = values;
-        if(triggerTime.subtract(5, 'minutes')<moment()){
+        if(triggerTime < moment().add(5, 'minutes')){
           message.error('外呼时间请设置为大于当前时间5分钟以上哦！');
           return;
         }

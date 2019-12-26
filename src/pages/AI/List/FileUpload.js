@@ -99,6 +99,7 @@ function ImportModal({ dispatch, visible, form, close, postList,fileRef }) {
       '.xlsx',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       '',
+      'application/vnd.ms-excel',
     //   'application/msword',
     //   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ];
