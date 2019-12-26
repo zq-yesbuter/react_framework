@@ -18,6 +18,7 @@ function ListItem({
   applyId,
   timeList,
   jobName,
+  disabled,
 }) {
   const itemStyle = String(selectJobId) === applyId ? 'active' : 'normal';
   function formatStatus(status) {
@@ -70,7 +71,7 @@ function ListItem({
   }
   return (
     <li className={styles[`chanceItem_${itemStyle}`]}>
-      <Checkbox onChange={e => onChange(e, applyId)} checked={checked} />
+      <Checkbox onChange={e => onChange(e, applyId)} checked={checked} disabled={disabled} />
       <div className={styles.item} onClick={() => onSelectItem(applyId)}>
         <div className={styles.itemAvatar}>
           <img src={headImage || user} alt="avatar" />

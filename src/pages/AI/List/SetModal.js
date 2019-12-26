@@ -113,6 +113,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
         const addBatch = batch.filter(item => item.status !== 21).map(({status,...item}) => item);
         let editBatch = batch.filter(item => item.status === 21).map(({status,...item}) => item);
         // console.log('add===>',addBatch,'editBatch===>',editBatch);
+        let resolvedPromisesArray = []
         if(editBatch.length) {
           const applyIds = editBatch.map(item => item.applyId) || [];
           fetchInvitation({ applyIds }).then(
@@ -121,42 +122,21 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
               // console.log('editBatch===>',editBatch);
             }
           );
+          resolvedPromisesArray.push(editBatchInvitation({batch:editBatch}));
         }
-        if(editBatch.length && addBatch.length){
-          Promise.all([ editBatchInvitation({batch:editBatch}),batchInvent({ batch:addBatch })]).then(() => {
-            message.success('批量邀约成功');
-            resetFields();
-            setDiffTimeList([]);
-            close();
-            dispatch({
-              type: 'chatrecord/jobAppliedAsPostAll',
-            });
-            resetSelectList();
-          }).catch(e => message.error(e.message))
-        }else if(editBatch.length){
-          editBatchInvitation({batch:editBatch}).then(() => {
-            message.success('批量修改邀约成功');
-            resetFields();
-            setDiffTimeList([]);
-            close();
-            dispatch({
-              type: 'chatrecord/jobAppliedAsPostAll',
-            });
-            resetSelectList();
-          }).catch(e => message.error(e.message))
-        }else if(addBatch.length){
-          batchInvent({ batch:addBatch }).then(() => {
-            message.success('批量新增邀约成功');
-            resetFields();
-            setDiffTimeList([]);
-            close();
-            dispatch({
-              type: 'chatrecord/jobAppliedAsPostAll',
-            });
-            resetSelectList();
-          }).catch(e => message.error(e.message))
+        if(addBatch.length){
+          resolvedPromisesArray.push(batchInvent({ batch:addBatch }));
         }
-        
+        Promise.all(resolvedPromisesArray).then(() => {
+          message.success('批量邀约成功');
+          resetFields();
+          setDiffTimeList([]);
+          close();
+          dispatch({
+            type: 'chatrecord/jobAppliedAsPostAll',
+          });
+          resetSelectList();
+        }).catch(e => message.error(e.message))        
       }
     });
   }

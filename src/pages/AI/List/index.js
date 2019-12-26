@@ -282,8 +282,8 @@ function ChatList({
     let newSelectedKeys = [...selectedKeys];
     let newDataSource = [];
     if (e.target.checked) {
-      newDataSource = jobList.map(item => ({ ...item, checked: true }));
-      newSelectedKeys = jobList.map(item => item.applyId);
+      newDataSource = jobList.map(item => ({ ...item, checked: !item.disabled }));
+      newSelectedKeys = jobList.filter(item => !item.disabled).map(item => item.applyId);
       setAllChecked(true);
     } else {
       newSelectedKeys = [];

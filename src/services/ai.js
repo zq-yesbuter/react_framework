@@ -141,6 +141,13 @@ export async function resumeApplyAsFile({ formData, urlParams }) {
     // },
   });
 }
+// 导入外呼文件
+export async function importFile({ formData, urlParams }) {
+  return request(`/tenant/job/apply/resumes/file?${stringify(urlParams)}`, {
+    method: 'POST',
+    body: formData,
+  });
+}
 
 // 查询已申请的简历信息
 export async function jobApplied(params) {

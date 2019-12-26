@@ -1,15 +1,18 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect, useRef } from 'react';
-import { Col, Row, Form, DatePicker, Button, InputNumber, Steps, message } from 'antd';
+import { Col, Row, Form, DatePicker, Button, InputNumber, Steps, message,Tag } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 import { batchInvent, editBatchInvitation,fetchInvitation } from '@/services/ai';
+import { flatten } from '@/utils/utils';
 import styles from './index.less';
 
 const { Item } = Form;
 const { Step } = Steps;
 const { RangePicker } = DatePicker;
 const format = 'YYYY-MM-DD HH:mm:ss';
+const colors = ['cyan','blue','geekblue','lime','green','purple','magenta','red','volcano','orange','gold'];
+
 function formatStatus(status) {
   switch (status) {
     case 1:
@@ -32,25 +35,18 @@ function usePrevious(value) {
   });
   return ref.current;
 }
-function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId, flowList, backShowTime } }) {
+
+function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId, flowList, backShowTime,
+  resumeObj: { resumeEvaluation }} }) {
   const { getFieldDecorator, validateFields,resetFields } = form;
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
-  // useEffect (()  =>  {
-  //   resetFields();
-  //   // return ()  =>  {
-  //   //   resetFields()
-  //   // }
-  // });
   useEffect(()  =>  {  
     if  (!mounted.current) {
       mounted.current = true;
     }  else  {
-      // const prevSelectJobId = prevCountRef.current;
-      // console.log('shangyici===>',prevSelectJobId,'zheci===>',selectJobId);
       // eslint-disable-next-line no-lonely-if
       if(prevSelectJobId !== selectJobId) {
-        // console.log('butong=============>');
         resetFields();
       }
     }
@@ -127,13 +123,14 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
   
   // console.log('status===>1111111',backShowTime,'=====>',moment(backShowTime.interviewEndTime).diff(backShowTime.interviewTime,'minutes')) 
   const { status } = jobList.find(item => item.applyId === selectJobId) || {};
+  const labelList = flatten(resumeEvaluation && resumeEvaluation.details && Object.values(resumeEvaluation.details) || []);
   return (
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
           <h3>计划邀约时间</h3>
-          <div className={styles.scroll}>
-            <div style={{ marginBottom: 10 }}>
+          <div className={styles.scroll} style={{paddingTop:15}}>
+            <div style={{ marginBottom: 15 }}>
               {getFieldDecorator('triggerTime',{
                 initialValue:Object.keys(backShowTime).length ? moment(backShowTime.triggerTime) : null,
               })(
@@ -147,7 +144,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                 />
               )}
             </div>
-            <div style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 15 }}>
               {getFieldDecorator('diff', {
                 initialValue: Object.keys(backShowTime).length ? moment(backShowTime.interviewEndTime).diff(backShowTime.interviewTime,'minutes') : 60,
               })(
@@ -160,7 +157,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                 />
               )}
             </div>
-            <div style={{ marginBottom: 10 }}>
+            <div style={{ marginBottom: 15 }}>
               {getFieldDecorator('interviewStartTime',{
                 initialValue:Object.keys(backShowTime).length ? moment(backShowTime.interviewTime) : null,
               })(
@@ -209,8 +206,15 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
       </Col>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
-          <h3>简历测评/人才标签</h3>
-          <div className={styles.scroll} />
+          <h3>简历/人才标签</h3>
+          <div className={styles.scroll} style={{paddingTop:15}}>
+            {labelList.length ?
+              labelList.map((item, index) => (
+                <Tag color={colors[index]} key={index} style={{marginBttom:8}}>
+                  {item}
+                </Tag>
+              )) : null}
+          </div>
         </div>
       </Col>
     </Row>

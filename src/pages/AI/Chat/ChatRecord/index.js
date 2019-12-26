@@ -165,18 +165,18 @@ function RecordList({
 
   function bottomLoadingHtml() {
     // const {  } = chatrecord;
-    if (bottomLoading) {
-      return (
-        <div className={styles.bottomLoading}>
-          <Spin />
-        </div>
-      );
-    }
+    // if (bottomLoading) {
+    //   return (
+    //     <div className={styles.bottomLoading}>
+    //       <Spin />
+    //     </div>
+    //   );
+    // }
     return null;
   }
 
   return (
-    <div className={styles.right}>
+    <div className={styles.chatContent}>
       {/* <div className={styles.recordHeader}>沟通记录</div> */}
       {bottomLoadingHtml()}
       <div className={styles.chatPanel}>
