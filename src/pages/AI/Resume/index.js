@@ -38,7 +38,7 @@ const filterName = (key, arr) => {
 
 function Resume({
   chatrecord: {
-    resumeObj: { name, tel, skills, projects, educations, companys },
+    resumeObj: { name, tel, skills, projects, educations, companys,channel },
     selectJobId,
     jobList,
   },
@@ -69,7 +69,7 @@ function Resume({
   function header() {
     return (
       <div className={styles.header}>
-        <h3>简历来源：猎聘网</h3>
+        <h3>{`简历来源：${channel === 'liepin' ? '猎聘网': ''}`}</h3>
         <Button onClick={showResume}>查看原简历</Button>
       </div>
     );

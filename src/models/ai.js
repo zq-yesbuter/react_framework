@@ -25,6 +25,11 @@ import {
 } from '../services/ai';
 import { getDateString,flatten } from '../utils/utils';
 
+function formatInventTime(timeList, applyId) {
+  const list = timeList.filter(item => item.applyId === applyId);
+  return list.length ? list.slice(-1)[0].interviewTime : null;
+}
+
 export default {
   namespace: 'chatrecord',
   state: {
@@ -148,9 +153,16 @@ export default {
         },
       });
     },
+    // 获取邀约时间
     *fetchInvitation({ payload }, { call, put }) {
       try {
         const timeList = yield call(fetchInvitation, payload);
+        yield put({
+          type: 'formatTimeJobList',
+          payload: {
+            timeList,
+          },
+        });
         yield put({
           type: 'save',
           payload: {
@@ -244,11 +256,29 @@ export default {
       }
     },
     *updateSingleInvent({ payload }, { call, put, select }) {
-      console.log('payload====>',payload)
-      const { applyId } = payload;
-      const timeList = yield call(fetchInvitation, {applyIds:[applyId]});
-      console.log('timeList====>',timeList);
-      
+      const jobList = yield select(({ chatrecord: { jobList } }) => jobList);
+      const applyIds = jobList.map(item => item.applyId) || [];
+      if (applyIds.length) {
+        yield put({
+          type: 'fetchInvitation',
+          payload: {
+            applyIds,
+          },
+        });
+      }
+    },
+    *addSingleInvent({ payload }, { call, put, select }) {
+      const requestFilter = yield select(({ chatrecord: { requestFilter } }) => requestFilter);
+      const jobList = yield call(jobAppliedAsPostAll,requestFilter);
+      const applyIds = jobList.map(item => item.applyId) || [];
+      if (applyIds.length) {
+        yield put({
+          type: 'fetchInvitation',
+          payload: {
+            applyIds,
+          },
+        });
+      }
     },
   },
   reducers: {
@@ -286,14 +316,21 @@ export default {
       const jobList=newJobList.map(item => ({...item,disabled:(!!((item.status === 23 || item.status === 24))) }));
       return { ...state, jobList }
     },
+    formatTimeJobList(state,{payload}) {
+      let { timeList } = payload;
+      let { jobList } = state;
+      jobList = jobList.map(item => ({...item,interviewTime:formatInventTime(timeList, item.applyId)}));
+      return { ...state, jobList }
+    },
   },
   subscriptions: {
-    setup({ history, dispatch }) {
-      return history.listen(({ pathname, search }) => {
-        const pathList = pathname.split('/');
-        const userId = search.split('=');
-        if (pathList[1] === 'chatRecord') {
-          dispatch({ type: 'init', payload: { userId: userId[1] } });
+    setup({ dispatch, history }) {
+      return history.listen(({ pathname }) => {
+        const match = /^\/AI/.exec(pathname);
+        if (match) {
+          dispatch({
+            type: 'jobAppliedAsPostAll',
+          });
         }
       });
     },

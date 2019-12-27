@@ -67,11 +67,11 @@ function ChatList({
   const [showMore, setShowMore] = useState(false);
   const listRef = useRef(null);
 
-  useEffect(() => {
-    dispatch({
-      type: 'chatrecord/jobAppliedAsPostAll',
-    });
-  }, []);
+  // useEffect(() => {
+  //   dispatch({
+  //     type: 'chatrecord/jobAppliedAsPostAll',
+  //   });
+  // }, []);
 
   function onSubmit(paramOrderBy, newDateStart, newStatus, newDateEnd,pageNum) {
     form.validateFields((err, values) => {

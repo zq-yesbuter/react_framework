@@ -23,6 +23,7 @@ import { connect } from 'dva';
 import _ from 'lodash';
 import moment from 'moment';
 import { batchInvent, editBatchInvitation,fetchInvitation } from '@/services/ai';
+import { flatten } from '@/utils/utils';
 import styles from './index.less';
 
 const { Option } = Select;
@@ -132,16 +133,27 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
               }
               Promise.all(resolvedPromisesArray).then(data => {
                 message.success('批量邀约成功');
+                // let errorCount=0;
+                // let successCount=0;
+                // let success = [];
+                // data.forEach(item => {
+                //   errorCount+=item.errorCount;
+                //   successCount+=item.successCount;
+                //   success.push(success);
+                // })
+                // const successList = flatten(success);
+                // console.log(errorCount,successCount,successList);
                 // Modal.info({
                 //   title: '批量邀约成功',
                 //   content: (
                 //     <div>
-                //       {formatSelectedKeys(data,jobList).map(({name}) =>
-                //         <p>{`${name}邀约成功`}</p>
+                //       <p>{`邀约成功${successCount}人，邀约失败${errorCount}人`}</p>
+                //       {formatSelectedKeys(successList,jobList).map(item =>
+                //         <p>{`${item ? item.name : null}邀约成功`}</p>
                 //       )}
                 //     </div>
                 //   ),
-                //   onOk() {() => close()},
+                //   // onOk() {() => close()},
                 // });
                 resetFields();
                 setDiffTimeList([]);
@@ -149,6 +161,9 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
                 dispatch({
                   type: 'chatrecord/jobAppliedAsPostAll',
                 });
+                // dispatch({
+                //   type: 'chatrecord/updateSingleInvent',
+                // });
                 resetSelectList();
               }).catch(e => message.error(e.message))  
             }
@@ -157,19 +172,23 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
           batchInvent({ batch:addBatch }).then(data => {
             message.success('批量邀约成功');
             // Modal.info({
-            //   title: '批量邀约成功',
+            //   title: '批量新增邀约成功',
             //   content: (
             //     <div>
-            //       {formatSelectedKeys(data,jobList).map(({name}) =>
-            //         <p>{`${name}邀约成功`}</p>
+            //       <p>{`邀约成功${data.successCount}人，邀约失败${data.errorCount}人`}</p>
+            //       {formatSelectedKeys(data.success,jobList).map(item =>
+            //         <p>{`${item.name}邀约成功`}</p>
             //       )}
             //     </div>
             //   ),
-            //   onOk() {() => close()},
+            //   // onOk() {() => close()},
             // });
             resetFields();
             setDiffTimeList([]);
             close();
+            // dispatch({
+            //   type: 'chatrecord/updateSingleInvent',
+            // });
             dispatch({
               type: 'chatrecord/jobAppliedAsPostAll',
             });

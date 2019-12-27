@@ -84,19 +84,12 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
             })
               .then(data => {
                 message.success('修改邀约成功');
-                // dispatch({
-                //   type: 'chatrecord/queryTimeList',
-                //   payload: {
-                //     selectJobId:applyId,
-                //   },
-                // });
-                // dispatch({
-                //   type: 'chatrecord/fetchInvitation',
-                //   payload: {applyId},
-                // }); 
                 dispatch({
-                  type: 'chatrecord/jobAppliedAsPostAll',
-                });
+                  type: 'chatrecord/updateSingleInvent',
+                }); 
+                // dispatch({
+                //   type: 'chatrecord/jobAppliedAsPostAll',
+                // });
               })
               .catch(e => message.error());
           }
@@ -110,11 +103,8 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
           .then(data => {
             message.success('新增邀约成功');
             // dispatch({
-            //   type: 'chatrecord/queryTimeList',
-            //   payload: {
-            //     selectJobId:applyId,
-            //   },
-            // });
+            //   type: 'chatrecord/updateSingleInvent',
+            // });  
             dispatch({
               type: 'chatrecord/jobAppliedAsPostAll',
             });
