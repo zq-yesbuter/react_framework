@@ -1,3 +1,4 @@
+import  'babel-polyfill';
 import React, { Fragment } from 'react';
 import { Card, Typography, Alert, Col, Row } from 'antd';
 import Chat from './Chat';
