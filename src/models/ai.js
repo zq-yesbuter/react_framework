@@ -76,6 +76,9 @@ export default {
         const selectJobId = jobList && jobList[0] && jobList[0].applyId || undefined;
         if(!selectJobId) { 
           yield put({
+            type: 'queryInformation',
+          });
+          yield put({
             type: 'save',
             payload: {
               tableLoading: false,
