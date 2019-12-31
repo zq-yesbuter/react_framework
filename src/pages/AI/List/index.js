@@ -395,7 +395,11 @@ function ChatList({
         if (response.status >= 200 && response.status < 300) {
           return response;
         }
-        return message.error(`请求错误 ${response.status}: 导出简历时发生错误！`);
+        message.error(`请求错误 ${response.status}: 导出简历时发生错误！`);
+        const error = new Error(errortext);
+        error.name = response.status;
+        error.response = response;
+        throw error;
       }) // 取出body
       .then(response => response.body)
       .then(body => {
@@ -419,7 +423,7 @@ function ChatList({
                 // 将下一个数据块置入流中
                 controller.enqueue(value);
                 return pump();
-              });
+              }).catch(e => message.error(e.message));
             }
           },
         });
@@ -429,10 +433,10 @@ function ChatList({
       .catch(err => message.error(err.message));
   }
   function onSizeChange(page, pageSize) {
-    console.log('page===>', page, 'pageSize==>', pageSize);
+    // console.log('page===>', page, 'pageSize==>', pageSize);
   }
   function onShowSizeChange(page, pageSize) {
-    console.log('page===>', page, 'pageSize==>', pageSize);
+    // console.log('page===>', page, 'pageSize==>', pageSize);
   }
   function bottom() {
     const importMenu = (

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useImperativeHandle,forwardRef, useRef } from 'react';
+import React, { useState, useEffect, useImperativeHandle,forwardRef, useRef, Fragment } from 'react';
 import {
   Radio,
   List,
@@ -18,9 +18,11 @@ import {
   Icon,
   message,
   Tabs,
+  Tooltip,
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
+import JobPostModal from './JobPostModal';
 import { resumeApplyAsFile } from '@/services/ai';
 import styles from './index.less';
 
@@ -42,6 +44,7 @@ const formItemLayout = {
 function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
   const { getFieldDecorator, validateFields, resetFields, setFields } = form;
   const [fileList, setFileList] = useState([]);
+  const [jobPostVisible, setJobPostVisible] = useState(false);
 
   // 此处注意useImperativeHandle方法的的第一个参数是目标元素的ref引用
   useImperativeHandle(resumeRef, () => ({
@@ -115,7 +118,12 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
     newFileList.splice(index, 1);
     setFileList(newFileList);
   }
-
+  function addJobPost(){
+    setJobPostVisible(true);
+  }
+  function jobPostClose(){
+    setJobPostVisible(false);
+  }
   const uploadProps = {
     customRequest: () => {},
     onRemove,
@@ -124,47 +132,57 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
   };
 
   return (
-    <Form {...formItemLayout}>
-      <Item label="简历渠道" required>
-        {getFieldDecorator('channel', {
-          rules: [{ required: true, message: '请选择简历渠道!' }],
-        })(
-          <Select allowClear placeholder="请选择简历渠道">
-            <Option key="liepin">猎聘网</Option>
-          </Select>
-        )}
-      </Item>
-      <Item label="导入文件" required>
-        {getFieldDecorator('fileName')(
-          <Upload {...uploadProps}>
-            {/* <Spin
-                spinning={uploading}
-                indicator={<Icon type="loading" style={{ fontSize: 24 }} />}
-              > */}
-            <Button>
-              <Icon type="upload" />
-              选择文件
-            </Button>
-            {/* </Spin> */}
-          </Upload>
-        )}
-      </Item>
-      <Item label="简历岗位" required>
-        {getFieldDecorator('jobId', {
-          rules: [{ required: true, message: '请输入部门和岗位名!' }],
-        })(
-          <Select allowClear placeholder="请选择岗位">
-            {postList.length &&
-              postList.map(({ jobId, name }) => <Option key={jobId}>{name}</Option>)}
-          </Select>
-        )}
-      </Item>
-      {/* <Item label="导入人" required>
-          {getFieldDecorator('name', {
-            rules: [{ required: true, message: '请输入导入人!' }],
-          })(<Input placeholder="请输入导入人" />)}
-        </Item> */}
-    </Form>
+    <Fragment>
+      <Form {...formItemLayout}>
+        <Item label="简历渠道" required>
+          {getFieldDecorator('channel', {
+            rules: [{ required: true, message: '请选择简历渠道!' }],
+          })(
+            <Select allowClear placeholder="请选择简历渠道">
+              <Option key="liepin">猎聘网</Option>
+            </Select>
+          )}
+        </Item>
+        <Item label="导入文件" required>
+          {getFieldDecorator('fileName')(
+            <Upload {...uploadProps}>
+              {/* <Spin
+                  spinning={uploading}
+                  indicator={<Icon type="loading" style={{ fontSize: 24 }} />}
+                > */}
+              <Button>
+                <Icon type="upload" />
+                选择文件
+              </Button>
+              {/* </Spin> */}
+            </Upload>
+          )}
+        </Item>
+        <Item label="简历岗位" required>
+          <div style={{ display: 'flex', marginLeft: 5 }}>
+            {getFieldDecorator('jobId', {
+              rules: [{ required: true, message: '请输入部门和岗位名!' }],
+            })(
+              <Select allowClear placeholder="请选择岗位">
+                {postList.length &&
+                  postList.map(({ jobId, name }) => <Option key={jobId}>{name}</Option>)}
+              </Select>
+            )}
+            <Tooltip title='如果发现没有合适的岗位信息，可以马上创建一个岗位信息哦！'>
+              <Button type="primary" style={{ marginLeft: 5 }} onClick={addJobPost}>
+                +
+              </Button>
+            </Tooltip>
+          </div>
+        </Item>
+        {/* <Item label="导入人" required>
+            {getFieldDecorator('name', {
+              rules: [{ required: true, message: '请输入导入人!' }],
+            })(<Input placeholder="请输入导入人" />)}
+          </Item> */}
+      </Form>
+      <JobPostModal visible={jobPostVisible} close={jobPostClose} />
+    </Fragment>
   );
 }
 const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });

@@ -10,6 +10,7 @@ import {
   Carousel,
   Typography,
   message,
+  Icon,
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
@@ -18,6 +19,10 @@ import classnames from 'classnames';
 import PDF from 'react-pdf-js';
 import PDFJS from 'pdfjs-dist';
 import moment from 'moment';
+import BasicContent from './BasicContent';
+import WorkContent from './WorkContent';
+import ProjectContent from './ProjectContent';
+import EducationContent from './EducationContent';
 import { inlineShowResume } from '@/services/ai'
 // import { TextLayerBuilder } from '@/pdfjs-dist/web/pdf_viewer.js';
 // import '@/pdfjs-dist/web/pdf_viewer.css';
@@ -54,6 +59,7 @@ function Resume({
   const [workIndex,setWorkIndex] = useState(0);
   const [projectIndex, setProjectIndex] = useState(0);
   const [eduIndex, setEduIndex] = useState(0);
+  const [basicContent, setBasicContent] = useState(false);
 
   const basicData = [
     { name: '姓名', value: name, id: '1' },
@@ -120,158 +126,31 @@ function Resume({
     setEduIndex(page);
     eduRef.current.goTo(page,false);
   }
+  function editBasicContent(){
+    setBasicContent(true);
+  }
+  function saveBasicContent(){
+    setBasicContent(false);
+  }
   const workCls = cExpand === 1 ? styles.expand : (cExpand === 0 ? styles.lessSixty :null)
+  const formItemLayout = {
+    labelCol: {
+      span: 10,
+    },
+    wrapperCol: {
+      span: 14,
+    },
+  };
   return (
     <div>
       {header()}
-      <li className={styles.chanceItem}>
-        <h4 className={styles.resumeTitle}>基本信息</h4>
-        {/* <PDF file={pdfurl} /> */}
-        <Row type="flex">
-          <Col
-            // className="gutter-row"
-            span={4}
-            style={{
-              flexShrink: 1,
-              alignItems: 'center',
-              flex: 1,
-              alignSelf: 'center',
-              padding: 10,
-            }}
-          >
-            <img src={user} alt="avatar" style={{ width: '100%', borderRadius: 10 }} />
-          </Col>
-          <Col span={18}>
-            <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
-              {basicData.map(({ name, value, id }) => (
-                <Col span={12} key={id}>
-                  <div>
-                    <Text strong>{`${name}：`}</Text>
-                    {value || '无'}
-                  </div>
-                </Col>
-              ))}
-            </Row>
-          </Col>
-        </Row>
-      </li>
-      <li className={styles.chanceItem}>
-        <h4 className={styles.resumeTitle}>工作经历</h4>
-        {companys && companys.length ? (
-          <Fragment>
-            <Carousel className={styles.mycarousel} ref={CRef} dots={false} slidesToShow={1}>
-              {companys.map((item, index) => (
-                <div className={styles.carousel} key={index}>
-                  <Paragraph>{`起止时间：${moment(item.startDate).format(format)} ~ ${item.endDate ? moment(item.endDate).format(format) : '至今'}`}</Paragraph>
-                  <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Paragraph style={{ flex: 1, marginRight: 5 }}>
-                      {`公司：  ${item.name}`}
-                    </Paragraph>
-                    <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position}`}</Paragraph>
-                  </Paragraph>
-                  <p className={cExpand === 1 ? styles.expand : null} ref={cContent} id={`workContent-${index}`}>
-                    {item.content}
-                  </p>
-                  {cExpand ? (
-                    <span onClick={() => cContentExpand(index)} className={styles.button}>
-                      {cExpand === 1 ? '展开' : '收起'}
-                    </span>
-                  ) : null}
-                </div>
-              ))}
-            </Carousel>
-            <div style={{display:'flex',justifyContent:'center'}}>
-              {companys.map((_, index) => {
-                let page = index;
-                page += 1; 
-                const cls = workIndex === index ? classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
-                return (<span onClick={() => workSelect(index)} className={cls} key={index}>{page}</span>)
-              }
-              )}
-            </div>
-          </Fragment>
-        ) : (
-          <div className={styles.noContent}>暂无</div>
-        )}
-      </li>
-      <li className={styles.chanceItem} style={{ position: 'relative' }}>
-        <h4 className={styles.resumeTitle}>项目经历</h4>
-        {projects && projects.length ? (
-          <Fragment>
-            <Carousel className={styles.mycarousel} ref={PRef} dots={false} slidesToShow={1}>
-              {projects.map((item, index) => (
-                <div className={styles.carousel} key={index}>
-                  <Paragraph style={{ marginBottom: 5 }}>
-                    {`起止时间： ${moment(item.startDate).format(format)} ~ ${item.endDate ? moment(item.endDate).format(format) : '至今'}`}
-                  </Paragraph>
-                  <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Paragraph style={{ flex: 1, marginRight: 5 }}>
-                      {`公司：  ${item.name  || '无'}`}
-                    </Paragraph>
-                    <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position || '无'}`}</Paragraph>
-                  </Paragraph>
-                  <p className={pExpand === 1 ? styles.expand : null} ref={pContent} id={`projectContent-${index}`}>
-                    {item.content}
-                  </p>
-                  {pExpand ? (
-                    <span onClick={pContentExpand} className={styles.button}>
-                      {pExpand === 1 ? '展开' : '收起'}
-                    </span>
-                  ) : null}
-                </div>
-              ))}
-            </Carousel>
-            <div style={{display:'flex',justifyContent:'center'}}>
-              {projects.map((_, index) => {
-                let page = index;
-                page += 1; 
-                const cls = projectIndex === index ?classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
-                return (<span onClick={() => projectSelect(index)} className={cls} key={index}>{page}</span>)
-              }
-              )}
-            </div>
-          </Fragment>
-        ) : (
-          <div className={styles.noContent}>暂无</div>
-        )}
-      </li>
-      <li className={styles.chanceItem}>
-        <h4 className={styles.resumeTitle}>教育经历</h4>
-        {educations && educations.length ? (
-          <Fragment>
-            <Carousel className={styles.mycarousel} ref={eduRef} dots={false}>
-              {educations.map((item, index) => (
-                <div className={styles.carousel} key={index}>
-                  <Paragraph style={{ marginBottom: 5 }}>
-                    {`起止时间： ${moment(item.startDate).format(format)} ~ ${item.endDate ? moment(item.endDate).format(format) : '至今'}`}
-                  </Paragraph>
-                  <Paragraph style={{ marginBottom: 5 }}>{`学校名称：  ${item.school}`}</Paragraph>
-                  <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <Paragraph style={{ flex: 1 }}>{`学历：  ${item.diploma}`}</Paragraph>
-                    <Paragraph style={{ flex: 1, marginRight: 5 }}>
-                      {`专业：  ${item.major}`}
-                    </Paragraph>
-                  </Paragraph>
-                </div>
-              ))}
-            </Carousel>
-            <div style={{display:'flex',justifyContent:'center'}}>
-              {educations.map((_, index) => {
-                 let page = index;
-                 page += 1; 
-                const cls = eduIndex === index ?classnames(styles.commonBadge, styles.activeBadge) : styles.commonBadge;
-                return (<span onClick={() => eduSelect(index)} className={cls} key={index}>{page}</span>)
-              }
-              )}
-            </div>
-          </Fragment>
-        ) : (
-          <div className={styles.noContent}>暂无</div>
-        )}
-      </li>
+      <BasicContent />
+      <WorkContent />
+      <ProjectContent />
+      <EducationContent />
     </div>
   );
 }
 
 const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
-export default connect(mapStateToProps)(Form.create({})(Resume));
+export default connect(mapStateToProps)(Resume);

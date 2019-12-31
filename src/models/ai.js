@@ -29,7 +29,10 @@ function formatInventTime(timeList, applyId) {
   const list = timeList.filter(item => item.applyId === applyId);
   return list.length ? list.slice(-1)[0].interviewTime : null;
 }
-
+function formatTriggerTime(timeList, applyId) {
+  const list = timeList.filter(item => item.applyId === applyId);
+  return list.length ? list.slice(-1)[0].triggerTime : null;
+}
 export default {
   namespace: 'chatrecord',
   state: {
@@ -45,7 +48,7 @@ export default {
     bottomLoading: false,
     notData: false,
     pageNum: 1,
-    requestFilter:{},
+    requestFilter:{orderBy: { applyDate: 'DESC' }},
   },
   effects: {
     // 获取微信聊天记录
@@ -315,14 +318,14 @@ export default {
       return { ...state, flowList,backShowTime };
     },
     formatJobList(state, { payload }) {
-      let { jobList:newJobList } = payload;
-      const jobList=newJobList.map(item => ({...item,disabled:(!!((item.status === 23 || item.status === 24))) }));
+      let { jobList } = payload;
+      // const jobList=newJobList.map(item => ({...item,disabled:(!!((item.status === 23 || item.status === 24))) }));
       return { ...state, jobList }
     },
     formatTimeJobList(state,{payload}) {
       let { timeList } = payload;
       let { jobList } = state;
-      jobList = jobList.map(item => ({...item,interviewTime:formatInventTime(timeList, item.applyId)}));
+      jobList = jobList.map(item => ({...item,triggerTime:formatTriggerTime(timeList, item.applyId)}));// interviewTime:formatInventTime(timeList, item.applyId)
       return { ...state, jobList }
     },
   },

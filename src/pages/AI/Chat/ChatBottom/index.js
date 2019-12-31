@@ -91,7 +91,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
                 //   type: 'chatrecord/jobAppliedAsPostAll',
                 // });
               })
-              .catch(e => message.error());
+              .catch(e => message.error(e.message));
           }
           );
           return;
@@ -109,7 +109,7 @@ function RecordBottom({ form, dispatch, chatrecord: { jobList = [], selectJobId,
               type: 'chatrecord/jobAppliedAsPostAll',
             });
           })
-          .catch(e => message.error());
+          .catch(e => message.error(e.message));
       }
     });
   }

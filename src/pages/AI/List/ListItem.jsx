@@ -20,6 +20,7 @@ function ListItem({
   jobName,
   disabled,
   interviewTime,
+  triggerTime,
 }) {
   const itemStyle = String(selectJobId) === applyId ? 'active' : 'normal';
   function formatStatus(status) {
@@ -86,8 +87,8 @@ function ListItem({
         </div>
         <div className={styles.itemTimeInfo}>
           {/* <Tooltip title="邀约时间" placement="topRight"> */}
-          <div title="邀约时间" className={styles.inventTime} style={formatBackground(status)}>
-            {interviewTime || null}
+          <div title="外呼时间" className={styles.inventTime} style={formatBackground(status)}>
+            {triggerTime || null}
           </div>
           {/* </Tooltip> */}
           <div title="导入时间">{applyDate}</div>

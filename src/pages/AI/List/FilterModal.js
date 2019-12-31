@@ -60,6 +60,7 @@ function ImportModal({ visible, form, close, handleOk }) {
         handleOk(undefined, undefined, undefined);
         close();
       }}
+      cancelText='重置'
     >
       <Tabs defaultActiveKey="1">
         <TabPane tab="状态" key="1">

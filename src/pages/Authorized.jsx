@@ -1,3 +1,4 @@
+import  'babel-polyfill';
 import React from 'react';
 import Redirect from 'umi/redirect';
 import { connect } from 'dva';

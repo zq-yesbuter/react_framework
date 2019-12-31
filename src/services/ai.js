@@ -221,3 +221,42 @@ export async function inlineShowResume({resumeId}) {
     method: 'GET',
   });
 }
+// 岗位创建
+export async function addJobPost(body) {
+  return request('/tenant/job', {
+    method: 'POST',
+    body,
+  });
+}
+// 修改简历中的基本信息
+export async function saveBasicContent(body) {
+  const { resumeId } = body
+  return request(`/resume/${resumeId}/basic`, {
+    method: 'POST',
+    body,
+  });
+}
+// 修改简历中的工作经历
+export async function saveWorkContent(body) {
+  const { resumeId } = body
+  return request(`/resume/${resumeId}/company`, {
+    method: 'POST',
+    body,
+  });
+}
+// 修改简历中的项目信息
+export async function saveProjectContent(body) {
+  const { resumeId } = body
+  return request(`/resume/${resumeId}/project`, {
+    method: 'POST',
+    body,
+  });
+}
+// 修改简历中的教育信息
+export async function saveEducationContent(body) {
+  const { resumeId } = body
+  return request(`/resume/${resumeId}/education`, {
+    method: 'POST',
+    body,
+  });
+}
