@@ -93,8 +93,8 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
     },
   }));
 
-  function beforeUpload(file) {
-    // console.log('文件格式==》', file.type, file.size);
+  function beforeUpload(file,filesList) {
+    // console.log('文件格式==》', file.type, file.size,filesList);
     const fileType = [
       '.doc',
       '.docx',
@@ -103,12 +103,17 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
       'application/msword',
       'application/pdf',
     ];
-    const currentType = fileType.includes(file.type);
-    if (!currentType) {
-      message.error('只支持word或pdf格式，请上传正确格式!');
-      return false;
-    }
-    setFileList([...fileList, file]);
+    const newFilesList = filesList.filter(file => fileType.includes(file.type));
+    // const notFilesList = filesList.filter(file => !fileType.includes(file.type));
+    // if(notFilesList.length){
+    //   message.error('不属于word或pdf格式的文件已经被过滤!');
+    // }
+    // const currentType = fileType.includes(file.type);
+    // if (!currentType) {
+    //   message.error('只支持word或pdf格式，请上传正确格式!');
+    //   return false;
+    // }
+    setFileList([...fileList, ...newFilesList]);
     return false;
   }
 
@@ -143,17 +148,20 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
             </Select>
           )}
         </Item>
+     
         <Item label="导入文件" required>
           {getFieldDecorator('fileName')(
-            <Upload {...uploadProps}>
+            <Upload {...uploadProps} multiple>
               {/* <Spin
                   spinning={uploading}
                   indicator={<Icon type="loading" style={{ fontSize: 24 }} />}
                 > */}
-              <Button>
-                <Icon type="upload" />
-                选择文件
-              </Button>
+              <Tooltip title='仅支持word或pdf文件格式上传，其他类型会被过滤！'>
+                <Button>
+                  <Icon type="upload" />
+                  选择文件
+                </Button>
+              </Tooltip>
               {/* </Spin> */}
             </Upload>
           )}
@@ -187,3 +195,5 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
 }
 const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
 export default connect(mapStateToProps)(Form.create({})(forwardRef(ImportModal)));
+
+

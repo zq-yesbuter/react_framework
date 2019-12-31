@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect,Fragment, useRef, useLayoutEffect } from 'react';
 import {
   List,
   Input,
@@ -95,7 +95,7 @@ function Resume({
   function saveProjectContent() {
     validateFields((err, values) => {
         if (!err) {
-            console.log('values===>',values);
+            // console.log('values===>',values);
             const { resumeId } = jobList.find(item => item.applyId === selectJobId);
             // const payload = {resumeId,...companys,...values};
             const { projects:newProjects } = values;
@@ -103,7 +103,7 @@ function Resume({
                 return {...item,...newProjects[index]}
             });
             const format = payload.map(item => ({...item,startDate:item.startDate ? item.startDate.format('YYYY-MM-DD') : item.startDate,endDate:item.endDate ? item.endDate.format('YYYY-MM-DD') :item.endDate}));
-            console.log('newCompanys====>',payload,'===>',format);
+            // console.log('newCompanys====>',payload,'===>',format);
             edit({resumeId,projects:format})
               .then(data => {
                   message.success('修改项目经历成功！');
@@ -145,7 +145,7 @@ function Resume({
         <Fragment>
           <Carousel className={styles.mycarousel} ref={PRef} dots={false} slidesToShow={1}>
             {projects.map((item, index) => (
-              <Fragment>
+              <Fragment key={`main-projects-${index}`}>
                 {projectContent ? (
                   <Fragment key={`edit-projects-${index}`}>
                     <div style={{display:'flex', marginBottom: 5 }}>

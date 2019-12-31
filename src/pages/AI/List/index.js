@@ -46,7 +46,23 @@ const filter = [
 const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
-
+const codeMessage = {
+  200: '服务器成功返回请求的数据。',
+  201: '新建或修改数据成功。',
+  202: '一个请求已经进入后台排队（异步任务）。',
+  204: '删除数据成功。',
+  400: '发出的请求有错误，服务器没有进行新建或修改数据的操作。',
+  401: '用户没有权限（令牌、用户名、密码错误）。',
+  403: '用户得到授权，但是访问是被禁止的。',
+  404: '发出的请求针对的是不存在的记录，服务器没有进行操作。',
+  406: '请求的格式不可得。',
+  410: '请求的资源被永久删除，且不会再得到的。',
+  422: '当创建一个对象时，发生一个验证错误。',
+  500: '服务器发生错误，请检查服务器。',
+  502: '网关错误。',
+  503: '服务不可用，服务器暂时过载或维护。',
+  504: '网关超时。',
+};
 function ChatList({
   dispatch,
   chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading, postList,bottomLoading,notData,pageNum },
@@ -396,6 +412,7 @@ function ChatList({
           return response;
         }
         message.error(`请求错误 ${response.status}: 导出简历时发生错误！`);
+        const errortext = codeMessage[response.status] || response.statusText;
         const error = new Error(errortext);
         error.name = response.status;
         error.response = response;
@@ -403,6 +420,7 @@ function ChatList({
       }) // 取出body
       .then(response => response.body)
       .then(body => {
+        // console.log('body====>jianli==>',body);
         const reader = body.getReader();
         return new ReadableStream({
           start(controller) {
@@ -416,7 +434,7 @@ function ChatList({
                 if (done) {
                   // console.log('end')
                   controller.close();
-                  // return;
+                  return;
                 }
                 size += value.length || 0;
                 // console.log(size,"size")
@@ -438,13 +456,68 @@ function ChatList({
   function onShowSizeChange(page, pageSize) {
     // console.log('page===>', page, 'pageSize==>', pageSize);
   }
+  function batchExportInvent() {
+    const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
+    const applyIds = resumeList.map(item => item.applyId);
+    const fileName = '导出邀约信息.xlsx';
+    let size = 0;
+    fetch('/data/interview/invitations/all', {
+      method: 'POST',
+      body: JSON.stringify({ applyIds,pageNum:1,pageSize:100 }),
+      headers: {
+        Accept: 'application/vnd.ms-excel',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => {
+        if (response.status >= 200 && response.status < 300) {
+          return response;
+        }
+        message.error(`请求错误 ${response.status}: 导出邀约信息时发生错误！`);
+        const errortext = codeMessage[response.status] || response.statusText;
+        const error = new Error(errortext);
+        error.name = response.status;
+        error.response = response;
+        throw error;
+      }) // 取出body
+      .then(response => response.body)
+      .then(body => {
+        const reader = body.getReader();
+        return new ReadableStream({
+          start(controller) {
+            return pump();
+            function pump() {
+              return reader.read().then(res => {
+                // res  ({ done, value })
+                // 读不到更多数据就关闭流
+                // console.log(res,'res');
+                const { done, value } = res;
+                if (done) {
+                  // console.log('end')
+                  controller.close();
+                  return;
+                }
+                size += value.length || 0;
+                // console.log(size,"size")
+                // 将下一个数据块置入流中
+                controller.enqueue(value);
+                return pump();
+              }).catch(e => message.error(e.message));
+            }
+          },
+        });
+      })
+      .then(stream => new Response(stream))
+      .then(response => savingFile(response,fileName))
+      .catch(err => message.error(err.message));
+  }
   function bottom() {
     const importMenu = (
       <Menu>
         <Menu.Item key={1} onClick={downloadResumes}>
           批量导出简历
         </Menu.Item>
-        {/* <Menu.Item key={2}>导出邀约</Menu.Item> */}
+        <Menu.Item key={2} onClick={batchExportInvent}>批量导出邀约</Menu.Item>
         {/* <Menu.Item key={3}>导出简历+邀约</Menu.Item> */}
         <Menu.Item key={4} onClick={onExportChange}>
           分配邀约时间

@@ -193,7 +193,7 @@ function Resume({
         <Fragment>
           <Carousel className={styles.mycarousel} ref={eduRef} dots={false}>
             {educations.map((item, index) => (
-              <Fragment>
+              <Fragment key={`main-education-${index}`}>
                 {educationContent ? (
                   <Fragment key={`edit-education-${index}`}>
                     <div style={{ display: 'flex',marginBottom:10 }}>

@@ -151,7 +151,7 @@ function Resume({
         <Fragment>
           <Carousel className={styles.mycarousel} ref={CRef} dots={false} slidesToShow={1}>
             {companys.map((item, index) => (
-              <Fragment>
+              <Fragment key={`main-companys-${index}`}>
                 {workContent ? (
                   <Fragment key={`edit-companys-${index}`}>
                     <div style={{ display: 'flex', marginBottom: 5 }}>

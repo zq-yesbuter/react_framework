@@ -237,6 +237,11 @@ export default {
       changeOrigin: true,
       pathRewrite,
     },
+    '/data': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
     '/authenticate': {
       target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
       changeOrigin: true,
