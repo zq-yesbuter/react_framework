@@ -76,23 +76,32 @@ function Resume({
   }
   function saveWorkContent() {
     validateFields((err, values) => {
-    if (!err) {
-        console.log('values===>',values);
+      if (!err) {
+        console.log('values===>', values);
         const { resumeId } = jobList.find(item => item.applyId === selectJobId);
-        const payload = {resumeId,...companys,...values};
-        edit(payload)
+        const { companys: newCompanys } = values;
+        const payload = companys.map((item, index) => {
+          return { ...item, ...newCompanys[index] };
+        });
+        const format = payload.map(item => ({
+          ...item,
+          startDate: item.startDate ? moment(item.startDate).format('YYYY-MM-DD') : item.startDate,
+          endDate: item.endDate ? moment(item.endDate).format('YYYY-MM-DD') : item.endDate,
+        }));
+        console.log('newCompanys====>', payload, '===>', format);
+        edit({ resumeId, companys: format })
           .then(data => {
-              message.success('修改工作经历成功！');
-              dispatch({
-                type: 'chatrecord/fetchResume',
-                payload: {
-                  resumeId,
-                },
-              });
-              setWorkContent(false);
+            message.success('修改工作经历成功！');
+            dispatch({
+              type: 'chatrecord/fetchResume',
+              payload: {
+                resumeId,
+              },
+            });
+            setWorkContent(false);
           })
           .catch(e => message.error(e.message));
-        }
+      }
     });
   }
   function cancelWorkContent() {
@@ -103,15 +112,20 @@ function Resume({
       <h4 className={styles.resumeTitle}>
         <div className={styles.resumeEditTitle}>
           <span>工作经历</span>
-          {workContent ? 
-          (
-            <div>
-              <span onClick={cancelWorkContent} style={{marginRight:5}}>取消</span>
-              <Icon type="check" style={{marginRight:5}} onClick={saveWorkContent} />
-            </div>
-           ) :(
-             <Icon type="edit" style={{ marginRight: 5 }} onClick={editWorkContent} />
-          )}
+          {companys && companys.length ? (
+            <Fragment>
+              {workContent ? (
+                <div>
+                  <span onClick={cancelWorkContent} style={{ marginRight: 10 }}>
+                    取消
+                  </span>
+                  <Icon type="check" style={{ marginRight: 5 }} onClick={saveWorkContent} />
+                </div>
+              ) : (
+                <Icon type="edit" style={{ marginRight: 5 }} onClick={editWorkContent} />
+              )}
+            </Fragment>
+          ) : null}
         </div>
       </h4>
       {companys && companys.length ? (
@@ -122,20 +136,25 @@ function Resume({
                 {workContent ? (
                   <Fragment key={index}>
                     <div style={{ display: 'flex', marginBottom: 5 }}>
-                      <span>起止时间: </span>
-                      {getFieldDecorator(`companys[${index}].date`, { initialValue: item.date })(
-                        // <RangePicker size="small" />
-                        <NomalRangePicker
-                          form={form} 
-                          format="YYYY-MM-DD" 
-                          names={['startDate', 'endDate']} 
-                        />
-                      )}
+                      <div style={{ display: 'inline-block', width: 100 }}>起止时间: </div>
+                      <NomalRangePicker
+                        form={form}
+                        format="YYYY-MM-DD"
+                        names={[`companys[${index}].startDate`, `companys[${index}].endDate`]}
+                        options={[
+                          {
+                            initialValue: moment(item.startDate) || null,
+                          },
+                          {
+                            initialValue: item.endDate ? moment(item.endDate) : null,
+                          },
+                        ]}
+                      />
                     </div>
                     <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
                       <Col span={12}>
-                        <div style={{ display: 'flex', marginBottom: 5 }}>
-                          <span>公司:</span>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                          <div style={{ display: 'inline-block', width: 55 }}>公司:</div>
                           {getFieldDecorator(`companys[${index}].name`, {
                             initialValue: item.name,
                           })(<Input size="small" type="text" />)}
@@ -143,7 +162,7 @@ function Resume({
                       </Col>
                       <Col span={12}>
                         <div style={{ display: 'flex' }}>
-                          <span>职位:</span>
+                          <div style={{ display: 'inline-block', width: 55 }}>职位:</div>
                           {getFieldDecorator(`companys[${index}].position`, {
                             initialValue: item.name,
                           })(<Input size="small" type="text" />)}
@@ -158,11 +177,11 @@ function Resume({
                   <div className={styles.carousel} key={index}>
                     <Paragraph>
                       {`起止时间：${moment(item.startDate).format(format)} ~ ${
-                      item.endDate ? moment(item.endDate).format(format) : '至今'
-                    }`}
+                        item.endDate ? moment(item.endDate).format(format) : '至今'
+                      }`}
                     </Paragraph>
                     <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Paragraph style={{ flex: 1, marginRight: 5 }}>
+                      <Paragraph style={{ flex: 1, marginRight: 10 }}>
                         {`公司：  ${item.name}`}
                       </Paragraph>
                       <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position}`}</Paragraph>

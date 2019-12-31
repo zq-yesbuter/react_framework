@@ -238,25 +238,25 @@ export async function saveBasicContent(body) {
 }
 // 修改简历中的工作经历
 export async function saveWorkContent(body) {
-  const { resumeId } = body
+  const { resumeId,companys } = body
   return request(`/resume/${resumeId}/company`, {
     method: 'POST',
-    body,
+    body:{companies:companys},
   });
 }
 // 修改简历中的项目信息
 export async function saveProjectContent(body) {
-  const { resumeId } = body
+  const { resumeId,projects } = body
   return request(`/resume/${resumeId}/project`, {
     method: 'POST',
-    body,
+    body:{projects},
   });
 }
 // 修改简历中的教育信息
 export async function saveEducationContent(body) {
-  const { resumeId } = body
+  const { resumeId,educations } = body
   return request(`/resume/${resumeId}/education`, {
     method: 'POST',
-    body,
+    body:{educations},
   });
 }

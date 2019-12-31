@@ -19,6 +19,7 @@ import classnames from 'classnames';
 import PDF from 'react-pdf-js';
 import PDFJS from 'pdfjs-dist';
 import moment from 'moment';
+import NomalRangePicker from './NomalRangePicker';
 import { saveProjectContent as edit } from '@/services/ai';
 // import { TextLayerBuilder } from '@/pdfjs-dist/web/pdf_viewer.js';
 // import '@/pdfjs-dist/web/pdf_viewer.css';
@@ -79,7 +80,13 @@ function Resume({
             console.log('values===>',values);
             const { resumeId } = jobList.find(item => item.applyId === selectJobId);
             // const payload = {resumeId,...companys,...values};
-            edit({resumeId,...values})
+            const { projects:newProjects } = values;
+            const payload = projects.map((item,index) => {
+                return {...item,...newProjects[index]}
+            });
+            const format = payload.map(item => ({...item,startDate:item.startDate ? item.startDate.format('YYYY-MM-DD') : item.startDate,endDate:item.endDate ? item.endDate.format('YYYY-MM-DD') :item.endDate}));
+            console.log('newCompanys====>',payload,'===>',format);
+            edit({resumeId,projects:format})
               .then(data => {
                   message.success('修改项目经历成功！');
                   dispatch({
@@ -102,14 +109,18 @@ function Resume({
       <h4 className={styles.resumeTitle}>
         <div className={styles.resumeEditTitle}>
           <span>项目经历</span>
-          {projectContent ?  (
-            <div>
-              <span onClick={cancelProjectContent} style={{marginRight:5}}>取消</span>
-              <Icon type="check" style={{marginRight:5}} onClick={saveProjectContent} />
-            </div>
+          {projects && projects.length ? (
+            <Fragment>
+              {projectContent ?  (
+                <div>
+                  <span onClick={cancelProjectContent} style={{marginRight:10}}>取消</span>
+                  <Icon type="check" style={{marginRight:5}} onClick={saveProjectContent} />
+                </div>
            ) : (
              <Icon type="edit" style={{ marginRight: 5 }} onClick={editProjectContent} />
           )}
+            </Fragment>
+          ) : null}
         </div>
       </h4>
       {projects && projects.length ? (
@@ -118,25 +129,38 @@ function Resume({
             {projects.map((item, index) => (
               <Fragment>
                 {projectContent ? (
-                  <Fragment key={index}>
+                  <Fragment key={`edit-projects-${index}`}>
                     <div style={{display:'flex'}}>
-                      <span>起止时间:</span>
-                      {getFieldDecorator(`projects[${index}].date`, { initialValue: item.date })(
+                      <span style={{display:'inline-block',width:100}}>起止时间:</span>
+                      <NomalRangePicker
+                        form={form} 
+                        format="YYYY-MM-DD" 
+                        names={[`projects[${index}].startDate`, `projects[${index}].endDate`]} 
+                        options={[
+                            {
+                              initialValue:  moment(item.startDate) || null,
+                            },
+                            {
+                              initialValue: item.endDate ? moment(item.endDate) : null,
+                            },
+                          ]}
+                      />
+                      {/* {getFieldDecorator(`projects[${index}].date`, { initialValue: item.date })(
                         <Input size="small" type="text" />
-                      )}
+                      )} */}
                     </div>
                     <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
                       <Col span={12}>
-                        <div style={{display:'flex',marginBottom:5}}>
-                          <span>项目： </span>
+                        <div style={{display:'flex',marginBottom:10}}>
+                          <span style={{display:'inline-block',width:55}}>项目： </span>
                           {getFieldDecorator(`projects[${index}].name`, {
                             initialValue: item.name,
                           })(<Input size="small" type="text" />)}
                         </div>
                       </Col>
                       <Col span={12}>
-                        <div style={{display:'flex',marginBottom:5}}>
-                          <span>职位： </span>
+                        <div style={{display:'flex',marginBottom:10}}>
+                          <span style={{display:'inline-block',width:55}}>职位： </span>
                           {getFieldDecorator(`projects[${index}].position`, {
                             initialValue: item.position,
                           })(<Input size="small" type="text" />)}
@@ -148,7 +172,7 @@ function Resume({
                     })(<TextArea rows={4} style={{marginBottom:10}} />)}
                   </Fragment>
                 ) : (
-                  <div className={styles.carousel} key={index}>
+                  <div className={styles.carousel} key={`projects-${index}`}>
                     <Paragraph style={{ marginBottom: 5 }}>
                       {`起止时间： ${moment(item.startDate).format(format)} ~ ${
                         item.endDate ? moment(item.endDate).format(format) : '至今'

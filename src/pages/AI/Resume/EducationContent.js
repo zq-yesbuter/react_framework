@@ -22,6 +22,7 @@ import moment from 'moment';
 import BasicContent from './BasicContent';
 import WorkContent from './WorkContent';
 import ProjectContent from './ProjectContent';
+import NomalRangePicker from './NomalRangePicker';
 import { saveEducationContent as edit } from '@/services/ai';
 import styles from './index.less';
 
@@ -115,9 +116,14 @@ function Resume({
   function saveEduContent() {
     validateFields((err, values) => {
       if (!err) {
-        console.log('values===>', values);
         const { resumeId } = jobList.find(item => item.applyId === selectJobId);
-        edit({ resumeId, ...values })
+        const { educations:newEducations } = values;
+        const payload = educations.map((item,index) => {
+            return {...item,...newEducations[index]}
+        });
+        const format = payload.map(item => ({...item,startDate:item.startDate ? item.startDate.format('YYYY-MM-DD') : item.startDate,endDate:item.endDate ? item.endDate.format('YYYY-MM-DD') :item.endDate}));
+        console.log('educations===>',format)
+        edit({resumeId,educations:format})
           .then(data => {
             message.success('修改教育经历成功！');
             dispatch({
@@ -149,16 +155,20 @@ function Resume({
       <h4 className={styles.resumeTitle}>
         <div className={styles.resumeEditTitle}>
           <span>教育经历</span>
-          {educationContent ? (
-            <div>
-              <span onClick={cancelEduContent} style={{ marginRight: 5 }}>
-                取消
-              </span>
-              <Icon type="check" style={{ marginRight: 5 }} onClick={saveEduContent} />
-            </div>
-          ) : (
-            <Icon type="edit" style={{ marginRight: 5 }} onClick={editEduContent} />
-          )}
+          {educations && educations.length ? (
+            <Fragment>
+              {educationContent ? (
+                <div>
+                  <span onClick={cancelEduContent} style={{ marginRight: 10 }}>
+                    取消
+                  </span>
+                  <Icon type="check" style={{ marginRight: 5 }} onClick={saveEduContent} />
+                </div>
+            ) : (
+              <Icon type="edit" style={{ marginRight: 5 }} onClick={editEduContent} />
+            )}
+            </Fragment>
+          ):null}
         </div>
       </h4>
       {educations && educations.length ? (
@@ -168,22 +178,32 @@ function Resume({
               <Fragment>
                 {educationContent ? (
                   <Fragment key={index}>
-                    <div style={{ display: 'flex' }}>
-                      <span>起止时间:</span>
-                      {getFieldDecorator(`educations[${index}].date`, { initialValue: item.date })(
-                        <Input size="small" type="text" />
-                      )}
+                    <div style={{ display: 'flex',marginBottom:10 }}>
+                      <span style={{display:'inline-block',width:100}}>起止时间:</span>
+                      <NomalRangePicker
+                        form={form} 
+                        format="YYYY-MM-DD" 
+                        names={[`educations[${index}].startDate`, `educations[${index}].endDate`]} 
+                        options={[
+                            {
+                              initialValue:  moment(item.startDate) || null,
+                            },
+                            {
+                              initialValue: item.endDate ? moment(item.endDate) : null,
+                            },
+                          ]}
+                      />
                     </div>
-                    <div style={{ display: 'flex' }}>
-                      <span>学校名称:</span>
+                    <div style={{ display: 'flex',marginBottom:10  }}>
+                      <span style={{display:'inline-block',width:55}}>学校名称:</span>
                       {getFieldDecorator(`educations[${index}].school`, { initialValue: item.school })(
                         <Input size="small" type="text" />
                       )}
                     </div>
                     <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
                       <Col span={12}>
-                        <div style={{ display: 'flex', marginBottom: 5 }}>
-                          <span>学历： </span>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                          <span style={{display:'inline-block',width:55}}>学历： </span>
                           {getFieldDecorator(`educations[${index}].diploma`, {
                             initialValue: item.diploma,
                           })(<Input size="small" type="text" />)}
@@ -191,7 +211,7 @@ function Resume({
                       </Col>
                       <Col span={12}>
                         <div style={{ display: 'flex', marginBottom: 5 }}>
-                          <span>专业： </span>
+                          <span style={{display:'inline-block',width:55}}>专业： </span>
                           {getFieldDecorator(`educations[${index}].major`, {
                             initialValue: item.major,
                           })(<Input size="small" type="text" />)}

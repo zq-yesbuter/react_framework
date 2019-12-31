@@ -50,7 +50,7 @@ function Resume({
 
   const basicData = [
     { name: '姓名', value: name, id: '1',key:'name' },
-    { name: '年龄', value: birthday ? `${moment().diff(moment(birthday),'years')}岁` : '无', id: '2',key: 'birthday' },
+    { name: '年龄', value: birthday, id: '2',key: 'birthday' },
     { name: '性别', value: sex, id: '3',key:'sex' },
     { name: '邮箱', value: email, id: '6',key:'email' },
     { name: '地点', value: residencePlace, id: '7',key:'residencePlace' },
@@ -68,7 +68,8 @@ function Resume({
     if (!err) {
         console.log('values===>',values);
         const { resumeId } = jobList.find(item => item.applyId === selectJobId);
-        edit({resumeId,...values}).then(data => {
+        console.log('birthday====>',birthday);
+        edit({resumeId,...values,birthday}).then(data => {
             message.success('修改基本信息成功！');
             dispatch({
               type: 'chatrecord/fetchResume',
@@ -100,7 +101,7 @@ function Resume({
           <span>基本信息</span>
           {basicContent ? (
             <div>
-              <span onClick={cancelBasicContent} style={{marginRight:5}}>取消</span>
+              <span onClick={cancelBasicContent} style={{marginRight:10}}>取消</span>
               <Icon type="check" style={{marginRight:5}} onClick={saveBasicContent} />
             </div>
           ) : <Icon type="edit" style={{marginRight:5}} onClick={editBasicContent} /> }
@@ -123,11 +124,12 @@ function Resume({
         <Col span={18}>
           {basicContent ? (
             <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
-              {basicData.map(({ name, value, id,key }) => ( 
+              {basicData.map(({ name, value, id, key }) => ( 
                 <Col span={12} key={id}>
                   <div style={{display:'flex',marginBottom:5}}>
-                    <Text>{`${name}：`}</Text>
-                    {getFieldDecorator(key,{initialValue: value})(<Input
+                    <Text style={{display:'inline-block',width:55}}>{`${name}：`}</Text>
+                    {getFieldDecorator(key,{initialValue: key==='birthday' ? `${moment().diff(moment(value),'years')}岁` : value})(<Input
+                      disabled={key==='birthday'}
                       size="small"
                       type="text"
                     />)}
@@ -137,11 +139,11 @@ function Resume({
             </Row>
         ): (
           <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
-            { basicData.map(({ name, value, id }) => (
+            { basicData.map(({ name, value, id,key }) => (
               <Col span={12} key={id}>
                 <div>
                   <Text>{`${name}：`}</Text>
-                  {value || '无'}
+                  {key==='birthday' ? `${moment().diff(moment(value),'years')}岁` : value || '无'}
                 </div>
               </Col>
             ))}
