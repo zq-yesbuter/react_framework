@@ -37,6 +37,13 @@ const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 function Resume({
   chatrecord: {
     resumeObj: { companys },
@@ -55,6 +62,18 @@ function Resume({
   const [workIndex, setWorkIndex] = useState(0);
   const [workContent, setWorkContent] = useState(false);
 
+  const prevSelectJobId = usePrevious(selectJobId);
+  const mounted = useRef();
+  useEffect(()  =>  {  
+    if  (!mounted.current) {
+      mounted.current = true;
+    }  else  {
+      // eslint-disable-next-line no-lonely-if
+      if(prevSelectJobId !== selectJobId) {
+        setWorkContent(false);
+      }
+    }
+  })
   function cContentExpand() {
     setCExpand(cExpand === 1 ? 2 : 1);
   }
@@ -134,7 +153,7 @@ function Resume({
             {companys.map((item, index) => (
               <Fragment>
                 {workContent ? (
-                  <Fragment key={index}>
+                  <Fragment key={`edit-companys-${index}`}>
                     <div style={{ display: 'flex', marginBottom: 5 }}>
                       <div style={{ display: 'inline-block', width: 100 }}>起止时间: </div>
                       <NomalRangePicker
@@ -151,7 +170,7 @@ function Resume({
                         ]}
                       />
                     </div>
-                    <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
+                    <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
                       <Col span={12}>
                         <div style={{ display: 'flex', marginBottom: 10 }}>
                           <div style={{ display: 'inline-block', width: 55 }}>公司:</div>
@@ -171,10 +190,10 @@ function Resume({
                     </Row>
                     {getFieldDecorator(`companys[${index}].content`, {
                       initialValue: item.content,
-                    })(<TextArea rows={4} style={{ marginBottom: 10 }} />)}
+                    })(<TextArea rows={7} style={{ marginBottom: 10 }} />)}
                   </Fragment>
                 ) : (
-                  <div className={styles.carousel} key={index}>
+                  <div className={styles.carousel} key={`companys-${index}`}>
                     <Paragraph>
                       {`起止时间：${moment(item.startDate).format(format)} ~ ${
                         item.endDate ? moment(item.endDate).format(format) : '至今'

@@ -38,6 +38,13 @@ const pdfurl = require('./1.pdf');
 const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
 function Resume({
   chatrecord: {
@@ -61,7 +68,18 @@ function Resume({
   const [projectIndex, setProjectIndex] = useState(0);
   const [eduIndex, setEduIndex] = useState(0);
   const [educationContent, setEducationContent] = useState(false);
-
+  const prevSelectJobId = usePrevious(selectJobId);
+  const mounted = useRef();
+  useEffect(()  =>  {  
+    if  (!mounted.current) {
+      mounted.current = true;
+    }  else  {
+      // eslint-disable-next-line no-lonely-if
+      if(prevSelectJobId !== selectJobId) {
+        setEducationContent(false);
+      }
+    }
+  })
   const basicData = [
     { name: '姓名', value: name, id: '1' },
     // { name: '年龄', value: '33', id: '2' },
@@ -177,7 +195,7 @@ function Resume({
             {educations.map((item, index) => (
               <Fragment>
                 {educationContent ? (
-                  <Fragment key={index}>
+                  <Fragment key={`edit-education-${index}`}>
                     <div style={{ display: 'flex',marginBottom:10 }}>
                       <span style={{display:'inline-block',width:100}}>起止时间:</span>
                       <NomalRangePicker
@@ -195,15 +213,15 @@ function Resume({
                       />
                     </div>
                     <div style={{ display: 'flex',marginBottom:10  }}>
-                      <span style={{display:'inline-block',width:55}}>学校名称:</span>
+                      <span style={{display:'inline-block',width:100}}>学校名称:</span>
                       {getFieldDecorator(`educations[${index}].school`, { initialValue: item.school })(
                         <Input size="small" type="text" />
                       )}
                     </div>
-                    <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
+                    <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
                       <Col span={12}>
                         <div style={{ display: 'flex', marginBottom: 10 }}>
-                          <span style={{display:'inline-block',width:55}}>学历： </span>
+                          <span style={{display:'inline-block',width:60}}>学历： </span>
                           {getFieldDecorator(`educations[${index}].diploma`, {
                             initialValue: item.diploma,
                           })(<Input size="small" type="text" />)}
@@ -211,7 +229,7 @@ function Resume({
                       </Col>
                       <Col span={12}>
                         <div style={{ display: 'flex', marginBottom: 5 }}>
-                          <span style={{display:'inline-block',width:55}}>专业： </span>
+                          <span style={{display:'inline-block',width:60}}>专业： </span>
                           {getFieldDecorator(`educations[${index}].major`, {
                             initialValue: item.major,
                           })(<Input size="small" type="text" />)}
@@ -220,7 +238,7 @@ function Resume({
                     </Row>
                   </Fragment>
                 ) : (
-                  <div className={styles.carousel} key={index}>
+                  <div className={styles.carousel} key={`education-${index}`}>
                     <Paragraph style={{ marginBottom: 5 }}>
                       {`起止时间： ${moment(item.startDate).format(format)} ~ ${
                         item.endDate ? moment(item.endDate).format(format) : '至今'

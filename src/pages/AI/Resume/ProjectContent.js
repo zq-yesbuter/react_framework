@@ -34,7 +34,13 @@ const format = 'YYYY-MM-DD';
 const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
-
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 function Resume({
   chatrecord: {
     resumeObj: { name, tel, skills, projects, educations, companys, channel },
@@ -53,6 +59,18 @@ function Resume({
   const [projectIndex, setProjectIndex] = useState(0);
   const [projectContent, setProjectContent] = useState(false);
 
+  const prevSelectJobId = usePrevious(selectJobId);
+  const mounted = useRef();
+  useEffect(()  =>  {  
+    if  (!mounted.current) {
+      mounted.current = true;
+    }  else  {
+      // eslint-disable-next-line no-lonely-if
+      if(prevSelectJobId !== selectJobId) {
+        setProjectContent(false);
+      }
+    }
+  })
   function pContentExpand() {
     setPExpand(pExpand === 1 ? 2 : 1);
   }
@@ -130,7 +148,7 @@ function Resume({
               <Fragment>
                 {projectContent ? (
                   <Fragment key={`edit-projects-${index}`}>
-                    <div style={{display:'flex'}}>
+                    <div style={{display:'flex', marginBottom: 5 }}>
                       <span style={{display:'inline-block',width:100}}>起止时间:</span>
                       <NomalRangePicker
                         form={form} 
@@ -149,10 +167,10 @@ function Resume({
                         <Input size="small" type="text" />
                       )} */}
                     </div>
-                    <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
+                    <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
                       <Col span={12}>
                         <div style={{display:'flex',marginBottom:10}}>
-                          <span style={{display:'inline-block',width:55}}>项目： </span>
+                          <div style={{display:'inline-block',width:60}}>项目： </div>
                           {getFieldDecorator(`projects[${index}].name`, {
                             initialValue: item.name,
                           })(<Input size="small" type="text" />)}
@@ -160,7 +178,7 @@ function Resume({
                       </Col>
                       <Col span={12}>
                         <div style={{display:'flex',marginBottom:10}}>
-                          <span style={{display:'inline-block',width:55}}>职位： </span>
+                          <div style={{display:'inline-block',width:60}}>职位： </div>
                           {getFieldDecorator(`projects[${index}].position`, {
                             initialValue: item.position,
                           })(<Input size="small" type="text" />)}
@@ -169,7 +187,7 @@ function Resume({
                     </Row>
                     {getFieldDecorator(`projects[${index}].content`, {
                     initialValue: item.content,
-                    })(<TextArea rows={4} style={{marginBottom:10}} />)}
+                    })(<TextArea rows={7} style={{marginBottom:10}} />)}
                   </Fragment>
                 ) : (
                   <div className={styles.carousel} key={`projects-${index}`}>

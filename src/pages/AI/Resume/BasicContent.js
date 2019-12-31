@@ -36,6 +36,14 @@ const filterName = (key, arr) => {
   return arr.find(item => item.key === key) && arr.find(item => item.key === key).name;
 };
 
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
+
 function Resume({
   chatrecord: {
     resumeObj: { name, tel, sex, email, birthday,residencePlace },
@@ -47,6 +55,18 @@ function Resume({
 }) {
   const [basicContent, setBasicContent] = useState(false);
   const { getFieldDecorator, validateFields, resetFields, setFields } = form;
+  const prevSelectJobId = usePrevious(selectJobId);
+  const mounted = useRef();
+  useEffect(()  =>  {  
+    if  (!mounted.current) {
+      mounted.current = true;
+    }  else  {
+      // eslint-disable-next-line no-lonely-if
+      if(prevSelectJobId !== selectJobId) {
+        setBasicContent(false);
+      }
+    }
+  })
 
   const basicData = [
     { name: '姓名', value: name, id: '1',key:'name' },
@@ -123,11 +143,11 @@ function Resume({
         </Col>
         <Col span={18}>
           {basicContent ? (
-            <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
+            <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
               {basicData.map(({ name, value, id, key }) => ( 
                 <Col span={12} key={id}>
                   <div style={{display:'flex',marginBottom:5}}>
-                    <Text style={{display:'inline-block',width:55}}>{`${name}：`}</Text>
+                    <div style={{display:'inline-block',width:67}}>{`${name}：`}</div>
                     {getFieldDecorator(key,{initialValue: key==='birthday' ? `${moment().diff(moment(value),'years')}岁` : value})(<Input
                       disabled={key==='birthday'}
                       size="small"
@@ -138,7 +158,7 @@ function Resume({
             ))}
             </Row>
         ): (
-          <Row gutter={[{ xs: 8, sm: 16, md: 24, lg: 32 }, 20]}>
+          <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
             { basicData.map(({ name, value, id,key }) => (
               <Col span={12} key={id}>
                 <div>
