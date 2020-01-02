@@ -56,7 +56,6 @@ function Resume({
   const { getFieldDecorator, validateFields, resetFields, setFields } = form;
   const CRef = useRef(null);
   const cContent = useRef(null);
-  const pContent = useRef(null);
   const [value, setValue] = useState();
   const [cExpand, setCExpand] = useState(1);
   const [workIndex, setWorkIndex] = useState(0);
@@ -64,16 +63,16 @@ function Resume({
 
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
-  useEffect(()  =>  {  
-    if  (!mounted.current) {
+  useEffect(() => {
+    if (!mounted.current) {
       mounted.current = true;
-    }  else  {
+    } else {
       // eslint-disable-next-line no-lonely-if
-      if(prevSelectJobId !== selectJobId) {
+      if (prevSelectJobId !== selectJobId) {
         setWorkContent(false);
       }
     }
-  })
+  });
   function cContentExpand() {
     setCExpand(cExpand === 1 ? 2 : 1);
   }
