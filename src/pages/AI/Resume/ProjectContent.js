@@ -168,9 +168,6 @@ function Resume({
                           },
                         ]}
                       />
-                      {/* {getFieldDecorator(`projects[${index}].date`, { initialValue: item.date })(
-                        <Input size="small" type="text" />
-                      )} */}
                     </div>
                     <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
                       <Col span={12}>

@@ -149,19 +149,17 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
           )}
         </Item>
      
-        <Item label="导入文件" required>
+        <Item label="导入文件" required extra="仅支持上传解析word格式简历！">
           {getFieldDecorator('fileName')(
             <Upload {...uploadProps} multiple>
               {/* <Spin
                   spinning={uploading}
                   indicator={<Icon type="loading" style={{ fontSize: 24 }} />}
                 > */}
-              <Tooltip title='仅支持word文件格式上传，其他类型会被过滤！'>
-                <Button>
-                  <Icon type="upload" />
-                  选择文件
-                </Button>
-              </Tooltip>
+              <Button>
+                <Icon type="upload" />
+                选择文件
+              </Button>
               {/* </Spin> */}
             </Upload>
           )}
