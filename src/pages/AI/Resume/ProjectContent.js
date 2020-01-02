@@ -103,8 +103,8 @@ function Resume({
         });
         const format = payload.map(item => ({
           ...item,
-          startDate: item.startDate ? item.startDate.format('YYYY-MM-DD') : item.startDate,
-          endDate: item.endDate ? item.endDate.format('YYYY-MM-DD') : item.endDate,
+          startDate: item.startDate ? moment(item.startDate).format('YYYY-MM-DD') : item.startDate,
+          endDate: item.endDate ? moment(item.endDate).format('YYYY-MM-DD') : item.endDate,
         }));
         // console.log('newCompanys====>',payload,'===>',format);
         edit({ resumeId, projects: format })
