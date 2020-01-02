@@ -21,7 +21,7 @@ function usePrevious(value) {
 
 function BasicContent({
   chatrecord: {
-    resumeObj: { name, tel, sex, email, birthday, residencePlace },
+    resumeObj: { name, tel, sex, email, birthday, residencePlace, workPlace },
     selectJobId,
     jobList,
   },
@@ -64,7 +64,8 @@ function BasicContent({
         // console.log('values===>',values);
         const { resumeId } = jobList.find(item => item.applyId === selectJobId);
         // console.log('birthday====>',birthday);
-        edit({ resumeId, ...values, birthday })
+
+        edit({ resumeId, ...values, birthday, workPlace })
           .then(data => {
             message.success('修改基本信息成功！');
             dispatch({

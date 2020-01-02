@@ -482,7 +482,7 @@ function ChatList({
     let size = 0;
     fetch('/data/interview/invitations/all', {
       method: 'POST',
-      body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 100 }),
+      body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 100,orderBy: { applyDate: 'DESC' } }),
       headers: {
         Accept: 'application/vnd.ms-excel',
         'Content-Type': 'application/json',

@@ -98,10 +98,10 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
     const fileType = [
       '.doc',
       '.docx',
-      '.pdf',
+      // '.pdf',
       'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
       'application/msword',
-      'application/pdf',
+      // 'application/pdf',
     ];
     const newFilesList = filesList.filter(file => fileType.includes(file.type));
     // const notFilesList = filesList.filter(file => !fileType.includes(file.type));
@@ -156,7 +156,7 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
                   spinning={uploading}
                   indicator={<Icon type="loading" style={{ fontSize: 24 }} />}
                 > */}
-              <Tooltip title='仅支持word或pdf文件格式上传，其他类型会被过滤！'>
+              <Tooltip title='仅支持word文件格式上传，其他类型会被过滤！'>
                 <Button>
                   <Icon type="upload" />
                   选择文件

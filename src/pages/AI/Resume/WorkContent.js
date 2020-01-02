@@ -95,7 +95,7 @@ function Resume({
   function saveWorkContent() {
     validateFields((err, values) => {
       if (!err) {
-        console.log('values===>', values);
+        // console.log('values===>', values);
         const { resumeId } = jobList.find(item => item.applyId === selectJobId);
         const { companys: newCompanys } = values;
         const payload = companys.map((item, index) => {
@@ -106,7 +106,7 @@ function Resume({
           startDate: item.startDate ? moment(item.startDate).format('YYYY-MM-DD') : item.startDate,
           endDate: item.endDate ? moment(item.endDate).format('YYYY-MM-DD') : item.endDate,
         }));
-        console.log('newCompanys====>', payload, '===>', format);
+        // console.log('newCompanys====>', payload, '===>', format);
         edit({ resumeId, companys: format })
           .then(data => {
             message.success('修改工作经历成功！');
@@ -182,7 +182,7 @@ function Resume({
                         <div style={{ display: 'flex' }}>
                           <div style={{ display: 'inline-block', width: 55 }}>职位:</div>
                           {getFieldDecorator(`companys[${index}].position`, {
-                            initialValue: item.name,
+                            initialValue: item.position,
                           })(<Input size="small" type="text" />)}
                         </div>
                       </Col>
