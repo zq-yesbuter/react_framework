@@ -1,4 +1,4 @@
-import React, { useState, useEffect,Fragment, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, Fragment, useRef, useLayoutEffect } from 'react';
 import {
   List,
   Input,
@@ -24,7 +24,6 @@ import { saveProjectContent as edit } from '@/services/ai';
 // import { TextLayerBuilder } from '@/pdfjs-dist/web/pdf_viewer.js';
 // import '@/pdfjs-dist/web/pdf_viewer.css';
 import styles from './index.less';
-
 
 const { TextArea } = Input;
 const { Item } = Form;
@@ -61,20 +60,20 @@ function Resume({
 
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
-  useEffect(()  =>  {  
-    if  (!mounted.current) {
+  useEffect(() => {
+    if (!mounted.current) {
       mounted.current = true;
-    }  else  {
+    } else {
       // eslint-disable-next-line no-lonely-if
-      if(prevSelectJobId !== selectJobId) {
+      if (prevSelectJobId !== selectJobId) {
         setProjectContent(false);
       }
     }
-  })
+  });
   function pContentExpand() {
     setPExpand(pExpand === 1 ? 2 : 1);
   }
- 
+
   function projectSelect(page) {
     setProjectIndex(page);
     PRef.current.goTo(page, true);
@@ -94,30 +93,34 @@ function Resume({
   }
   function saveProjectContent() {
     validateFields((err, values) => {
-        if (!err) {
-            // console.log('values===>',values);
-            const { resumeId } = jobList.find(item => item.applyId === selectJobId);
-            // const payload = {resumeId,...companys,...values};
-            const { projects:newProjects } = values;
-            const payload = projects.map((item,index) => {
-                return {...item,...newProjects[index]}
-            });
-            const format = payload.map(item => ({...item,startDate:item.startDate ? item.startDate.format('YYYY-MM-DD') : item.startDate,endDate:item.endDate ? item.endDate.format('YYYY-MM-DD') :item.endDate}));
-            // console.log('newCompanys====>',payload,'===>',format);
-            edit({resumeId,projects:format})
-              .then(data => {
-                  message.success('修改项目经历成功！');
-                  dispatch({
-                    type: 'chatrecord/fetchResume',
-                    payload: {
-                      resumeId,
-                    },
-                  });
-                  setProjectContent(false);
-              })
-              .catch(e => message.error(e.message));
-            }
+      if (!err) {
+        // console.log('values===>',values);
+        const { resumeId } = jobList.find(item => item.applyId === selectJobId);
+        // const payload = {resumeId,...companys,...values};
+        const { projects: newProjects } = values;
+        const payload = projects.map((item, index) => {
+          return { ...item, ...newProjects[index] };
         });
+        const format = payload.map(item => ({
+          ...item,
+          startDate: item.startDate ? item.startDate.format('YYYY-MM-DD') : item.startDate,
+          endDate: item.endDate ? item.endDate.format('YYYY-MM-DD') : item.endDate,
+        }));
+        // console.log('newCompanys====>',payload,'===>',format);
+        edit({ resumeId, projects: format })
+          .then(data => {
+            message.success('修改项目经历成功！');
+            dispatch({
+              type: 'chatrecord/fetchResume',
+              payload: {
+                resumeId,
+              },
+            });
+            setProjectContent(false);
+          })
+          .catch(e => message.error(e.message));
+      }
+    });
   }
   function cancelProjectContent() {
     setProjectContent(false);
@@ -129,14 +132,16 @@ function Resume({
           <span>项目经历</span>
           {projects && projects.length ? (
             <Fragment>
-              {projectContent ?  (
+              {projectContent ? (
                 <div>
-                  <span onClick={cancelProjectContent} style={{marginRight:10}}>取消</span>
-                  <Icon type="check" style={{marginRight:5}} onClick={saveProjectContent} />
+                  <span onClick={cancelProjectContent} style={{ marginRight: 10 }}>
+                    取消
+                  </span>
+                  <Icon type="check" style={{ marginRight: 5 }} onClick={saveProjectContent} />
                 </div>
-           ) : (
-             <Icon type="edit" style={{ marginRight: 5 }} onClick={editProjectContent} />
-          )}
+              ) : (
+                <Icon type="edit" style={{ marginRight: 5 }} onClick={editProjectContent} />
+              )}
             </Fragment>
           ) : null}
         </div>
@@ -148,20 +153,20 @@ function Resume({
               <Fragment key={`main-projects-${index}`}>
                 {projectContent ? (
                   <Fragment key={`edit-projects-${index}`}>
-                    <div style={{display:'flex', marginBottom: 5 }}>
-                      <span style={{display:'inline-block',width:100}}>起止时间:</span>
+                    <div style={{ display: 'flex', marginBottom: 5 }}>
+                      <span style={{ display: 'inline-block', width: 100 }}>起止时间:</span>
                       <NomalRangePicker
-                        form={form} 
-                        format="YYYY-MM-DD" 
-                        names={[`projects[${index}].startDate`, `projects[${index}].endDate`]} 
+                        form={form}
+                        format="YYYY-MM-DD"
+                        names={[`projects[${index}].startDate`, `projects[${index}].endDate`]}
                         options={[
-                            {
-                              initialValue:  moment(item.startDate) || null,
-                            },
-                            {
-                              initialValue: item.endDate ? moment(item.endDate) : null,
-                            },
-                          ]}
+                          {
+                            initialValue: moment(item.startDate) || null,
+                          },
+                          {
+                            initialValue: item.endDate ? moment(item.endDate) : null,
+                          },
+                        ]}
                       />
                       {/* {getFieldDecorator(`projects[${index}].date`, { initialValue: item.date })(
                         <Input size="small" type="text" />
@@ -169,16 +174,16 @@ function Resume({
                     </div>
                     <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
                       <Col span={12}>
-                        <div style={{display:'flex',marginBottom:10}}>
-                          <div style={{display:'inline-block',width:60}}>项目： </div>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                          <div style={{ display: 'inline-block', width: 69 }}>项目： </div>
                           {getFieldDecorator(`projects[${index}].name`, {
                             initialValue: item.name,
                           })(<Input size="small" type="text" />)}
                         </div>
                       </Col>
                       <Col span={12}>
-                        <div style={{display:'flex',marginBottom:10}}>
-                          <div style={{display:'inline-block',width:60}}>职位： </div>
+                        <div style={{ display: 'flex', marginBottom: 10 }}>
+                          <div style={{ display: 'inline-block', width: 69 }}>职位： </div>
                           {getFieldDecorator(`projects[${index}].position`, {
                             initialValue: item.position,
                           })(<Input size="small" type="text" />)}
@@ -186,8 +191,8 @@ function Resume({
                       </Col>
                     </Row>
                     {getFieldDecorator(`projects[${index}].content`, {
-                    initialValue: item.content,
-                    })(<TextArea rows={7} style={{marginBottom:10}} />)}
+                      initialValue: item.content,
+                    })(<TextArea rows={7} style={{ marginBottom: 10 }} />)}
                   </Fragment>
                 ) : (
                   <div className={styles.carousel} key={`projects-${index}`}>
@@ -201,8 +206,7 @@ function Resume({
                         {`公司：  ${item.name || '无'}`}
                       </Paragraph>
                       <Paragraph style={{ flex: 1 }}>
-                        {`职位：  ${item.position ||
-                        '无'}`}
+                        {`职位：  ${item.position || '无'}`}
                       </Paragraph>
                     </Paragraph>
                     <p

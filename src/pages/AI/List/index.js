@@ -65,7 +65,16 @@ const codeMessage = {
 };
 function ChatList({
   dispatch,
-  chatrecord: { jobList = [], selectJobId, timeList = [], tableLoading, postList,bottomLoading,notData,pageNum },
+  chatrecord: {
+    jobList = [],
+    selectJobId,
+    timeList = [],
+    tableLoading,
+    postList,
+    bottomLoading,
+    notData,
+    pageNum,
+  },
   form,
 }) {
   const [value, setValue] = useState();
@@ -89,7 +98,7 @@ function ChatList({
   //   });
   // }, []);
 
-  function onSubmit(paramOrderBy, newDateStart, newStatus, newDateEnd,pageNum) {
+  function onSubmit(paramOrderBy, newDateStart, newStatus, newDateEnd, pageNum) {
     form.validateFields((err, values) => {
       if (!err) {
         const { name } = values;
@@ -107,49 +116,54 @@ function ChatList({
           requestValue = { ...requestValue, dateEnd: newDateEnd.format('YYYY-MM-DD HH:mm:ss') };
         }
         if (newStatus) {
-          requestValue = { ...requestValue, status: newStatus };
+          requestValue = { ...requestValue, status: newStatus === true ? undefined : newStatus };
         }
-        const reg=/^\d{1,11}$/;
+
+        const reg = /^\d{1,11}$/;
         let nameObj = {};
-        if(reg.test(name)) {
-          nameObj = {tel:name}
-        }else{
-          nameObj = {name}
+        if (reg.test(name)) {
+          nameObj = { tel: name };
+        } else {
+          nameObj = { name };
         }
-        if(pageNum !== 1){
+        if (pageNum !== 1) {
           dispatch({
             type: 'chatrecord/loadMoreList',
-            payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
+            payload: { ...nameObj, ...requestValue, pageSize: 20, pageNum },
           });
           dispatch({
-            type:'chatrecord/save',
-            payload: {requestFilter: { ...nameObj, ...requestValue}},
-          })
+            type: 'chatrecord/save',
+            payload: {
+              requestFilter: { orderBy: { applyDate: 'DESC' }, ...nameObj, ...requestValue },
+            },
+          });
           return;
         }
         hadleSelectedKeys([]);
         dispatch({
           type: 'chatrecord/jobAppliedAsPostAll',
-          payload: { ...nameObj, ...requestValue,pageSize:20,pageNum },
+          payload: { ...nameObj, ...requestValue, pageSize: 20, pageNum },
         });
         dispatch({
-          type:'chatrecord/save',
-          payload: {requestFilter: { ...nameObj, ...requestValue}},
-        })
+          type: 'chatrecord/save',
+          payload: {
+            requestFilter: { orderBy: { applyDate: 'DESC' }, ...nameObj, ...requestValue },
+          },
+        });
       }
     });
   }
   function handleScroll() {
-    const { clientHeight,scrollHeight,scrollTop} = listRef && listRef.current || {};
-    if(clientHeight < scrollHeight){
+    const { clientHeight, scrollHeight, scrollTop } = (listRef && listRef.current) || {};
+    if (clientHeight < scrollHeight) {
       setShowMore(true);
-    }else{
+    } else {
       setShowMore(false);
     }
     if (scrollHeight - (scrollTop + clientHeight) < 10) {
-      if(!notData){
-        const newPageNum = pageNum+1;
-        onSubmit(undefined,undefined,undefined,undefined,newPageNum);
+      if (!notData) {
+        const newPageNum = pageNum + 1;
+        onSubmit(undefined, undefined, undefined, undefined, newPageNum);
         dispatch({
           type: 'chatrecord/save',
           payload: {
@@ -157,7 +171,7 @@ function ChatList({
           },
         });
       }
-    } 
+    }
   }
 
   function search() {
@@ -165,7 +179,10 @@ function ChatList({
     return (
       <div className={styles.search}>
         {getFieldDecorator('name')(
-          <Search placeholder="请根据姓名、手机号搜索" onSearch={() => onSubmit(undefined,undefined,undefined,undefined,1)} />
+          <Search
+            placeholder="请根据姓名、手机号搜索"
+            onSearch={() => onSubmit(undefined, undefined, undefined, undefined, 1)}
+          />
         )}
         <Button icon="plus" style={{ marginLeft: 10 }} onClick={importResume}>
           导入简历
@@ -190,7 +207,7 @@ function ChatList({
   }
   function sortSelect(e) {
     setOrderBy(e.key);
-    onSubmit(e.key,undefined,undefined,undefined,1);
+    onSubmit(e.key, undefined, undefined, undefined, 1);
   }
   function header() {
     const { getFieldDecorator } = form;
@@ -344,8 +361,7 @@ function ChatList({
             <div className={styles.noBottomContent}>
               {bottomLoading ? <Spin /> : notData ? '没有更多数据了！' : null}
             </div>
-          ): null
-          }
+          ) : null}
         </Fragment>
       );
     }
@@ -426,22 +442,25 @@ function ChatList({
           start(controller) {
             return pump();
             function pump() {
-              return reader.read().then(res => {
-                // res  ({ done, value })
-                // 读不到更多数据就关闭流
-                // console.log(res,'res');
-                const { done, value } = res;
-                if (done) {
-                  // console.log('end')
-                  controller.close();
-                  return;
-                }
-                size += value.length || 0;
-                // console.log(size,"size")
-                // 将下一个数据块置入流中
-                controller.enqueue(value);
-                return pump();
-              }).catch(e => message.error(e.message));
+              return reader
+                .read()
+                .then(res => {
+                  // res  ({ done, value })
+                  // 读不到更多数据就关闭流
+                  // console.log(res,'res');
+                  const { done, value } = res;
+                  if (done) {
+                    // console.log('end')
+                    controller.close();
+                    return;
+                  }
+                  size += value.length || 0;
+                  // console.log(size,"size")
+                  // 将下一个数据块置入流中
+                  controller.enqueue(value);
+                  return pump();
+                })
+                .catch(e => message.error(e.message));
             }
           },
         });
@@ -463,7 +482,7 @@ function ChatList({
     let size = 0;
     fetch('/data/interview/invitations/all', {
       method: 'POST',
-      body: JSON.stringify({ applyIds,pageNum:1,pageSize:100 }),
+      body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 100 }),
       headers: {
         Accept: 'application/vnd.ms-excel',
         'Content-Type': 'application/json',
@@ -487,28 +506,31 @@ function ChatList({
           start(controller) {
             return pump();
             function pump() {
-              return reader.read().then(res => {
-                // res  ({ done, value })
-                // 读不到更多数据就关闭流
-                // console.log(res,'res');
-                const { done, value } = res;
-                if (done) {
-                  // console.log('end')
-                  controller.close();
-                  return;
-                }
-                size += value.length || 0;
-                // console.log(size,"size")
-                // 将下一个数据块置入流中
-                controller.enqueue(value);
-                return pump();
-              }).catch(e => message.error(e.message));
+              return reader
+                .read()
+                .then(res => {
+                  // res  ({ done, value })
+                  // 读不到更多数据就关闭流
+                  // console.log(res,'res');
+                  const { done, value } = res;
+                  if (done) {
+                    // console.log('end')
+                    controller.close();
+                    return;
+                  }
+                  size += value.length || 0;
+                  // console.log(size,"size")
+                  // 将下一个数据块置入流中
+                  controller.enqueue(value);
+                  return pump();
+                })
+                .catch(e => message.error(e.message));
             }
           },
         });
       })
       .then(stream => new Response(stream))
-      .then(response => savingFile(response,fileName))
+      .then(response => savingFile(response, fileName))
       .catch(err => message.error(err.message));
   }
   function bottom() {
@@ -517,7 +539,9 @@ function ChatList({
         <Menu.Item key={1} onClick={downloadResumes}>
           批量导出简历
         </Menu.Item>
-        <Menu.Item key={2} onClick={batchExportInvent}>批量导出邀约</Menu.Item>
+        <Menu.Item key={2} onClick={batchExportInvent}>
+          批量导出邀约
+        </Menu.Item>
         {/* <Menu.Item key={3}>导出简历+邀约</Menu.Item> */}
         <Menu.Item key={4} onClick={onExportChange}>
           分配邀约时间
@@ -552,14 +576,14 @@ function ChatList({
       </Fragment>
     );
   }
+  // 筛选条件查询时发的请求
   function handleOk(dateStart, status, dateEnd) {
     setDateEnd(dateEnd ? dateEnd.format('YYYY-MM-DD HH:mm:ss') : dateEnd);
     setDateStart(dateStart ? dateStart.format('YYYY-MM-DD HH:mm:ss') : dateStart);
-    setStatus(status);
-    setStatus(status);
-    onSubmit(undefined, dateStart, status, dateEnd,1);
+    setStatus(status === true ? undefined : status);
+    onSubmit(undefined, dateStart, status, dateEnd, 1);
   }
-  function resetSelectList(){
+  function resetSelectList() {
     let newSelectedKeys = [...selectedKeys];
     let newDataSource = [];
     newSelectedKeys = [];

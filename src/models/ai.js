@@ -308,7 +308,7 @@ export default {
       }
       let flowList = [];
       if (!selectJobId || !(timeList && timeList.length)) {
-        return { ...state, flowList };
+        return { ...state, flowList, backShowTime: {} };
       }
       const list = timeList.filter(item => item.applyId === selectJobId);
       const backShowTime = list.length ? list.slice(-1)[0] : {};

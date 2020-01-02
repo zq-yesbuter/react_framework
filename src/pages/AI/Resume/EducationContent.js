@@ -141,7 +141,7 @@ function Resume({
                     <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
                       <Col span={12}>
                         <div style={{ display: 'flex', marginBottom: 10 }}>
-                          <span style={{ display: 'inline-block', width: 60 }}>学历： </span>
+                          <span style={{ display: 'inline-block', width: 70 }}>学历： </span>
                           {getFieldDecorator(`educations[${index}].diploma`, {
                             initialValue: item.diploma,
                           })(<Input size="small" type="text" />)}
@@ -149,7 +149,7 @@ function Resume({
                       </Col>
                       <Col span={12}>
                         <div style={{ display: 'flex', marginBottom: 5 }}>
-                          <span style={{ display: 'inline-block', width: 60 }}>专业： </span>
+                          <span style={{ display: 'inline-block', width: 70 }}>专业： </span>
                           {getFieldDecorator(`educations[${index}].major`, {
                             initialValue: item.major,
                           })(<Input size="small" type="text" />)}

@@ -57,10 +57,10 @@ function ImportModal({ visible, form, close, handleOk }) {
       }}
       onCancel={() => {
         resetFields();
-        handleOk(undefined, undefined, undefined);
+        handleOk(undefined, true, undefined);
         close();
       }}
-      cancelText='重置'
+      cancelText="重置"
     >
       <Tabs defaultActiveKey="1">
         <TabPane tab="状态" key="1">

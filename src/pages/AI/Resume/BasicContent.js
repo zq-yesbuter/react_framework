@@ -127,11 +127,21 @@ function BasicContent({
               {basicData.map(({ name, value, id, key }) => (
                 <Col span={12} key={id}>
                   <div style={{ display: 'flex', marginBottom: 5 }}>
-                    <div style={{ display: 'inline-block', width: 67 }}>{`${name}：`}</div>
+                    <div style={{ display: 'inline-block', width: 80 }}>{`${name}：`}</div>
                     {getFieldDecorator(key, {
                       initialValue:
-                        key === 'birthday' ? `${moment().diff(moment(value), 'years')}岁` : value,
-                    })(<Input disabled={key === 'birthday'} size="small" type="text" />)}
+                        key === 'birthday'
+                          ? value
+                            ? `${moment().diff(moment(value), 'years')}岁`
+                            : '无'
+                          : value,
+                    })(
+                      <Input
+                        disabled={key === 'birthday' || key === 'name' || key === 'tel'}
+                        size="small"
+                        type="text"
+                      />
+                    )}
                   </div>
                 </Col>
               ))}
