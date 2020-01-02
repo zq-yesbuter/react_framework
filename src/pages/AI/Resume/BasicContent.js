@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import React, { useState, useEffect, useRef, useLayoutEffect, Fragment } from 'react';
 import { Input, Form, Col, Row, Carousel, Typography, message, Icon } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
@@ -21,7 +21,7 @@ function usePrevious(value) {
 
 function BasicContent({
   chatrecord: {
-    resumeObj: { name, tel, sex, email, birthday, residencePlace, workPlace },
+    resumeObj: { name, tel, sex, email, birthday, residencePlace, workPlace,channel},
     selectJobId,
     jobList,
   },
@@ -96,16 +96,20 @@ function BasicContent({
       <h4 className={styles.resumeTitle}>
         <div className={styles.resumeEditTitle}>
           <span>基本信息</span>
-          {basicContent ? (
-            <div>
-              <span onClick={cancelBasicContent} style={{ marginRight: 10 }}>
-                取消
-              </span>
-              <Icon type="check" style={{ marginRight: 5 }} onClick={saveBasicContent} />
-            </div>
-          ) : (
-            <Icon type="edit" style={{ marginRight: 5 }} onClick={editBasicContent} />
-          )}
+          {channel ? (
+            <Fragment>
+              {basicContent ? (
+                <div>
+                  <span onClick={cancelBasicContent} style={{ marginRight: 10 }}>
+                    取消
+                  </span>
+                  <Icon type="check" style={{ marginRight: 5 }} onClick={saveBasicContent} />
+                </div>
+              ) : (
+                <Icon type="edit" style={{ marginRight: 5 }} onClick={editBasicContent} />
+              )}
+            </Fragment>
+          ): null}
         </div>
       </h4>
       <Row type="flex">
@@ -132,7 +136,7 @@ function BasicContent({
                     {getFieldDecorator(key, {
                       initialValue:
                         key === 'birthday'
-                          ? value
+                          ? moment().diff(moment(value), 'years')>0
                             ? `${moment().diff(moment(value), 'years')}岁`
                             : '无'
                           : value,
@@ -154,7 +158,7 @@ function BasicContent({
                   <div>
                     <Text>{`${name}：`}</Text>
                     {key === 'birthday'
-                      ? `${moment().diff(moment(value), 'years')}岁`
+                      ? moment().diff(moment(value), 'years')>0 ? `${moment().diff(moment(value), 'years')}岁` :'无'
                       : value || '无'}
                   </div>
                 </Col>
