@@ -23,7 +23,7 @@ import {
   operator,
   operatorPersonnel,
 } from '../services/ai';
-import { getDateString,flatten } from '../utils/utils';
+import { getDateString, flatten } from '../utils/utils';
 
 function formatInventTime(timeList, applyId) {
   const list = timeList.filter(item => item.applyId === applyId);
@@ -48,7 +48,7 @@ export default {
     bottomLoading: false,
     notData: false,
     pageNum: 1,
-    requestFilter:{orderBy: { applyDate: 'DESC' }},
+    requestFilter: { orderBy: { applyDate: 'DESC' } },
   },
   effects: {
     // 获取微信聊天记录
@@ -75,9 +75,9 @@ export default {
           },
         });
         const requestFilter = yield select(({ chatrecord: { requestFilter } }) => requestFilter);
-        const jobList = yield call(jobAppliedAsPostAll, {...requestFilter,...payload});
-        const selectJobId = jobList && jobList[0] && jobList[0].applyId || undefined;
-        if(!selectJobId) { 
+        const jobList = yield call(jobAppliedAsPostAll, { ...requestFilter, ...payload });
+        const selectJobId = (jobList && jobList[0] && jobList[0].applyId) || undefined;
+        if (!selectJobId) {
           yield put({
             type: 'queryInformation',
           });
@@ -177,7 +177,7 @@ export default {
         });
         yield put({
           type: 'getFlowList',
-          payload: {timeList},
+          payload: { timeList },
         });
       } catch (e) {
         return Promise.reject(e);
@@ -210,7 +210,7 @@ export default {
         const { selectJobId } = payload;
         yield put({
           type: 'getFlowList',
-          payload: {selectJobId,timeList},
+          payload: { selectJobId, timeList },
         });
       }
     },
@@ -222,8 +222,10 @@ export default {
             bottomLoading: true,
           },
         });
-        const moreJobList = yield call(jobAppliedAsPostAll, payload);
-        if(!(moreJobList && moreJobList.length)) { 
+        const requestFilter = yield select(({ chatrecord: { requestFilter } }) => requestFilter);
+        const moreJobList = yield call(jobAppliedAsPostAll, { ...requestFilter, ...payload });
+        // const moreJobList = yield call(jobAppliedAsPostAll, payload);
+        if (!(moreJobList && moreJobList.length)) {
           yield put({
             type: 'save',
             payload: {
@@ -275,7 +277,7 @@ export default {
     },
     *addSingleInvent({ payload }, { call, put, select }) {
       const requestFilter = yield select(({ chatrecord: { requestFilter } }) => requestFilter);
-      const jobList = yield call(jobAppliedAsPostAll,requestFilter);
+      const jobList = yield call(jobAppliedAsPostAll, requestFilter);
       const applyIds = jobList.map(item => item.applyId) || [];
       if (applyIds.length) {
         yield put({
@@ -301,7 +303,7 @@ export default {
       if (payload && payload.selectJobId) {
         selectJobId = payload.selectJobId;
       }
-      if(payload && payload.timeList) {
+      if (payload && payload.timeList) {
         timeList = payload.timeList;
       }
       let flowList = [];
@@ -315,18 +317,21 @@ export default {
         .filter(item => item.flow.length > 0)
         .map(item => item.flow);
       flowList = flatten(flowList);
-      return { ...state, flowList,backShowTime };
+      return { ...state, flowList, backShowTime };
     },
     formatJobList(state, { payload }) {
       let { jobList } = payload;
       // const jobList=newJobList.map(item => ({...item,disabled:(!!((item.status === 23 || item.status === 24))) }));
-      return { ...state, jobList }
+      return { ...state, jobList };
     },
-    formatTimeJobList(state,{payload}) {
+    formatTimeJobList(state, { payload }) {
       let { timeList } = payload;
       let { jobList } = state;
-      jobList = jobList.map(item => ({...item,triggerTime:formatTriggerTime(timeList, item.applyId)}));// interviewTime:formatInventTime(timeList, item.applyId)
-      return { ...state, jobList }
+      jobList = jobList.map(item => ({
+        ...item,
+        triggerTime: formatTriggerTime(timeList, item.applyId),
+      })); // interviewTime:formatInventTime(timeList, item.applyId)
+      return { ...state, jobList };
     },
   },
   subscriptions: {
