@@ -211,7 +211,7 @@ function RecordBottom({
               )}
             </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button onClick={onSubmit}>更新</Button>
+              <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>更新</Button>
               {/* <Button disabled={!selectJobId} onClick={onSubmit}>外呼</Button> */}
             </div>
           </div>
