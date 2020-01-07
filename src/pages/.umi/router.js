@@ -14,9 +14,7 @@ const routes = [
     component: __IS_BROWSER
       ? _dvaDynamic({
           component: () =>
-            import(
-              /* webpackChunkName: "layouts__SecurityLayout" */ '../../layouts/SecurityLayout'
-            ),
+            import(/* webpackChunkName: "layouts__SecurityLayout" */ '../../layouts/SecurityLayout'),
           LoadingComponent: require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/src/components/PageLoading/index')
             .default,
         })
@@ -45,7 +43,8 @@ const routes = [
             icon: 'smile',
             component: __IS_BROWSER
               ? _dvaDynamic({
-                  component: () => import(/* webpackChunkName: "p__AI" */ '../AI'),
+                  component: () =>
+                    import(/* webpackChunkName: "p__AI" */ '../AI'),
                   LoadingComponent: require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/src/components/PageLoading/index')
                     .default,
                 })
@@ -58,7 +57,8 @@ const routes = [
             icon: 'smile',
             component: __IS_BROWSER
               ? _dvaDynamic({
-                  component: () => import(/* webpackChunkName: "p__403" */ '../403'),
+                  component: () =>
+                    import(/* webpackChunkName: "p__403" */ '../403'),
                   LoadingComponent: require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/src/components/PageLoading/index')
                     .default,
                 })
@@ -71,7 +71,8 @@ const routes = [
             icon: 'smile',
             component: __IS_BROWSER
               ? _dvaDynamic({
-                  component: () => import(/* webpackChunkName: "p__500" */ '../500'),
+                  component: () =>
+                    import(/* webpackChunkName: "p__500" */ '../500'),
                   LoadingComponent: require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/src/components/PageLoading/index')
                     .default,
                 })
@@ -84,7 +85,8 @@ const routes = [
             icon: 'smile',
             component: __IS_BROWSER
               ? _dvaDynamic({
-                  component: () => import(/* webpackChunkName: "p__404" */ '../404'),
+                  component: () =>
+                    import(/* webpackChunkName: "p__404" */ '../404'),
                   LoadingComponent: require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/src/components/PageLoading/index')
                     .default,
                 })
@@ -94,7 +96,8 @@ const routes = [
           {
             component: __IS_BROWSER
               ? _dvaDynamic({
-                  component: () => import(/* webpackChunkName: "p__404" */ '../404'),
+                  component: () =>
+                    import(/* webpackChunkName: "p__404" */ '../404'),
                   LoadingComponent: require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/src/components/PageLoading/index')
                     .default,
                 })
@@ -106,7 +109,7 @@ const routes = [
               React.createElement(
                 require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
                   .default,
-                { pagesPath: 'src/pages', hasRoutesInConfig: true }
+                { pagesPath: 'src/pages', hasRoutesInConfig: true },
               ),
           },
         ],
@@ -114,7 +117,8 @@ const routes = [
       {
         component: __IS_BROWSER
           ? _dvaDynamic({
-              component: () => import(/* webpackChunkName: "p__404" */ '../404'),
+              component: () =>
+                import(/* webpackChunkName: "p__404" */ '../404'),
               LoadingComponent: require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/src/components/PageLoading/index')
                 .default,
             })
@@ -126,7 +130,7 @@ const routes = [
           React.createElement(
             require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
               .default,
-            { pagesPath: 'src/pages', hasRoutesInConfig: true }
+            { pagesPath: 'src/pages', hasRoutesInConfig: true },
           ),
       },
     ],
@@ -146,7 +150,7 @@ const routes = [
       React.createElement(
         require('/Users/zhangqing272/workspace/work/getTest/human_resources_platform/node_modules/umi/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
           .default,
-        { pagesPath: 'src/pages', hasRoutesInConfig: true }
+        { pagesPath: 'src/pages', hasRoutesInConfig: true },
       ),
   },
 ];
@@ -176,7 +180,9 @@ export default class RouterWrapper extends React.Component {
     // dva 中 history.listen 会初始执行一次
     // 这里排除掉 dva 的场景，可以避免 onRouteChange 在启用 dva 后的初始加载时被多执行一次
     const isDva =
-      history.listen.toString().indexOf('callback(history.location, history.action)') > -1;
+      history.listen
+        .toString()
+        .indexOf('callback(history.location, history.action)') > -1;
     if (!isDva) {
       routeChangeHandler(history.location);
     }

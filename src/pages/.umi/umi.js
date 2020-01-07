@@ -41,7 +41,11 @@ let clientRender = async () => {
     const activeRoute = findRoute(require('@tmp/router').routes, pathname);
     // 在客户端渲染前，执行 getInitialProps 方法
     // 拿到初始数据
-    if (activeRoute && activeRoute.component && activeRoute.component.getInitialProps) {
+    if (
+      activeRoute &&
+      activeRoute.component &&
+      activeRoute.component.getInitialProps
+    ) {
       const initialProps = plugins.apply('modifyInitialProps', {
         initialValue: {},
       });
@@ -58,11 +62,14 @@ let clientRender = async () => {
   const rootContainer = plugins.apply('rootContainer', {
     initialValue: React.createElement(require('./router').default, props),
   });
-  ReactDOM[window.g_useSSR ? 'hydrate' : 'render'](rootContainer, document.getElementById('root'));
+  ReactDOM[window.g_useSSR ? 'hydrate' : 'render'](
+    rootContainer,
+    document.getElementById('root'),
+  );
 };
 const render = plugins.compose(
   'render',
-  { initialValue: clientRender }
+  { initialValue: clientRender },
 );
 
 const moduleBeforeRendererPromises = [];
@@ -86,8 +93,13 @@ if (!__IS_BROWSER) {
     const history = require('@tmp/history').default;
     history.push(ctx.req.url);
     let props = {};
-    const activeRoute = findRoute(require('./router').routes, pathname) || false;
-    if (activeRoute && activeRoute.component && activeRoute.component.getInitialProps) {
+    const activeRoute =
+      findRoute(require('./router').routes, pathname) || false;
+    if (
+      activeRoute &&
+      activeRoute.component &&
+      activeRoute.component.getInitialProps
+    ) {
       const initialProps = plugins.apply('modifyInitialProps', {
         initialValue: {},
       });
@@ -112,7 +124,7 @@ if (!__IS_BROWSER) {
       console.log(
         !activeRoute
           ? `${pathname} activeRoute not found`
-          : `${pathname} activeRoute's getInitialProps function not found`
+          : `${pathname} activeRoute's getInitialProps function not found`,
       );
     }
     const rootContainer = plugins.apply('rootContainer', {
@@ -120,7 +132,10 @@ if (!__IS_BROWSER) {
     });
     const htmlTemplateMap = {};
     return {
-      htmlElement: activeRoute && activeRoute.path ? htmlTemplateMap[activeRoute.path] : '',
+      htmlElement:
+        activeRoute && activeRoute.path
+          ? htmlTemplateMap[activeRoute.path]
+          : '',
       rootContainer,
       matchPath: activeRoute && activeRoute.path,
       g_initialData: props,
@@ -132,7 +147,7 @@ if (!__IS_BROWSER) {
 }
 
 export { ReactDOMServer };
-export default __IS_BROWSER ? null : serverRender;
+export default (__IS_BROWSER ? null : serverRender);
 
 (() => {
   try {
@@ -141,12 +156,15 @@ export default __IS_BROWSER ? null : serverRender;
     if (isIE) return;
 
     // Umi UI Bubble
-    require('../../../node_modules/umi/node_modules/umi-plugin-ui/lib/bubble').default({
-      port: 3000,
-      path: '/Users/zhangqing272/workspace/work/getTest/human_resources_platform',
-      currentProject: '',
-      isBigfish: undefined,
-    });
+    require('../../../node_modules/umi/node_modules/umi-plugin-ui/lib/bubble').default(
+      {
+        port: 3000,
+        path:
+          '/Users/zhangqing272/workspace/work/getTest/human_resources_platform',
+        currentProject: '',
+        isBigfish: undefined,
+      },
+    );
   } catch (e) {
     console.warn('Umi UI render error:', e);
   }
@@ -178,7 +196,9 @@ export default __IS_BROWSER ? null : serverRender;
             el.innerHTML = '.g_umiuiBlockAddEditMode { display: none; }';
             break;
           case 'umi.ui.checkValidEditSection':
-            const haveValid = !!document.querySelectorAll('div.g_umiuiBlockAddEditMode').length;
+            const haveValid = !!document.querySelectorAll(
+              'div.g_umiuiBlockAddEditMode',
+            ).length;
             const frame = document.getElementById('umi-ui-bubble');
             if (frame && frame.contentWindow) {
               frame.contentWindow.postMessage(
@@ -188,7 +208,7 @@ export default __IS_BROWSER ? null : serverRender;
                     haveValid,
                   },
                 }),
-                '*'
+                '*',
               );
             }
           default:
@@ -196,7 +216,7 @@ export default __IS_BROWSER ? null : serverRender;
         }
       } catch (e) {}
     },
-    false
+    false,
   );
 
   // TODO: remove this before publish

@@ -56,11 +56,11 @@ function checkResult(response, options) {
     });
   }
   // message.error(`message:${message},code:${response.code}`);
-  // const error = new Error(message);
-  // error.name = 200;
-  // error.response = response;
-  // error.code = response.code;
-  // throw error;
+  const error = new Error(message);
+  error.name = 200;
+  error.response = response;
+  error.code = response.code;
+  throw error;
 }
 // try {
 //   await request().catch((e)=>{console.log(e.code)})
