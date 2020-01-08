@@ -122,9 +122,9 @@ function ChatList({
         const reg = /^\d{1,11}$/;
         let nameObj = {};
         if (reg.test(name)) {
-          nameObj = { tel: name };
+          nameObj = { tel: name,name:'' };
         } else {
-          nameObj = { name };
+          nameObj = { name,tel:'' };
         }
         if (pageNum !== 1) {
           dispatch({
