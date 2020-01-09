@@ -53,7 +53,7 @@ function RecordList({
     try {
       let { search, origin } = document.location || {};
       if(!search){search=localStorage.getItem('token')}
-      let socket = new SockJS(`http://10.9.10.32:8088/ws/messaging${search}`,null, {transports:'websocket'});
+      let socket = new SockJS(`/ws/messaging${search}`,null, {transports:'websocket'});
       const stompClient = Stomp.over(socket);
       // stompClient.heartbeat.outgoing = 20000;
       // stompClient.heartbeat.incoming = 20000;
