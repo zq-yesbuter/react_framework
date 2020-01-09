@@ -1,9 +1,11 @@
 /* eslint-disable react/no-array-index-key */
 import React, { useState, useEffect, useRef, Fragment } from 'react';
-import { Avatar, Spin } from 'antd';
+import { Avatar, Spin, Icon } from 'antd';
 import { connect } from 'dva';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 import NormalAudio from './ChatAudio';
 import styles from './index.less';
 
@@ -12,8 +14,11 @@ function RecordList({
   chatrecord: { messageList = [], newTalk, noLoading = false, bottomLoading = false },
 }) {
   const chatRef = useRef(null);
+  const intervalRef = useRef(null);
   const [pageNo, setPageNo] = useState(0);
   const [scroll, setScroll] = useState(true);
+  const [showNotice,setShowNotice] = useState(false);
+
   function handleScroll() {
     const clientHeight = chatRef.current.clientHeight;
     const scrollHeight = chatRef.current.scrollHeight;
@@ -43,7 +48,46 @@ function RecordList({
     //   }
     // }
   }
-
+  useEffect(() => {
+    // console.log('didmount===>')
+    try {
+      let { search, origin } = document.location || {};
+      if(!search){search=localStorage.getItem('token')}
+      let socket = new SockJS(`http://10.9.10.32:8088/ws/messaging${search}`,null, {transports:'websocket'});
+      const stompClient = Stomp.over(socket);
+      // stompClient.heartbeat.outgoing = 20000;
+      // stompClient.heartbeat.incoming = 20000;
+      stompClient.connect({}, (frame) => {
+        stompClient.subscribe('/ws/operator/queue/event', (response) => {
+          const show = Object.keys(JSON.parse(response.body)).length;
+          show && setShowNotice(true);
+        })
+    });
+    let id = setInterval(() => {
+      if(stompClient === null || !stompClient.connected) {
+        console.log('断开重连！');
+        stompClient.connect({}, (frame) => {
+          stompClient.subscribe('/ws/operator/queue/event', (response) => {
+            const show = Object.keys(JSON.parse(response.body)).length;
+            show && setShowNotice(true);
+          })
+        });
+      }
+    }, 30000)
+    intervalRef.current = id;
+    return () => {
+      if (stompClient != null) {
+        stompClient.disconnect();
+        console.log('Disconnected');
+      }
+      clearInterval(intervalRef.current);
+    };
+    } catch (e) {
+      // 捕获异常，防止js error
+      // donothing
+      console.log('socket error',e)
+    } 
+}, []);
   // useEffect(() => {
   //   if (scroll || newTalk) {
   //     ref.current.scrollTop = ref.current.scrollHeight;
@@ -179,6 +223,27 @@ function RecordList({
     <div className={styles.chatContent}>
       {/* <div className={styles.recordHeader}>沟通记录</div> */}
       {bottomLoadingHtml()}
+      {showNotice ? (
+        <div className={styles.noticeFix}>
+          <div>
+            你有新的状态更新了，请
+            <Icon
+              type="sync"
+              onClick={() => {
+                dispatch({
+                  type: 'chatrecord/jobAppliedAsPostAll',
+                });
+                // window.location.reload();
+                setShowNotice(false);
+              }
+              } 
+              style={{ fontSize: '17px', color: '#08c',marginLeft:7,marginRight:7 }} 
+            />
+            {/* <span onClick={() => {window.location.reload();}}>刷新</span> */}
+            获取哦！
+          </div>
+        </div>
+      ) : null}
       <div className={styles.chatPanel}>
         <div className={styles.chatPanelContainer} ref={chatRef} onScroll={handleScroll}>
           <ul className={styles.chatList}>{chatList()}</ul>

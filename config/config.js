@@ -217,6 +217,13 @@ export default {
   },
   chainWebpack: webpackPlugin,
   proxy: {
+    '/ws': {
+      // secure: false,
+      ws:true,
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
     '/tenant': {
       target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
       changeOrigin: true,
