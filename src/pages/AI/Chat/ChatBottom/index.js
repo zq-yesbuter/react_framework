@@ -10,7 +10,7 @@ import styles from './index.less';
 const { Item } = Form;
 const { Step } = Steps;
 const { RangePicker } = DatePicker;
-const format = 'YYYY-MM-DD HH:mm:ss';
+const format = 'YYYY-MM-DD HH:mm';
 // const colors = ['cyan','blue','geekblue','lime','green','purple','magenta','red','volcano','orange','gold'];
 const colors = [
   '#f50',
@@ -168,9 +168,9 @@ function RecordBottom({
                   : null,
               })(
                 <DatePicker
-                  showTime
+                  showTime={{ format: 'HH:mm', minuteStep: 5 }}
                   disabledDate={disabledDate}
-                  format={format}
+                  format="YYYY-MM-DD HH:mm"
                   placeholder="请选择外呼时间"
                   style={{ display: 'block' }}
                 />
@@ -201,10 +201,10 @@ function RecordBottom({
                   : null,
               })(
                 <DatePicker
-                  showTime
                   disabledDate={disabledDate}
                   // disabledTime={disabledDateTime}
-                  format={format}
+                  showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                  format="YYYY-MM-DD HH:mm"
                   placeholder="请选择面试时间"
                   style={{ display: 'block' }}
                 />
@@ -236,7 +236,8 @@ function RecordBottom({
                           <p>{`邀约外呼开始时间： ${roundStartTime}`}</p>
                           <p>{`邀约外呼结束时间： ${roundEndTime}`}</p>
                           {interviewConfirmTime ? (
-                            <p>{`邀约用户反馈的面试时间： ${interviewConfirmTime}`}</p>
+                            <Tag color="blue" style={{marginBottom:6}}>{`邀约用户反馈的面试时间： ${interviewConfirmTime}`}</Tag>
+                            // <p>{`邀约用户反馈的面试时间： ${interviewConfirmTime}`}</p>
                           ) : null}
                           <p>{remark}</p>
                         </div>

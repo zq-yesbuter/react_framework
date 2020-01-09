@@ -62,8 +62,8 @@ const formatTime = (diffTimeList, selectedKeys, diff) => {
             .fill(0)
             .reduce(acc => {
               acc.push({
-                interviewStartTime: begin.format('YYYY-MM-DD HH:mm:ss'),
-                interviewEndTime: begin.add(diff, 'minutes').format('YYYY-MM-DD HH:mm:ss'),
+                interviewStartTime: begin.format('YYYY-MM-DD HH:mm'),
+                interviewEndTime: begin.add(diff, 'minutes').format('YYYY-MM-DD HH:mm'),
               });
               return acc;
             }, [])
@@ -111,7 +111,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
             applicantId: id,
             applyId,
             status,
-            triggerTime: triggerTime.format('YYYY-MM-DD HH:mm:ss'),
+            triggerTime: triggerTime.format('YYYY-MM-DD HH:mm'),
             ...timeList[index],
           });
         });
@@ -231,7 +231,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
           <div style={{ marginLeft: 10 }}>
             {formatSelectedKeys(selectedKeys, jobList).length ?
               formatSelectedKeys(selectedKeys, jobList).map((item, index) => (
-                <Tag color="cyan" key={index}>
+                <Tag color="blue" key={index}>
                   {item && item.name || null}
                 </Tag>
               )) : null}
@@ -242,9 +242,9 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
             rules: [{ required: true, message: '请选择外呼时间!' }],
           })(
             <DatePicker
-              showTime
+              showTime={{ format: 'HH:mm', minuteStep: 5 }}
               disabledDate={disabledDate}
-              format="YYYY-MM-DD HH:mm:ss"
+              format="YYYY-MM-DD HH:mm"
               placeholder="请选择外呼时间"
               style={{ display: 'block' }}
             />
@@ -272,9 +272,11 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
                 // disabledTime={disabledRangeTime}
                 showTime={{
                   hideDisabledOptions: true,
+                  format: 'HH:mm',
+                  minuteStep: 5,
                   // defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')],
                 }}
-                format="YYYY-MM-DD HH:mm:ss"
+                format="YYYY-MM-DD HH:mm"
               />
             )}
             <Button type="primary" style={{ marginLeft: 5 }} onClick={addTime}>
@@ -288,11 +290,11 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
               <Tag
                 key={index}
                 closable
-                color="cyan"
+                color="blue"
                 onClose={() => handleClose(index)}
                 style={{ marginBottom: 5 }}
               >
-                {`${begin.format('YYYY-MM-DD HH:mm:ss')}  ~   ${end.format('YYYY-MM-DD HH:mm:ss')}`}
+                {`${begin.format('YYYY-MM-DD HH:mm')}  ~   ${end.format('YYYY-MM-DD HH:mm')}`}
               </Tag>
             ))}
           </div>
