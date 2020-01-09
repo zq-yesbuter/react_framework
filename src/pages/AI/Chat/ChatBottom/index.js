@@ -77,8 +77,8 @@ function RecordBottom({
     validateFields((err, values) => {
       if (!err) {
         const { triggerTime } = values;
-        if (triggerTime < moment().add(5, 'minutes')) {
-          message.error('外呼时间请设置为大于当前时间5分钟以上哦！');
+        if (triggerTime < moment().add(10, 'minutes')) {
+          message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
         }
         const interviewStartTime = values.interviewStartTime.format(format);
