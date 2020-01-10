@@ -1,6 +1,10 @@
 import defaultSettings from './defaultSettings'; // https://umijs.org/config/
 import slash from 'slash2';
 import webpackPlugin from './plugin.config';
+
+const os = require('os');
+const HappyPack = require('happypack');
+
 const { pwa, primaryColor } = defaultSettings; // preview.pro.ant.design only do not use in your production ;
 // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
 
@@ -15,7 +19,8 @@ if (process.env.BUILD_ENV === 'development') {
 } else if (process.env.BUILD_ENV === 'beta' || process.env.BUILD_ENV === 'betahuangcun') {
   publicPath = '//test-static-cdjr.jd.com/human_resources_platform/';
 }
-
+// 构造出共享进程池
+const happyThreadPool = HappyPack.ThreadPool({ size: os.cpus().length });
 // proxy control
 const { proxyUrl = '', proxyPort = '', proxyPath = '', pathRewrite = {} } = {
   MOCK: {
@@ -40,8 +45,7 @@ const plugins = [
     'umi-plugin-react',
     {
       antd: true,
-      react: 'React',
-      'react-dom': 'ReactDOM',
+
       dva: {
         hmr: true,
       },
@@ -81,7 +85,26 @@ const plugins = [
       modifyRequest: true,
       autoAddMenu: true,
     },
-  ],
+  ], 
+  new HappyPack({
+    id: 'babel',
+    // 如何处理 .js 文件，用法和 Loader 配置中一样
+    loaders: ['babel-loader?cacheDirectory'],
+    // loaders: [
+    //   {
+    //     loader: 'babel-loader',
+    //     options: {
+    //       cacheDirectory: true,
+    //       presets: ['@babel/preset-env', '@babel/preset-react'],
+    //       plugins: [
+    //         ['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }],
+    //       ],
+    //     }, 
+    //   },
+    // ],
+    // 使用共享进程池中的子进程去处理任务
+    threadPool: happyThreadPool,
+  }),
 ]; // 针对 preview.pro.ant.design 的 GA 统计代码
 
 // if (isAntDesignProPreview) {
