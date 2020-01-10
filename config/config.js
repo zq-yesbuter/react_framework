@@ -40,6 +40,8 @@ const plugins = [
     'umi-plugin-react',
     {
       antd: true,
+      react: 'React',
+      'react-dom': 'ReactDOM',
       dva: {
         hmr: true,
       },
