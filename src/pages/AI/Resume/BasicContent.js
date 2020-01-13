@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useLayoutEffect, Fragment } from 'react';
-import { Input, Form, Col, Row, Carousel, Typography, message, Icon } from 'antd';
+import { Input, Form, Col, Row, Carousel, Typography, message, Icon, Tooltip } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
 import user from '@/assets/user.svg';
@@ -21,7 +21,7 @@ function usePrevious(value) {
 
 function BasicContent({
   chatrecord: {
-    resumeObj: { name, tel, sex, email, birthday, residencePlace, workPlace,channel},
+    resumeObj: { name, tel, sex, email, birthday, residencePlace, workPlace, channel },
     selectJobId,
     jobList,
   },
@@ -109,7 +109,7 @@ function BasicContent({
                 <Icon type="edit" style={{ marginRight: 5 }} onClick={editBasicContent} />
               )}
             </Fragment>
-          ): null}
+          ) : null}
         </div>
       </h4>
       <Row type="flex">
@@ -136,7 +136,7 @@ function BasicContent({
                     {getFieldDecorator(key, {
                       initialValue:
                         key === 'birthday'
-                          ? moment().diff(moment(value), 'years')>0
+                          ? moment().diff(moment(value), 'years') > 0
                             ? `${moment().diff(moment(value), 'years')}岁`
                             : '无'
                           : value,
@@ -155,12 +155,16 @@ function BasicContent({
             <Row gutter={[{ xs: 4, sm: 8, md: 12, lg: 16 }, 20]}>
               {basicData.map(({ name, value, id, key }) => (
                 <Col span={12} key={id}>
-                  <div>
-                    <Text>{`${name}：`}</Text>
-                    {key === 'birthday'
-                      ? moment().diff(moment(value), 'years')>0 ? `${moment().diff(moment(value), 'years')}岁` :'无'
-                      : value || '无'}
-                  </div>
+                  <Tooltip title={key === 'email' || key === 'tel' ? value : ''}>
+                    <Paragraph ellipsis>
+                      <Text>{`${name}：`}</Text>
+                      {key === 'birthday'
+                        ? moment().diff(moment(value), 'years') > 0
+                          ? `${moment().diff(moment(value), 'years')}岁`
+                          : '无'
+                        : value || '无'}
+                    </Paragraph>
+                  </Tooltip>
                 </Col>
               ))}
             </Row>

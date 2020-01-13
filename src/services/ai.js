@@ -43,7 +43,7 @@ export async function editBatchInvitation(body) {
 }
 
 // 获取单个邀约时间
-export async function getSingelInvent({applyId}) {
+export async function getSingelInvent({ applyId }) {
   return request(`/interview/invitation/${applyId}`, {
     method: 'GET',
   });
@@ -216,7 +216,7 @@ export async function batchExportResume(body) {
 }
 
 // 获取简历在线展示
-export async function inlineShowResume({resumeId}) {
+export async function inlineShowResume({ resumeId }) {
   return request(`/tenant/resume/attachment/${resumeId}`, {
     method: 'GET',
   });
@@ -230,7 +230,7 @@ export async function addJobPost(body) {
 }
 // 修改简历中的基本信息
 export async function saveBasicContent(body) {
-  const { resumeId } = body
+  const { resumeId } = body;
   return request(`/resume/${resumeId}/basic`, {
     method: 'POST',
     body,
@@ -238,25 +238,32 @@ export async function saveBasicContent(body) {
 }
 // 修改简历中的工作经历
 export async function saveWorkContent(body) {
-  const { resumeId,companys } = body
+  const { resumeId, companys } = body;
   return request(`/resume/${resumeId}/company`, {
     method: 'POST',
-    body:{companies:companys},
+    body: { companies: companys },
   });
 }
 // 修改简历中的项目信息
 export async function saveProjectContent(body) {
-  const { resumeId,projects } = body
+  const { resumeId, projects } = body;
   return request(`/resume/${resumeId}/project`, {
     method: 'POST',
-    body:{projects},
+    body: { projects },
   });
 }
 // 修改简历中的教育信息
 export async function saveEducationContent(body) {
-  const { resumeId,educations } = body
+  const { resumeId, educations } = body;
   return request(`/resume/${resumeId}/education`, {
     method: 'POST',
-    body:{educations},
+    body: { educations },
+  });
+}
+// 可修改状态修改
+export async function cancelInvent({ updateId }) {
+  return request(`/interview/invitation/cancel/${updateId}`, {
+    method: 'POST',
+    body: {},
   });
 }
