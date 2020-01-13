@@ -1,6 +1,9 @@
 import defaultSettings from './defaultSettings'; // https://umijs.org/config/
 import slash from 'slash2';
 import webpackPlugin from './plugin.config';
+
+
+
 const { pwa, primaryColor } = defaultSettings; // preview.pro.ant.design only do not use in your production ;
 // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
 
@@ -40,6 +43,7 @@ const plugins = [
     'umi-plugin-react',
     {
       antd: true,
+
       dva: {
         hmr: true,
       },
@@ -79,7 +83,7 @@ const plugins = [
       modifyRequest: true,
       autoAddMenu: true,
     },
-  ],
+  ], 
 ]; // 针对 preview.pro.ant.design 的 GA 统计代码
 
 // if (isAntDesignProPreview) {

@@ -90,8 +90,8 @@ function ImportModal({ visible, form, close, handleOk }) {
           <Item label="导入开始时间">
             {getFieldDecorator('setDateStart')(
               <DatePicker
-                showTime
-                format="YYYY-MM-DD HH:mm:ss"
+                showTime={{ format: 'HH:mm' }}
+                format="YYYY-MM-DD HH:mm"
                 placeholder="请选择导入开始时间"
                 style={{ display: 'block' }}
               />
@@ -100,8 +100,8 @@ function ImportModal({ visible, form, close, handleOk }) {
           <Item label="导入结束时间">
             {getFieldDecorator('setDateEnd')(
               <DatePicker
-                showTime
-                format="YYYY-MM-DD HH:mm:ss"
+                showTime={{ format: 'HH:mm' }}
+                format="YYYY-MM-DD HH:mm"
                 placeholder="请选择导入结束时间"
                 style={{ display: 'block' }}
               />

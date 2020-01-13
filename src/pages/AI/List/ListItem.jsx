@@ -80,7 +80,7 @@ function ListItem({
         </div>
         <div className={styles.itemBaseInfo}>
           <div>
-            <span className={styles.name}>{name|| '无'}</span>
+            <span className={styles.name}>{name || '无'}</span>
             <span>{`(${jobName || '无'})`}</span>
           </div>
           <div>{formatStatus(status) || '无'}</div>
@@ -88,7 +88,7 @@ function ListItem({
         <div className={styles.itemTimeInfo}>
           {/* <Tooltip title="邀约时间" placement="topRight"> */}
           <div title="外呼时间" className={styles.inventTime} style={formatBackground(status)}>
-            {triggerTime || null}
+            {status !== 11 && triggerTime ? triggerTime : null}
           </div>
           {/* </Tooltip> */}
           <div title="导入时间">{applyDate}</div>
