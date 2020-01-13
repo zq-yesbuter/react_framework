@@ -72,7 +72,7 @@ function RecordBottom({
     resumeObj: { resumeEvaluation },
   },
 }) {
-  const { getFieldDecorator, validateFields, resetFields } = form;
+  const { getFieldDecorator, validateFields, resetFields,setFieldsValue } = form;
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
   useEffect(() => {
@@ -142,9 +142,10 @@ function RecordBottom({
             // dispatch({
             //   type: 'chatrecord/updateSingleInvent',
             // });
-            dispatch({
-              type: 'chatrecord/jobAppliedAsPostAll',
-            });
+
+            // dispatch({
+            //   type: 'chatrecord/jobAppliedAsPostAll',
+            // });
           })
           .catch(e => message.error(e.message));
       }
@@ -180,10 +181,11 @@ function RecordBottom({
       const updateId = time.length ? time.slice(-1)[0].invitationId : null;
       cancelInvent({ updateId })
         .then(data => {
-          message.success('取消邀约成功');
-          dispatch({
-            type: 'chatrecord/jobAppliedAsPostAll',
-          });
+          message.success('取消邀约成功！状态推送后点刷新按钮获取！');
+          // dispatch({
+          //   type: 'chatrecord/jobAppliedAsPostAll',
+          // });
+          // setFieldsValue({'triggerTime':null,interviewStartTime:null,diff:60});
         })
         .catch(e => message.error(e.message));
     });
