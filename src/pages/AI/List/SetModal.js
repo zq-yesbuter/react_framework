@@ -136,15 +136,20 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, re
               }
               Promise.all(resolvedPromisesArray)
                 .then(data => {
-                  message.success('批量邀约成功');
-                  // let errorCount=0;
-                  // let successCount=0;
-                  // let success = [];
-                  // data.forEach(item => {
-                  //   errorCount+=item.errorCount;
-                  //   successCount+=item.successCount;
-                  //   success.push(success);
-                  // })
+                  let errorCount=0;
+                  let successCount=0;
+                  let success = [];
+                  data.forEach(item => {
+                    errorCount+=item.errorCount;
+                    successCount+=item.successCount;
+                    // success.push(item.success);
+                  })
+                  console.log('success===>',success)
+                  if(!errorCount){
+                    message.success('批量邀约成功');
+                  }else{
+                    message.warn(`批量邀约成功${successCount}人，批量邀约失败${errorCount}人`);
+                  }
                   // const successList = flatten(success);
                   // console.log(errorCount,successCount,successList);
                   // Modal.info({
@@ -157,7 +162,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, re
                   //       )}
                   //     </div>
                   //   ),
-                  //   // onOk() {() => close()},
+                  //   onOk() {() => close()},
                   // });
                   resetFields();
                   setDiffTimeList([]);
@@ -176,7 +181,12 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, re
         } else if (addBatch.length) {
           batchInvent({ batch: addBatch })
             .then(data => {
-              message.success('批量邀约成功');
+              // message.success('批量邀约成功');
+              if(!data.errorCount){
+                message.success('批量邀约成功');
+              }else{
+                message.warn(`批量邀约成功${data.successCount}人，批量邀约失败${data.errorCount}人`);
+              }
               // Modal.info({
               //   title: '批量新增邀约成功',
               //   content: (

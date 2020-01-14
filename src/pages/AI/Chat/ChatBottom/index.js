@@ -116,11 +116,11 @@ function RecordBottom({
         if (status === 21) {
           if (backShowTime && backShowTime.triggerTime) {
             if (moment(backShowTime.triggerTime) < moment().add(10, 'minutes')) {
-              message.error('外呼时间需要大于当前时间10分钟以上！');
+              message.error('当前时间和外呼时间差小于10分钟，无法更新！');
               return;
             }
             if (values.interviewStartTime < moment().add(10, 'minutes')) {
-              message.error('面试时间需要大于当前时间10分钟以上！');
+              message.error('当前时间和面试时间差小于10分钟，无法更新！');
               return;
             }
           }
@@ -150,9 +150,9 @@ function RecordBottom({
             //   type: 'chatrecord/updateSingleInvent',
             // });
 
-            // dispatch({
-            //   type: 'chatrecord/jobAppliedAsPostAll',
-            // });
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
           })
           .catch(e => message.error(e.message));
       }
@@ -179,7 +179,7 @@ function RecordBottom({
   function cancelConfirm() {
     if (backShowTime && backShowTime.triggerTime) {
       if (moment(backShowTime.triggerTime) < moment().add(10, 'minutes')) {
-        message.error('上次外呼时间大于当前时间10分钟以上，才能取消！已过期的时间不能取消！');
+        message.error('当前时间和外呼时间差小于10分钟，无法取消！');
         return;
       }
     }
@@ -188,10 +188,10 @@ function RecordBottom({
       const updateId = time.length ? time.slice(-1)[0].invitationId : null;
       cancelInvent({ updateId })
         .then(data => {
-          message.success('取消邀约成功！状态推送后点刷新按钮获取！');
-          // dispatch({
-          //   type: 'chatrecord/jobAppliedAsPostAll',
-          // });
+          message.success('取消邀约成功!');
+          dispatch({
+            type: 'chatrecord/jobAppliedAsPostAll',
+          });
           // setFieldsValue({'triggerTime':null,interviewStartTime:null,diff:60});
         })
         .catch(e => message.error(e.message));
@@ -268,15 +268,17 @@ function RecordBottom({
               <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>
                 更新
               </Button>
-              <Popconfirm
-                title="外呼时间和面试时间均会被取消，确认要取消吗？"
-                onConfirm={cancelConfirm}
-                onCancel={quitCancel}
-              >
-                <Button disabled={!selectJobId || status !== 21} style={{ marginLeft: 20 }}>
-                  取消
-                </Button>
-              </Popconfirm>
+              {selectJobId && status === 21 ? (
+                <Popconfirm
+                  title="外呼时间和面试时间均会被取消，确认要取消吗？"
+                  onConfirm={cancelConfirm}
+                  onCancel={quitCancel}
+                >
+                  <Button disabled={!selectJobId || status !== 21} style={{ marginLeft: 20 }}>
+                    取消
+                  </Button>
+                </Popconfirm>
+              ) : null}
             </div>
           </div>
         </div>
