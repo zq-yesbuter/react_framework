@@ -145,6 +145,7 @@ function ImportModal({ dispatch, visible, form, close, postList,resumeRef }) {
           })(
             <Select allowClear placeholder="请选择简历渠道">
               <Option key="liepin">猎聘网</Option>
+              <Option key="zhilian">智联招聘</Option>
             </Select>
           )}
         </Item>

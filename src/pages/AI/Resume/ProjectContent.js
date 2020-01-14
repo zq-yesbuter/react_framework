@@ -200,7 +200,7 @@ function Resume({
                     </Paragraph>
                     <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Paragraph style={{ flex: 1, marginRight: 5 }}>
-                        {`公司：  ${item.name || '无'}`}
+                        {`项目：  ${item.name || '无'}`}
                       </Paragraph>
                       <Paragraph style={{ flex: 1 }}>
                         {`职位：  ${item.position || '无'}`}
