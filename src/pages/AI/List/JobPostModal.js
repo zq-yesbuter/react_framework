@@ -36,6 +36,7 @@ function ImportModal({ dispatch, visible, form, close }) {
               close();
               dispatch({
                   type: 'chatrecord/queryInformation',
+                  payload:{pageNum:1,pageSize:100},
               });
           })
           .catch(e => message.error(e.message));
