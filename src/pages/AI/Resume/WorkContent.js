@@ -200,9 +200,9 @@ function Resume({
                     </Paragraph>
                     <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <Paragraph style={{ flex: 1, marginRight: 10 }}>
-                        {`公司：  ${item.name}`}
+                        {`公司：  ${item.name || '无'}`}
                       </Paragraph>
-                      <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position}`}</Paragraph>
+                      <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position || '无'}`}</Paragraph>
                     </Paragraph>
                     <p
                       className={cExpand === 1 ? styles.expand : null}

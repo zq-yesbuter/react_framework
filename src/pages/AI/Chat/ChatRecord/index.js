@@ -55,7 +55,7 @@ function RecordList({
       if (!search) {
         search = localStorage.getItem('token');
       }
-      let publicPath = 'http://aijob.jd.com';
+      let publicPath = 'http://aijob.jd.com:8088';
       if (process.env.NODE_ENV === 'development') {
         publicPath = 'http://jddai.jd.com:8088';
       } else if (process.env.NODE_ENV === 'beta' || process.env.NODE_ENV === 'betahuangcun') {

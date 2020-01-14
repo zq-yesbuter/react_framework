@@ -158,7 +158,7 @@ export default (__IS_BROWSER ? null : serverRender);
     // Umi UI Bubble
     require('../../../node_modules/umi/node_modules/umi-plugin-ui/lib/bubble').default(
       {
-        port: 3000,
+        port: 3001,
         path:
           '/Users/zhangqing272/workspace/work/feature_5/human_resources_platform',
         currentProject: '',
