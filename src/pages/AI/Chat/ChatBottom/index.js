@@ -302,11 +302,7 @@ function RecordBottom({
                           {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
                           {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
                           {interviewConfirmTime ? (
-                            <Tag
-                              color="blue"
-                              style={{ marginBottom: 6 }}
-                            >{`邀约用户反馈的面试时间： ${interviewConfirmTime}`}</Tag>
-                          ) : // <p>{`邀约用户反馈的面试时间： ${interviewConfirmTime}`}</p>
+                            <p style={{color:'red',fontWeight:400}}>{`用户期望面试时间： ${interviewConfirmTime}`}</p>) :
                           null}
                           <p>{remark}</p>
                         </div>
