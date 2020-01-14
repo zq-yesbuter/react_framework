@@ -80,6 +80,7 @@ export default {
         if (!selectJobId) {
           yield put({
             type: 'queryInformation',
+            payload:{pageNum:1,pageSize:100},
           });
           // yield put({
           //   type: 'save',
@@ -145,6 +146,7 @@ export default {
         });
         yield put({
           type: 'queryInformation',
+          payload:{pageNum:1,pageSize:100},
         });
       } catch (e) {
         message.error(e.message);
