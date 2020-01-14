@@ -14,7 +14,14 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-import { batchInvent, editBatchInvitation, fetchInvitation, cancelInvent } from '@/services/ai';
+import {
+  batchInvent,
+  editBatchInvitation,
+  fetchInvitation,
+  cancelInvent,
+  editInvitation,
+  addInvitation,
+} from '@/services/ai';
 import { flatten } from '@/utils/utils';
 import styles from './index.less';
 
@@ -72,7 +79,7 @@ function RecordBottom({
     resumeObj: { resumeEvaluation },
   },
 }) {
-  const { getFieldDecorator, validateFields, resetFields,setFieldsValue } = form;
+  const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
   useEffect(() => {
@@ -109,34 +116,34 @@ function RecordBottom({
         if (status === 21) {
           if (backShowTime && backShowTime.triggerTime) {
             if (moment(backShowTime.triggerTime) < moment().add(10, 'minutes')) {
-              message.error('上次外呼时间大于当前时间10分钟以上，才能取消！已过期的时间不能取消！');
+              message.error('外呼时间需要大于当前时间10分钟以上！');
+              return;
+            }
+            if (values.interviewStartTime < moment().add(10, 'minutes')) {
+              message.error('面试时间需要大于当前时间10分钟以上！');
               return;
             }
           }
-          fetchInvitation({ applyIds: [applyId] }).then(time => {
-            const updateId = time.length ? time.slice(-1)[0].invitationId : null;
-            payload = { ...payload, updateId };
-            dispatch({
-              type: 'chatrecord/editInvitation',
-              payload,
+          fetchInvitation({ applyIds: [applyId] })
+            .then(time => {
+              const updateId = time.length ? time.slice(-1)[0].invitationId : null;
+              payload = { ...payload, updateId };
+              editInvitation(payload)
+                .then(data => {
+                  message.success('修改邀约成功');
+                  dispatch({
+                    type: 'chatrecord/updateSingleInvent',
+                  });
+                  // dispatch({
+                  //   type: 'chatrecord/jobAppliedAsPostAll',
+                  // });
+                })
+                .catch(e => message.error(e.message));
             })
-              .then(data => {
-                message.success('修改邀约成功');
-                dispatch({
-                  type: 'chatrecord/updateSingleInvent',
-                });
-                // dispatch({
-                //   type: 'chatrecord/jobAppliedAsPostAll',
-                // });
-              })
-              .catch(e => message.error(e.message));
-          });
+            .catch(e => Promise.reject(e));
           return;
         }
-        dispatch({
-          type: 'chatrecord/addInvitation',
-          payload,
-        })
+        addInvitation(payload)
           .then(data => {
             message.success('新增邀约成功');
             // dispatch({

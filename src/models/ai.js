@@ -70,7 +70,7 @@ export default {
         yield put({
           type: 'save',
           payload: {
-            tableLoading: true,
+            // tableLoading: true,
             pageNum: 1,
           },
         });
@@ -81,12 +81,12 @@ export default {
           yield put({
             type: 'queryInformation',
           });
-          yield put({
-            type: 'save',
-            payload: {
-              tableLoading: false,
-            },
-          });
+          // yield put({
+          //   type: 'save',
+          //   payload: {
+          //     tableLoading: false,
+          //   },
+          // });
           yield put({
             type: 'save',
             payload: {

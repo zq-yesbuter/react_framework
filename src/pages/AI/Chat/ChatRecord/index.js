@@ -17,7 +17,7 @@ function RecordList({
   const intervalRef = useRef(null);
   const [pageNo, setPageNo] = useState(0);
   const [scroll, setScroll] = useState(true);
-  const [showNotice,setShowNotice] = useState(false);
+  const [showNotice, setShowNotice] = useState(false);
 
   function handleScroll() {
     const clientHeight = chatRef.current.clientHeight;
@@ -49,45 +49,55 @@ function RecordList({
     // }
   }
   useEffect(() => {
-    // console.log('didmount===>')
+    console.log('didmount===>', process.env);
     try {
       let { search, origin } = document.location || {};
-      if(!search){search=localStorage.getItem('token')}
-      let socket = new SockJS(`/ws/messaging${search}`,null, {transports:'websocket'});
+      if (!search) {
+        search = localStorage.getItem('token');
+      }
+      let publicPath = 'http://aijob.jd.com';
+      if (process.env.NODE_ENV === 'development') {
+        publicPath = 'http://jddai.jd.com:8088';
+      } else if (process.env.NODE_ENV === 'beta' || process.env.NODE_ENV === 'betahuangcun') {
+        publicPath = 'http://aijob.jd.com:8088';
+      }
+      let socket = new SockJS(`${publicPath}/ws/messaging${search}`, null, {
+        transports: 'websocket',
+      });
       const stompClient = Stomp.over(socket);
       // stompClient.heartbeat.outgoing = 20000;
       // stompClient.heartbeat.incoming = 20000;
-      stompClient.connect({}, (frame) => {
-        stompClient.subscribe('/ws/operator/queue/event', (response) => {
+      stompClient.connect({}, frame => {
+        stompClient.subscribe('/ws/operator/queue/event', response => {
           const show = Object.keys(JSON.parse(response.body)).length;
           show && setShowNotice(true);
-        })
-    });
-    let id = setInterval(() => {
-      if(stompClient === null || !stompClient.connected) {
-        console.log('断开重连！');
-        stompClient.connect({}, (frame) => {
-          stompClient.subscribe('/ws/operator/queue/event', (response) => {
-            const show = Object.keys(JSON.parse(response.body)).length;
-            show && setShowNotice(true);
-          })
         });
-      }
-    }, 30000)
-    intervalRef.current = id;
-    return () => {
-      if (stompClient != null) {
-        stompClient.disconnect();
-        console.log('Disconnected');
-      }
-      clearInterval(intervalRef.current);
-    };
+      });
+      let id = setInterval(() => {
+        if (stompClient === null || !stompClient.connected) {
+          console.log('断开重连！');
+          stompClient.connect({}, frame => {
+            stompClient.subscribe('/ws/operator/queue/event', response => {
+              const show = Object.keys(JSON.parse(response.body)).length;
+              show && setShowNotice(true);
+            });
+          });
+        }
+      }, 30000);
+      intervalRef.current = id;
+      return () => {
+        if (stompClient != null) {
+          stompClient.disconnect();
+          console.log('Disconnected');
+        }
+        clearInterval(intervalRef.current);
+      };
     } catch (e) {
       // 捕获异常，防止js error
       // donothing
-      console.log('socket error',e)
-    } 
-}, []);
+      console.log('socket error', e);
+    }
+  }, []);
   // useEffect(() => {
   //   if (scroll || newTalk) {
   //     ref.current.scrollTop = ref.current.scrollHeight;
@@ -235,9 +245,8 @@ function RecordList({
                 });
                 // window.location.reload();
                 setShowNotice(false);
-              }
-              } 
-              style={{ fontSize: '17px', color: '#08c',marginLeft:7,marginRight:7 }} 
+              }}
+              style={{ fontSize: '17px', color: '#08c', marginLeft: 7, marginRight: 7 }}
             />
             {/* <span onClick={() => {window.location.reload();}}>刷新</span> */}
             获取哦！

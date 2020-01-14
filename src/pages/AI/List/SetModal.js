@@ -22,7 +22,7 @@ import {
 import { connect } from 'dva';
 import _ from 'lodash';
 import moment from 'moment';
-import { batchInvent, editBatchInvitation,fetchInvitation } from '@/services/ai';
+import { batchInvent, editBatchInvitation, fetchInvitation } from '@/services/ai';
 import { flatten } from '@/utils/utils';
 import styles from './index.less';
 
@@ -72,7 +72,7 @@ const formatTime = (diffTimeList, selectedKeys, diff) => {
   });
   return list;
 };
-function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,resetSelectList }) {
+function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, resetSelectList }) {
   const [diffTimeList, setDiffTimeList] = useState([]);
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
 
@@ -88,7 +88,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
           return;
         }
         const { diff, triggerTime } = values;
-        if(triggerTime < moment().add(10, 'minutes')){
+        if (triggerTime < moment().add(10, 'minutes')) {
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
         }
@@ -115,93 +115,100 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
             ...timeList[index],
           });
         });
-        const addBatch = batch.filter(item => item.status !== 21).map(({status,...item}) => item);
-        let editBatch = batch.filter(item => item.status === 21).map(({status,...item}) => item);
+        const addBatch = batch
+          .filter(item => item.status !== 21)
+          .map(({ status, ...item }) => item);
+        let editBatch = batch.filter(item => item.status === 21).map(({ status, ...item }) => item);
         // console.log('add===>',addBatch,'editBatch===>',editBatch);
-        let resolvedPromisesArray = []
-        if(editBatch.length) {
+        let resolvedPromisesArray = [];
+        if (editBatch.length) {
           const applyIds = editBatch.map(item => item.applyId) || [];
-          fetchInvitation({ applyIds }).then(
-            timeList=> {
-              editBatch = editBatch.map(item => { 
+          fetchInvitation({ applyIds })
+            .then(timeList => {
+              editBatch = editBatch.map(item => {
                 // console.log('timelist====>',timeList,formatInventTime(timeList, item.applyId))
-                return {...item,updateId:formatInventTime(timeList, item.applyId) || null}})
+                return { ...item, updateId: formatInventTime(timeList, item.applyId) || null };
+              });
               // console.log('editBatch===>',editBatch);
-              resolvedPromisesArray.push(editBatchInvitation({batch:editBatch}));
-              if(addBatch.length){
-                resolvedPromisesArray.push(batchInvent({ batch:addBatch }));
+              resolvedPromisesArray.push(editBatchInvitation({ batch: editBatch }));
+              if (addBatch.length) {
+                resolvedPromisesArray.push(batchInvent({ batch: addBatch }));
               }
-              Promise.all(resolvedPromisesArray).then(data => {
-                message.success('批量邀约成功');
-                // let errorCount=0;
-                // let successCount=0;
-                // let success = [];
-                // data.forEach(item => {
-                //   errorCount+=item.errorCount;
-                //   successCount+=item.successCount;
-                //   success.push(success);
-                // })
-                // const successList = flatten(success);
-                // console.log(errorCount,successCount,successList);
-                // Modal.info({
-                //   title: '批量邀约成功',
-                //   content: (
-                //     <div>
-                //       <p>{`邀约成功${successCount}人，邀约失败${errorCount}人`}</p>
-                //       {formatSelectedKeys(successList,jobList).map(item =>
-                //         <p>{`${item ? item.name : null}邀约成功`}</p>
-                //       )}
-                //     </div>
-                //   ),
-                //   // onOk() {() => close()},
-                // });
-                resetFields();
-                setDiffTimeList([]);
-                close();
-                dispatch({
-                  type: 'chatrecord/jobAppliedAsPostAll',
-                });
-                // dispatch({
-                //   type: 'chatrecord/updateSingleInvent',
-                // });
-                resetSelectList();
-              }).catch(e => message.error(e.message))  
-            }
-          ).catch(e => message.error(`出现错误：${e.message}`));
-        }else if(addBatch.length){
-          batchInvent({ batch:addBatch }).then(data => {
-            message.success('批量邀约成功');
-            // Modal.info({
-            //   title: '批量新增邀约成功',
-            //   content: (
-            //     <div>
-            //       <p>{`邀约成功${data.successCount}人，邀约失败${data.errorCount}人`}</p>
-            //       {formatSelectedKeys(data.success,jobList).map(item =>
-            //         <p>{`${item.name}邀约成功`}</p>
-            //       )}
-            //     </div>
-            //   ),
-            //   // onOk() {() => close()},
-            // });
-            resetFields();
-            setDiffTimeList([]);
-            close();
-            // dispatch({
-            //   type: 'chatrecord/updateSingleInvent',
-            // });
-            dispatch({
-              type: 'chatrecord/jobAppliedAsPostAll',
-            });
-            resetSelectList();
-          }).catch(e => message.error(e.message))  
-        }   
+              Promise.all(resolvedPromisesArray)
+                .then(data => {
+                  message.success('批量邀约成功');
+                  // let errorCount=0;
+                  // let successCount=0;
+                  // let success = [];
+                  // data.forEach(item => {
+                  //   errorCount+=item.errorCount;
+                  //   successCount+=item.successCount;
+                  //   success.push(success);
+                  // })
+                  // const successList = flatten(success);
+                  // console.log(errorCount,successCount,successList);
+                  // Modal.info({
+                  //   title: '批量邀约成功',
+                  //   content: (
+                  //     <div>
+                  //       <p>{`邀约成功${successCount}人，邀约失败${errorCount}人`}</p>
+                  //       {formatSelectedKeys(successList,jobList).map(item =>
+                  //         <p>{`${item ? item.name : null}邀约成功`}</p>
+                  //       )}
+                  //     </div>
+                  //   ),
+                  //   // onOk() {() => close()},
+                  // });
+                  resetFields();
+                  setDiffTimeList([]);
+                  close();
+                  dispatch({
+                    type: 'chatrecord/jobAppliedAsPostAll',
+                  });
+                  // dispatch({
+                  //   type: 'chatrecord/updateSingleInvent',
+                  // });
+                  resetSelectList();
+                })
+                .catch(e => message.error(e.message));
+            })
+            .catch(e => message.error(`出现错误：${e.message}`));
+        } else if (addBatch.length) {
+          batchInvent({ batch: addBatch })
+            .then(data => {
+              message.success('批量邀约成功');
+              // Modal.info({
+              //   title: '批量新增邀约成功',
+              //   content: (
+              //     <div>
+              //       <p>{`邀约成功${data.successCount}人，邀约失败${data.errorCount}人`}</p>
+              //       {formatSelectedKeys(data.success,jobList).map(item =>
+              //         <p>{`${item.name}邀约成功`}</p>
+              //       )}
+              //     </div>
+              //   ),
+              //   // onOk() {() => close()},
+              // });
+              resetFields();
+              setDiffTimeList([]);
+              close();
+              // dispatch({
+              //   type: 'chatrecord/updateSingleInvent',
+              // });
+              dispatch({
+                type: 'chatrecord/jobAppliedAsPostAll',
+              });
+              resetSelectList();
+            })
+            .catch(e => message.error(e.message));
+        }
       }
     });
   }
   function disabledDate(current) {
     // Can not select days before today and today
-    return current &&  current < moment().subtract(1, 'days')
-  } 
+    return current && current < moment().subtract(1, 'days');
+  }
   function addTime() {
     if (!getFieldValue('time')) {
       message.warn('请选择时间段再添加！');
@@ -229,12 +236,13 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
       <Form {...formItemLayout}>
         <Item label="面试邀约人" required>
           <div style={{ marginLeft: 10 }}>
-            {formatSelectedKeys(selectedKeys, jobList).length ?
-              formatSelectedKeys(selectedKeys, jobList).map((item, index) => (
-                <Tag color="blue" key={index}>
-                  {item && item.name || null}
-                </Tag>
-              )) : null}
+            {formatSelectedKeys(selectedKeys, jobList).length
+              ? formatSelectedKeys(selectedKeys, jobList).map((item, index) => (
+                  <Tag color="blue" key={index}>
+                    {(item && item.name) || null}
+                  </Tag>
+                ))
+              : null}
           </div>
         </Item>
         <Item label="外呼时间" required>
@@ -298,7 +306,7 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList,res
               </Tag>
             ))}
           </div>
-        ) : null}        
+        ) : null}
         {/* <Item label="短信发送" required>
           {getFieldDecorator('name', {
             defaultValue: 1,
