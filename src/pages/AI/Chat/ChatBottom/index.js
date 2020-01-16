@@ -131,12 +131,12 @@ function RecordBottom({
               editInvitation(payload)
                 .then(data => {
                   message.success('修改邀约成功');
-                  dispatch({
-                    type: 'chatrecord/updateSingleInvent',
-                  });
                   // dispatch({
-                  //   type: 'chatrecord/jobAppliedAsPostAll',
+                  //   type: 'chatrecord/updateSingleInvent',
                   // });
+                  dispatch({
+                    type: 'chatrecord/jobAppliedAsPostAll',
+                  });
                 })
                 .catch(e => message.error(e.message));
             })
@@ -192,7 +192,13 @@ function RecordBottom({
           dispatch({
             type: 'chatrecord/jobAppliedAsPostAll',
           });
-          // setFieldsValue({'triggerTime':null,interviewStartTime:null,diff:60});
+          // dispatch({
+          //   type: 'chatrecord/queryTimeList',
+          //   payload: {
+          //     selectJobId,
+          //   },
+          // });
+          setFieldsValue({'triggerTime':null,interviewStartTime:null,diff:60});
         })
         .catch(e => message.error(e.message));
     });
@@ -201,8 +207,9 @@ function RecordBottom({
     resetFields();
   }
 
-  // console.log('status===>1111111',backShowTime,'=====>',moment(backShowTime.interviewEndTime).diff(backShowTime.interviewTime,'minutes'))
+
   const { status } = jobList.find(item => item.applyId === selectJobId) || {};
+  // console.log('status===>1111111',status,backShowTime,'=====>',moment(backShowTime.interviewEndTime).diff(backShowTime.interviewTime,'minutes'))
   const labelList = flatten(
     (resumeEvaluation && resumeEvaluation.details && Object.values(resumeEvaluation.details)) || []
   );
@@ -215,8 +222,8 @@ function RecordBottom({
             <div style={{ marginBottom: 15 }}>
               {getFieldDecorator('triggerTime', {
                 initialValue:
-                  status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.triggerTime)
+                status !== 11 && Object.keys(backShowTime).length
+                ? moment(backShowTime.triggerTime)
                     : null,
               })(
                 <DatePicker
@@ -250,8 +257,8 @@ function RecordBottom({
             <div style={{ marginBottom: 15 }}>
               {getFieldDecorator('interviewStartTime', {
                 initialValue:
-                  status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.interviewTime)
+                status !== 11 && Object.keys(backShowTime).length
+                ? moment(backShowTime.interviewTime)
                     : null,
               })(
                 <DatePicker

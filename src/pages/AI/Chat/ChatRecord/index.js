@@ -48,56 +48,79 @@ function RecordList({
     //   }
     // }
   }
-  // useEffect(() => {
-  //   console.log('didmount===>', process.env);
-  //   try {
-  //     let { search, origin } = document.location || {};
-  //     if (!search) {
-  //       search = localStorage.getItem('token');
-  //     }
-  //     let publicPath = 'http://aijob.jd.com:8088';
-  //     if (process.env.NODE_ENV === 'development') {
-  //       publicPath = 'http://jddai.jd.com:8088';
-  //     } else if (process.env.NODE_ENV === 'beta' || process.env.NODE_ENV === 'betahuangcun') {
-  //       publicPath = 'http://aijob.jd.com:8088';
-  //     }
-  //     let socket = new SockJS(`${publicPath}/ws/messaging${search}`, null, {
-  //       transports: 'websocket',
-  //     });
-  //     const stompClient = Stomp.over(socket);
-  //     // stompClient.heartbeat.outgoing = 20000;
-  //     // stompClient.heartbeat.incoming = 20000;
-  //     stompClient.connect({}, frame => {
-  //       stompClient.subscribe('/ws/operator/queue/event', response => {
-  //         const show = Object.keys(JSON.parse(response.body)).length;
-  //         show && setShowNotice(true);
-  //       });
-  //     });
-  //     let id = setInterval(() => {
-  //       if (stompClient === null || !stompClient.connected) {
-  //         console.log('断开重连！');
-  //         stompClient.connect({}, frame => {
-  //           stompClient.subscribe('/ws/operator/queue/event', response => {
-  //             const show = Object.keys(JSON.parse(response.body)).length;
-  //             show && setShowNotice(true);
-  //           });
-  //         });
-  //       }
-  //     }, 30000);
-  //     intervalRef.current = id;
-  //     return () => {
-  //       if (stompClient != null) {
-  //         stompClient.disconnect();
-  //         console.log('Disconnected');
-  //       }
-  //       clearInterval(intervalRef.current);
-  //     };
-  //   } catch (e) {
-  //     // 捕获异常，防止js error
-  //     // donothing
-  //     console.log('socket error', e);
-  //   }
-  // }, []);
+  useEffect(() => {
+    console.log('didmount===>', process.env);
+    let { search, origin } = document.location || {};
+    if (!search) {
+      search = localStorage.getItem('token');
+    }
+    let stocks = new EventSource(`/sse/messages${search}`);
+    stocks.onopen = function (){
+      console.log('open==>');
+    }
+    stocks.onmessage = function (event) {
+      console.log('message===>',event);
+      setShowNotice(true);
+    };
+    stocks.onerror = function (event) {
+      console.log('error==>');
+      // new EventSource(`/sse/messages${search}`);
+    };
+    return () => {
+      if (stocks != null) {
+        stocks.close();
+        console.log('Disconnected');
+      }
+    };
+    // console.log('didmount===>', process.env);
+    // try {
+    //   let { search, origin } = document.location || {};
+    //   if (!search) {
+    //     search = localStorage.getItem('token');
+    //   }
+    //   let publicPath = 'http://aijob.jd.com:8088';
+    //   if (process.env.NODE_ENV === 'development') {
+    //     publicPath = 'http://jddai.jd.com:8088';
+    //   } else if (process.env.NODE_ENV === 'beta' || process.env.NODE_ENV === 'betahuangcun') {
+    //     publicPath = 'http://aijob.jd.com:8088';
+    //   }
+    //   let socket = new SockJS(`${publicPath}/ws/messaging${search}`, null, {
+    //     transports: 'websocket',
+    //   });
+    //   const stompClient = Stomp.over(socket);
+    //   // stompClient.heartbeat.outgoing = 20000;
+    //   // stompClient.heartbeat.incoming = 20000;
+    //   stompClient.connect({}, frame => {
+    //     stompClient.subscribe('/ws/operator/queue/event', response => {
+    //       const show = Object.keys(JSON.parse(response.body)).length;
+    //       show && setShowNotice(true);
+    //     });
+    //   });
+    //   let id = setInterval(() => {
+    //     if (stompClient === null || !stompClient.connected) {
+    //       console.log('断开重连！');
+    //       stompClient.connect({}, frame => {
+    //         stompClient.subscribe('/ws/operator/queue/event', response => {
+    //           const show = Object.keys(JSON.parse(response.body)).length;
+    //           show && setShowNotice(true);
+    //         });
+    //       });
+    //     }
+    //   }, 30000);
+    //   intervalRef.current = id;
+    //   return () => {
+    //     if (stompClient != null) {
+    //       stompClient.disconnect();
+    //       console.log('Disconnected');
+    //     }
+    //     clearInterval(intervalRef.current);
+    //   };
+    // } catch (e) {
+    //   // 捕获异常，防止js error
+    //   // donothing
+    //   console.log('socket error', e);
+    // }
+  }, []);
   // useEffect(() => {
   //   if (scroll || newTalk) {
   //     ref.current.scrollTop = ref.current.scrollHeight;
