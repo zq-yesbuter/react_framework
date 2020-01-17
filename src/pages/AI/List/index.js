@@ -554,9 +554,9 @@ function ChatList({
           批量导出邀约
         </Menu.Item>
         {/* <Menu.Item key={3}>导出简历+邀约</Menu.Item> */}
-        {/* <Menu.Item key={4} onClick={onExportChange}>
+        <Menu.Item key={4} onClick={onExportChange}>
           分配邀约时间
-        </Menu.Item> */}
+        </Menu.Item>
         <Menu.Item key={5} onClick={onOfferChange}>
           分配录用通知时间
         </Menu.Item>
