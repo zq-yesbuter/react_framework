@@ -82,6 +82,18 @@ function ImportModal({ visible, form, close, handleOk }) {
                 <Radio style={radioStyle} value={24}>
                   邀约成功
                 </Radio>
+                <Radio style={radioStyle} value={71}>
+                  offer已申请
+                </Radio>
+                <Radio style={radioStyle} value={72}>
+                  offer已反馈
+                </Radio>
+                <Radio style={radioStyle} value={73}>
+                  offer已通过
+                </Radio>
+                <Radio style={radioStyle} value={74}>
+                  offer已拒绝
+                </Radio>
               </Radio.Group>
             )}
           </Item>

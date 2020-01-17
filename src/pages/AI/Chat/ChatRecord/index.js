@@ -11,13 +11,13 @@ import styles from './index.less';
 
 function RecordList({
   dispatch,
-  chatrecord: { messageList = [], newTalk, noLoading = false, bottomLoading = false },
+  chatrecord: { messageList = [], newTalk, noLoading = false, bottomLoading = false, showNotice },
 }) {
   const chatRef = useRef(null);
   const intervalRef = useRef(null);
   const [pageNo, setPageNo] = useState(0);
   const [scroll, setScroll] = useState(true);
-  const [showNotice, setShowNotice] = useState(false);
+  // const [showNotice, setShowNotice] = useState(false);
 
   function handleScroll() {
     const clientHeight = chatRef.current.clientHeight;
@@ -72,6 +72,7 @@ function RecordList({
     //     console.log('Disconnected');
     //   }
     // };
+
     // console.log('didmount===>', process.env);
     // try {
     //   let { search, origin } = document.location || {};
@@ -267,7 +268,8 @@ function RecordList({
                   type: 'chatrecord/jobAppliedAsPostAll',
                 });
                 // window.location.reload();
-                setShowNotice(false);
+                dispatch({type:'chatrecord/save',payload:{showNotice:false}})
+                // setShowNotice(false); 
               }}
               style={{ fontSize: '17px', color: '#08c', marginLeft: 7, marginRight: 7 }}
             />

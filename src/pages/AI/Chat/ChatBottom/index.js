@@ -65,7 +65,18 @@ function formatStatus(status) {
       return '无';
   }
 }
-
+function formatPhoneStatus(status) {
+  switch (status) {
+    case 0:
+      return '短信已发送';
+    case 1:
+      return '短信发送成功';
+    case 2:
+      return '短信发送失败';
+    default:
+      return '无';
+  }
+}
 function usePrevious(value) {
   const ref = useRef();
   useEffect(() => {
@@ -85,6 +96,8 @@ function RecordBottom({
     resumeObj: { resumeEvaluation },
     offerBackShowTime,
     offerFlowList,
+    phoneMessage,
+    offerPhoneMessage,
   },
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
@@ -305,7 +318,42 @@ function RecordBottom({
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
-          <Tabs tabPosition="bottom" size="small">
+          <h3>录用外呼时间</h3>
+          <div className={styles.scroll} style={{ paddingTop: 15 }}>
+            <div style={{ marginBottom: 15 }}>
+              {getFieldDecorator('offerTriggerTime', {
+                initialValue:
+                  status !== 11 && Object.keys(offerBackShowTime).length
+                    ? moment(offerBackShowTime.triggerTime)
+                    : null,
+              })(
+                <DatePicker
+                  showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                  disabledDate={disabledDate}
+                  format="YYYY-MM-DD HH:mm"
+                  placeholder="请选择外呼时间"
+                  style={{ display: 'block' }}
+                />
+              )}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'center' }}>
+              <Button onClick={onOfferSubmit} disabled={!selectJobId || status === 74}>
+                更新
+              </Button>
+              {selectJobId && status === 71 ? (
+                <Popconfirm
+                  title="外呼时间和面试时间均会被取消，确认要取消吗？"
+                  onConfirm={cancelOfferConfirm}
+                  onCancel={cancelOffer}
+                >
+                  <Button disabled={!selectJobId || status !== 71} style={{ marginLeft: 20 }}>
+                    取消
+                  </Button>
+                </Popconfirm>
+              ) : null}
+            </div>
+          </div>
+          {/* <Tabs tabPosition="bottom" size="small">
             <TabPane tab="设置面试时间" key="1">
               <div style={{ height: 220 }}>
                 <h3>邀约/面试时间</h3>
@@ -329,8 +377,8 @@ function RecordBottom({
                   {getFieldDecorator('diff', {
                     initialValue:
                       status !== 11 && Object.keys(backShowTime).length
-                        ? moment(backShowTime.interviewEndTime).diff(
-                            backShowTime.interviewTime,
+                        ? moment(backShowTime.endTime).diff(
+                            backShowTime.time,
                             'minutes'
                           )
                         : 60,
@@ -345,10 +393,10 @@ function RecordBottom({
                   )}
                 </div>
                 <div style={{ marginBottom: 15 }}>
-                  {getFieldDecorator('interviewStartTime', {
+                  {getFieldDecorator('startTime', {
                     initialValue:
                       status !== 11 && Object.keys(backShowTime).length
-                        ? moment(backShowTime.interviewTime)
+                        ? moment(backShowTime.time)
                         : null,
                   })(
                     <DatePicker
@@ -416,7 +464,7 @@ function RecordBottom({
                 </div>
               </div>
             </TabPane>
-          </Tabs>
+          </Tabs> */}
         </div>
       </Col>
       <Col className={styles['gutter-row']} span={8}>
@@ -451,6 +499,21 @@ function RecordBottom({
                 )}
             </Steps>
             <Steps progressDot direction="vertical" current={10000}>
+              {phoneMessage &&
+                phoneMessage.length &&
+                phoneMessage.map(
+                  (
+                    { status },
+                    index
+                  ) => (
+                    <Step
+                      title={`【${formatPhoneStatus(status)}】`}
+                      key={index}
+                    />
+                  )
+                )}
+            </Steps>
+            <Steps progressDot direction="vertical" current={10000}>
               {offerFlowList &&
                 offerFlowList.length &&
                 offerFlowList.map(
@@ -472,6 +535,21 @@ function RecordBottom({
                           <p>{remark}</p>
                         </div>
                       }
+                      key={index}
+                    />
+                  )
+                )}
+            </Steps>
+            <Steps progressDot direction="vertical" current={10000}>
+              {offerPhoneMessage &&
+                offerPhoneMessage.length &&
+                offerPhoneMessage.map(
+                  (
+                    { status },
+                    index
+                  ) => (
+                    <Step
+                      title={`【${formatPhoneStatus(status)}】`}
                       key={index}
                     />
                   )

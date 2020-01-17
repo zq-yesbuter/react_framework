@@ -54,6 +54,9 @@ export default {
     offerList: [],
     offerFlowList: [],
     offerBackShowTime: {},
+    showNotice: false,
+    phoneMessage: [],
+    offerPhoneMessage: [],
   },
   effects: {
     // 获取微信聊天记录
@@ -356,17 +359,23 @@ export default {
         timeList = payload.timeList;
       }
       let flowList = [];
+      let phoneMessage = [];
       if (!selectJobId || !(timeList && timeList.length)) {
-        return { ...state, flowList, backShowTime: {} };
+        return { ...state, flowList, backShowTime: {},phoneMessage };
       }
       const list = timeList.filter(item => item.applyId === selectJobId);
       const backShowTime = list.length ? list.slice(-1)[0] : {};
       flowList = timeList
         .filter(item => item.applyId === selectJobId)
-        .filter(item => item.flow.length > 0)
+        .filter(item => item.flow.length > 0 )
         .map(item => item.flow);
       flowList = flatten(flowList);
-      return { ...state, flowList, backShowTime };
+      phoneMessage = timeList
+        .filter(item => item.applyId === selectJobId)
+        .filter(item => item.notifyMessage.length > 0 )
+        .map(item => item.notifyMessage);
+      phoneMessage = flatten(phoneMessage);
+      return { ...state, flowList, backShowTime, phoneMessage };
     },
     getOfferFlowList(state, { payload }) {
       let { timeList, selectJobId } = state;
@@ -377,8 +386,9 @@ export default {
         timeList = payload.timeList;
       }
       let offerFlowList = [];
+      let offerPhoneMessage = [];
       if (!selectJobId || !(timeList && timeList.length)) {
-        return { ...state, offerFlowList, offerBackShowTime: {} };
+        return { ...state, offerFlowList, offerBackShowTime: {}, offerPhoneMessage };
       }
       const list = timeList.filter(item => item.applyId === selectJobId);
       const offerBackShowTime = list.length ? list.slice(-1)[0] : {};
@@ -387,7 +397,12 @@ export default {
         .filter(item => item.flow.length > 0)
         .map(item => item.flow);
       offerFlowList = flatten(offerFlowList);
-      return { ...state, offerFlowList, offerBackShowTime };
+      offerPhoneMessage = timeList
+        .filter(item => item.applyId === selectJobId)
+        .filter(item => item.notifyMessage.length > 0 )
+        .map(item => item.notifyMessage);
+      offerPhoneMessage = flatten(offerPhoneMessage);
+      return { ...state, offerFlowList, offerBackShowTime,offerPhoneMessage };
     },
 
     formatJobList(state, { payload }) {
@@ -421,6 +436,29 @@ export default {
         if (match) {
           dispatch({
             type: 'jobAppliedAsPostAll',
+          }).then(data => {
+            // console.log('=======>gogogogo')
+            // let { search, origin } = document.location || {};
+            // if (!search) {
+            //   search = localStorage.getItem('token');
+            // }
+            // let stocks = new EventSource(`/sse/messages${search}`);
+            // stocks.onopen = () => {
+            //   console.log('open==>');
+            // }
+            // stocks.onmessage = (event) => {
+            //   console.log('message===>',event);
+            //   dispatch({
+            //     type: 'save',
+            //     payload: {
+            //       showNotice: true,
+            //     },
+            //   });
+            // };
+            // stocks.onerror = (event) => {
+            //   console.log('error==>');
+            //   // new EventSource(`/sse/messages${search}`);
+            // };
           });
         }
       });
