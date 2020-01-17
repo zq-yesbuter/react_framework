@@ -306,7 +306,7 @@ function RecordBottom({
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
           <Tabs tabPosition="bottom" size="small">
-            <TabPane tab="设置邀约/面试时间" key="1">
+            <TabPane tab="设置面试时间" key="1">
               <div style={{ height: 220 }}>
                 <h3>邀约/面试时间</h3>
                 <div style={{ marginBottom: 15 }}>
@@ -379,7 +379,7 @@ function RecordBottom({
                 </div>
               </div>
             </TabPane>
-            <TabPane tab="设置录用外呼时间" key="2">
+            <TabPane tab="设置录用时间" key="2">
               <div style={{ height: 220 }}>
                 <h3>录用外呼时间</h3>
                 <div style={{ marginBottom: 15 }}>
