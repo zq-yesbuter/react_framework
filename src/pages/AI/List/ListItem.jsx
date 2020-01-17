@@ -21,6 +21,7 @@ function ListItem({
   disabled,
   interviewTime,
   triggerTime,
+  offerTime,
 }) {
   const itemStyle = String(selectJobId) === applyId ? 'active' : 'normal';
   function formatStatus(status) {
@@ -49,6 +50,14 @@ function ListItem({
         return '已通过（面试阶段）';
       case 34:
         return '已拒绝（面试阶段）';
+      case 71:
+        return 'offer已申请';
+      case 72:
+        return 'offer已反馈';
+      case 73:
+        return 'offer已通过';
+      case 74:
+        return 'offer已拒绝';
       default:
         return '无';
     }
@@ -61,7 +70,7 @@ function ListItem({
         return { color: 'red' };
       case status === 21 || status === 22 || status === 24:
         return { color: 'green' };
-      case status > 30 && status < 34:
+      case (status > 30 && status < 34) || status > 70:
         return { color: 'green' };
       default:
         return { color: 'red' };
@@ -87,6 +96,9 @@ function ListItem({
         </div>
         <div className={styles.itemTimeInfo}>
           {/* <Tooltip title="邀约时间" placement="topRight"> */}
+          <div title="录用外呼时间" className={styles.inventTime} style={{ color: 'blue' }}>
+            {status !== 11 && offerTime ? offerTime : null}
+          </div>
           <div title="外呼时间" className={styles.inventTime} style={formatBackground(status)}>
             {status !== 11 && triggerTime ? triggerTime : null}
           </div>

@@ -25,6 +25,7 @@ import _ from 'lodash';
 import ListItem from './ListItem';
 import ImportModal from './ImportModal';
 import SetModal from './SetModal';
+import OfferModal from './OfferModal';
 import FilterModal from './FilterModal';
 import { batchExportResume } from '@/services/ai';
 import styles from './index.less';
@@ -90,6 +91,7 @@ function ChatList({
   const [status, setStatus] = useState();
   const [dateEnd, setDateEnd] = useState();
   const [showMore, setShowMore] = useState(false);
+  const [offerVisible, setOfferVisible] = useState(false);
   const listRef = useRef(null);
 
   // useEffect(() => {
@@ -122,9 +124,9 @@ function ChatList({
         const reg = /^\d{1,11}$/;
         let nameObj = {};
         if (reg.test(name)) {
-          nameObj = { tel: name,name:'' };
+          nameObj = { tel: name, name: '' };
         } else {
-          nameObj = { name,tel:'' };
+          nameObj = { name, tel: '' };
         }
         if (pageNum !== 1) {
           dispatch({
@@ -260,6 +262,12 @@ function ChatList({
     });
     dispatch({
       type: 'chatrecord/queryTimeList',
+      payload: {
+        selectJobId,
+      },
+    });
+    dispatch({
+      type: 'chatrecord/queryOfferTimeList',
       payload: {
         selectJobId,
       },
@@ -475,6 +483,9 @@ function ChatList({
   function onShowSizeChange(page, pageSize) {
     // console.log('page===>', page, 'pageSize==>', pageSize);
   }
+  function onOfferChange() {
+    setOfferVisible(true);
+  }
   function batchExportInvent() {
     const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
     const applyIds = resumeList.map(item => item.applyId);
@@ -482,7 +493,7 @@ function ChatList({
     let size = 0;
     fetch('/data/interview/invitations/all', {
       method: 'POST',
-      body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 100,orderBy: { applyDate: 'DESC' } }),
+      body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 100, orderBy: { applyDate: 'DESC' } }),
       headers: {
         Accept: 'application/vnd.ms-excel',
         'Content-Type': 'application/json',
@@ -545,6 +556,9 @@ function ChatList({
         {/* <Menu.Item key={3}>导出简历+邀约</Menu.Item> */}
         <Menu.Item key={4} onClick={onExportChange}>
           分配邀约时间
+        </Menu.Item>
+        <Menu.Item key={5} onClick={onOfferChange}>
+          分配录用通知时间
         </Menu.Item>
       </Menu>
     );
@@ -617,6 +631,13 @@ function ChatList({
         visible={filterVisible}
         close={() => setFilterVisible(false)}
         handleOk={handleOk}
+      />
+      <OfferModal
+        visible={offerVisible}
+        selectedKeys={selectedKeys}
+        close={() => setOfferVisible(false)}
+        jobList={jobList}
+        resetSelectList={resetSelectList}
       />
     </Fragment>
   );

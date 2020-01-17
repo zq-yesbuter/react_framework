@@ -2,8 +2,6 @@ import defaultSettings from './defaultSettings'; // https://umijs.org/config/
 import slash from 'slash2';
 import webpackPlugin from './plugin.config';
 
-
-
 const { pwa, primaryColor } = defaultSettings; // preview.pro.ant.design only do not use in your production ;
 // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
 
@@ -83,7 +81,7 @@ const plugins = [
       modifyRequest: true,
       autoAddMenu: true,
     },
-  ], 
+  ],
 ]; // 针对 preview.pro.ant.design 的 GA 统计代码
 
 // if (isAntDesignProPreview) {
@@ -229,6 +227,11 @@ export default {
     //   pathRewrite,
     // },
     '/sse': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/offer': {
       target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
       changeOrigin: true,
       pathRewrite,

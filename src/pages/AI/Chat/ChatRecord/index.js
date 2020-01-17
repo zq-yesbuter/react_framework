@@ -49,29 +49,29 @@ function RecordList({
     // }
   }
   useEffect(() => {
-    console.log('didmount===>', process.env);
-    let { search, origin } = document.location || {};
-    if (!search) {
-      search = localStorage.getItem('token');
-    }
-    let stocks = new EventSource(`/sse/messages${search}`);
-    stocks.onopen = function (){
-      console.log('open==>');
-    }
-    stocks.onmessage = function (event) {
-      console.log('message===>',event);
-      setShowNotice(true);
-    };
-    stocks.onerror = function (event) {
-      console.log('error==>');
-      // new EventSource(`/sse/messages${search}`);
-    };
-    return () => {
-      if (stocks != null) {
-        stocks.close();
-        console.log('Disconnected');
-      }
-    };
+    // console.log('didmount===>', process.env);
+    // let { search, origin } = document.location || {};
+    // if (!search) {
+    //   search = localStorage.getItem('token');
+    // }
+    // let stocks = new EventSource(`/sse/messages${search}`);
+    // stocks.onopen = function (){
+    //   console.log('open==>');
+    // }
+    // stocks.onmessage = function (event) {
+    //   console.log('message===>',event);
+    //   setShowNotice(true);
+    // };
+    // stocks.onerror = function (event) {
+    //   console.log('error==>');
+    //   // new EventSource(`/sse/messages${search}`);
+    // };
+    // return () => {
+    //   if (stocks != null) {
+    //     stocks.close();
+    //     console.log('Disconnected');
+    //   }
+    // };
     // console.log('didmount===>', process.env);
     // try {
     //   let { search, origin } = document.location || {};

@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Fragment } from 'react';
 import {
   Col,
   Row,
@@ -11,6 +11,7 @@ import {
   message,
   Tag,
   Popconfirm,
+  Tabs,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -21,6 +22,10 @@ import {
   cancelInvent,
   editInvitation,
   addInvitation,
+  singleEditOfffer,
+  singleAddOfffer,
+  queryOffferInventIds,
+  cancelOfffer,
 } from '@/services/ai';
 import { flatten } from '@/utils/utils';
 import styles from './index.less';
@@ -28,6 +33,7 @@ import styles from './index.less';
 const { Item } = Form;
 const { Step } = Steps;
 const { RangePicker } = DatePicker;
+const { TabPane } = Tabs;
 const format = 'YYYY-MM-DD HH:mm';
 // const colors = ['cyan','blue','geekblue','lime','green','purple','magenta','red','volcano','orange','gold'];
 const colors = [
@@ -77,6 +83,8 @@ function RecordBottom({
     flowList,
     backShowTime,
     resumeObj: { resumeEvaluation },
+    offerBackShowTime,
+    offerFlowList,
   },
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
@@ -101,16 +109,18 @@ function RecordBottom({
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
         }
-        const interviewStartTime = values.interviewStartTime.format(format);
-        const interviewEndTime = values.interviewStartTime
-          .add(values.diff, 'minutes')
-          .format(format);
+        if (!values.startTime) {
+          message.error('请选择面试时间！');
+          return;
+        }
+        const startTime = values.startTime.format(format);
+        const endTime = values.startTime.add(values.diff, 'minutes').format(format);
         const { id, applyId, status } = jobList.find(item => item.applyId === selectJobId) || {};
         let payload = {
           applicantId: id,
           applyId,
-          interviewStartTime,
-          interviewEndTime,
+          startTime,
+          endTime,
           triggerTime: values.triggerTime.format(format),
         };
         if (status === 21) {
@@ -119,7 +129,7 @@ function RecordBottom({
               message.error('当前时间和外呼时间差小于10分钟，无法更新！');
               return;
             }
-            if (values.interviewStartTime < moment().add(10, 'minutes')) {
+            if (values.startTime < moment().add(10, 'minutes')) {
               message.error('当前时间和面试时间差小于10分钟，无法更新！');
               return;
             }
@@ -150,6 +160,54 @@ function RecordBottom({
             //   type: 'chatrecord/updateSingleInvent',
             // });
 
+            dispatch({
+              type: 'chatrecord/jobAppliedAsPostAll',
+            });
+          })
+          .catch(e => message.error(e.message));
+      }
+    });
+  }
+  function onOfferSubmit() {
+    validateFields((err, values) => {
+      if (!err) {
+        const { offerTriggerTime } = values;
+        if (offerTriggerTime < moment().add(10, 'minutes')) {
+          message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
+          return;
+        }
+        const { id, applyId, status } = jobList.find(item => item.applyId === selectJobId) || {};
+        let payload = {
+          applicantId: id,
+          applyId,
+          triggerTime: values.offerTriggerTime.format(format),
+        };
+        if (status === 71) {
+          if (offerBackShowTime && offerBackShowTime.triggerTime) {
+            if (moment(offerBackShowTime.triggerTime) < moment().add(10, 'minutes')) {
+              message.error('当前时间和外呼时间差小于10分钟，无法更新！');
+              return;
+            }
+          }
+          queryOffferInventIds({ applyIds: [applyId] })
+            .then(time => {
+              const updateId = time.length ? time.slice(-1)[0].invitationId : null;
+              payload = { ...payload, updateId };
+              singleEditOfffer(payload)
+                .then(data => {
+                  message.success('修改录用邀约成功');
+                  dispatch({
+                    type: 'chatrecord/jobAppliedAsPostAll',
+                  });
+                })
+                .catch(e => message.error(e.message));
+            })
+            .catch(e => Promise.reject(e));
+          return;
+        }
+        singleAddOfffer(payload)
+          .then(data => {
+            message.success('新增录用邀约成功');
             dispatch({
               type: 'chatrecord/jobAppliedAsPostAll',
             });
@@ -198,7 +256,34 @@ function RecordBottom({
           //     selectJobId,
           //   },
           // });
-          setFieldsValue({'triggerTime':null,interviewStartTime:null,diff:60});
+          setFieldsValue({ triggerTime: null, startTime: null, diff: 60 });
+        })
+        .catch(e => message.error(e.message));
+    });
+  }
+  function cancelOfferConfirm() {
+    if (offerBackShowTime && offerBackShowTime.triggerTime) {
+      if (moment(offerBackShowTime.triggerTime) < moment().add(10, 'minutes')) {
+        message.error('当前时间和外呼时间差小于10分钟，无法取消！');
+        return;
+      }
+    }
+    const { id, applyId, status } = jobList.find(item => item.applyId === selectJobId) || {};
+    queryOffferInventIds({ applyIds: [applyId] }).then(time => {
+      const updateId = time.length ? time.slice(-1)[0].invitationId : null;
+      cancelOfffer({ updateId })
+        .then(data => {
+          message.success('取消录用邀约成功!');
+          dispatch({
+            type: 'chatrecord/jobAppliedAsPostAll',
+          });
+          // dispatch({
+          //   type: 'chatrecord/queryTimeList',
+          //   payload: {
+          //     selectJobId,
+          //   },
+          // });
+          setFieldsValue({ offerTriggerTime: null });
         })
         .catch(e => message.error(e.message));
     });
@@ -206,10 +291,13 @@ function RecordBottom({
   function quitCancel() {
     resetFields();
   }
-
+  function cancelOffer() {
+    resetFields();
+  }
 
   const { status } = jobList.find(item => item.applyId === selectJobId) || {};
-  // console.log('status===>1111111',status,backShowTime,'=====>',moment(backShowTime.interviewEndTime).diff(backShowTime.interviewTime,'minutes'))
+  // console.log('status===>1111111',status,backShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
+  // console.log('status===>1111111',status,offerBackShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
   const labelList = flatten(
     (resumeEvaluation && resumeEvaluation.details && Object.values(resumeEvaluation.details)) || []
   );
@@ -217,77 +305,118 @@ function RecordBottom({
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
-          <h3>邀约/面试时间</h3>
-          <div className={styles.scroll} style={{ paddingTop: 15 }}>
-            <div style={{ marginBottom: 15 }}>
-              {getFieldDecorator('triggerTime', {
-                initialValue:
-                status !== 11 && Object.keys(backShowTime).length
-                ? moment(backShowTime.triggerTime)
-                    : null,
-              })(
-                <DatePicker
-                  showTime={{ format: 'HH:mm', minuteStep: 5 }}
-                  disabledDate={disabledDate}
-                  format="YYYY-MM-DD HH:mm"
-                  placeholder="请选择外呼时间"
-                  style={{ display: 'block' }}
-                />
-              )}
-            </div>
-            <div style={{ marginBottom: 15 }}>
-              {getFieldDecorator('diff', {
-                initialValue:
-                  status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.interviewEndTime).diff(
-                        backShowTime.interviewTime,
-                        'minutes'
-                      )
-                    : 60,
-              })(
-                <InputNumber
-                  style={{ width: '100%' }}
-                  min={0}
-                  max={160}
-                  formatter={value => `${value}分钟`}
-                  parser={value => value.replace('分钟', '')}
-                />
-              )}
-            </div>
-            <div style={{ marginBottom: 15 }}>
-              {getFieldDecorator('interviewStartTime', {
-                initialValue:
-                status !== 11 && Object.keys(backShowTime).length
-                ? moment(backShowTime.interviewTime)
-                    : null,
-              })(
-                <DatePicker
-                  disabledDate={disabledDate}
-                  // disabledTime={disabledDateTime}
-                  showTime={{ format: 'HH:mm', minuteStep: 5 }}
-                  format="YYYY-MM-DD HH:mm"
-                  placeholder="请选择面试时间"
-                  style={{ display: 'block' }}
-                />
-              )}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>
-                更新
-              </Button>
-              {selectJobId && status === 21 ? (
-                <Popconfirm
-                  title="外呼时间和面试时间均会被取消，确认要取消吗？"
-                  onConfirm={cancelConfirm}
-                  onCancel={quitCancel}
-                >
-                  <Button disabled={!selectJobId || status !== 21} style={{ marginLeft: 20 }}>
-                    取消
+          <Tabs tabPosition="bottom" size="small">
+            <TabPane tab="设置邀约/面试时间" key="1">
+              <div style={{ height: 220 }}>
+                <h3>邀约/面试时间</h3>
+                <div style={{ marginBottom: 15 }}>
+                  {getFieldDecorator('triggerTime', {
+                    initialValue:
+                      status !== 11 && Object.keys(backShowTime).length
+                        ? moment(backShowTime.triggerTime)
+                        : null,
+                  })(
+                    <DatePicker
+                      showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                      disabledDate={disabledDate}
+                      format="YYYY-MM-DD HH:mm"
+                      placeholder="请选择外呼时间"
+                      style={{ display: 'block' }}
+                    />
+                  )}
+                </div>
+                <div style={{ marginBottom: 15 }}>
+                  {getFieldDecorator('diff', {
+                    initialValue:
+                      status !== 11 && Object.keys(backShowTime).length
+                        ? moment(backShowTime.interviewEndTime).diff(
+                            backShowTime.interviewTime,
+                            'minutes'
+                          )
+                        : 60,
+                  })(
+                    <InputNumber
+                      style={{ width: '100%' }}
+                      min={0}
+                      max={160}
+                      formatter={value => `${value}分钟`}
+                      parser={value => value.replace('分钟', '')}
+                    />
+                  )}
+                </div>
+                <div style={{ marginBottom: 15 }}>
+                  {getFieldDecorator('interviewStartTime', {
+                    initialValue:
+                      status !== 11 && Object.keys(backShowTime).length
+                        ? moment(backShowTime.interviewTime)
+                        : null,
+                  })(
+                    <DatePicker
+                      disabledDate={disabledDate}
+                      // disabledTime={disabledDateTime}
+                      showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                      format="YYYY-MM-DD HH:mm"
+                      placeholder="请选择面试时间"
+                      style={{ display: 'block' }}
+                    />
+                  )}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>
+                    更新
                   </Button>
-                </Popconfirm>
-              ) : null}
-            </div>
-          </div>
+                  {selectJobId && status === 21 ? (
+                    <Popconfirm
+                      title="外呼时间和面试时间均会被取消，确认要取消吗？"
+                      onConfirm={cancelConfirm}
+                      onCancel={quitCancel}
+                    >
+                      <Button disabled={!selectJobId || status !== 21} style={{ marginLeft: 20 }}>
+                        取消
+                      </Button>
+                    </Popconfirm>
+                  ) : null}
+                </div>
+              </div>
+            </TabPane>
+            <TabPane tab="设置录用外呼时间" key="2">
+              <div style={{ height: 220 }}>
+                <h3>录用外呼时间</h3>
+                <div style={{ marginBottom: 15 }}>
+                  {getFieldDecorator('offerTriggerTime', {
+                    initialValue:
+                      status !== 11 && Object.keys(offerBackShowTime).length
+                        ? moment(offerBackShowTime.triggerTime)
+                        : null,
+                  })(
+                    <DatePicker
+                      showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                      disabledDate={disabledDate}
+                      format="YYYY-MM-DD HH:mm"
+                      placeholder="请选择外呼时间"
+                      style={{ display: 'block' }}
+                    />
+                  )}
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button onClick={onOfferSubmit} disabled={!selectJobId || status === 74}>
+                    更新
+                  </Button>
+                  {selectJobId && status === 71 ? (
+                    <Popconfirm
+                      title="外呼时间和面试时间均会被取消，确认要取消吗？"
+                      onConfirm={cancelOfferConfirm}
+                      onCancel={cancelOffer}
+                    >
+                      <Button disabled={!selectJobId || status !== 71} style={{ marginLeft: 20 }}>
+                        取消
+                      </Button>
+                    </Popconfirm>
+                  ) : null}
+                </div>
+              </div>
+            </TabPane>
+          </Tabs>
         </div>
       </Col>
       <Col className={styles['gutter-row']} span={8}>
@@ -309,8 +438,37 @@ function RecordBottom({
                           {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
                           {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
                           {interviewConfirmTime ? (
-                            <p style={{color:'red',fontWeight:400}}>{`用户期望面试时间： ${interviewConfirmTime}`}</p>) :
-                          null}
+                            <p
+                              style={{ color: 'red', fontWeight: 400 }}
+                            >{`用户期望面试时间： ${interviewConfirmTime}`}</p>
+                          ) : null}
+                          <p>{remark}</p>
+                        </div>
+                      }
+                      key={index}
+                    />
+                  )
+                )}
+            </Steps>
+            <Steps progressDot direction="vertical" current={10000}>
+              {offerFlowList &&
+                offerFlowList.length &&
+                offerFlowList.map(
+                  (
+                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime },
+                    index
+                  ) => (
+                    <Step
+                      title={`录用【${formatStatus(status)}】`}
+                      description={
+                        <div>
+                          {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
+                          {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
+                          {interviewConfirmTime ? (
+                            <p
+                              style={{ color: 'red', fontWeight: 400 }}
+                            >{`用户期望时间： ${interviewConfirmTime}`}</p>
+                          ) : null}
                           <p>{remark}</p>
                         </div>
                       }

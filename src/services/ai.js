@@ -267,3 +267,59 @@ export async function cancelInvent({ updateId }) {
     body: {},
   });
 }
+
+// 批量offer外呼
+export async function batchAddOfffer(body) {
+  return request('/offer/invitations', {
+    method: 'POST',
+    body,
+  });
+}
+// 单个外呼申请
+export async function singleAddOfffer(body) {
+  return request('/offer/invitation', {
+    method: 'POST',
+    body,
+  });
+}
+
+// 批量offer外呼修改
+export async function batchEditOfffer(body) {
+  return request('/offer/invitations/update', {
+    method: 'POST',
+    body,
+  });
+}
+
+// 单个外呼修改
+export async function singleEditOfffer(body) {
+  const { updateId } = body;
+  return request(`/offer/invitation/${updateId}`, {
+    method: 'POST',
+    body,
+  });
+}
+
+// offer取消
+export async function cancelOfffer({ updateId }) {
+  return request(`/offer/invitation/cancel/${updateId}`, {
+    method: 'POST',
+    body: {},
+  });
+}
+
+// offer获取所有的邀约时间
+export async function queryOffferInvent(body) {
+  return request('/offer/invitations/all', {
+    method: 'POST',
+    body,
+  });
+}
+
+// offfer查询过去的状态
+export async function queryOffferInventIds(body) {
+  return request('/offer/invitations/all', {
+    method: 'POST',
+    body,
+  });
+}

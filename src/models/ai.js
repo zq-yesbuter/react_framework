@@ -22,6 +22,7 @@ import {
   supervisor,
   operator,
   operatorPersonnel,
+  queryOffferInvent,
 } from '../services/ai';
 import { getDateString, flatten } from '../utils/utils';
 
@@ -33,6 +34,7 @@ function formatTriggerTime(timeList, applyId) {
   const list = timeList.filter(item => item.applyId === applyId);
   return list.length ? list.slice(-1)[0].triggerTime : null;
 }
+
 export default {
   namespace: 'chatrecord',
   state: {
@@ -49,6 +51,9 @@ export default {
     notData: false,
     pageNum: 1,
     requestFilter: { orderBy: { applyDate: 'DESC' } },
+    offerList: [],
+    offerFlowList: [],
+    offerBackShowTime: {},
   },
   effects: {
     // 获取微信聊天记录
@@ -80,7 +85,7 @@ export default {
         if (!selectJobId) {
           yield put({
             type: 'queryInformation',
-            payload:{pageNum:1,pageSize:100},
+            payload: { pageNum: 1, pageSize: 100 },
           });
           // yield put({
           //   type: 'save',
@@ -130,6 +135,12 @@ export default {
               applyIds,
             },
           });
+          yield put({
+            type: 'queryOffferInvent',
+            payload: {
+              applyIds,
+            },
+          });
         }
         const resumeId = jobList[0].resumeId;
         yield put({
@@ -146,7 +157,7 @@ export default {
         });
         yield put({
           type: 'queryInformation',
-          payload:{pageNum:1,pageSize:100},
+          payload: { pageNum: 1, pageSize: 100 },
         });
       } catch (e) {
         message.error(e.message);
@@ -185,6 +196,30 @@ export default {
         return Promise.reject(e);
       }
     },
+    // 获取offer邀约时间
+    *queryOffferInvent({ payload }, { call, put }) {
+      try {
+        const timeList = yield call(queryOffferInvent, payload);
+        yield put({
+          type: 'formatOfferTimeJobList',
+          payload: {
+            timeList,
+          },
+        });
+        yield put({
+          type: 'save',
+          payload: {
+            offerList: timeList,
+          },
+        });
+        yield put({
+          type: 'getOfferFlowList',
+          payload: { timeList },
+        });
+      } catch (e) {
+        return Promise.reject(e);
+      }
+    },
     *addInvitation({ payload }, { call, put, select }) {
       return yield call(addInvitation, payload);
     },
@@ -212,6 +247,18 @@ export default {
         const { selectJobId } = payload;
         yield put({
           type: 'getFlowList',
+          payload: { selectJobId, timeList },
+        });
+      }
+    },
+    *queryOfferTimeList({ payload }, { call, put, select }) {
+      const jobList = yield select(({ chatrecord: { jobList } }) => jobList);
+      const applyIds = jobList.map(item => item.applyId) || [];
+      if (applyIds.length) {
+        const timeList = yield call(queryOffferInvent, { applyIds });
+        const { selectJobId } = payload;
+        yield put({
+          type: 'getOfferFlowList',
           payload: { selectJobId, timeList },
         });
       }
@@ -321,6 +368,28 @@ export default {
       flowList = flatten(flowList);
       return { ...state, flowList, backShowTime };
     },
+    getOfferFlowList(state, { payload }) {
+      let { timeList, selectJobId } = state;
+      if (payload && payload.selectJobId) {
+        selectJobId = payload.selectJobId;
+      }
+      if (payload && payload.timeList) {
+        timeList = payload.timeList;
+      }
+      let offerFlowList = [];
+      if (!selectJobId || !(timeList && timeList.length)) {
+        return { ...state, offerFlowList, offerBackShowTime: {} };
+      }
+      const list = timeList.filter(item => item.applyId === selectJobId);
+      const offerBackShowTime = list.length ? list.slice(-1)[0] : {};
+      offerFlowList = timeList
+        .filter(item => item.applyId === selectJobId)
+        .filter(item => item.flow.length > 0)
+        .map(item => item.flow);
+      offerFlowList = flatten(offerFlowList);
+      return { ...state, offerFlowList, offerBackShowTime };
+    },
+
     formatJobList(state, { payload }) {
       let { jobList } = payload;
       // const jobList=newJobList.map(item => ({...item,disabled:(!!((item.status === 23 || item.status === 24))) }));
@@ -332,6 +401,15 @@ export default {
       jobList = jobList.map(item => ({
         ...item,
         triggerTime: formatTriggerTime(timeList, item.applyId),
+      })); // interviewTime:formatInventTime(timeList, item.applyId)
+      return { ...state, jobList };
+    },
+    formatOfferTimeJobList(state, { payload }) {
+      let { timeList } = payload;
+      let { jobList } = state;
+      jobList = jobList.map(item => ({
+        ...item,
+        offerTime: formatTriggerTime(timeList, item.applyId),
       })); // interviewTime:formatInventTime(timeList, item.applyId)
       return { ...state, jobList };
     },
