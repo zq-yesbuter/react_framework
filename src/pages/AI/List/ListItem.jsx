@@ -55,9 +55,9 @@ function ListItem({
       case 72:
         return 'offer已反馈';
       case 73:
-        return 'offer已通过';
-      case 74:
         return 'offer已拒绝';
+      case 74:
+        return 'offer已接受';
       default:
         return '无';
     }
