@@ -54,7 +54,8 @@ function RecordList({
     if (!search) {
       search = localStorage.getItem('token');
     }
-    let stocks = new EventSource(`/sse/messages${search}`);
+    const url = search ? `/sse/messages${search}` : '/sse/messages';
+    let stocks = new EventSource(url);
     stocks.onopen = () => {
       console.log('open==>');
     }

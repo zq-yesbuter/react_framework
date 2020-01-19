@@ -97,10 +97,10 @@ function ListItem({
         <div className={styles.itemTimeInfo}>
           {/* <Tooltip title="邀约时间" placement="topRight"> */}
           <div title="录用外呼时间" className={styles.inventTime} style={{ color: 'blue' }}>
-            {status !== 11 && offerTime ? offerTime : null}
+            {status > 70 && offerTime ? offerTime : null}
           </div>
           <div title="外呼时间" className={styles.inventTime} style={formatBackground(status)}>
-            {status !== 11 && triggerTime ? triggerTime : null}
+            {status > 20 && status < 70 && triggerTime ? triggerTime : null}
           </div>
           {/* </Tooltip> */}
           <div title="导入时间">{applyDate}</div>
