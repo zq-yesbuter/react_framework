@@ -11,13 +11,13 @@ import styles from './index.less';
 
 function RecordList({
   dispatch,
-  chatrecord: { messageList = [], newTalk, noLoading = false, bottomLoading = false, showNotice },
+  chatrecord: { messageList = [], newTalk, noLoading = false, bottomLoading = false },
 }) {
   const chatRef = useRef(null);
   const intervalRef = useRef(null);
   const [pageNo, setPageNo] = useState(0);
   const [scroll, setScroll] = useState(true);
-  // const [showNotice, setShowNotice] = useState(false);
+  const [showNotice, setShowNotice] = useState(false);
 
   function handleScroll() {
     const clientHeight = chatRef.current.clientHeight;
@@ -49,29 +49,29 @@ function RecordList({
     // }
   }
   useEffect(() => {
-    // console.log('didmount===>', process.env);
-    // let { search, origin } = document.location || {};
-    // if (!search) {
-    //   search = localStorage.getItem('token');
-    // }
-    // let stocks = new EventSource(`/sse/messages${search}`);
-    // stocks.onopen = function (){
-    //   console.log('open==>');
-    // }
-    // stocks.onmessage = function (event) {
-    //   console.log('message===>',event);
-    //   setShowNotice(true);
-    // };
-    // stocks.onerror = function (event) {
-    //   console.log('error==>');
-    //   // new EventSource(`/sse/messages${search}`);
-    // };
-    // return () => {
-    //   if (stocks != null) {
-    //     stocks.close();
-    //     console.log('Disconnected');
-    //   }
-    // };
+    console.log('didmount===>', process.env);
+    let { search, origin } = document.location || {};
+    if (!search) {
+      search = localStorage.getItem('token');
+    }
+    let stocks = new EventSource(`/sse/messages${search}`);
+    stocks.onopen = () => {
+      console.log('open==>');
+    }
+    stocks.onmessage = (event) => {
+      console.log('message===>',event);
+      setShowNotice(true);
+    };
+    stocks.onerror = (event) => {
+      console.log('error==>');
+      // new EventSource(`/sse/messages${search}`);
+    };
+    return () => {
+      if (stocks != null) {
+        stocks.close();
+        console.log('Disconnected');
+      }
+    };
 
     // console.log('didmount===>', process.env);
     // try {
@@ -268,8 +268,8 @@ function RecordList({
                   type: 'chatrecord/jobAppliedAsPostAll',
                 });
                 // window.location.reload();
-                dispatch({type:'chatrecord/save',payload:{showNotice:false}})
-                // setShowNotice(false); 
+                // dispatch({type:'chatrecord/save',payload:{showNotice:false}})
+                setShowNotice(false); 
               }}
               style={{ fontSize: '17px', color: '#08c', marginLeft: 7, marginRight: 7 }}
             />
