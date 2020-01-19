@@ -610,14 +610,14 @@ function ChatList({
           批量导出简历
         </Menu.Item>
         <Menu.Item key={2} onClick={batchExportInvent}>
-          批量导出邀约
+          批量导出面试邀约
         </Menu.Item>
         <Menu.Item key={3} onClick={batchOfferInvent}>
           批量导出录用邀约
         </Menu.Item>
         {/* <Menu.Item key={3}>导出简历+邀约</Menu.Item> */}
         <Menu.Item key={4} onClick={onExportChange}>
-          分配邀约时间
+          分配邀约面试时间
         </Menu.Item>
         <Menu.Item key={5} onClick={onOfferChange}>
           分配录用通知时间
