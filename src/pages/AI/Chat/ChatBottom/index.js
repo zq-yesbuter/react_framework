@@ -318,7 +318,7 @@ function RecordBottom({
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
-          {/* <h3>录用外呼时间</h3>
+          <h3>录用外呼时间</h3>
           <div className={styles.scroll} style={{ paddingTop: 15 }}>
             <div style={{ marginBottom: 15 }}>
               {getFieldDecorator('offerTriggerTime', {
@@ -352,8 +352,8 @@ function RecordBottom({
                 </Popconfirm>
               ) : null}
             </div>
-          </div> */}
-          <Tabs tabPosition="bottom" size="small">
+          </div>
+          {/* <Tabs tabPosition="bottom" size="small">
             <TabPane tab="设置面试时间" key="1">
               <div style={{ height: 220 }}>
                 <h3>邀约/面试时间</h3>
@@ -464,7 +464,7 @@ function RecordBottom({
                 </div>
               </div>
             </TabPane>
-          </Tabs>
+          </Tabs> */}
         </div>
       </Col>
       <Col className={styles['gutter-row']} span={8}>
