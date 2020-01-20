@@ -75,11 +75,13 @@ function ChatList({
     bottomLoading,
     notData,
     pageNum,
+    selectedKeys,
+    showNotice,
   },
   form,
 }) {
   const [value, setValue] = useState();
-  const [selectedKeys, hadleSelectedKeys] = useState([]);
+  // const [selectedKeys, hadleSelectedKeys] = useState([]);
   const [sortTitle, setSortTitle] = useState('排序');
   const [filterTitle, setFilterTitle] = useState('筛选');
   const [allChecked, setAllChecked] = useState(false);
@@ -141,7 +143,8 @@ function ChatList({
           });
           return;
         }
-        hadleSelectedKeys([]);
+
+        // hadleSelectedKeys([]);
         dispatch({
           type: 'chatrecord/jobAppliedAsPostAll',
           payload: { ...nameObj, ...requestValue, pageSize: 20, pageNum },
@@ -149,7 +152,8 @@ function ChatList({
         dispatch({
           type: 'chatrecord/save',
           payload: {
-            requestFilter: { orderBy: { applyDate: 'DESC' }, ...nameObj, ...requestValue },
+            requestFilter: { orderBy: { applyDate: 'DESC' }, ...nameObj, ...requestValue},
+            selectedKeys:[],
           },
         });
       }
@@ -314,7 +318,13 @@ function ChatList({
         jobList: newDataSource,
       },
     });
-    hadleSelectedKeys(newSelectedKeys);
+    dispatch({
+      type: 'chatrecord/save',
+      payload: {
+        selectedKeys: newSelectedKeys,
+      },
+    });
+    // hadleSelectedKeys(newSelectedKeys);
   }
 
   // 全选按钮
@@ -334,9 +344,10 @@ function ChatList({
       type: 'chatrecord/save',
       payload: {
         jobList: newDataSource,
+        selectedKeys: newSelectedKeys,
       },
     });
-    hadleSelectedKeys(newSelectedKeys);
+    // hadleSelectedKeys(newSelectedKeys);
   }
   function component() {
     let chatComponent;
@@ -669,14 +680,47 @@ function ChatList({
       type: 'chatrecord/save',
       payload: {
         jobList: newDataSource,
+        selectedKeys: newSelectedKeys,
       },
     });
-    hadleSelectedKeys(newSelectedKeys);
+    // hadleSelectedKeys(newSelectedKeys);
   }
   return (
     <Fragment>
       {search()}
       {header()}
+      {showNotice ? (
+        <div className={styles.noticeFix}>
+          <div>
+            有新的信息变化，请
+            {/* <Icon
+              type="sync"
+              onClick={() => {
+                dispatch({
+                  type: 'chatrecord/jobAppliedAsPostAll',
+                });
+                // window.location.reload();
+                // dispatch({type:'chatrecord/save',payload:{showNotice:false}})
+                setShowNotice(false); 
+              }}
+              style={{ fontSize: '17px', color: '#08c', marginLeft: 7, marginRight: 7 }}
+            /> */}
+            <span
+              onClick={() => {
+               dispatch({
+                type: 'chatrecord/jobAppliedAsPostAll',
+              });
+              // window.location.reload();
+              dispatch({type:'chatrecord/save',payload:{showNotice:false}})
+              // setShowNotice(false); 
+            }} 
+            >
+            点击刷新
+            </span>
+            查看
+          </div>
+        </div>
+     ) : null}
       <div className={styles.listContent} ref={listRef} onScroll={_.throttle(handleScroll, 1000)}>
         {component()}
       </div>

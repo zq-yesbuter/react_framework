@@ -57,6 +57,7 @@ export default {
     showNotice: false,
     phoneMessage: [],
     offerPhoneMessage: [],
+    selectedKeys: [],
   },
   effects: {
     // 获取微信聊天记录
@@ -100,6 +101,7 @@ export default {
             type: 'save',
             payload: {
               selectJobId,
+              selectedKeys: [],
             },
           });
           yield put({
@@ -115,6 +117,7 @@ export default {
           payload: {
             selectJobId,
             notData: false,
+            selectedKeys: [],
           },
         });
         yield put({

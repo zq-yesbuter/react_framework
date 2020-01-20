@@ -51,13 +51,13 @@ function ListItem({
       case 34:
         return '已拒绝（面试阶段）';
       case 71:
-        return 'offer已申请';
+        return 'Offer待联系';
       case 72:
-        return 'offer已反馈';
+        return 'Offer已联系';
       case 73:
-        return 'offer已拒绝';
+        return 'Offer未确认';
       case 74:
-        return 'offer已接受';
+        return 'Offer已确认';
       default:
         return '无';
     }

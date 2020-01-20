@@ -61,7 +61,8 @@ function RecordList({
     }
     stocks.onmessage = (event) => {
       console.log('message===>',event);
-      setShowNotice(true);
+      dispatch({type:'chatrecord/save',payload:{showNotice:true}});
+      // setShowNotice(true);
     };
     stocks.onerror = (event) => {
       console.log('error==>');
@@ -258,27 +259,6 @@ function RecordList({
     <div className={styles.chatContent}>
       {/* <div className={styles.recordHeader}>沟通记录</div> */}
       {bottomLoadingHtml()}
-      {showNotice ? (
-        <div className={styles.noticeFix}>
-          <div>
-            你有新的状态更新了，请
-            <Icon
-              type="sync"
-              onClick={() => {
-                dispatch({
-                  type: 'chatrecord/jobAppliedAsPostAll',
-                });
-                // window.location.reload();
-                // dispatch({type:'chatrecord/save',payload:{showNotice:false}})
-                setShowNotice(false); 
-              }}
-              style={{ fontSize: '17px', color: '#08c', marginLeft: 7, marginRight: 7 }}
-            />
-            {/* <span onClick={() => {window.location.reload();}}>刷新</span> */}
-            获取哦！
-          </div>
-        </div>
-      ) : null}
       <div className={styles.chatPanel}>
         <div className={styles.chatPanelContainer} ref={chatRef} onScroll={handleScroll}>
           <ul className={styles.chatList}>{chatList()}</ul>
