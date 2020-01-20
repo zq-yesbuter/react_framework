@@ -83,16 +83,16 @@ function ImportModal({ visible, form, close, handleOk }) {
                   邀约成功
                 </Radio>
                 <Radio style={radioStyle} value={71}>
-                  offer已申请
+                  Offer待联系
                 </Radio>
                 <Radio style={radioStyle} value={72}>
-                  offer已反馈
+                  Offer已联系
                 </Radio>
                 <Radio style={radioStyle} value={73}>
-                  offer已通过
+                  Offer未确认
                 </Radio>
                 <Radio style={radioStyle} value={74}>
-                  offer已拒绝
+                  Offer已确认
                 </Radio>
               </Radio.Group>
             )}
