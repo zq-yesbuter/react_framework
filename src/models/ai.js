@@ -50,7 +50,7 @@ export default {
     bottomLoading: false,
     notData: false,
     pageNum: 1,
-    requestFilter: { orderBy: { applyDate: 'DESC' } },
+    requestFilter: { orderBy: { applyDate: 'DESC' },pageSize: 50, pageNum: 1 },
     offerList: [],
     offerFlowList: [],
     offerBackShowTime: {},
@@ -313,6 +313,12 @@ export default {
               applyIds,
             },
           });
+          yield put({
+            type: 'queryOffferInvent',
+            payload: {
+              applyIds,
+            },
+          });
         }
       } catch (e) {
         return Promise.reject(e);
@@ -370,14 +376,22 @@ export default {
       const backShowTime = list.length ? list.slice(-1)[0] : {};
       flowList = timeList
         .filter(item => item.applyId === selectJobId)
-        .filter(item => item.flow.length > 0 )
-        .map(item => item.flow);
+        .filter(item => item.flow.length > 0 || item.notifyMessage.length > 0 )
+        .map(item => {
+          if(!item.flow){
+            item.flow = []
+          }
+          if(!item.notifyMessage){
+            item.notifyMessage = []
+          }
+          return [...item.flow,...item.notifyMessage];
+        });
       flowList = flatten(flowList);
-      phoneMessage = timeList
-        .filter(item => item.applyId === selectJobId)
-        .filter(item => item.notifyMessage.length > 0 )
-        .map(item => item.notifyMessage);
-      phoneMessage = flatten(phoneMessage);
+      // phoneMessage = timeList
+      //   .filter(item => item.applyId === selectJobId)
+      //   .filter(item => item.notifyMessage.length > 0 )
+      //   .map(item => item.notifyMessage);
+      // phoneMessage = flatten(phoneMessage);
       return { ...state, flowList, backShowTime, phoneMessage };
     },
     getOfferFlowList(state, { payload }) {
@@ -397,14 +411,24 @@ export default {
       const offerBackShowTime = list.length ? list.slice(-1)[0] : {};
       offerFlowList = timeList
         .filter(item => item.applyId === selectJobId)
-        .filter(item => item.flow.length > 0)
-        .map(item => item.flow);
+        .filter(item => item.flow.length > 0 || item.notifyMessage.length > 0 )
+        .map(item => {
+          if(!item.flow){
+            item.flow = []
+          }
+          if(!item.notifyMessage){
+            item.notifyMessage=[]
+          }
+          return [...item.flow,...item.notifyMessage];
+        });
+        // .filter(item => item.flow.length > 0)
+        // .map(item => item.flow);
       offerFlowList = flatten(offerFlowList);
-      offerPhoneMessage = timeList
-        .filter(item => item.applyId === selectJobId)
-        .filter(item => item.notifyMessage.length > 0 )
-        .map(item => item.notifyMessage);
-      offerPhoneMessage = flatten(offerPhoneMessage);
+      // offerPhoneMessage = timeList
+      //   .filter(item => item.applyId === selectJobId)
+      //   .filter(item => item.notifyMessage.length > 0 )
+      //   .map(item => item.notifyMessage);
+      // offerPhoneMessage = flatten(offerPhoneMessage);
       return { ...state, offerFlowList, offerBackShowTime,offerPhoneMessage };
     },
 

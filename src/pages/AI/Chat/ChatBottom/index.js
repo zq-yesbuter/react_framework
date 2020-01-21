@@ -476,11 +476,11 @@ function RecordBottom({
                 flowList.length &&
                 flowList.map(
                   (
-                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime },
+                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel},
                     index
                   ) => (
                     <Step
-                      title={`【${formatStatus(status)}】`}
+                      title={channel ? `【${formatPhoneStatus(status)}】` : `【${formatStatus(status)}】`}
                       description={
                         <div>
                           {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
@@ -490,7 +490,7 @@ function RecordBottom({
                               style={{ color: 'red', fontWeight: 400 }}
                             >{`用户期望面试时间： ${interviewConfirmTime}`}</p>
                           ) : null}
-                          <p>{remark}</p>
+                          <p>{channel ? null : remark}</p>
                         </div>
                       }
                       key={index}
@@ -498,7 +498,7 @@ function RecordBottom({
                   )
                 )}
             </Steps>
-            <Steps progressDot direction="vertical" current={10000}>
+            {/* <Steps progressDot direction="vertical" current={10000}>
               {phoneMessage &&
                 phoneMessage.length &&
                 phoneMessage.map(
@@ -512,17 +512,17 @@ function RecordBottom({
                     />
                   )
                 )}
-            </Steps>
+            </Steps> */}
             <Steps progressDot direction="vertical" current={10000}>
               {offerFlowList &&
                 offerFlowList.length &&
                 offerFlowList.map(
                   (
-                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime },
+                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
                     index
                   ) => (
                     <Step
-                      title={`录用【${formatStatus(status)}】`}
+                      title={channel ? `【${formatPhoneStatus(status)}】` : `录用【${formatStatus(status)}】`}
                       description={
                         <div>
                           {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
@@ -532,7 +532,7 @@ function RecordBottom({
                               style={{ color: 'red', fontWeight: 400 }}
                             >{`用户期望时间： ${interviewConfirmTime}`}</p>
                           ) : null}
-                          <p>{remark}</p>
+                          <p>{channel ? null : remark}</p>
                         </div>
                       }
                       key={index}
@@ -540,7 +540,7 @@ function RecordBottom({
                   )
                 )}
             </Steps>
-            <Steps progressDot direction="vertical" current={10000}>
+            {/* <Steps progressDot direction="vertical" current={10000}>
               {offerPhoneMessage &&
                 offerPhoneMessage.length &&
                 offerPhoneMessage.map(
@@ -554,7 +554,7 @@ function RecordBottom({
                     />
                   )
                 )}
-            </Steps>
+            </Steps> */}
           </div>
         </div>
       </Col>

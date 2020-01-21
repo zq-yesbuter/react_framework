@@ -133,7 +133,7 @@ function ChatList({
         if (pageNum !== 1) {
           dispatch({
             type: 'chatrecord/loadMoreList',
-            payload: { ...nameObj, ...requestValue, pageSize: 20, pageNum },
+            payload: { ...nameObj, ...requestValue, pageSize: 50, pageNum },
           });
           dispatch({
             type: 'chatrecord/save',
@@ -147,7 +147,7 @@ function ChatList({
         // hadleSelectedKeys([]);
         dispatch({
           type: 'chatrecord/jobAppliedAsPostAll',
-          payload: { ...nameObj, ...requestValue, pageSize: 20, pageNum },
+          payload: { ...nameObj, ...requestValue, pageSize: 50, pageNum },
         });
         dispatch({
           type: 'chatrecord/save',
