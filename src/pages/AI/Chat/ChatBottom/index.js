@@ -168,7 +168,7 @@ function RecordBottom({
         }
         addInvitation(payload)
           .then(data => {
-            message.success('新增邀约成功');
+            message.success('新增邀约成功');               
             // dispatch({
             //   type: 'chatrecord/updateSingleInvent',
             // });
@@ -340,8 +340,8 @@ function RecordBottom({
               {getFieldDecorator('diff', {
                 initialValue:
                   status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.interviewEndTime).diff(
-                        backShowTime.interviewTime,
+                    ? moment(backShowTime.endTime).diff(
+                        backShowTime.time,
                         'minutes'
                       )
                     : 60,
@@ -356,10 +356,10 @@ function RecordBottom({
               )}
             </div>
             <div style={{ marginBottom: 15 }}>
-              {getFieldDecorator('interviewStartTime', {
+              {getFieldDecorator('startTime', {
                 initialValue:
                   status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.interviewTime)
+                    ? moment(backShowTime.time)
                     : null,
               })(
                 <DatePicker
