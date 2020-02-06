@@ -318,13 +318,13 @@ function RecordBottom({
     <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
       <Col className={styles['gutter-row']} span={8}>
         <div className={styles['gutter-box']}>
-          <h3>录用外呼时间</h3>
+          <h3>邀约/面试时间</h3>
           <div className={styles.scroll} style={{ paddingTop: 15 }}>
             <div style={{ marginBottom: 15 }}>
-              {getFieldDecorator('offerTriggerTime', {
+              {getFieldDecorator('triggerTime', {
                 initialValue:
-                  status !== 11 && Object.keys(offerBackShowTime).length
-                    ? moment(offerBackShowTime.triggerTime)
+                  status !== 11 && Object.keys(backShowTime).length
+                    ? moment(backShowTime.triggerTime)
                     : null,
               })(
                 <DatePicker
@@ -336,135 +336,59 @@ function RecordBottom({
                 />
               )}
             </div>
+            <div style={{ marginBottom: 15 }}>
+              {getFieldDecorator('diff', {
+                initialValue:
+                  status !== 11 && Object.keys(backShowTime).length
+                    ? moment(backShowTime.interviewEndTime).diff(
+                        backShowTime.interviewTime,
+                        'minutes'
+                      )
+                    : 60,
+              })(
+                <InputNumber
+                  style={{ width: '100%' }}
+                  min={0}
+                  max={160}
+                  formatter={value => `${value}分钟`}
+                  parser={value => value.replace('分钟', '')}
+                />
+              )}
+            </div>
+            <div style={{ marginBottom: 15 }}>
+              {getFieldDecorator('interviewStartTime', {
+                initialValue:
+                  status !== 11 && Object.keys(backShowTime).length
+                    ? moment(backShowTime.interviewTime)
+                    : null,
+              })(
+                <DatePicker
+                  disabledDate={disabledDate}
+                  // disabledTime={disabledDateTime}
+                  showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                  format="YYYY-MM-DD HH:mm"
+                  placeholder="请选择面试时间"
+                  style={{ display: 'block' }}
+                />
+              )}
+            </div>
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button onClick={onOfferSubmit} disabled={!selectJobId || status === 74}>
+              <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>
                 更新
               </Button>
-              {selectJobId && status === 71 ? (
+              {selectJobId && status === 21 ? (
                 <Popconfirm
                   title="外呼时间和面试时间均会被取消，确认要取消吗？"
-                  onConfirm={cancelOfferConfirm}
-                  onCancel={cancelOffer}
+                  onConfirm={cancelConfirm}
+                  onCancel={quitCancel}
                 >
-                  <Button disabled={!selectJobId || status !== 71} style={{ marginLeft: 20 }}>
+                  <Button disabled={!selectJobId || status !== 21} style={{ marginLeft: 20 }}>
                     取消
                   </Button>
                 </Popconfirm>
               ) : null}
             </div>
           </div>
-          {/* <Tabs tabPosition="bottom" size="small">
-            <TabPane tab="设置面试时间" key="1">
-              <div style={{ height: 220 }}>
-                <h3>邀约/面试时间</h3>
-                <div style={{ marginBottom: 15 }}>
-                  {getFieldDecorator('triggerTime', {
-                    initialValue:
-                      status !== 11 && Object.keys(backShowTime).length
-                        ? moment(backShowTime.triggerTime)
-                        : null,
-                  })(
-                    <DatePicker
-                      showTime={{ format: 'HH:mm', minuteStep: 5 }}
-                      disabledDate={disabledDate}
-                      format="YYYY-MM-DD HH:mm"
-                      placeholder="请选择外呼时间"
-                      style={{ display: 'block' }}
-                    />
-                  )}
-                </div>
-                <div style={{ marginBottom: 15 }}>
-                  {getFieldDecorator('diff', {
-                    initialValue:
-                      status !== 11 && Object.keys(backShowTime).length
-                        ? moment(backShowTime.endTime).diff(
-                            backShowTime.time,
-                            'minutes'
-                          )
-                        : 60,
-                  })(
-                    <InputNumber
-                      style={{ width: '100%' }}
-                      min={0}
-                      max={160}
-                      formatter={value => `${value}分钟`}
-                      parser={value => value.replace('分钟', '')}
-                    />
-                  )}
-                </div>
-                <div style={{ marginBottom: 15 }}>
-                  {getFieldDecorator('startTime', {
-                    initialValue:
-                      status !== 11 && Object.keys(backShowTime).length
-                        ? moment(backShowTime.time)
-                        : null,
-                  })(
-                    <DatePicker
-                      disabledDate={disabledDate}
-                      // disabledTime={disabledDateTime}
-                      showTime={{ format: 'HH:mm', minuteStep: 5 }}
-                      format="YYYY-MM-DD HH:mm"
-                      placeholder="请选择面试时间"
-                      style={{ display: 'block' }}
-                    />
-                  )}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>
-                    更新
-                  </Button>
-                  {selectJobId && status === 21 ? (
-                    <Popconfirm
-                      title="外呼时间和面试时间均会被取消，确认要取消吗？"
-                      onConfirm={cancelConfirm}
-                      onCancel={quitCancel}
-                    >
-                      <Button disabled={!selectJobId || status !== 21} style={{ marginLeft: 20 }}>
-                        取消
-                      </Button>
-                    </Popconfirm>
-                  ) : null}
-                </div>
-              </div>
-            </TabPane>
-            <TabPane tab="设置录用时间" key="2">
-              <div style={{ height: 220 }}>
-                <h3>录用外呼时间</h3>
-                <div style={{ marginBottom: 15 }}>
-                  {getFieldDecorator('offerTriggerTime', {
-                    initialValue:
-                      status !== 11 && Object.keys(offerBackShowTime).length
-                        ? moment(offerBackShowTime.triggerTime)
-                        : null,
-                  })(
-                    <DatePicker
-                      showTime={{ format: 'HH:mm', minuteStep: 5 }}
-                      disabledDate={disabledDate}
-                      format="YYYY-MM-DD HH:mm"
-                      placeholder="请选择外呼时间"
-                      style={{ display: 'block' }}
-                    />
-                  )}
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <Button onClick={onOfferSubmit} disabled={!selectJobId || status === 74}>
-                    更新
-                  </Button>
-                  {selectJobId && status === 71 ? (
-                    <Popconfirm
-                      title="外呼时间和面试时间均会被取消，确认要取消吗？"
-                      onConfirm={cancelOfferConfirm}
-                      onCancel={cancelOffer}
-                    >
-                      <Button disabled={!selectJobId || status !== 71} style={{ marginLeft: 20 }}>
-                        取消
-                      </Button>
-                    </Popconfirm>
-                  ) : null}
-                </div>
-              </div>
-            </TabPane>
-          </Tabs> */}
         </div>
       </Col>
       <Col className={styles['gutter-row']} span={8}>

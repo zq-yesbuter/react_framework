@@ -20,11 +20,11 @@ export function _onCreate() {
     app.use(plugin);
   });
   
-  app.model({ namespace: 'ai', ...(require('/Users/zhangqing272/workspace/work/human_resources_platform/src/models/ai.js').default) });
-app.model({ namespace: 'global', ...(require('/Users/zhangqing272/workspace/work/human_resources_platform/src/models/global.js').default) });
-app.model({ namespace: 'login', ...(require('/Users/zhangqing272/workspace/work/human_resources_platform/src/models/login.js').default) });
-app.model({ namespace: 'setting', ...(require('/Users/zhangqing272/workspace/work/human_resources_platform/src/models/setting.js').default) });
-app.model({ namespace: 'user', ...(require('/Users/zhangqing272/workspace/work/human_resources_platform/src/models/user.js').default) });
+  app.model({ namespace: 'ai', ...(require('F:/homuanresource、/human_resources_platform/src/models/ai.js').default) });
+app.model({ namespace: 'global', ...(require('F:/homuanresource、/human_resources_platform/src/models/global.js').default) });
+app.model({ namespace: 'login', ...(require('F:/homuanresource、/human_resources_platform/src/models/login.js').default) });
+app.model({ namespace: 'setting', ...(require('F:/homuanresource、/human_resources_platform/src/models/setting.js').default) });
+app.model({ namespace: 'user', ...(require('F:/homuanresource、/human_resources_platform/src/models/user.js').default) });
   return app;
 }
 
