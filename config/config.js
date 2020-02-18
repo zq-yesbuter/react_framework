@@ -1,3 +1,4 @@
+import 'babel-polyfill';
 import defaultSettings from './defaultSettings'; // https://umijs.org/config/
 import slash from 'slash2';
 import webpackPlugin from './plugin.config';
