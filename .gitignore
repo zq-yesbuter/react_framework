@@ -33,6 +33,7 @@ functions/*
 /.umi 
 /.umi/ 
 *.umi
+.umi
 .umi-production
 
 # screenshot
