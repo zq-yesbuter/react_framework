@@ -152,8 +152,8 @@ function ChatList({
         dispatch({
           type: 'chatrecord/save',
           payload: {
-            requestFilter: { orderBy: { applyDate: 'DESC' }, ...nameObj, ...requestValue},
-            selectedKeys:[],
+            requestFilter: { orderBy: { applyDate: 'DESC' }, ...nameObj, ...requestValue },
+            selectedKeys: [],
           },
         });
       }
@@ -434,7 +434,7 @@ function ChatList({
     const resumeIds = resumeList.map(item => item.resumeId);
     const fileName = '导出简历信息.zip';
     let size = 0;
-    fetch('/tenant/job/apply/resume/attachment/download', {
+    fetch('/resume/attachment/download', {
       method: 'POST',
       body: JSON.stringify({ resumeIds }),
       headers: {
@@ -707,20 +707,20 @@ function ChatList({
             /> */}
             <span
               onClick={() => {
-               dispatch({
-                type: 'chatrecord/jobAppliedAsPostAll',
-              });
-              // window.location.reload();
-              dispatch({type:'chatrecord/save',payload:{showNotice:false}})
-              // setShowNotice(false); 
-            }} 
+                dispatch({
+                  type: 'chatrecord/jobAppliedAsPostAll',
+                });
+                // window.location.reload();
+                dispatch({ type: 'chatrecord/save', payload: { showNotice: false } });
+                // setShowNotice(false);
+              }}
             >
-            点击刷新
+              点击刷新
             </span>
             查看
           </div>
         </div>
-     ) : null}
+      ) : null}
       <div className={styles.listContent} ref={listRef} onScroll={_.throttle(handleScroll, 1000)}>
         {component()}
       </div>

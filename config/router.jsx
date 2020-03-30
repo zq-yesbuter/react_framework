@@ -16,7 +16,7 @@ export default [
     routes: [
       {
         path: '/',
-        component: '../layouts/BasicLayout',
+        component: '../layouts/BlankLayout',
         authority: ['admin', 'user'],
         routes: [
           {
@@ -37,27 +37,15 @@ export default [
             ],
           },
           // {
-          //   path: '/403',
-          //   name: '403',
-          //   icon: 'smile',
-          //   component: './403',
-          // },
-          // {
-          //   path: '/500',
-          //   name: '500',
-          //   icon: 'smile',
-          //   component: './500',
-          // },
-          // {
-          //   path: '/404',
-          //   name: '404',
-          //   icon: 'smile',
           //   component: './404',
           // },
-          {
-            component: './404',
-          },
         ],
+      },
+      {
+        component: './403',
+      },
+      {
+        component: './500',
       },
       {
         component: './404',
