@@ -2,8 +2,9 @@ import 'babel-polyfill';
 import defaultSettings from './defaultSettings'; // https://umijs.org/config/
 import slash from 'slash2';
 import webpackPlugin from './plugin.config';
+import routes from './router';
 
-const { pwa, primaryColor } = defaultSettings; // preview.pro.ant.design only do not use in your production ;
+const { pwa, primaryColor, menuDarkBg } = defaultSettings; // preview.pro.ant.design only do not use in your production ;
 // preview.pro.ant.design 专用环境变量，请不要在你的项目中使用它。
 
 const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION, API = 'MOCK' } = process.env;
@@ -112,69 +113,7 @@ export default {
   },
   devtool: isAntDesignProPreview ? 'source-map' : false,
   // umi routes: https://umijs.org/zh/guide/router.html
-  routes: [
-    // {
-    //   path: '/user',
-    //   component: '../layouts/UserLayout',
-    //   routes: [
-    //     {
-    //       name: 'login',
-    //       path: '/user/login',
-    //       component: './user/login',
-    //     },
-    //   ],
-    // },
-    {
-      path: '/',
-      component: '../layouts/SecurityLayout',
-      routes: [
-        {
-          path: '/',
-          component: '../layouts/BlankLayout',
-          authority: ['admin', 'user'],
-          routes: [
-            {
-              path: '/',
-              redirect: '/AI',
-            },
-            {
-              path: '/AI',
-              name: 'AI',
-              icon: 'smile',
-              component: './AI',
-            },
-            {
-              path: '/403',
-              name: '403',
-              icon: 'smile',
-              component: './403',
-            },
-            {
-              path: '/500',
-              name: '500',
-              icon: 'smile',
-              component: './500',
-            },
-            {
-              path: '/404',
-              name: '404',
-              icon: 'smile',
-              component: './404',
-            },
-            {
-              component: './404',
-            },
-          ],
-        },
-        {
-          component: './404',
-        },
-      ],
-    },
-    {
-      component: './404',
-    },
-  ],
+  routes,
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
   // 主题颜色
   theme: {

@@ -13,11 +13,10 @@ class AvatarDropdown extends React.Component {
     if (key === 'logout') {
       const { dispatch } = this.props;
 
-      if (dispatch) {
-        dispatch({
-          type: 'login/logout',
-        });
-      }
+      const logoutUrl = `/authenticate/erp/logout?callback=${encodeURIComponent(
+        `${location.origin}/AI`
+      )}`;
+      window.location.href = logoutUrl;
 
       return;
     }
@@ -35,7 +34,7 @@ class AvatarDropdown extends React.Component {
     } = this.props;
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
-        {menu && (
+        {/* {menu && (
           <Menu.Item key="center">
             <Icon type="user" />
             <FormattedMessage id="menu.account.center" defaultMessage="account center" />
@@ -47,7 +46,7 @@ class AvatarDropdown extends React.Component {
             <FormattedMessage id="menu.account.settings" defaultMessage="account settings" />
           </Menu.Item>
         )}
-        {menu && <Menu.Divider />}
+        {menu && <Menu.Divider />} */}
 
         <Menu.Item key="logout">
           <Icon type="logout" />
@@ -55,22 +54,23 @@ class AvatarDropdown extends React.Component {
         </Menu.Item>
       </Menu>
     );
-    return currentUser && currentUser.name ? (
+    return (
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
           <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-          <span className={styles.name}>{currentUser.name}</span>
+          <span className={styles.name}>{currentUser.name || '当前用户'}</span>
         </span>
       </HeaderDropdown>
-    ) : (
-      <Spin
-        size="small"
-        style={{
-          marginLeft: 8,
-          marginRight: 8,
-        }}
-      />
     );
+    // currentUser && currentUser.name ?) : (
+    //   <Spin
+    //     size="small"
+    //     style={{
+    //       marginLeft: 8,
+    //       marginRight: 8,
+    //     }}
+    //   />
+    // );
   }
 }
 

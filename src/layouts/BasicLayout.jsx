@@ -8,7 +8,6 @@ import React, { useEffect } from 'react';
 import Link from 'umi/link';
 import { connect } from 'dva';
 import { Icon } from 'antd';
-import { formatMessage } from 'umi-plugin-react/locale';
 import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { isAntDesignPro } from '@/utils/utils';
@@ -28,20 +27,20 @@ const menuDataRender = menuList =>
 
 const defaultFooterDom = (
   <DefaultFooter
-    copyright="2019 蚂蚁金服体验技术部出品"
+    copyright="2020 京东数科智能技术部出品"
     links={[
       {
-        key: 'Ant Design Pro',
-        title: 'Ant Design Pro',
-        href: 'https://pro.ant.design',
+        key: 'AI招聘系统',
+        title: 'AI招聘系统',
+        // href: 'https://pro.ant.design',
         blankTarget: true,
       },
-      {
-        key: 'github',
-        title: <Icon type="github" />,
-        href: 'https://github.com/ant-design/ant-design-pro',
-        blankTarget: true,
-      },
+      // {
+      //   key: 'github',
+      //   title: <Icon type="github" />,
+      //   href: 'https://github.com/ant-design/ant-design-pro',
+      //   blankTarget: true,
+      // },
       {
         key: 'Ant Design',
         title: 'Ant Design',
@@ -111,37 +110,33 @@ const BasicLayout = props => {
     <ProLayout
       logo={logo}
       onCollapse={handleMenuCollapse}
-      // menuItemRender={(menuItemProps, defaultDom) => {
-      //   if (menuItemProps.isUrl) {
-      //     return defaultDom;
-      //   }
+      menuItemRender={(menuItemProps, defaultDom) => {
+        if (menuItemProps.isUrl) {
+          return defaultDom;
+        }
 
-      //   return <Link to={menuItemProps.path}>{defaultDom}</Link>;
-      // }}
-      // breadcrumbRender={(routers = []) => [
-      //   {
-      //     path: '/',
-      //     breadcrumbName: formatMessage({
-      //       id: 'menu.home',
-      //       defaultMessage: 'Home',
-      //     }),
-      //   },
-      //   ...routers,
-      // ]}
-      // itemRender={(route, params, routes, paths) => {
-      //   const first = routes.indexOf(route) === 0;
-      //   return first ? (
-      //     <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
-      //   ) : (
-      //     <span>{route.breadcrumbName}</span>
-      //   );
-      // }}
-      // footerRender={footerRender}
-      // menuDataRender={menuDataRender}
-      // formatMessage={formatMessage}
-      // rightContentRender={rightProps => <RightContent {...rightProps} />}
-      // {...props}
-      // {...settings}
+        return <Link to={menuItemProps.path}>{defaultDom}</Link>;
+      }}
+      breadcrumbRender={(routers = []) => [
+        {
+          path: '/',
+          breadcrumbName: '首页',
+        },
+        ...routers,
+      ]}
+      itemRender={(route, params, routes, paths) => {
+        const first = routes.indexOf(route) === 0;
+        return first ? (
+          <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
+        ) : (
+          <span>{route.breadcrumbName}</span>
+        );
+      }}
+      footerRender={() => null}
+      menuDataRender={menuDataRender}
+      rightContentRender={rightProps => <RightContent {...rightProps} />}
+      {...props}
+      {...settings}
     >
       {children}
     </ProLayout>
