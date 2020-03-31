@@ -25,7 +25,7 @@ export default {
   'user-login.password.required': 'Please enter your password!',
   'user-login.password.twice': 'The passwords entered twice do not match!',
   'user-login.strength.msg':
-    "Please enter at least 6 characters and don't use passwords that are easy to guess.",
+    'Please enter at least 6 characters and don\'t use passwords that are easy to guess.',
   'user-login.strength.strong': 'Strength: strong',
   'user-login.strength.medium': 'Strength: medium',
   'user-login.strength.short': 'Strength: too short',

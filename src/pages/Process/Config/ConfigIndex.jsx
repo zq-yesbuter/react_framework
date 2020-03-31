@@ -20,11 +20,13 @@ import {
   message,
 } from 'antd';
 import { connect } from 'dva';
+import { routerRedux, Link } from 'dva/router';
 import _ from 'lodash';
 import moment from 'moment';
 import { batchInvent, editBatchInvitation, fetchInvitation } from '@/services/ai';
 import { flatten } from '@/utils/utils';
 import styles from './index.less';
+import TrimInput from '@/components/TrimInput';
 
 const { Option } = Select;
 const { Search } = Input;
@@ -40,7 +42,7 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-const formatSelectedKeys = (selectedKeys, jobList) => {
+const formatSelectedKeys = (selectedKeys = [], jobList) => {
   let arr = [];
   selectedKeys.forEach(val => {
     const arrItem = jobList.find(item => item.applyId === val);
@@ -72,7 +74,7 @@ const formatTime = (diffTimeList, selectedKeys, diff) => {
   });
   return list;
 };
-function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, resetSelectList }) {
+function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSelectList }) {
   const [diffTimeList, setDiffTimeList] = useState([]);
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
 
@@ -234,40 +236,81 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, re
     newDiffTimeList.splice(index, 1);
     setDiffTimeList(newDiffTimeList);
   }
+
   return (
-    <Modal
-      title="设置邀约时间"
-      visible={visible}
-      onOk={handleOk}
-      onCancel={() => {
-        resetFields();
-        close();
-        setDiffTimeList([]);
-      }}
+    <Card
+      bordered={false}
+      title={
+        <Fragment>
+          任务配置{' '}
+          <a
+            href="javascript:;"
+            style={{
+              padding: '5px 10px',
+            }}
+            onClick={e => {
+              e.preventDefault();
+              dispatch(routerRedux.goBack());
+              // dispatch(routerRedux.push('/statistics/insight/hotspotInsight'));
+            }}
+          >
+            返回上一级
+          </a>
+        </Fragment>
+      }
     >
       <Form {...formItemLayout}>
-        <Item label="面试邀约人" required>
+        <Item {...formItemLayout} label="任务名">
+          {getFieldDecorator('keywords', {
+            rules: [
+              {
+                required: true,
+                message: '任务名必填！',
+              },
+            ],
+          })(<TrimInput style={{ width: '200px' }} placeholder="请输入任务名" />)}
+        </Item>
+        <Item label="外呼名单" required>
           <div style={{ marginLeft: 10 }}>
             {formatSelectedKeys(selectedKeys, jobList).length
               ? formatSelectedKeys(selectedKeys, jobList).map((item, index) => (
-                <Tag color="blue" key={index}>
-                  {(item && item.name) || null}
-                </Tag>
+                  <Tag color="blue" key={index}>
+                    {(item && item.name) || null}
+                  </Tag>
                 ))
               : null}
           </div>
         </Item>
-        <Item label="外呼时间" required>
-          {getFieldDecorator('triggerTime', {
-            rules: [{ required: true, message: '请选择外呼时间!' }],
+        <Item label="外呼类型">
+          {getFieldDecorator('type', {
+            rules: [{ required: true, message: '请选择面试时长!' }],
           })(
-            <DatePicker
-              showTime={{ format: 'HH:mm', minuteStep: 5 }}
-              disabledDate={disabledDate}
-              format="YYYY-MM-DD HH:mm"
-              placeholder="请选择外呼时间"
-              style={{ display: 'block' }}
-            />
+            <Select
+              style={{ width: '200px' }}
+              onChange={data => {
+                this.handleRefresh(data);
+              }}
+            >
+              <Option value="no">面试邀约</Option>
+              <Option value="60">offer确认</Option>
+              <Option value="6=70">录用通知</Option>
+            </Select>
+          )}
+        </Item>
+        <Item label="外呼场景">
+          {getFieldDecorator('scence', {
+            rules: [{ required: true, message: '请选择外呼场景!' }],
+          })(
+            <Select
+              style={{ width: '200px' }}
+              onChange={data => {
+                this.handleRefresh(data);
+              }}
+            >
+              <Option value="no">实习生面试邀约流程</Option>
+              <Option value="60">offer确认邀约流程</Option>
+              <Option value="6=70">录用通知邀约流程</Option>
+            </Select>
           )}
         </Item>
         <Item label="面试时长">
@@ -294,7 +337,6 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, re
                   hideDisabledOptions: true,
                   format: 'HH:mm',
                   minuteStep: 5,
-                  // defaultValue: [moment('00:00:00', 'HH:mm:ss'), moment('11:59:59', 'HH:mm:ss')],
                 }}
                 format="YYYY-MM-DD HH:mm"
               />
@@ -319,19 +361,113 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, re
             ))}
           </div>
         ) : null}
-        {/* <Item label="短信发送" required>
-          {getFieldDecorator('name', {
-            defaultValue: 1,
-            rules: [{ required: true, message: '请输入导入人!' }],
+        <Item label="外呼时间" required>
+          {getFieldDecorator('triggerTime', {
+            rules: [{ required: true, message: '请选择外呼时间!' }],
           })(
-            <Select>
-              <Option value="1">立即发送</Option>
-            </Select>
+            <DatePicker
+              showTime={{ format: 'HH:mm', minuteStep: 5 }}
+              disabledDate={disabledDate}
+              format="YYYY-MM-DD HH:mm"
+              placeholder="请选择外呼时间"
+              // style={{ display: 'block' }}
+            />
           )}
-        </Item> */}
+        </Item>
+        <Item label="重复外呼">
+          <div className={styles['inline-select']}>
+            {getFieldDecorator('name', {
+              defaultValue: '1',
+              // rules: [{ message: '请输入' }],
+            })(
+              <Select>
+                <Option value="1">未接听</Option>
+                <Option value="2">已拒听</Option>
+                <Option value="3">无</Option>
+              </Select>
+            )}
+            {getFieldDecorator('name1', {
+              defaultValue: '1',
+              // rules: [{ message: '请输入' }],
+            })(
+              <Select>
+                <Option value="1">1小时</Option>
+                <Option value="2">2小时</Option>
+                <Option value="3">3小时</Option>
+              </Select>
+            )}
+            {getFieldDecorator('name2', {
+              defaultValue: '1',
+              // rules: [{ message: '请输入' }],
+            })(
+              <Select>
+                <Option value="1">1次</Option>
+                <Option value="2">2次</Option>
+                <Option value="3">3次</Option>
+              </Select>
+            )}
+          </div>
+        </Item>
+        <Item label="挂机外呼">
+          <div className={styles['inline-select']}>
+            {getFieldDecorator('name', {
+              defaultValue: '1',
+              // rules: [{ message: '请输入' }],
+            })(
+              <Select>
+                <Option value="1">未接听</Option>
+                <Option value="2">已拒听</Option>
+                <Option value="3">无</Option>
+              </Select>
+            )}
+            {getFieldDecorator('name1', {
+              defaultValue: '1',
+              // rules: [{ message: '请输入' }],
+            })(
+              <Select>
+                <Option value="1">1小时</Option>
+                <Option value="2">2小时</Option>
+                <Option value="3">3小时</Option>
+              </Select>
+            )}
+            {getFieldDecorator('name2', {
+              defaultValue: '1',
+              // rules: [{ message: '请输入' }],
+            })(
+              <Select>
+                <Option value="1">1次</Option>
+                <Option value="2">2次</Option>
+                <Option value="3">3次</Option>
+              </Select>
+            )}
+          </div>
+        </Item>
+        <Item>
+          <Button
+            htmlType="submit"
+            type="primary"
+            className="test-input-search"
+            onClick={() => handleOk()}
+          >
+            提交任务
+          </Button>
+          {/* <Button
+            style={{ margin: '0 10px' }}
+            className="test-input-search"
+            onClick={e => {
+              onCancel={() => {
+                resetFields();
+                close();
+                setDiffTimeList([]);
+            }}}}
+          >
+            重置
+          </Button> */}
+        </Item>
       </Form>
-    </Modal>
+    </Card>
   );
 }
+
 const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
-export default connect(mapStateToProps)(Form.create({})(ImportModal));
+export default connect(mapStateToProps)(Form.create({})(Index));

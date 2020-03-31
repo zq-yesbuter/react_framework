@@ -1,0 +1,35 @@
+@import '~antd/lib/style/themes/default.less';
+.gutter-row {
+  padding: 10px;
+  .gutter-box {
+    background: #f9fafc; // #F6F6F6;//hsl(0, 0%, 97%);
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    .scroll {
+      height: 240px; //calc(~'40vh - 135px');
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        width: 0px;
+        /*height: 4px;*/
+      }
+      scrollbar-width: none;
+    }
+    :global {
+      .ant-steps-item-title {
+        font-size: 14px;
+      }
+      .ant-steps-vertical .ant-steps-item-description {
+        padding-right: 0px;
+        // padding-bottom: 0px;
+        font-size: 13px;
+        margin-top: 10px;
+      }
+      .ant-steps-dot .ant-steps-item-content {
+        width: 100% - 20px;
+        text-align: left;
+        margin-left: 20px;
+      }
+    }
+  }
+}

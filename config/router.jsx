@@ -16,7 +16,7 @@ export default [
     routes: [
       {
         path: '/',
-        component: '../layouts/BlankLayout',
+        component: '../layouts/BasicLayout',
         authority: ['admin', 'user'],
         routes: [
           {
@@ -25,20 +25,39 @@ export default [
           },
           {
             path: '/AI',
-            name: '流程管理',
+            name: '外呼管理',
             icon: 'smile',
-            component: './AI',
-            children: [
+            // component: '../pages/Process',
+            routes: [
               {
-                name: '面试邀约',
-                path: '/AI',
-                // component: './AI',
+                name: '外呼任务',
+                path: '/AI/outging',
+                component: '../pages/Process/OutgoingTask/index.js',
+                icon: 'smile',
+              },
+              {
+                // name: '外呼配置',
+                path: '/AI/config',
+                component: '../pages/Process/Config/index.js',
+                // icon: 'smile',
+              },
+              {
+                // name: '',
+                path: '/AI/namelist',
+                component: '../pages/Process/NameList/index.js',
+                // icon: 'smile',
+              },
+              {
+                // name: '',
+                path: '/AI/record',
+                component: '../pages/Process/Record/index.js',
+                // icon: 'smile',
               },
             ],
           },
-          // {
-          //   component: './404',
-          // },
+          {
+            component: './404',
+          },
         ],
       },
       {

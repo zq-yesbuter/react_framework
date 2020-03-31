@@ -15,12 +15,12 @@ function Index() {
   }
   return (
     <Fragment>
-      <div className={styles.header}>
+      {/* <div className={styles.header}>
         <h1>AI招聘系统</h1>
         <span onClick={logout} className={styles.logout}>
           退出登录
         </span>
-      </div>
+      </div> */}
       <div className={styles.container}>
         <div className={styles.left}>
           <List />

@@ -36,7 +36,7 @@ export default {
       let viewport = page.getViewport(scale);
 
       let pageDiv = document.createElement('div');
-      pageDiv.setAttribute('id', 'page-' + (page.pageIndex + 1));
+      pageDiv.setAttribute('id', `page-${  page.pageIndex + 1}`);
       pageDiv.setAttribute('style', 'position: relative');
       container.appendChild(pageDiv);
 
@@ -48,7 +48,7 @@ export default {
 
       let renderContext = {
         canvasContext: context,
-        viewport: viewport,
+        viewport,
       };
 
       await page.render(renderContext);
@@ -61,10 +61,10 @@ export default {
       pageDiv.appendChild(textLayerDiv);
 
       // 创建新的TextLayerBuilder实例
-      var textLayer = new TextLayerBuilder({
-        textLayerDiv: textLayerDiv,
+      let textLayer = new TextLayerBuilder({
+        textLayerDiv,
         pageIndex: page.pageIndex,
-        viewport: viewport,
+        viewport,
       });
 
       textLayer.setTextContent(textContent);

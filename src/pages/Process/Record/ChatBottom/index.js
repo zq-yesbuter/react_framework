@@ -26,8 +26,8 @@ import {
   singleAddOfffer,
   queryOffferInventIds,
   cancelOfffer,
-} from '@/services/ai';
-import { flatten } from '@/utils/utils';
+} from './node_modules/@/services/ai';
+import { flatten } from './node_modules/@/utils/utils';
 import styles from './index.less';
 
 const { Item } = Form;
@@ -168,7 +168,7 @@ function RecordBottom({
         }
         addInvitation(payload)
           .then(data => {
-            message.success('新增邀约成功');               
+            message.success('新增邀约成功');
             // dispatch({
             //   type: 'chatrecord/updateSingleInvent',
             // });
@@ -340,10 +340,7 @@ function RecordBottom({
               {getFieldDecorator('diff', {
                 initialValue:
                   status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.endTime).diff(
-                        backShowTime.time,
-                        'minutes'
-                      )
+                    ? moment(backShowTime.endTime).diff(backShowTime.time, 'minutes')
                     : 60,
               })(
                 <InputNumber
@@ -400,19 +397,19 @@ function RecordBottom({
                 flowList.length &&
                 flowList.map(
                   (
-                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel},
+                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
                     index
                   ) => (
                     <Step
-                      title={channel ? `【${formatPhoneStatus(status)}】` : `【${formatStatus(status)}】`}
+                      title={
+                        channel ? `【${formatPhoneStatus(status)}】` : `【${formatStatus(status)}】`
+                      }
                       description={
                         <div>
                           {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
                           {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
                           {interviewConfirmTime ? (
-                            <p
-                              style={{ color: 'red', fontWeight: 400 }}
-                            >
+                            <p style={{ color: 'red', fontWeight: 400 }}>
                               {`用户期望面试时间： ${interviewConfirmTime}`}
                             </p>
                           ) : null}
@@ -448,15 +445,17 @@ function RecordBottom({
                     index
                   ) => (
                     <Step
-                      title={channel ? `【${formatPhoneStatus(status)}】` : `录用【${formatStatus(status)}】`}
+                      title={
+                        channel
+                          ? `【${formatPhoneStatus(status)}】`
+                          : `录用【${formatStatus(status)}】`
+                      }
                       description={
                         <div>
                           {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
                           {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
                           {interviewConfirmTime ? (
-                            <p
-                              style={{ color: 'red', fontWeight: 400 }}
-                            >
+                            <p style={{ color: 'red', fontWeight: 400 }}>
                               {`用户期望时间： ${interviewConfirmTime}`}
                             </p>
                           ) : null}

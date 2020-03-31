@@ -194,9 +194,9 @@ function ImportModal({ dispatch, visible, form, close, selectedKeys, jobList, re
           <div style={{ marginLeft: 10 }}>
             {formatSelectedKeys(selectedKeys, jobList).length
               ? formatSelectedKeys(selectedKeys, jobList).map((item, index) => (
-                  <Tag color="blue" key={index}>
-                    {(item && item.name) || null}
-                  </Tag>
+                <Tag color="blue" key={index}>
+                  {(item && item.name) || null}
+                </Tag>
                 ))
               : null}
           </div>
