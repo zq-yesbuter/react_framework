@@ -1,18 +1,21 @@
-import React, { PureComponent, Fragment, useState, useEffect } from 'react';
+import React, { PureComponent, Fragment, useState, useEffect, useRef } from 'react';
 import { connect } from 'dva';
 import { Card, message, Button, Divider, Modal, Table, Dropdown, Menu } from 'antd';
 import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
 import UploadModal from './UploadModal';
 import DateFormat from '../../../components/DateFormat';
-import CategoryQueryForm from './PictureQueryForm';
+import QueryForm from './QueryForm';
+import renderTable from '@/components/SelectTable';
+import renderColumns from './Colums';
 
 // import { detail } from '../../../services/picture';
 
-function Index({ dispatch, location, list }) {
+function Index({ dispatch, location, nameList }) {
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   useEffect(() => {
     return () => {
       dispatch({
@@ -51,84 +54,6 @@ function Index({ dispatch, location, list }) {
   };
 
   const query = {}; //  queryString.parse(location.search);
-  const columns = [
-    {
-      title: '姓名',
-      key: 'channel',
-      dataIndex: 'channel',
-    },
-    {
-      title: '电话',
-      key: 'channelName',
-      dataIndex: 'channelName',
-    },
-    {
-      title: '岗位',
-      key: 'terminalType',
-      dataIndex: 'terminalType',
-    },
-    {
-      title: '面试时长',
-      key: 'entity',
-      dataIndex: 'entity',
-    },
-    {
-      title: '面试地址',
-      key: 'keywords',
-      dataIndex: 'keywords',
-    },
-    {
-      title: '外呼时间',
-      key: 'entity',
-      dataIndex: 'entity',
-    },
-    {
-      title: '挂机时间',
-      key: 'entity1',
-      dataIndex: 'entity1',
-    },
-    {
-      title: '挂机原因',
-      key: 'entity2',
-      dataIndex: 'entity3',
-    },
-    {
-      title: '状态',
-      key: 'entity6',
-      dataIndex: 'entity6',
-    },
-    {
-      title: '更新人',
-      key: 'modified',
-      dataIndex: 'modified',
-    },
-    {
-      title: '操作时间',
-      key: 'modifiedDate',
-      dataIndex: 'modifiedDate',
-      width: 200,
-      // render: modifiedDate => <DateFormat value={modifiedDate} />,
-    },
-    {
-      title: '操作',
-      key: 'channel',
-      dataIndex: 'channel',
-      width: 150,
-      render: (channel, value) => {
-        return (
-          <Fragment>
-            <a
-              onClick={() => {
-                dispatch(routerRedux.push('/AI/record'));
-              }}
-            >
-              查看记录
-            </a>
-          </Fragment>
-        );
-      },
-    },
-  ];
 
   const start = () => {
     setLoading(true);
@@ -137,6 +62,63 @@ function Index({ dispatch, location, list }) {
       setSelectedRowKeys([]);
       setLoading(false);
     }, 1000);
+  };
+  const importMenu = (
+    <Menu>
+      <Menu.Item key={1} onClick={downloadResumes}>
+        批量导出简历
+      </Menu.Item>
+      <Menu.Item key={2} onClick={batchExportInvent}>
+        批量导出面试邀约
+      </Menu.Item>
+      <Menu.Item key={5}>删除</Menu.Item>
+    </Menu>
+  );
+  const setting = {
+    data: nameList || [],
+    total: 0, // faqList.total,
+    current: start / length + 1,
+    columns: renderColumns(dispatch),
+    pageSize: length,
+    loading,
+    selectedRowKeys,
+    // sortedInfo,
+    onChange: (start, length, sorter) => {
+      console.log('start==>', start, length, sorter);
+      // onChange(
+      //   {
+      //     start,
+      //     length,
+      //     status,
+      //   },
+      //   () => {
+      //     onSubmit({
+      //       start,
+      //       length,
+      //       status,
+      //       modelCode,
+      //       order: sorter.columnKey,
+      //       dir: sorter.order,
+      //     });
+      //     this.pending = false;
+      //   }
+      // );
+      setSelectedRowKeys([]);
+      // this.setState({
+      //   selectedRows: [],
+      //   sortedInfo: sorter,
+      // });
+    },
+    rowKey: 'applyId',
+    rowSelection: {
+      selectedRowKeys,
+      onChange: (selectedRowKeys, selectedRows) => {
+        console.log('selectedRowKeys changed:===> ', selectedRowKeys);
+        setSelectedRowKeys(selectedRowKeys);
+        // this.setState({ , selectedRows });
+      },
+    },
+    importMenu,
   };
   function downloadResumes() {
     // const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
@@ -197,34 +179,49 @@ function Index({ dispatch, location, list }) {
     //   .then(response => savingFile(response, fileName))
     //   .catch(err => message.error(err.message));
   }
+  // 筛选条件
+  function onSubmit(values) {
+    console.log('values===>', values);
+    const { name } = values;
+    const reg = /^\d{1,11}$/;
+    let nameObj = {};
+    if (reg.test(name)) {
+      nameObj = { tel: name, name: '' };
+    } else {
+      nameObj = { name, tel: '' };
+    }
+
+    // hadleSelectedKeys([]);
+    dispatch({
+      type: 'namelist/getNameList',
+      payload: { ...nameObj },
+    });
+  }
   function batchExportInvent() {}
   function onExportChange() {}
-  const importMenu = (
-    <Menu>
-      <Menu.Item key={1} onClick={downloadResumes}>
-        批量导出简历
-      </Menu.Item>
-      <Menu.Item key={2} onClick={batchExportInvent}>
-        批量导出面试邀约
-      </Menu.Item>
-      <Menu.Item key={5}>删除</Menu.Item>
-    </Menu>
-  );
 
-  const onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed:===> ', selectedRowKeys);
-    setSelectedRowKeys({ selectedRowKeys });
-  };
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
   const hasSelected = selectedRowKeys.length > 0;
   return (
     <Card
       bordered={false}
-      title="外呼名单"
+      title={
+        <Fragment>
+          外呼名单
+          <a
+            href="javascript:;"
+            style={{
+              padding: '5px 15px',
+              fontSize: 14,
+            }}
+            onClick={e => {
+              e.preventDefault();
+              dispatch(routerRedux.goBack());
+            }}
+          >
+            返回上一级
+          </a>
+        </Fragment>
+      }
       extra={
         <Button
           icon="plus"
@@ -237,66 +234,26 @@ function Index({ dispatch, location, list }) {
         </Button>
       }
     >
-      <CategoryQueryForm
+      <QueryForm
         value={query}
         onSubmit={data => {
-          dispatch(
-            routerRedux.push({
-              // pathname: location.pathname,
-              search: queryString.stringify({
-                ...query,
-                ...data,
-              }),
-            })
-          );
+          onSubmit(data);
         }}
       />
-      <div>
-        <div style={{ marginBottom: 16 }}>
-          <Dropdown
-            overlay={importMenu}
-            trigger={['hover']}
-            placement="bottomCenter"
-            disabled={!hasSelected}
-          >
-            <Button type="primary" onClick={start} loading={loading}>
-              批量操作
-            </Button>
-          </Dropdown>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-          </span>
-        </div>
-        <Table rowSelection={rowSelection} columns={columns} dataSource={[{}]} />
-      </div>
+      {renderTable(setting)}
       <UploadModal
         value={value}
         onCancel={() => {
           setValue(null);
-        }}
-        onSubmit={data => {
-          setValue(null);
-          // dispatch({
-          //   type: 'picture/createOrUpdate',
-          //   payload: data,
-          // })
-          //   .then(() => {
-          //     message.success(data.id ? '修改成功' : '新增成功');
-          //     dispatch({
-          //       type: 'picture/reload',
-          //     });
-          //     this.setState({
-          //       value: null,
-          //     });
-          //   })
-          //   .catch(e => {
-          //     message.warn(e.message);
-          //   });
         }}
       />
     </Card>
   );
 }
 
-const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
-export default connect(mapStateToProps)(Index);
+export default connect(({ namelist }) => {
+  const { nameList } = namelist;
+  return {
+    nameList,
+  };
+})(Index);

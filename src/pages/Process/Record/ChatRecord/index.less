@@ -3,12 +3,13 @@
 @pro-header-hover-bg: rgba(0, 0, 0, 0.025);
 .chatContent {
   flex: 1;
-  padding: 10px;
-  margin: 0 10px;
+  // margin: 0 10px;
   position: relative;
   overflow: hidden;
+  background-color: #fff;
+  border-radius: 8px;
   // height: 60vh;
-  height: calc(100vh - 375px);
+  height: calc(100vh - 305px);
   .noticeFix {
     position: absolute;
     width: 100%;
@@ -39,12 +40,13 @@
     // height: 100%;
     width: 100%;
     .chatPanelContainer {
+      padding: 10px;
       position: absolute;
       top: 16px;
       left: 0;
       width: 100%;
       // height: 60vh;
-      height: calc(100vh - 375px);
+      height: calc(100vh - 318px);
       overflow-y: auto;
       &::-webkit-scrollbar {
         width: 4px;
@@ -127,6 +129,6 @@
     justify-content: center;
     align-items: center;
     color: #888;
-    height: calc(100vh - 375px);
+    height: calc(100vh - 315px);
   }
 }

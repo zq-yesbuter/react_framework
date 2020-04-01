@@ -9,7 +9,7 @@ export default {
   fixSiderbar: false,
   colorWeak: false,
   menu: {
-    locale: true,
+    locale: false,
   },
   title: 'AI招聘系统',
   pwa: false,

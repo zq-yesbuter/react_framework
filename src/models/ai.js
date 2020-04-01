@@ -50,7 +50,7 @@ export default {
     bottomLoading: false,
     notData: false,
     pageNum: 1,
-    requestFilter: { orderBy: { applyDate: 'DESC' },pageSize: 50, pageNum: 1 },
+    requestFilter: { orderBy: { applyDate: 'DESC' }, pageSize: 50, pageNum: 1 },
     offerList: [],
     offerFlowList: [],
     offerBackShowTime: {},
@@ -370,21 +370,21 @@ export default {
       let flowList = [];
       let phoneMessage = [];
       if (!selectJobId || !(timeList && timeList.length)) {
-        return { ...state, flowList, backShowTime: {},phoneMessage };
+        return { ...state, flowList, backShowTime: {}, phoneMessage };
       }
       const list = timeList.filter(item => item.applyId === selectJobId);
       const backShowTime = list.length ? list.slice(-1)[0] : {};
       flowList = timeList
         .filter(item => item.applyId === selectJobId)
-        .filter(item => item.flow.length > 0 || item.notifyMessage.length > 0 )
+        .filter(item => item.flow.length > 0 || item.notifyMessage.length > 0)
         .map(item => {
-          if(!item.flow){
-            item.flow = []
+          if (!item.flow) {
+            item.flow = [];
           }
-          if(!item.notifyMessage){
-            item.notifyMessage = []
+          if (!item.notifyMessage) {
+            item.notifyMessage = [];
           }
-          return [...item.flow,...item.notifyMessage];
+          return [...item.flow, ...item.notifyMessage];
         });
       flowList = flatten(flowList);
       // phoneMessage = timeList
@@ -411,25 +411,25 @@ export default {
       const offerBackShowTime = list.length ? list.slice(-1)[0] : {};
       offerFlowList = timeList
         .filter(item => item.applyId === selectJobId)
-        .filter(item => item.flow.length > 0 || item.notifyMessage.length > 0 )
+        .filter(item => item.flow.length > 0 || item.notifyMessage.length > 0)
         .map(item => {
-          if(!item.flow){
-            item.flow = []
+          if (!item.flow) {
+            item.flow = [];
           }
-          if(!item.notifyMessage){
-            item.notifyMessage=[]
+          if (!item.notifyMessage) {
+            item.notifyMessage = [];
           }
-          return [...item.flow,...item.notifyMessage];
+          return [...item.flow, ...item.notifyMessage];
         });
-        // .filter(item => item.flow.length > 0)
-        // .map(item => item.flow);
+      // .filter(item => item.flow.length > 0)
+      // .map(item => item.flow);
       offerFlowList = flatten(offerFlowList);
       // offerPhoneMessage = timeList
       //   .filter(item => item.applyId === selectJobId)
       //   .filter(item => item.notifyMessage.length > 0 )
       //   .map(item => item.notifyMessage);
       // offerPhoneMessage = flatten(offerPhoneMessage);
-      return { ...state, offerFlowList, offerBackShowTime,offerPhoneMessage };
+      return { ...state, offerFlowList, offerBackShowTime, offerPhoneMessage };
     },
 
     formatJobList(state, { payload }) {
@@ -461,32 +461,32 @@ export default {
       return history.listen(({ pathname }) => {
         const match = /^\/AI/.exec(pathname);
         if (match) {
-          dispatch({
-            type: 'jobAppliedAsPostAll',
-          }).then(data => {
-            // console.log('=======>gogogogo')
-            // let { search, origin } = document.location || {};
-            // if (!search) {
-            //   search = localStorage.getItem('token');
-            // }
-            // let stocks = new EventSource(`/sse/messages${search}`);
-            // stocks.onopen = () => {
-            //   console.log('open==>');
-            // }
-            // stocks.onmessage = (event) => {
-            //   console.log('message===>',event);
-            //   dispatch({
-            //     type: 'save',
-            //     payload: {
-            //       showNotice: true,
-            //     },
-            //   });
-            // };
-            // stocks.onerror = (event) => {
-            //   console.log('error==>');
-            //   // new EventSource(`/sse/messages${search}`);
-            // };
-          });
+          // dispatch({
+          //   type: 'jobAppliedAsPostAll',
+          // }).then(data => {
+          // console.log('=======>gogogogo')
+          // let { search, origin } = document.location || {};
+          // if (!search) {
+          //   search = localStorage.getItem('token');
+          // }
+          // let stocks = new EventSource(`/sse/messages${search}`);
+          // stocks.onopen = () => {
+          //   console.log('open==>');
+          // }
+          // stocks.onmessage = (event) => {
+          //   console.log('message===>',event);
+          //   dispatch({
+          //     type: 'save',
+          //     payload: {
+          //       showNotice: true,
+          //     },
+          //   });
+          // };
+          // stocks.onerror = (event) => {
+          //   console.log('error==>');
+          //   // new EventSource(`/sse/messages${search}`);
+          // };
+          // });
         }
       });
     },

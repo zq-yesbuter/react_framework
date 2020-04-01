@@ -21,7 +21,11 @@ export default [
         routes: [
           {
             path: '/',
-            redirect: '/AI',
+            redirect: '/AI/outging',
+          },
+          {
+            path: '/AI',
+            redirect: '/AI/outging',
           },
           {
             path: '/AI',
@@ -56,7 +60,7 @@ export default [
             ],
           },
           {
-            component: './404',
+            component: '../pages/404.jsx',
           },
         ],
       },

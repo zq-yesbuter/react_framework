@@ -46,68 +46,49 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-function ImportModal({
-  dispatch,
-  visible,
-  form,
-  close,
-  postList,
-  fileRef,
-  value,
-  onSumbit,
-  onCancel,
-}) {
-  // console.log('refs===>',fileRef);
+function ImportModal({ dispatch, visible, form, close, postList, value, onCancel }) {
   const { getFieldDecorator, validateFields, resetFields, setFields } = form;
   const [fileList, setFileList] = useState([]);
   const [jobPostVisible, setJobPostVisible] = useState(false);
 
-  // // 此处注意useImperativeHandle方法的的第一个参数是目标元素的ref引用
-  // useImperativeHandle(fileRef, () => ({
-  //   // changeVal 就是暴露给父组件的方法
-  //   handleOk: newVal => {
-  //     validateFields((err, values) => {
-  //       if (!err) {
-  //         const { jobId } = values;
-  //         if (!fileList.length) {
-  //           setFields({
-  //             fileName: {
-  //               errors: [new Error('请上传外呼文件')],
-  //             },
-  //           });
-  //           return;
-  //         }
-  //         setFields({
-  //           fileName: {
-  //             errors: null,
-  //           },
-  //         });
-  //         const formData = new FormData();
-  //         // console.log('fileList===>', fileList);
-  //         fileList.forEach(file => {
-  //           formData.append('resumeFile', file);
-  //         });
-  //         const urlParams = { jobId };
-  //         importFile({ formData, urlParams })
-  //           .then(data => {
-  //             message.success('外呼文件导入成功');
-  //             resetFields();
-  //             setFileList([]);
-  //             close();
-  //             dispatch({
-  //               type: 'chatrecord/jobAppliedAsPostAll',
-  //             });
-  //           })
-  //           .catch(e => message.error(e.message));
-  //       }
-  //     });
-  //   },
-  //   handleCancel: () => {
-  //     resetFields();
-  //     setFileList([]);
-  //     close();
-  //   },
-  // }));
+  function onSumbit() {
+    validateFields((err, values) => {
+      if (!err) {
+        const { jobId } = values;
+        if (!fileList.length) {
+          setFields({
+            fileName: {
+              errors: [new Error('请上传外呼文件')],
+            },
+          });
+          return;
+        }
+        setFields({
+          fileName: {
+            errors: null,
+          },
+        });
+        const formData = new FormData();
+        // console.log('fileList===>', fileList);
+        fileList.forEach(file => {
+          formData.append('resumeFile', file);
+        });
+        const urlParams = { jobId };
+        importFile({ formData, urlParams })
+          .then(data => {
+            message.success('外呼文件导入成功');
+            resetFields();
+            setFileList([]);
+            close();
+            onCancel();
+            // dispatch({
+            //   type: 'chatrecord/jobAppliedAsPostAll',
+            // });
+          })
+          .catch(e => message.error(e.message));
+      }
+    });
+  }
 
   function beforeUpload(file) {
     // console.log('tile===>',file,file.type, file.size)
@@ -165,7 +146,7 @@ function ImportModal({
       <Form {...formItemLayout}>
         <Item label="选择类型">
           {getFieldDecorator('type', {
-            rules: [{ required: true, message: '请选择面试时长!' }],
+            // rules: [{ required: true, message: '请选择类型!' }],
           })(
             <Select style={{ width: '200px' }}>
               <Option value="no">面试邀约</Option>
@@ -175,7 +156,7 @@ function ImportModal({
         </Item>
         <Item label="选择模版">
           {getFieldDecorator('scence', {
-            rules: [{ required: true, message: '请选择外呼场景!' }],
+            // rules: [{ required: true, message: '请选择模版!' }],
           })(
             <Select style={{ width: '200px' }}>
               <Option value="60">面试时间已分配</Option>

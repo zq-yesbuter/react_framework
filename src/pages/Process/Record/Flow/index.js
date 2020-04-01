@@ -315,113 +315,39 @@ function RecordBottom({
     (resumeEvaluation && resumeEvaluation.details && Object.values(resumeEvaluation.details)) || []
   );
   return (
-    <Row gutter={8} style={{ marginLeft: 8, marginRight: 8 }}>
-      <Col className={styles['gutter-row']} span={8}>
-        <div className={styles['gutter-box']}>
-          <h3>邀约/面试时间</h3>
-          <div className={styles.scroll} style={{ paddingTop: 15 }}>
-            <div style={{ marginBottom: 15 }}>
-              {getFieldDecorator('triggerTime', {
-                initialValue:
-                  status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.triggerTime)
-                    : null,
-              })(
-                <DatePicker
-                  showTime={{ format: 'HH:mm', minuteStep: 5 }}
-                  disabledDate={disabledDate}
-                  format="YYYY-MM-DD HH:mm"
-                  placeholder="请选择外呼时间"
-                  style={{ display: 'block' }}
+    <div className={styles['gutter-box']}>
+      <h3>邀约记录/结果</h3>
+      <div className={styles.scroll}>
+        <Steps progressDot direction="vertical" current={10000}>
+          {flowList &&
+            flowList.length &&
+            flowList.map(
+              (
+                { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
+                index
+              ) => (
+                <Step
+                  title={
+                    channel ? `【${formatPhoneStatus(status)}】` : `【${formatStatus(status)}】`
+                  }
+                  description={
+                    <div>
+                      {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
+                      {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
+                      {interviewConfirmTime ? (
+                        <p style={{ color: 'red', fontWeight: 400 }}>
+                          {`用户期望面试时间： ${interviewConfirmTime}`}
+                        </p>
+                      ) : null}
+                      <p>{channel ? null : remark}</p>
+                    </div>
+                  }
+                  key={index}
                 />
-              )}
-            </div>
-            <div style={{ marginBottom: 15 }}>
-              {getFieldDecorator('diff', {
-                initialValue:
-                  status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.endTime).diff(backShowTime.time, 'minutes')
-                    : 60,
-              })(
-                <InputNumber
-                  style={{ width: '100%' }}
-                  min={0}
-                  max={160}
-                  formatter={value => `${value}分钟`}
-                  parser={value => value.replace('分钟', '')}
-                />
-              )}
-            </div>
-            <div style={{ marginBottom: 15 }}>
-              {getFieldDecorator('startTime', {
-                initialValue:
-                  status !== 11 && Object.keys(backShowTime).length
-                    ? moment(backShowTime.time)
-                    : null,
-              })(
-                <DatePicker
-                  disabledDate={disabledDate}
-                  // disabledTime={disabledDateTime}
-                  showTime={{ format: 'HH:mm', minuteStep: 5 }}
-                  format="YYYY-MM-DD HH:mm"
-                  placeholder="请选择面试时间"
-                  style={{ display: 'block' }}
-                />
-              )}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>
-                更新
-              </Button>
-              {selectJobId && status === 21 ? (
-                <Popconfirm
-                  title="外呼时间和面试时间均会被取消，确认要取消吗？"
-                  onConfirm={cancelConfirm}
-                  onCancel={quitCancel}
-                >
-                  <Button disabled={!selectJobId || status !== 21} style={{ marginLeft: 20 }}>
-                    取消
-                  </Button>
-                </Popconfirm>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      </Col>
-      <Col className={styles['gutter-row']} span={8}>
-        <div className={styles['gutter-box']}>
-          <h3>邀约记录/结果</h3>
-          <div className={styles.scroll}>
-            <Steps progressDot direction="vertical" current={10000}>
-              {flowList &&
-                flowList.length &&
-                flowList.map(
-                  (
-                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
-                    index
-                  ) => (
-                    <Step
-                      title={
-                        channel ? `【${formatPhoneStatus(status)}】` : `【${formatStatus(status)}】`
-                      }
-                      description={
-                        <div>
-                          {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
-                          {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
-                          {interviewConfirmTime ? (
-                            <p style={{ color: 'red', fontWeight: 400 }}>
-                              {`用户期望面试时间： ${interviewConfirmTime}`}
-                            </p>
-                          ) : null}
-                          <p>{channel ? null : remark}</p>
-                        </div>
-                      }
-                      key={index}
-                    />
-                  )
-                )}
-            </Steps>
-            {/* <Steps progressDot direction="vertical" current={10000}>
+              )
+            )}
+        </Steps>
+        {/* <Steps progressDot direction="vertical" current={10000}>
               {phoneMessage &&
                 phoneMessage.length &&
                 phoneMessage.map(
@@ -436,38 +362,36 @@ function RecordBottom({
                   )
                 )}
             </Steps> */}
-            <Steps progressDot direction="vertical" current={10000}>
-              {offerFlowList &&
-                offerFlowList.length &&
-                offerFlowList.map(
-                  (
-                    { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
-                    index
-                  ) => (
-                    <Step
-                      title={
-                        channel
-                          ? `【${formatPhoneStatus(status)}】`
-                          : `录用【${formatStatus(status)}】`
-                      }
-                      description={
-                        <div>
-                          {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
-                          {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
-                          {interviewConfirmTime ? (
-                            <p style={{ color: 'red', fontWeight: 400 }}>
-                              {`用户期望时间： ${interviewConfirmTime}`}
-                            </p>
-                          ) : null}
-                          <p>{channel ? null : remark}</p>
-                        </div>
-                      }
-                      key={index}
-                    />
-                  )
-                )}
-            </Steps>
-            {/* <Steps progressDot direction="vertical" current={10000}>
+        <Steps progressDot direction="vertical" current={10000}>
+          {offerFlowList &&
+            offerFlowList.length &&
+            offerFlowList.map(
+              (
+                { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
+                index
+              ) => (
+                <Step
+                  title={
+                    channel ? `【${formatPhoneStatus(status)}】` : `录用【${formatStatus(status)}】`
+                  }
+                  description={
+                    <div>
+                      {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
+                      {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
+                      {interviewConfirmTime ? (
+                        <p style={{ color: 'red', fontWeight: 400 }}>
+                          {`用户期望时间： ${interviewConfirmTime}`}
+                        </p>
+                      ) : null}
+                      <p>{channel ? null : remark}</p>
+                    </div>
+                  }
+                  key={index}
+                />
+              )
+            )}
+        </Steps>
+        {/* <Steps progressDot direction="vertical" current={10000}>
               {offerPhoneMessage &&
                 offerPhoneMessage.length &&
                 offerPhoneMessage.map(
@@ -482,24 +406,8 @@ function RecordBottom({
                   )
                 )}
             </Steps> */}
-          </div>
-        </div>
-      </Col>
-      <Col className={styles['gutter-row']} span={8}>
-        <div className={styles['gutter-box']}>
-          <h3>简历/人才标签</h3>
-          <div className={styles.scroll} style={{ paddingTop: 15 }}>
-            {labelList.length
-              ? labelList.map((item, index) => (
-                <Tag color={colors[index]} key={index} style={{ marginBottom: 8 }}>
-                  {item}
-                </Tag>
-                ))
-              : null}
-          </div>
-        </div>
-      </Col>
-    </Row>
+      </div>
+    </div>
   );
 }
 

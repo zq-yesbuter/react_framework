@@ -10,7 +10,7 @@ import styles from './index.less';
 
 function RecordList({
   dispatch,
-  chatrecord: { messageList = [], newTalk, noLoading = false, bottomLoading = false },
+  namelist: { messageList = [], newTalk, noLoading = false, bottomLoading = false },
 }) {
   const chatRef = useRef(null);
   const intervalRef = useRef(null);
@@ -268,11 +268,4 @@ function RecordList({
   );
 }
 
-RecordList.propTypes = {
-  chatrecord: PropTypes.object.isRequired,
-  dispatch: PropTypes.func.isRequired,
-};
-
-const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
-
-export default connect(mapStateToProps)(RecordList);
+export default connect(({ namelist = {} }) => ({ namelist }))(RecordList);

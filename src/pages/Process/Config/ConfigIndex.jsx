@@ -34,14 +34,22 @@ const { Item } = Form;
 const { MonthPicker, RangePicker } = DatePicker;
 const formItemLayout = {
   labelCol: {
-    xs: { span: 24 },
-    sm: { span: 4 },
+    span: 8,
   },
   wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 20 },
+    span: 16,
   },
 };
+
+const tailLayout = {
+  wrapperCol: {
+    offset: 8,
+    span: 16,
+  },
+};
+// const tailLayout = {
+//   wrapperCol: { offset: 8, span: 20 },
+// };
 const formatSelectedKeys = (selectedKeys = [], jobList) => {
   let arr = [];
   selectedKeys.forEach(val => {
@@ -242,11 +250,12 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
       bordered={false}
       title={
         <Fragment>
-          任务配置{' '}
+          任务配置
           <a
             href="javascript:;"
             style={{
-              padding: '5px 10px',
+              padding: '5px 15px',
+              fontSize: 14,
             }}
             onClick={e => {
               e.preventDefault();
@@ -268,7 +277,7 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
                 message: '任务名必填！',
               },
             ],
-          })(<TrimInput style={{ width: '200px' }} placeholder="请输入任务名" />)}
+          })(<Input style={{ width: '300px' }} placeholder="请输入任务名" />)}
         </Item>
         <Item label="外呼名单" required>
           <div style={{ marginLeft: 10 }}>
@@ -286,7 +295,7 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
             rules: [{ required: true, message: '请选择面试时长!' }],
           })(
             <Select
-              style={{ width: '200px' }}
+              style={{ width: '300px' }}
               onChange={data => {
                 this.handleRefresh(data);
               }}
@@ -302,7 +311,7 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
             rules: [{ required: true, message: '请选择外呼场景!' }],
           })(
             <Select
-              style={{ width: '200px' }}
+              style={{ width: '300px' }}
               onChange={data => {
                 this.handleRefresh(data);
               }}
@@ -442,11 +451,11 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
             )}
           </div>
         </Item>
-        <Item>
+        <Item {...tailLayout}>
           <Button
             htmlType="submit"
             type="primary"
-            className="test-input-search"
+            // className="test-input-search"
             onClick={() => handleOk()}
           >
             提交任务

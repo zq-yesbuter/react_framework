@@ -5,8 +5,9 @@ import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
 import CategoryAddFormModal from './AddFormModal';
 // import StandardTable from '../../../components/StandardTable';
-import DateFormat from '../../../components/DateFormat';
+import DateFormat from '@/components/DateFormat';
 import CategoryQueryForm from './PictureQueryForm';
+import renderTable from '@/components/SelectTable';
 
 // import { detail } from '../../../services/picture';
 
@@ -142,7 +143,53 @@ function Index({ dispatch, location, list }) {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  const hasSelected = selectedRowKeys.length > 0;
+
+  const setting = {
+    data: [{}], // faqList.data,
+    total: 0, // faqList.total,
+    current: start / length + 1,
+    columns, // renderColumns(showColumns, this.props, this),
+    pageSize: length,
+    loading,
+    selectedRowKeys,
+    // sortedInfo,
+    // onChange: (start, length, sorter) => {
+    //   if (this.pending) {
+    //     this.pending = false;
+    //     return;
+    //   }
+    //   this.pending = true;
+    //   onChange(
+    //     {
+    //       start,
+    //       length,
+    //       status,
+    //     },
+    //     () => {
+    //       onSubmit({
+    //         start,
+    //         length,
+    //         status,
+    //         modelCode,
+    //         order: sorter.columnKey,
+    //         dir: sorter.order,
+    //       });
+    //       this.pending = false;
+    //     }
+    //   );
+    //   this.setState({
+    //     selectedRowKeys: [],
+    //     selectedRows: [],
+    //     sortedInfo: sorter,
+    //   });
+    // },
+    // rowSelection: {
+    //   selectedRowKeys,
+    //   onChange: (selectedRowKeys, selectedRows) => {
+    //     this.setState({ selectedRowKeys, selectedRows });
+    //   },
+    // },
+  };
   return (
     <Card
       bordered={false}
@@ -173,24 +220,7 @@ function Index({ dispatch, location, list }) {
           );
         }}
       />
-      <div>
-        <div style={{ marginBottom: 16 }}>
-          <Dropdown
-            overlay={importMenu}
-            trigger={['hover']}
-            placement="bottomCenter"
-            disabled={!hasSelected}
-          >
-            <Button type="primary" onClick={start} loading={loading}>
-              批量操作
-            </Button>
-          </Dropdown>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `Selected ${selectedRowKeys.length} items` : ''}
-          </span>
-        </div>
-        <Table rowSelection={rowSelection} columns={columns} dataSource={[{}]} />
-      </div>
+      {renderTable(setting)}
       <CategoryAddFormModal
         value={value}
         onCancel={() => {

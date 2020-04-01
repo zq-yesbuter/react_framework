@@ -21,7 +21,7 @@ function QueryForm({ form, formatResult, onSubmit }) {
   return (
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="人才搜索">
-        {getFieldDecorator('channel', {})(<TrimInput className="test-input-space-name" />)}
+        {getFieldDecorator('name', {})(<TrimInput className="test-input-space-name" />)}
       </FormItem>
       <FormItem label="时间选项">
         {getFieldDecorator('channel0', {})(<TrimInput className="test-input-space-name" />)}
@@ -35,7 +35,6 @@ function QueryForm({ form, formatResult, onSubmit }) {
       <FormItem label="岗位筛选">
         {getFieldDecorator('channel3', {})(<TrimInput className="test-input-space-name" />)}
       </FormItem>
-
       <FormItem>
         <Button htmlType="submit" type="primary" className="test-input-search">
           搜索
