@@ -1,3 +1,5 @@
+
+
 export default [
   // {
   //   path: '/user',
@@ -30,32 +32,38 @@ export default [
           {
             path: '/AI',
             name: '外呼管理',
-            icon: 'smile',
+            icon: 'appstore',
             // component: '../pages/Process',
             routes: [
               {
                 name: '外呼任务',
                 path: '/AI/outging',
-                component: '../pages/Process/OutgoingTask/index.js',
-                icon: 'smile',
+                component: '../pages/Process/OutgoingTask',
+                icon: "align-left",
               },
               {
-                // name: '外呼配置',
-                path: '/AI/config',
-                component: '../pages/Process/Config/index.js',
+                name: '外呼配置',
+                hideInMenu: true,
+                path: '/AI/outging/config',
+                component: '../pages/Process/Config',
                 // icon: 'smile',
               },
               {
-                // name: '',
-                path: '/AI/namelist',
-                component: '../pages/Process/NameList/index.js',
+                name: '外呼名单',
+                hideInMenu: true,
+                path: '/AI/outging/namelist',
+                component: '../pages/Process/NameList',
                 // icon: 'smile',
               },
               {
-                // name: '',
-                path: '/AI/record',
-                component: '../pages/Process/Record/index.js',
+                name: '沟通记录',
+                hideInMenu: true,
+                path: '/AI/outging/record',
+                component: '../pages/Process/Record',
                 // icon: 'smile',
+              },
+              {
+                component: '../pages/404.jsx',
               },
             ],
           },
@@ -64,18 +72,18 @@ export default [
           },
         ],
       },
+      // {
+      //   component: './403',
+      // },
+      // {
+      //   component: './500',
+      // },
       {
-        component: './403',
-      },
-      {
-        component: './500',
-      },
-      {
-        component: './404',
+        component: '../pages/404.jsx',
       },
     ],
   },
   {
-    component: './404',
+    component: '../pages/404.jsx',
   },
 ];

@@ -6,7 +6,7 @@ import ListIndex from './ListIndex';
 
 function Index({ match, routerData, location, dispatch }) {
   return (
-    <PageHeaderWrapper title="外呼管理 - 外呼任务">
+    <PageHeaderWrapper>
       <ListIndex />
     </PageHeaderWrapper>
   );

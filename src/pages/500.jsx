@@ -7,7 +7,7 @@ const NoFoundPage = () => (
   <Result
     status="500"
     title="500"
-    subTitle="服务器请求错误."
+    subTitle="服务器请求错误～"
     extra={
       <Button type="primary" onClick={() => router.push('/')}>
         回到首页

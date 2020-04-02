@@ -7,7 +7,7 @@ const NoFoundPage = () => (
   <Result
     status="403"
     title="403"
-    subTitle="登录错误了！你需要的权限有问题，请联系管理员哦！"
+    subTitle="登录错误了！你需要的权限有问题，请联系管理员哦～"
     extra={
       <Button
         type="primary"

@@ -28,16 +28,16 @@ function Index({ dispatch }) {
           </a>
         </Fragment>
       }
-      breadcrumb={{
-        routes: [
-          { path: '/AI/outging', breadcrumbName: '外呼任务' },
-          { path: '/AI/namelist', breadcrumbName: '外呼名单' },
-          { path: '/AI/record', breadcrumbName: '外呼记录' },
-        ],
-        itemRender: (route, params, routes, paths) => {
-          return <Link to={route.path}>{route.breadcrumbName}</Link>;
-        },
-      }}
+      // breadcrumb={{
+      //   routes: [
+      //     { path: '/AI/outging', breadcrumbName: '外呼任务' },
+      //     { path: '/AI/namelist', breadcrumbName: '外呼名单' },
+      //     { path: '/AI/record', breadcrumbName: '外呼记录' },
+      //   ],
+      //   itemRender: (route, params, routes, paths) => {
+      //     return <Link to={route.path}>{route.breadcrumbName}</Link>;
+      //   },
+      // }}
     >
       <Row gutter={8}>
         <Col span={18}>

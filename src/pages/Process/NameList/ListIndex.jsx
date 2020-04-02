@@ -9,7 +9,6 @@ import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 
-// import { detail } from '../../../services/picture';
 
 function Index({ dispatch, location, nameList }) {
   const [value, setValue] = useState(null);

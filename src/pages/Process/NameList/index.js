@@ -8,17 +8,17 @@ import NotFound from '../../404';
 function Index({ match, routerData, location, dispatch }) {
   return (
     <PageHeaderWrapper
-      title="名单列表"
-      breadcrumb={{
-        routes: [
-          { path: '/AI/outging', breadcrumbName: '外呼管理' },
-          { path: '/AI/outging', breadcrumbName: '外呼任务' },
-          { path: '/AI/namelist', breadcrumbName: '外呼名单' },
-        ],
-        itemRender: (route, params, routes, paths) => {
-          return <Link to={route.path}>{route.breadcrumbName}</Link>;
-        },
-      }}
+      // title="名单列表"
+      // breadcrumb={{
+      //   routes: [
+      //     { path: '/AI/outging', breadcrumbName: '外呼管理' },
+      //     { path: '/AI/outging', breadcrumbName: '外呼任务' },
+      //     { path: '/AI/namelist', breadcrumbName: '外呼名单' },
+      //   ],
+      //   itemRender: (route, params, routes, paths) => {
+      //     return <Link to={route.path}>{route.breadcrumbName}</Link>;
+      //   },
+      // }}
     >
       <Switch>
         <ListIndex />

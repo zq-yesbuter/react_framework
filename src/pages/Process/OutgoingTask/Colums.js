@@ -1,53 +1,39 @@
 import React, { Fragment } from 'react';
 import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
+import { Divider } from 'antd';
 
 const renderColumns = dispatch => {
   const columns = [
     {
-      title: '姓名',
-      key: 'name',
-      dataIndex: 'name',
+      title: '任务名',
+      key: 'channel',
+      dataIndex: 'channel',
     },
     {
-      title: '电话',
-      key: 'tel',
-      dataIndex: 'tel',
+      title: '任务类型',
+      key: 'channelName',
+      dataIndex: 'channelName',
     },
     {
-      title: '岗位',
+      title: '外呼流程',
       key: 'terminalType',
       dataIndex: 'terminalType',
     },
     {
-      title: '面试时长',
+      title: '外呼名单',
       key: 'entity',
       dataIndex: 'entity',
     },
     {
-      title: '面试地址',
+      title: '外呼号段',
       key: 'keywords',
       dataIndex: 'keywords',
     },
     {
-      title: '外呼时间',
-      key: 'entity8',
-      dataIndex: 'entity8',
-    },
-    {
-      title: '挂机时间',
-      key: 'entity1',
-      dataIndex: 'entity1',
-    },
-    {
-      title: '挂机原因',
-      key: 'entity2',
-      dataIndex: 'entity3',
-    },
-    {
-      title: '状态',
-      key: 'entity6',
-      dataIndex: 'entity6',
+      title: '外呼开始时间',
+      key: 'entity',
+      dataIndex: 'entity',
     },
     {
       title: '更新人',
@@ -63,26 +49,21 @@ const renderColumns = dispatch => {
     },
     {
       title: '操作',
-      key: 'applyId',
-      dataIndex: 'applyId',
+      key: 'channel',
+      dataIndex: 'channel',
       width: 150,
-      render: (applyId, value) => {
+      render: (channel, value) => {
         return (
           <Fragment>
             <a
               onClick={() => {
-                dispatch(
-                  routerRedux.push({
-                    pathname: '/AI/outging/record',
-                    search: queryString.stringify({
-                      applyId,
-                    }),
-                  })
-                );
+                dispatch(routerRedux.push('/AI/outging/config'));
               }}
             >
-              查看记录
+              配置
             </a>
+            <Divider type="vertical" />
+            <a onClick={() => dispatch(routerRedux.push('/AI/outging/namelist'))}>名单</a>
           </Fragment>
         );
       },

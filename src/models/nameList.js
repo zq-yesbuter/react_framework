@@ -103,8 +103,8 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname, search }) => {
-        const match = /^\/AI\/namelist/.exec(pathname);
-        const matchRecord = /^\/AI\/record/.exec(pathname);
+        const match = /^\/AI\/outging\/namelist/.exec(pathname);
+        const matchRecord = /^\/AI\/outging\/record/.exec(pathname);
         if (match) {
           dispatch({
             type: 'getNameList',
