@@ -8,18 +8,21 @@ import DateFormat from '@/components/DateFormat';
 import CategoryQueryForm from './PictureQueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
+import { addBatch,batchRelated,batchCancel } from '@/services/nameList';
 
 
-function Index({ dispatch, location, list }) {
+function Index({ dispatch, location, namelist }) {
+  const { batchList } = namelist;
+  console.log('batchllist===>', batchList);
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   useEffect(() => {
-    return () => {
-      dispatch({
-        type: 'picture/init',
-      });
-    };
+    // return () => {
+    //   dispatch({
+    //     type: 'picture/init',
+    //   });
+    // };
   }, []);
 
   const handleRemoveConfirm = value => {
@@ -79,7 +82,7 @@ function Index({ dispatch, location, list }) {
     onChange: onSelectChange,
   };
   const setting = {
-    data: [{}],
+    data: batchList,
     total: 0, // faqList.total,
     current: start / length + 1,
     columns: renderColumns(dispatch),
@@ -162,27 +165,24 @@ function Index({ dispatch, location, list }) {
           setValue(null);
         }}
         onSubmit={data => {
-          dispatch({
-            type: 'picture/createOrUpdate',
+          console.log('data===>',data);
+           dispatch({
+            type: 'namelist/addBatchname',
             payload: data,
-          })
-            .then(() => {
-              message.success(data.id ? '修改成功' : '新增成功');
-              dispatch({
-                type: 'picture/reload',
-              });
-              this.setState({
-                value: null,
-              });
-            })
-            .catch(e => {
-              message.warn(e.message);
-            });
+          })  
+          message.success(data.id ? '修改成功' : '新增成功');
+          // const {triggerTime,...rest } = data;
+          // addBatch({triggerTime: triggerTime.format('YYYY-MM-DD HH:mm'),...rest})
+          // .then(body => {
+                
+          // })
+          // .catch(e => {});
+          setValue(null);
         }}
       />
     </Card>
   );
 }
 
-const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
+const mapStateToProps = ({ namelist = {} }) => ({ namelist });
 export default connect(mapStateToProps)(Index);

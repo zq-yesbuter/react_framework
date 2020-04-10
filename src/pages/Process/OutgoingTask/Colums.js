@@ -7,13 +7,13 @@ const renderColumns = dispatch => {
   const columns = [
     {
       title: '任务名',
-      key: 'channel',
-      dataIndex: 'channel',
+      key: 'name',
+      dataIndex: 'name',
     },
     {
       title: '任务类型',
-      key: 'channelName',
-      dataIndex: 'channelName',
+      key: 'intent',
+      dataIndex: 'intent',
     },
     {
       title: '外呼流程',
@@ -32,32 +32,38 @@ const renderColumns = dispatch => {
     },
     {
       title: '外呼开始时间',
-      key: 'entity',
-      dataIndex: 'entity',
+      key: 'triggerStartTime',
+      dataIndex: 'triggerStartTime',
     },
     {
       title: '更新人',
-      key: 'modified',
-      dataIndex: 'modified',
+      key: 'operator',
+      dataIndex: 'operator',
     },
     {
       title: '操作时间',
-      key: 'modifiedDate',
-      dataIndex: 'modifiedDate',
+      key: 'operationTime',
+      dataIndex: 'operationTime',
       width: 200,
       // render: modifiedDate => <DateFormat value={modifiedDate} />,
     },
     {
       title: '操作',
-      key: 'channel',
-      dataIndex: 'channel',
+      key: 'id',
+      dataIndex: 'id',
       width: 150,
-      render: (channel, value) => {
+      render: (id, value) => {
+        console.log(value)
+        const { name } = value || {};
         return (
           <Fragment>
             <a
               onClick={() => {
-                dispatch(routerRedux.push('/AI/outging/config'));
+                dispatch({
+                  type: 'namelist/save',
+                  payload: {configValue:value},
+                });
+                dispatch(routerRedux.push(`/AI/outging/config?${name}`));
               }}
             >
               配置

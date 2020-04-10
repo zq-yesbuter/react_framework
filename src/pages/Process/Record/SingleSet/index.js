@@ -63,7 +63,6 @@ function RecordBottom({
   namelist: { jobList = [], selectJobId, backShowTime },
   location,
 }) {
-  console.log('location===>', location);
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
@@ -199,6 +198,101 @@ function RecordBottom({
     resetFields();
   }
 
+  function formatFieldItem(intent) {
+    switch (intent) {
+      case ('first_entry_invitation',
+      'second_entry_invitation',
+      'interview_research_invitation',
+      'offer_invitation'):
+        return (
+          <Fragment>
+            {getFieldDecorator('triggerTime', {
+              initialValue:
+                status !== 11 && Object.keys(backShowTime).length
+                  ? moment(backShowTime.triggerTime)
+                  : null,
+            })(
+              <DatePicker
+                showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                disabledDate={disabledDate}
+                format="YYYY-MM-DD HH:mm"
+                placeholder="请选择外呼时间"
+                style={{ marginRight: 10 }}
+              />
+            )}
+          </Fragment>
+        );
+      case 'interview_invitation':
+        return (
+          <Fragment>
+            {getFieldDecorator('triggerTime', {
+              initialValue:
+                status !== 11 && Object.keys(backShowTime).length
+                  ? moment(backShowTime.triggerTime)
+                  : null,
+            })(
+              <DatePicker
+                showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                disabledDate={disabledDate}
+                format="YYYY-MM-DD HH:mm"
+                placeholder="请选择外呼时间"
+                style={{ marginRight: 10 }}
+              />
+            )}
+            {getFieldDecorator('diff', {
+              initialValue:
+                status !== 11 && Object.keys(backShowTime).length
+                  ? moment(backShowTime.endTime).diff(backShowTime.time, 'minutes')
+                  : 60,
+            })(
+              <InputNumber
+                style={{ marginRight: 10 }}
+                min={0}
+                max={160}
+                formatter={value => `${value}分钟`}
+                parser={value => value.replace('分钟', '')}
+              />
+            )}
+
+            {getFieldDecorator('startTime', {
+              initialValue:
+                status !== 11 && Object.keys(backShowTime).length
+                  ? moment(backShowTime.time)
+                  : null,
+            })(
+              <DatePicker
+                disabledDate={disabledDate}
+                // disabledTime={disabledDateTime}
+                showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                format="YYYY-MM-DD HH:mm"
+                placeholder="请选择面试时间"
+                style={{ marginRight: 10 }}
+              />
+            )}
+          </Fragment>
+        );
+      default:
+        return (
+          <Fragment>
+            {getFieldDecorator('triggerTime', {
+              initialValue:
+                status !== 11 && Object.keys(backShowTime).length
+                  ? moment(backShowTime.triggerTime)
+                  : null,
+            })(
+              <DatePicker
+                showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                disabledDate={disabledDate}
+                format="YYYY-MM-DD HH:mm"
+                placeholder="请选择外呼时间"
+                style={{ marginRight: 10 }}
+              />
+            )}
+          </Fragment>
+        );
+    }
+  }
+
   const { status } = jobList.find(item => item.applyId === selectJobId) || {};
   // console.log('status===>1111111',status,backShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
   // console.log('status===>1111111',status,offerBackShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
@@ -207,7 +301,7 @@ function RecordBottom({
     <div className={styles['gutter-box']}>
       <h3>外呼时间</h3>
       <div>
-        {getFieldDecorator('triggerTime', {
+        {/* {getFieldDecorator('triggerTime', {
           initialValue:
             status !== 11 && Object.keys(backShowTime).length
               ? moment(backShowTime.triggerTime)
@@ -249,8 +343,8 @@ function RecordBottom({
             placeholder="请选择面试时间"
             style={{ marginRight: 10 }}
           />
-        )}
-
+        )} */}
+        {formatFieldItem('offer_invitation')}
         <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>
           更新
         </Button>

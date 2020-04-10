@@ -10,7 +10,9 @@ import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 
 
-function Index({ dispatch, location, nameList }) {
+function Index({ dispatch, location, namelist }) {
+  const { nameList } = namelist;
+  console.log('nameList===>', namelist);
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -82,26 +84,26 @@ function Index({ dispatch, location, nameList }) {
     loading,
     selectedRowKeys,
     // sortedInfo,
-    onChange: (start, length, sorter) => {
-      console.log('start==>', start, length, sorter);
-      // onChange(
-      //   {
-      //     start,
-      //     length,
-      //     status,
-      //   },
-      //   () => {
-      //     onSubmit({
+    onChange: (start, length) => {
+      console.log('start==>', start, length);
+      // this.setState(
+      //   ({ fields }) => ({
+      //     fields: {
+      //       ...fields,
       //       start,
       //       length,
-      //       status,
-      //       modelCode,
-      //       order: sorter.columnKey,
-      //       dir: sorter.order,
-      //     });
+      //     },
+      //   }),
+      //   () => {
+      //     this.handleSubmit();
       //     this.pending = false;
       //   }
       // );
+
+      dispatch({
+        type: 'namelist/getNameList',
+        payload: { start, length },
+      });
       setSelectedRowKeys([]);
       // this.setState({
       //   selectedRows: [],
@@ -223,7 +225,7 @@ function Index({ dispatch, location, nameList }) {
       }
       extra={
         <Button
-          icon="plus"
+          icon="upload"
           type="primary"
           onClick={() => {
             setValue({});
@@ -251,8 +253,7 @@ function Index({ dispatch, location, nameList }) {
 }
 
 export default connect(({ namelist }) => {
-  const { nameList } = namelist;
   return {
-    nameList,
+    namelist,
   };
 })(Index);

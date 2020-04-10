@@ -29,7 +29,8 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
-import { importFile } from '@/services/ai';
+import { upload } from '@/services/nameList';
+
 
 const { Option } = Select;
 const { Search } = Input;
@@ -46,7 +47,8 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-function ImportModal({ dispatch, visible, form, close, postList, value, onCancel }) {
+function ImportModal({ dispatch, visible, form, close, postList, value, onCancel, namelist }) {
+  const { ivrIntents } = namelist;
   const { getFieldDecorator, validateFields, resetFields, setFields } = form;
   const [fileList, setFileList] = useState([]);
   const [jobPostVisible, setJobPostVisible] = useState(false);
@@ -74,7 +76,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
           formData.append('resumeFile', file);
         });
         const urlParams = { jobId };
-        importFile({ formData, urlParams })
+        upload({ formData, urlParams })
           .then(data => {
             message.success('外呼文件导入成功');
             resetFields();
@@ -136,7 +138,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
       visible={!!value}
       title="导入名单"
       destroyOnClose
-      width={750}
+      width={550}
       onOk={onSumbit}
       onCancel={() => {
         // this.setState({ selectSource: [], categoryIconUrl: '' });
@@ -146,15 +148,14 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
       <Form {...formItemLayout}>
         <Item label="选择类型">
           {getFieldDecorator('type', {
-            // rules: [{ required: true, message: '请选择类型!' }],
+            rules: [{ required: true, message: '请选择类型!' }],
           })(
             <Select style={{ width: '200px' }}>
-              <Option value="no">面试邀约</Option>
-              <Option value="60">面试调研</Option>
+              {ivrIntents && ivrIntents.length && ivrIntents.map(item => <Option value={item.intent}>{item.intentDesc}</Option>) }
             </Select>
           )}
         </Item>
-        <Item label="选择模版">
+        {/* <Item label="选择模版">
           {getFieldDecorator('scence', {
             // rules: [{ required: true, message: '请选择模版!' }],
           })(
@@ -163,7 +164,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
               <Option value="6=70">面试时间未分配</Option>
             </Select>
           )}
-        </Item>
+        </Item> */}
         <Item label="导入文件" required>
           {getFieldDecorator('fileName')(
             <Upload {...uploadProps}>
@@ -183,5 +184,5 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
     </Modal>
   );
 }
-const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
+const mapStateToProps = ({ namelist = {} }) => ({ namelist });
 export default connect(mapStateToProps)(Form.create({})(forwardRef(ImportModal)));

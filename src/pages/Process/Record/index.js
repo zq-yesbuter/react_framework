@@ -51,5 +51,4 @@ function Index({ dispatch }) {
     </PageHeaderWrapper>
   );
 }
-const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
-export default connect(mapStateToProps)(Index);
+export default connect(({ namelist = {} }) => ({ namelist }))(Index);

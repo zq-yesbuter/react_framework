@@ -50,7 +50,7 @@ class AvatarDropdown extends React.Component {
 
         <Menu.Item key="logout">
           <Icon type="logout" />
-          <FormattedMessage id="menu.account.logout" defaultMessage="logout" />
+          退出登录
         </Menu.Item>
       </Menu>
     );

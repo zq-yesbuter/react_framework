@@ -206,5 +206,20 @@ export default {
       changeOrigin: true,
       pathRewrite,
     },
+    '/ivr': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/batch': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/common': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    }
   },
 };

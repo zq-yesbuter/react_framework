@@ -1,12 +1,18 @@
 import React, { PureComponent } from 'react';
-import { Form, Button } from 'antd';
+import { Form, Button, DatePicker, Select } from 'antd';
 import { connect } from 'dva';
 import mapValueToFields from '../../../utils/mapValueToFields';
 import TrimInput from '../../../components/TrimInput';
 
 const FormItem = Form.Item;
 const createForm = Form.create;
-
+const { Option } = Select;
+const statusOptions = [
+  {value:1,name:'已申请'},
+  {value:2,name:'已完成'},
+  {value:3,name:'已拒绝'},
+  {value:4,name:'已接受'},
+]
 function QueryForm({ form, formatResult, onSubmit }) {
   const handleSubmit = e => {
     e.preventDefault();
@@ -24,16 +30,32 @@ function QueryForm({ form, formatResult, onSubmit }) {
         {getFieldDecorator('name', {})(<TrimInput className="test-input-space-name" />)}
       </FormItem>
       <FormItem label="时间选项">
-        {getFieldDecorator('channel0', {})(<TrimInput className="test-input-space-name" />)}
+        {getFieldDecorator('status', {})(
+          <DatePicker
+            // showTime={{ format: 'HH:mm', minuteStep: 5 }}
+            // disabledDate={disabledDate}
+            format="YYYY-MM-DD HH:mm:ss"
+            placeholder="请选择时间"
+            style={{ width:250 }}
+          />)}
       </FormItem>
       <FormItem label="状态筛选">
-        {getFieldDecorator('channel1', {})(<TrimInput className="test-input-space-name" />)}
+        {getFieldDecorator('status', {})( 
+          <Select allowClear placeholder="请选择岗位" style={{width:200}}>
+            {statusOptions.map(item => <Option value={item.value}>{item.name}</Option>)}
+          </Select>)}
       </FormItem>
       <FormItem label="挂机原因">
-        {getFieldDecorator('channel2', {})(<TrimInput className="test-input-space-name" />)}
+        {getFieldDecorator('channel2', {})(
+          <Select allowClear placeholder="请选择岗位" style={{width:200}}>
+            <Option value={null}>全部</Option>
+          </Select>)}
       </FormItem>
       <FormItem label="岗位筛选">
-        {getFieldDecorator('channel3', {})(<TrimInput className="test-input-space-name" />)}
+        {getFieldDecorator('channel3', {})(
+          <Select allowClear placeholder="请选择岗位" style={{width:200}}>
+            <Option value={null}>全部</Option>
+          </Select>)}
       </FormItem>
       <FormItem>
         <Button htmlType="submit" type="primary" className="test-input-search">

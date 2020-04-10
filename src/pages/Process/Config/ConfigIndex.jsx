@@ -23,7 +23,7 @@ import { connect } from 'dva';
 import { routerRedux, Link } from 'dva/router';
 import _ from 'lodash';
 import moment from 'moment';
-import { batchInvent, editBatchInvitation, fetchInvitation } from '@/services/ai';
+import { addBatch,batchRelated,batchCancel } from '@/services/nameList';
 import { flatten } from '@/utils/utils';
 import styles from './index.less';
 import TrimInput from '@/components/TrimInput';
@@ -58,31 +58,22 @@ const formatSelectedKeys = (selectedKeys = [], jobList) => {
   });
   return arr;
 };
-const formatTime = (diffTimeList, selectedKeys, diff) => {
-  let list = [];
-  const newData = _.cloneDeep(diffTimeList);
-  newData.forEach(item => {
-    const [begin, end] = item;
-    const diffTime = end.diff(begin, 'minutes');
-    // eslint-disable-next-line radix
-    const len = parseInt(diffTime / diff);
-    const show =
-      len > 0
-        ? Array(len)
-            .fill(0)
-            .reduce(acc => {
-              acc.push({
-                startTime: begin.format('YYYY-MM-DD HH:mm'),
-                endTime: begin.add(diff, 'minutes').format('YYYY-MM-DD HH:mm'),
-              });
-              return acc;
-            }, [])
-        : [];
-    list.push(...show);
-  });
-  return list;
-};
-function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSelectList }) {
+
+function Index({
+  dispatch,
+  visible,
+  form,
+  close,
+  selectedKeys,
+  jobList,
+  resetSelectList,
+  location,
+  namelist,
+}) {
+  const { configValue, ivrIntents } = namelist;
+  console.log('confifValue====>', configValue,ivrIntents );
+  const { search } = window.location;
+  const batchName = decodeURI(search.slice(1));
   const [diffTimeList, setDiffTimeList] = useState([]);
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
 
@@ -93,139 +84,90 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
-        if (!diffTimeList.length) {
-          message.warn('选择了时间段需要点击添加按钮哦！');
-          return;
-        }
-        const { diff, triggerTime } = values;
+        // invitations
+        console.log('vlues===>',values);
+        const { name, intent, scene, triggerTime } = values;
         if (triggerTime < moment().add(10, 'minutes')) {
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
         }
-        let allTime = 0;
-        diffTimeList.forEach(([begin, end]) => {
-          const diffTime = end.diff(begin, 'minutes');
-          allTime += diffTime / diff;
-        });
-        if (allTime < selectedKeys.length) {
-          message.warn('请选择足够批量人数的面试时间的时间段！');
-          return;
-        }
-        const timeList = formatTime(diffTimeList, selectedKeys, diff);
-        // console.log('formatTime====>',timeList);
-        const nameList = formatSelectedKeys(selectedKeys, jobList);
-        let batch = [];
-        // console.log('nameList====>',nameList);
-        nameList.forEach(({ id, applyId, status }, index) => {
-          batch.push({
-            applicantId: id,
-            applyId,
-            status,
-            triggerTime: triggerTime.format('YYYY-MM-DD HH:mm'),
-            ...timeList[index],
-          });
-        });
-        const addBatch = batch
-          .filter(item => item.status !== 21)
-          .map(({ status, ...item }) => item);
-        let editBatch = batch.filter(item => item.status === 21).map(({ status, ...item }) => item);
-        // console.log('add===>',addBatch,'editBatch===>',editBatch);
-        let resolvedPromisesArray = [];
-        if (editBatch.length) {
-          const applyIds = editBatch.map(item => item.applyId) || [];
-          fetchInvitation({ applyIds })
-            .then(timeList => {
-              editBatch = editBatch.map(item => {
-                // console.log('timelist====>',timeList,formatInventTime(timeList, item.applyId))
-                return { ...item, updateId: formatInventTime(timeList, item.applyId) || null };
-              });
-              // console.log('editBatch===>',editBatch);
-              resolvedPromisesArray.push(editBatchInvitation({ batch: editBatch }));
-              if (addBatch.length) {
-                resolvedPromisesArray.push(batchInvent({ batch: addBatch }));
-              }
-              Promise.all(resolvedPromisesArray)
-                .then(data => {
-                  let errorCount = 0;
-                  let successCount = 0;
-                  let success = [];
-                  data.forEach(item => {
-                    errorCount += item.errorCount;
-                    successCount += item.successCount;
-                    // success.push(item.success);
-                  });
-                  console.log('success===>', success);
-                  if (!errorCount) {
-                    message.success('批量邀约成功');
-                  } else {
-                    message.warn(`批量邀约成功${successCount}人，批量邀约失败${errorCount}人`);
-                  }
-                  // const successList = flatten(success);
-                  // console.log(errorCount,successCount,successList);
-                  // Modal.info({
-                  //   title: '批量邀约成功',
-                  //   content: (
-                  //     <div>
-                  //       <p>{`邀约成功${successCount}人，邀约失败${errorCount}人`}</p>
-                  //       {formatSelectedKeys(successList,jobList).map(item =>
-                  //         <p>{`${item ? item.name : null}邀约成功`}</p>
-                  //       )}
-                  //     </div>
-                  //   ),
-                  //   onOk() {() => close()},
-                  // });
-                  resetFields();
-                  setDiffTimeList([]);
-                  close();
-                  dispatch({
-                    type: 'chatrecord/jobAppliedAsPostAll',
-                  });
-                  // dispatch({
-                  //   type: 'chatrecord/updateSingleInvent',
-                  // });
-                  resetSelectList();
-                })
-                .catch(e => message.error(e.message));
+        addBatch({name, intent, scene})  
+          .then(({id}) => {
+            batchRelated({id,intent,triggerTime,invitations:[]}) 
+              .then(body => {
+                
+              })
+              .catch(e => {});
             })
-            .catch(e => message.error(`出现错误：${e.message}`));
-        } else if (addBatch.length) {
-          batchInvent({ batch: addBatch })
-            .then(data => {
-              // message.success('批量邀约成功');
-              if (!data.errorCount) {
-                message.success('批量邀约成功');
-              } else {
-                message.warn(
-                  `批量邀约成功${data.successCount}人，批量邀约失败${data.errorCount}人`
-                );
-              }
-              // Modal.info({
-              //   title: '批量新增邀约成功',
-              //   content: (
-              //     <div>
-              //       <p>{`邀约成功${data.successCount}人，邀约失败${data.errorCount}人`}</p>
-              //       {formatSelectedKeys(data.success,jobList).map(item =>
-              //         <p>{`${item.name}邀约成功`}</p>
-              //       )}
-              //     </div>
-              //   ),
-              //   // onOk() {() => close()},
-              // });
-              resetFields();
-              setDiffTimeList([]);
-              close();
-              // dispatch({
-              //   type: 'chatrecord/updateSingleInvent',
-              // });
-              dispatch({
-                type: 'chatrecord/jobAppliedAsPostAll',
-              });
-              resetSelectList();
-            })
-            .catch(e => message.error(e.message));
-        }
+            .catch(e => {});
+
+          // fetchInvitation({ applyIds })
+          //   .then(timeList => {
+          //     editBatch = editBatch.map(item => {
+          //       // console.log('timelist====>',timeList,formatInventTime(timeList, item.applyId))
+          //       return { ...item, updateId: formatInventTime(timeList, item.applyId) || null };
+          //     });
+          //     // console.log('editBatch===>',editBatch);
+          //     resolvedPromisesArray.push(editBatchInvitation({ batch: editBatch }));
+          //     if (addBatch.length) {
+          //       resolvedPromisesArray.push(batchInvent({ batch: addBatch }));
+          //     }
+          //     Promise.all(resolvedPromisesArray)
+          //       .then(data => {
+          //         let errorCount = 0;
+          //         let successCount = 0;
+          //         let success = [];
+          //         data.forEach(item => {
+          //           errorCount += item.errorCount;
+          //           successCount += item.successCount;
+          //           // success.push(item.success);
+          //         });
+          //         console.log('success===>', success);
+          //         if (!errorCount) {
+          //           message.success('批量邀约成功');
+          //         } else {
+          //           message.warn(`批量邀约成功${successCount}人，批量邀约失败${errorCount}人`);
+          //         }
+          //         // const successList = flatten(success);
+          //         // console.log(errorCount,successCount,successList);
+          //         // Modal.info({
+          //         //   title: '批量邀约成功',
+          //         //   content: (
+          //         //     <div>
+          //         //       <p>{`邀约成功${successCount}人，邀约失败${errorCount}人`}</p>
+          //         //       {formatSelectedKeys(successList,jobList).map(item =>
+          //         //         <p>{`${item ? item.name : null}邀约成功`}</p>
+          //         //       )}
+          //         //     </div>
+          //         //   ),
+          //         //   onOk() {() => close()},
+          //         // });
+          //         resetFields();
+          //         setDiffTimeList([]);
+          //         close();
+          //         dispatch({
+          //           type: 'chatrecord/jobAppliedAsPostAll',
+          //         });
+          //         // dispatch({
+          //         //   type: 'chatrecord/updateSingleInvent',
+          //         // });
+          //         resetSelectList();
+          //       })
+          //       .catch(e => message.error(e.message));
+          //   })
+          //   .catch(e => message.error(`出现错误：${e.message}`));
+       
       }
     });
+  }
+  function cancel() {
+    const { intent,id } = configValue;
+    console.log('configValue===>', intent,id);
+    batchCancel({intent,id})
+    .then(body => {
+      message.success('取消任务成功')      
+    })
+    .catch(e => {message.error('取消任务失败')  });
   }
   function disabledDate(current) {
     // Can not select days before today and today
@@ -270,13 +212,15 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
     >
       <Form {...formItemLayout}>
         <Item {...formItemLayout} label="任务名">
-          {getFieldDecorator('keywords', {
+          {getFieldDecorator('name', {
             rules: [
               {
                 required: true,
                 message: '任务名必填！',
               },
             ],
+            initialValue: batchName,
+            // batchName 
           })(<Input style={{ width: '300px' }} placeholder="请输入任务名" />)}
         </Item>
         <Item label="外呼名单" required>
@@ -291,38 +235,57 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
           </div>
         </Item>
         <Item label="外呼类型">
-          {getFieldDecorator('type', {
+          {getFieldDecorator('intent', {
             rules: [{ required: true, message: '请选择面试时长!' }],
           })(
             <Select
               style={{ width: '300px' }}
-              onChange={data => {
-                this.handleRefresh(data);
-              }}
+              placeholder="请选择外呼类型"
             >
-              <Option value="no">面试邀约</Option>
-              <Option value="60">offer确认</Option>
-              <Option value="6=70">录用通知</Option>
+              {ivrIntents &&
+                ivrIntents.length &&
+                ivrIntents.map(item => <Option value={item.intent}>{item.intentDesc}</Option>)}
             </Select>
           )}
         </Item>
         <Item label="外呼场景">
-          {getFieldDecorator('scence', {
+          {getFieldDecorator('scene', {
             rules: [{ required: true, message: '请选择外呼场景!' }],
           })(
             <Select
               style={{ width: '300px' }}
-              onChange={data => {
-                this.handleRefresh(data);
-              }}
+              placeholder="请选择外呼场景"
             >
-              <Option value="no">实习生面试邀约流程</Option>
-              <Option value="60">offer确认邀约流程</Option>
-              <Option value="6=70">录用通知邀约流程</Option>
+              {ivrIntents &&
+                ivrIntents.length &&
+                ivrIntents.map(item => <Option value={item.scene}>{item.sceneDesc}</Option>)}
             </Select>
           )}
         </Item>
-        <Item label="面试时长">
+        <Item label="外呼时间" required>
+          {getFieldDecorator('triggerTime', {
+            rules: [{ required: true, message: '请选择外呼时间!' }],
+          })(
+            <DatePicker
+              showTime={{ format: 'HH:mm', minuteStep: 5 }}
+              disabledDate={disabledDate}
+              format="YYYY-MM-DD HH:mm"
+              placeholder="请选择外呼时间"
+              style={{ width: 300 }}
+            />
+          )}
+        </Item>
+        {/* <Item label="重复外呼">
+          {getFieldDecorator('name', {
+            // rules: [{ message: '请输入' }],s
+          })(
+            <Select style={{ width: 300 }} placeholder="请选择是否重复外呼">
+              <Option value="yes">是</Option>
+              <Option value="no">否</Option>
+            </Select>
+          )}
+        </Item> */}
+        {/* <Item label="面试时长">
           {getFieldDecorator('diff', {
             initialValue: 60,
             rules: [{ required: true, message: '请选择面试时长!' }],
@@ -369,21 +332,8 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
               </Tag>
             ))}
           </div>
-        ) : null}
-        <Item label="外呼时间" required>
-          {getFieldDecorator('triggerTime', {
-            rules: [{ required: true, message: '请选择外呼时间!' }],
-          })(
-            <DatePicker
-              showTime={{ format: 'HH:mm', minuteStep: 5 }}
-              disabledDate={disabledDate}
-              format="YYYY-MM-DD HH:mm"
-              placeholder="请选择外呼时间"
-              // style={{ display: 'block' }}
-            />
-          )}
-        </Item>
-        <Item label="重复外呼">
+        ) : null} */}
+        {/* <Item label="重复外呼">
           <div className={styles['inline-select']}>
             {getFieldDecorator('name', {
               defaultValue: '1',
@@ -450,7 +400,7 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
               </Select>
             )}
           </div>
-        </Item>
+        </Item> */}
         <Item {...tailLayout}>
           <Button
             htmlType="submit"
@@ -460,23 +410,20 @@ function Index({ dispatch, visible, form, close, selectedKeys, jobList, resetSel
           >
             提交任务
           </Button>
-          {/* <Button
-            style={{ margin: '0 10px' }}
-            className="test-input-search"
-            onClick={e => {
-              onCancel={() => {
-                resetFields();
-                close();
-                setDiffTimeList([]);
-            }}}}
-          >
-            重置
-          </Button> */}
+          {configValue && configValue.id && 
+            <Button
+              style={{ margin: '0 10px' }}
+              className="test-input-search"
+              onClick={e => {cancel()}}
+            >
+              取消任务
+            </Button>
+          }
         </Item>
       </Form>
     </Card>
   );
 }
 
-const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
+const mapStateToProps = ({ namelist = {} }) => ({ namelist });
 export default connect(mapStateToProps)(Form.create({})(Index));

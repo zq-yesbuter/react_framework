@@ -22,9 +22,9 @@ const renderTable = ({
     pageSize,
     showSizeChanger: true,
     showQuickJumper: true,
-    onShowSizeChange: (current, pageSize) => {
-      onChange((current - 1) * pageSize, pageSize, sortedInfo);
-    },
+    // onShowSizeChange: (current, pageSize) => {
+    //   onChange((current - 1) * pageSize, pageSize, sortedInfo);
+    // },
     onChange: (current, pageSize) => {
       onChange((current - 1) * pageSize, pageSize, sortedInfo);
     },

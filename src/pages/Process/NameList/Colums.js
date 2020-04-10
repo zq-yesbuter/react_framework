@@ -16,8 +16,8 @@ const renderColumns = dispatch => {
     },
     {
       title: '岗位',
-      key: 'terminalType',
-      dataIndex: 'terminalType',
+      key: 'jobName',
+      dataIndex: 'jobName',
     },
     {
       title: '面试时长',
@@ -26,13 +26,13 @@ const renderColumns = dispatch => {
     },
     {
       title: '面试地址',
-      key: 'keywords',
-      dataIndex: 'keywords',
+      key: 'address',
+      dataIndex: 'address',
     },
     {
       title: '外呼时间',
-      key: 'entity8',
-      dataIndex: 'entity8',
+      key: 'triggerTime',
+      dataIndex: 'triggerTime',
     },
     {
       title: '挂机时间',
@@ -46,18 +46,18 @@ const renderColumns = dispatch => {
     },
     {
       title: '状态',
-      key: 'entity6',
-      dataIndex: 'entity6',
+      key: 'status',
+      dataIndex: 'status',
     },
     {
       title: '更新人',
-      key: 'modified',
-      dataIndex: 'modified',
+      key: 'operator',
+      dataIndex: 'operator',
     },
     {
       title: '操作时间',
-      key: 'modifiedDate',
-      dataIndex: 'modifiedDate',
+      key: 'operationTime',
+      dataIndex: 'operationTime',
       width: 200,
       // render: modifiedDate => <DateFormat value={modifiedDate} />,
     },

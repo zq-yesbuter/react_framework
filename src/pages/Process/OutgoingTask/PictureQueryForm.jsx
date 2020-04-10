@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Button } from 'antd';
+import { Form, Button, DatePicker } from 'antd';
 import { connect } from 'dva';
 import mapValueToFields from '../../../utils/mapValueToFields';
 import TrimInput from '../../../components/TrimInput';
@@ -24,7 +24,14 @@ function QueryForm({ form, formatResult, onSubmit }) {
         {getFieldDecorator('channel', {})(<TrimInput className="test-input-space-name" />)}
       </FormItem>
       <FormItem label="时间选项">
-        {getFieldDecorator('channel', {})(<TrimInput className="test-input-space-name" />)}
+        {getFieldDecorator('channel', {})(
+          <DatePicker
+            // showTime={{ format: 'HH:mm', minuteStep: 5 }}
+            // disabledDate={disabledDate}
+            format="YYYY-MM-DD HH:mm:ss"
+            placeholder="请选择时间"
+            style={{ width:250 }}
+          />)}
       </FormItem>
       <FormItem label="人才搜索">
         {getFieldDecorator('channel', {})(<TrimInput className="test-input-space-name" />)}
