@@ -133,3 +133,8 @@ export function getRoutes(path, routerData) {
   });
   return renderRoutes;
 }
+
+export function formatTaskType(ivrIntents,key,keyValue,value) {
+  const ivrValue = ivrIntents.find(e => e[key] = keyValue);
+  return ivrValue && Object.keys(ivrValue).length ? ivrValue[value] : null
+}

@@ -39,7 +39,7 @@ function Index({ dispatch }) {
       //   },
       // }}
     >
-      <Row gutter={8}>
+      <Row gutter={12}>
         <Col span={18}>
           <SingleSet />
           <ChatRecord />

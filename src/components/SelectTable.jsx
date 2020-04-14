@@ -15,6 +15,9 @@ const renderTable = ({
   selectedRowKeys,
   importMenu,
   rowKey,
+  prev,
+  next,
+  showNext,
 }) => {
   const pagination = {
     defaultCurrent,
@@ -22,14 +25,17 @@ const renderTable = ({
     pageSize,
     showSizeChanger: true,
     showQuickJumper: true,
+    pageSizeOptions: ['10', '20', '50', '100'],
     // onShowSizeChange: (current, pageSize) => {
     //   onChange((current - 1) * pageSize, pageSize, sortedInfo);
     // },
     onChange: (current, pageSize) => {
-      onChange((current - 1) * pageSize, pageSize, sortedInfo);
+      onChange(current + 1, pageSize);
+      // onChange((current - 1) * pageSize, pageSize, sortedInfo);
     },
     showTotal: (total, range) => {
-      return `展示第${range[0]}至${range[1]}条数据，共${total}条数据`;
+      console.log('展示数据==》',range,total);
+      // return `展示第${range[0]}至${range[1]}条数据，共${total}条数据`;
     },
     current,
   };
@@ -39,7 +45,7 @@ const renderTable = ({
       <Table
         style={{ marginTop: 15 }}
         size="small"
-        pagination={{ ...pagination }}
+        pagination={false}
         dataSource={data || []}
         columns={columns || []}
         rowKey={rowKey}
@@ -49,7 +55,16 @@ const renderTable = ({
           onChange((page.current - 1) * page.pageSize, page.pageSize, sorter);
         }}
       />
-      <div>
+      {total ? 
+        (
+          <div style={{display:'flex',justifyContent: 'flex-end',margin:'10px 0' }}>
+            <div style={{alignItems: 'center'}}>{`当前展示第${current}页，展示${total}条`}</div>
+            <Button style={{marginLeft:10}} size="small" onClick={() => prev()} disabled={current===1}>上一页</Button>
+            <Button style={{marginLeft:10}} size="small" onClick={() => next()} disabled={showNext}>下一页</Button>
+          </div>
+        ) : null
+      }
+      <div style={{marginTop:10}}>
         <Dropdown
           overlay={importMenu}
           trigger={['hover']}

@@ -2,8 +2,11 @@ import React, { Fragment } from 'react';
 import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
 import { Divider } from 'antd';
+import renderTable from '@/components/SelectTable';
+import { formatTaskType } from '@/utils/utils';
+import { statusOptions } from '../contant';
 
-const renderColumns = dispatch => {
+const renderColumns = (dispatch,ivrIntents) => {
   const columns = [
     {
       title: '任务名',
@@ -14,26 +17,39 @@ const renderColumns = dispatch => {
       title: '任务类型',
       key: 'intent',
       dataIndex: 'intent',
+      render:  scene => formatTaskType(ivrIntents,'intent',scene,'intentDesc'),
     },
-    {
-      title: '外呼流程',
-      key: 'terminalType',
-      dataIndex: 'terminalType',
-    },
-    {
-      title: '外呼名单',
-      key: 'entity',
-      dataIndex: 'entity',
-    },
-    {
-      title: '外呼号段',
-      key: 'keywords',
-      dataIndex: 'keywords',
-    },
+    // {
+    //   title: '外呼流程',
+    //   key: 'terminalType',
+    //   dataIndex: 'terminalType',
+    // },
+    // {
+    //   title: '外呼名单',
+    //   key: 'entity',
+    //   dataIndex: 'entity',
+    // },
+    // {
+    //   title: '外呼号段',
+    //   key: 'keywords',
+    //   dataIndex: 'keywords',
+    // },
     {
       title: '外呼开始时间',
       key: 'triggerStartTime',
       dataIndex: 'triggerStartTime',
+    },
+    {
+      title: '场景',
+      key: 'scene',
+      dataIndex: 'scene',
+      render:  scene => formatTaskType(ivrIntents,'scene',scene,'sceneDesc'),
+    },
+    {
+      title: '状态',
+      key: 'status',
+      dataIndex: 'status',
+      render:  status => formatTaskType(statusOptions,'value',status,'name'),
     },
     {
       title: '更新人',
@@ -53,12 +69,17 @@ const renderColumns = dispatch => {
       dataIndex: 'id',
       width: 150,
       render: (id, value) => {
-        console.log(value)
-        const { name } = value || {};
+        const { name, intent} = value || {};
         return (
           <Fragment>
             <a
               onClick={() => {
+                if(id){
+                  dispatch({
+                    type: 'namelist/configNameList',
+                    payload: {id,intent},
+                  });
+                }
                 dispatch({
                   type: 'namelist/save',
                   payload: {configValue:value},
@@ -69,7 +90,22 @@ const renderColumns = dispatch => {
               配置
             </a>
             <Divider type="vertical" />
-            <a onClick={() => dispatch(routerRedux.push('/AI/outging/namelist'))}>名单</a>
+            <a onClick={
+              () =>  {
+                if(id){
+                  dispatch(routerRedux.push({
+                    pathname: '/AI/outging/namelist',
+                    search: queryString.stringify({
+                      intent,
+                      id,
+                    }),
+                  })
+                )
+                }
+              }}
+            >
+            名单
+            </a>
           </Fragment>
         );
       },

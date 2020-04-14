@@ -26,11 +26,13 @@ import {
   message,
   Tabs,
   Tooltip,
+  DatePicker,
 } from 'antd';
 import { connect } from 'dva';
+import moment from 'moment';
 import _ from 'lodash';
-import { upload } from '@/services/nameList';
-
+import queryString from 'query-string';
+import { upload, batchRelated } from '@/services/nameList';
 
 const { Option } = Select;
 const { Search } = Input;
@@ -47,16 +49,17 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-function ImportModal({ dispatch, visible, form, close, postList, value, onCancel, namelist }) {
+function ImportModal({ dispatch, visible, form, close, postList, value, onCancel, namelist}) {
   const { ivrIntents } = namelist;
-  const { getFieldDecorator, validateFields, resetFields, setFields } = form;
+  const { getFieldDecorator, validateFields, resetFields, setFields, getFieldValue, setFieldsValue } = form;
   const [fileList, setFileList] = useState([]);
   const [jobPostVisible, setJobPostVisible] = useState(false);
 
+  // 导入名单
   function onSumbit() {
     validateFields((err, values) => {
       if (!err) {
-        const { jobId } = values;
+        const { intent, triggerTime, scene } = values;
         if (!fileList.length) {
           setFields({
             fileName: {
@@ -73,19 +76,29 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
         const formData = new FormData();
         // console.log('fileList===>', fileList);
         fileList.forEach(file => {
-          formData.append('resumeFile', file);
+          formData.append('file', file);
         });
-        const urlParams = { jobId };
-        upload({ formData, urlParams })
-          .then(data => {
-            message.success('外呼文件导入成功');
+        const params = { intent, triggerTime:triggerTime.format('YYYY-MM-DD HH:mm:ss'), scene}
+        upload({ formData, params })
+          .then(({success}) => {
+            console.log('data===>',success);
+            let invitations=[];
+            invitations=success.map(item => item.invitationId) || [];
+            const { search } = window.location;
+            // const batchName = decodeURI(search.slice(1));
+            const {id,intent}=queryString.parse(search);
+            if(invitations.length){
+               batchRelated({id,intent,triggerTime:triggerTime.format('YYYY-MM-DD HH:mm:ss'),invitations}) 
+              .then(body => {
+                message.success('外呼文件导入成功并且设置成功');
+              })
+              .catch(e => {});
+            }else{
+              message.warn('外呼文件导入为空！');
+            }
             resetFields();
             setFileList([]);
-            close();
             onCancel();
-            // dispatch({
-            //   type: 'chatrecord/jobAppliedAsPostAll',
-            // });
           })
           .catch(e => message.error(e.message));
       }
@@ -133,6 +146,16 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
     fileList,
   };
 
+  function disabledDate(current) {
+    // Can not select days before today and today
+    return current && current < moment().subtract(1, 'days');
+  }
+
+  function intentChange() {
+    setFieldsValue({ scene: null });
+  }
+
+  const intent = getFieldValue('intent');
   return (
     <Modal
       visible={!!value}
@@ -147,11 +170,16 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
     >
       <Form {...formItemLayout}>
         <Item label="选择类型">
-          {getFieldDecorator('type', {
+          {getFieldDecorator('intent', {
             rules: [{ required: true, message: '请选择类型!' }],
           })(
-            <Select style={{ width: '200px' }}>
-              {ivrIntents && ivrIntents.length && ivrIntents.map(item => <Option value={item.intent}>{item.intentDesc}</Option>) }
+            <Select 
+              style={{ width: '300px' }}
+              onChange={intentChange}
+            >
+              {ivrIntents &&
+                ivrIntents.length &&
+                ivrIntents.map(item => <Option value={item.intent}>{item.intentDesc}</Option>)}
             </Select>
           )}
         </Item>
@@ -165,6 +193,40 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
             </Select>
           )}
         </Item> */}
+        <Item label="外呼时间" required>
+          {getFieldDecorator('triggerTime', {
+            rules: [{ required: true, message: '请选择外呼时间!' }],
+          })(
+            <DatePicker
+              showTime={{ format: 'HH:mm', minuteStep: 5 }}
+              disabledDate={disabledDate}
+              format="YYYY-MM-DD HH:mm"
+              placeholder="请选择外呼时间"
+              style={{ width: 300 }}
+            />
+          )}
+        </Item>
+        <Item label="外呼场景">
+          {getFieldDecorator('scene', {
+            rules: [{ required: true, message: '请选择外呼场景!' }],
+          })(
+            <Select
+              style={{ width: '300px' }}
+              placeholder="请选择外呼场景"
+            >
+              {ivrIntents &&
+                ivrIntents.length &&
+                ivrIntents.filter(item => item.intent === intent)
+                      .map(({ scene,sceneDesc }) => {
+                        return (
+                          <Option value={scene} key={scene}>
+                            {sceneDesc}
+                          </Option>
+                       );
+                       })}
+            </Select>
+          )}
+        </Item>
         <Item label="导入文件" required>
           {getFieldDecorator('fileName')(
             <Upload {...uploadProps}>

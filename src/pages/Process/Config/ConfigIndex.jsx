@@ -21,12 +21,14 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import { routerRedux, Link } from 'dva/router';
+import queryString from 'query-string';
 import _ from 'lodash';
 import moment from 'moment';
-import { addBatch,batchRelated,batchCancel } from '@/services/nameList';
+import { addBatch, batchRelated, batchCancel } from '@/services/nameList';
 import { flatten } from '@/utils/utils';
 import styles from './index.less';
 import TrimInput from '@/components/TrimInput';
+import mapValueToFields from '@/utils/mapValueToFields';
 
 const { Option } = Select;
 const { Search } = Input;
@@ -70,12 +72,21 @@ function Index({
   location,
   namelist,
 }) {
-  const { configValue, ivrIntents } = namelist;
-  console.log('confifValue====>', configValue,ivrIntents );
+  const { configValue, ivrIntents, configNameList } = namelist;
+  console.log('confifValue====>', configValue, ivrIntents );
   const { search } = window.location;
   const batchName = decodeURI(search.slice(1));
   const [diffTimeList, setDiffTimeList] = useState([]);
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
+
+  useEffect(() => {
+    return () => {
+      dispatch({
+        type: 'namelist/save',
+        payload: {configNameList: []},
+      });
+    }
+  },[]);
 
   function formatInventTime(timeList, applyId) {
     const list = timeList.filter(item => item.applyId === applyId);
@@ -91,15 +102,30 @@ function Index({
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
         }
-        addBatch({name, intent, scene})  
+        addBatch({name, intent, scene,triggerTime:triggerTime.format('YYYY-MM-DD HH:mm:ss')})
           .then(({id}) => {
-            batchRelated({id,intent,triggerTime,invitations:[]}) 
+            console.log('创建成功了===》',invitations);
+            console.log('invitations===>',invitations);
+            if(invitations && !invitations.length){
+              dispatch(routerRedux.push({
+                pathname: `/AI/outging/namelist`,
+                search: queryString.stringify({
+                  id,
+                  intent,
+                })
+              }));
+              return;
+            }
+            
+            batchRelated({id,intent,triggerTime,invitations}) 
               .then(body => {
                 
               })
               .catch(e => {});
             })
-            .catch(e => {});
+            .catch(e => {
+              console.error(e)
+            });
 
           // fetchInvitation({ applyIds })
           //   .then(timeList => {
@@ -162,10 +188,10 @@ function Index({
   }
   function cancel() {
     const { intent,id } = configValue;
-    console.log('configValue===>', intent,id);
     batchCancel({intent,id})
     .then(body => {
-      message.success('取消任务成功')      
+      message.success('取消任务成功');
+      resetFields();
     })
     .catch(e => {message.error('取消任务失败')  });
   }
@@ -187,6 +213,10 @@ function Index({
     setDiffTimeList(newDiffTimeList);
   }
 
+  function intentChange(e) {
+    setFieldsValue({ scene: null });
+  }
+  const intent = getFieldValue('intent');
   return (
     <Card
       bordered={false}
@@ -219,14 +249,15 @@ function Index({
                 message: '任务名必填！',
               },
             ],
-            initialValue: batchName,
-            // batchName 
+            initialValue:  configValue && configValue.id ? 
+            configValue.name
+            : batchName,
           })(<Input style={{ width: '300px' }} placeholder="请输入任务名" />)}
         </Item>
         <Item label="外呼名单" required>
           <div style={{ marginLeft: 10 }}>
-            {formatSelectedKeys(selectedKeys, jobList).length
-              ? formatSelectedKeys(selectedKeys, jobList).map((item, index) => (
+            {configNameList.length
+              ? configNameList.map((item, index) => (
                   <Tag color="blue" key={index}>
                     {(item && item.name) || null}
                   </Tag>
@@ -236,11 +267,16 @@ function Index({
         </Item>
         <Item label="外呼类型">
           {getFieldDecorator('intent', {
-            rules: [{ required: true, message: '请选择面试时长!' }],
+            rules: [{ required: true, message: '请选择外呼类型!' }],
+            initialValue:
+            configValue && configValue.id ? 
+              configValue.intent
+              : null,
           })(
             <Select
               style={{ width: '300px' }}
               placeholder="请选择外呼类型"
+              onChange={() => {intentChange()}}
             >
               {ivrIntents &&
                 ivrIntents.length &&
@@ -251,6 +287,10 @@ function Index({
         <Item label="外呼场景">
           {getFieldDecorator('scene', {
             rules: [{ required: true, message: '请选择外呼场景!' }],
+            initialValue:
+            configValue && configValue.id ? 
+              configValue.scene
+              : null,
           })(
             <Select
               style={{ width: '300px' }}
@@ -258,13 +298,24 @@ function Index({
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.map(item => <Option value={item.scene}>{item.sceneDesc}</Option>)}
+                ivrIntents.filter(item => item.intent === intent)
+                      .map(({ scene,sceneDesc }) => {
+                        return (
+                          <Option value={scene} key={scene}>
+                            {sceneDesc}
+                          </Option>
+                       );
+                       })}
             </Select>
           )}
         </Item>
         <Item label="外呼时间" required>
           {getFieldDecorator('triggerTime', {
             rules: [{ required: true, message: '请选择外呼时间!' }],
+            initialValue:
+            configValue && configValue.id ? 
+              moment(configValue.triggerStartTime)
+              : null,
           })(
             <DatePicker
               showTime={{ format: 'HH:mm', minuteStep: 5 }}
@@ -412,13 +463,23 @@ function Index({
           </Button>
           {configValue && configValue.id && 
             <Button
-              style={{ margin: '0 10px' }}
+              style={{ marginLeft: '10px' }}
               className="test-input-search"
               onClick={e => {cancel()}}
             >
               取消任务
             </Button>
           }
+           <Button
+            style={{ marginLeft: '10px' }}
+            htmlType="submit"
+            // className="test-input-search"
+            onClick={() => {
+              dispatch(routerRedux.goBack());
+            }}
+          >
+            返回
+          </Button>
         </Item>
       </Form>
     </Card>
@@ -426,4 +487,5 @@ function Index({
 }
 
 const mapStateToProps = ({ namelist = {} }) => ({ namelist });
-export default connect(mapStateToProps)(Form.create({})(Index));
+export default connect(mapStateToProps)(
+  Form.create({})(Index));

@@ -88,12 +88,12 @@ function usePrevious(value) {
 function RecordBottom({
   form,
   dispatch,
-  chatrecord: {
+  namelist: {
     jobList = [],
     selectJobId,
     flowList,
     backShowTime,
-    resumeObj: { resumeEvaluation },
+    // resumeObj: { resumeEvaluation },
     offerBackShowTime,
     offerFlowList,
     phoneMessage,
@@ -311,9 +311,8 @@ function RecordBottom({
   const { status } = jobList.find(item => item.applyId === selectJobId) || {};
   // console.log('status===>1111111',status,backShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
   // console.log('status===>1111111',status,offerBackShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
-  const labelList = flatten(
-    (resumeEvaluation && resumeEvaluation.details && Object.values(resumeEvaluation.details)) || []
-  );
+  console.log('flowList==>', flowList);
+  
   return (
     <div className={styles['gutter-box']}>
       <h3>邀约记录/结果</h3>
@@ -362,35 +361,7 @@ function RecordBottom({
                   )
                 )}
             </Steps> */}
-        <Steps progressDot direction="vertical" current={10000}>
-          {offerFlowList &&
-            offerFlowList.length &&
-            offerFlowList.map(
-              (
-                { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
-                index
-              ) => (
-                <Step
-                  title={
-                    channel ? `【${formatPhoneStatus(status)}】` : `录用【${formatStatus(status)}】`
-                  }
-                  description={
-                    <div>
-                      {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
-                      {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
-                      {interviewConfirmTime ? (
-                        <p style={{ color: 'red', fontWeight: 400 }}>
-                          {`用户期望时间： ${interviewConfirmTime}`}
-                        </p>
-                      ) : null}
-                      <p>{channel ? null : remark}</p>
-                    </div>
-                  }
-                  key={index}
-                />
-              )
-            )}
-        </Steps>
+       
         {/* <Steps progressDot direction="vertical" current={10000}>
               {offerPhoneMessage &&
                 offerPhoneMessage.length &&
@@ -411,5 +382,5 @@ function RecordBottom({
   );
 }
 
-const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
+const mapStateToProps = ({ namelist = {} }) => ({ namelist });
 export default connect(mapStateToProps)(Form.create({})(RecordBottom));

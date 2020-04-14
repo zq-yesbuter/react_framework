@@ -1,8 +1,10 @@
 import React, { Fragment } from 'react';
 import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
+import { formatTaskType } from '@/utils/utils';
+import { statusOptions } from '../contant';
 
-const renderColumns = dispatch => {
+const renderColumns = (dispatch,ivrIntents) => {
   const columns = [
     {
       title: '姓名',
@@ -35,19 +37,25 @@ const renderColumns = dispatch => {
       dataIndex: 'triggerTime',
     },
     {
-      title: '挂机时间',
-      key: 'entity1',
-      dataIndex: 'entity1',
+      title: '应用',
+      key: 'appCode',
+      dataIndex: 'appCode',
     },
     {
-      title: '挂机原因',
-      key: 'entity2',
-      dataIndex: 'entity3',
+      title: '待确定开始时间',
+      key: 'startTime',
+      dataIndex: 'startTime',
+    },
+    {
+      title: '待确定结束时间',
+      key: 'endTime',
+      dataIndex: 'endTime',
     },
     {
       title: '状态',
       key: 'status',
       dataIndex: 'status',
+      render:  scene => formatTaskType(ivrIntents,'scene',scene,'sceneDesc'),
     },
     {
       title: '更新人',
@@ -63,19 +71,26 @@ const renderColumns = dispatch => {
     },
     {
       title: '操作',
-      key: 'applyId',
-      dataIndex: 'applyId',
+      key: 'invitationId',
+      dataIndex: 'invitationId',
       width: 150,
-      render: (applyId, value) => {
+      render: (group, value) => {
+        const { intent } = value;
         return (
           <Fragment>
             <a
               onClick={() => {
+                console.log('listvalue====>',value)
+                dispatch({
+                  type: 'namelist/save',
+                  payload: {listValue:value},
+                });
                 dispatch(
                   routerRedux.push({
                     pathname: '/AI/outging/record',
                     search: queryString.stringify({
-                      applyId,
+                      group,
+                      intent,
                     }),
                   })
                 );
@@ -87,6 +102,22 @@ const renderColumns = dispatch => {
         );
       },
     },
+    // {
+    //   title: '挂机时间',
+    //   key: 'entity1',
+    //   dataIndex: 'entity1',
+    // },
+    // {
+    //   title: '挂机原因',
+    //   key: 'entity2',
+    //   dataIndex: 'entity3',
+    // },
+    
+    // {
+    //   title: 'contact',
+    //   key: 'contact',
+    //   dataIndex: 'contact',
+    // },
   ];
 
   return columns;

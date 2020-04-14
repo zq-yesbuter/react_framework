@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
+import queryString from 'query-string';
 import {
   batchInvent,
   editBatchInvitation,
@@ -60,12 +61,13 @@ function usePrevious(value) {
 function RecordBottom({
   form,
   dispatch,
-  namelist: { jobList = [], selectJobId, backShowTime },
+  namelist: { jobList = [], selectJobId, backShowTime,listValue },
   location,
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
+  const { status } = listValue;
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
@@ -208,8 +210,8 @@ function RecordBottom({
           <Fragment>
             {getFieldDecorator('triggerTime', {
               initialValue:
-                status !== 11 && Object.keys(backShowTime).length
-                  ? moment(backShowTime.triggerTime)
+                status !== 11 && Object.keys(listValue).length
+                  ? moment(listValue.triggerTime)
                   : null,
             })(
               <DatePicker
@@ -227,9 +229,9 @@ function RecordBottom({
           <Fragment>
             {getFieldDecorator('triggerTime', {
               initialValue:
-                status !== 11 && Object.keys(backShowTime).length
-                  ? moment(backShowTime.triggerTime)
-                  : null,
+              status !== 11 && Object.keys(listValue).length
+              ? moment(listValue.triggerTime)
+              : null,
             })(
               <DatePicker
                 showTime={{ format: 'HH:mm', minuteStep: 5 }}
@@ -241,9 +243,9 @@ function RecordBottom({
             )}
             {getFieldDecorator('diff', {
               initialValue:
-                status !== 11 && Object.keys(backShowTime).length
-                  ? moment(backShowTime.endTime).diff(backShowTime.time, 'minutes')
-                  : 60,
+              status !== 11 && Object.keys(listValue).length
+              ? moment(listValue.endTime).diff(listValue.startTime, 'minutes')
+              : 60,
             })(
               <InputNumber
                 style={{ marginRight: 10 }}
@@ -253,12 +255,11 @@ function RecordBottom({
                 parser={value => value.replace('分钟', '')}
               />
             )}
-
             {getFieldDecorator('startTime', {
               initialValue:
-                status !== 11 && Object.keys(backShowTime).length
-                  ? moment(backShowTime.time)
-                  : null,
+              status !== 11 && Object.keys(listValue).length
+                ? moment(listValue.time)
+                : null,
             })(
               <DatePicker
                 disabledDate={disabledDate}
@@ -276,8 +277,8 @@ function RecordBottom({
           <Fragment>
             {getFieldDecorator('triggerTime', {
               initialValue:
-                status !== 11 && Object.keys(backShowTime).length
-                  ? moment(backShowTime.triggerTime)
+                status !== 11 && Object.keys(listValue).length
+                  ? moment(listValue.triggerTime)
                   : null,
             })(
               <DatePicker
@@ -292,69 +293,25 @@ function RecordBottom({
         );
     }
   }
-
-  const { status } = jobList.find(item => item.applyId === selectJobId) || {};
-  // console.log('status===>1111111',status,backShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
-  // console.log('status===>1111111',status,offerBackShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
-
+  const { search } = window.location;
+  // const batchName = decodeURI(search.slice(1));
+ 
+  const {group,intent}=queryString.parse(search);
   return (
     <div className={styles['gutter-box']}>
       <h3>外呼时间</h3>
       <div>
-        {/* {getFieldDecorator('triggerTime', {
-          initialValue:
-            status !== 11 && Object.keys(backShowTime).length
-              ? moment(backShowTime.triggerTime)
-              : null,
-        })(
-          <DatePicker
-            showTime={{ format: 'HH:mm', minuteStep: 5 }}
-            disabledDate={disabledDate}
-            format="YYYY-MM-DD HH:mm"
-            placeholder="请选择外呼时间"
-            style={{ marginRight: 10 }}
-          />
-        )}
-
-        {getFieldDecorator('diff', {
-          initialValue:
-            status !== 11 && Object.keys(backShowTime).length
-              ? moment(backShowTime.endTime).diff(backShowTime.time, 'minutes')
-              : 60,
-        })(
-          <InputNumber
-            style={{ marginRight: 10 }}
-            min={0}
-            max={160}
-            formatter={value => `${value}分钟`}
-            parser={value => value.replace('分钟', '')}
-          />
-        )}
-
-        {getFieldDecorator('startTime', {
-          initialValue:
-            status !== 11 && Object.keys(backShowTime).length ? moment(backShowTime.time) : null,
-        })(
-          <DatePicker
-            disabledDate={disabledDate}
-            // disabledTime={disabledDateTime}
-            showTime={{ format: 'HH:mm', minuteStep: 5 }}
-            format="YYYY-MM-DD HH:mm"
-            placeholder="请选择面试时间"
-            style={{ marginRight: 10 }}
-          />
-        )} */}
-        {formatFieldItem('offer_invitation')}
-        <Button onClick={onSubmit} disabled={!selectJobId || status === 24}>
+        {formatFieldItem(intent)}
+        <Button onClick={onSubmit} disabled={status === 24}>
           更新
         </Button>
-        {selectJobId && status === 21 ? (
+        {status === 21 ? (
           <Popconfirm
             title="外呼时间和面试时间均会被取消，确认要取消吗？"
             onConfirm={cancelConfirm}
             onCancel={quitCancel}
           >
-            <Button disabled={!selectJobId || status !== 21} style={{ marginLeft: 20 }}>
+            <Button disabled={status !== 21} style={{ marginLeft: 20 }}>
               取消
             </Button>
           </Popconfirm>

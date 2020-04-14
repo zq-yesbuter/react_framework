@@ -59,12 +59,41 @@ export async function getBatch(body) {
 }
 
 // 上传
-export async function upload(formData, urlParams) {
-  return request(`/common/invitations?${stringify(urlParams)}`, {
+export async function upload({formData, params}) {
+  const { intent, triggerTime, scene} = params;
+  return request(`/${intent}/excel?${stringify({triggerTime,scene})}`, {
     method: 'POST',
     body: formData,
   });
 }
+
+// 批次详情查询
+export async function getBatchDetail(body) {
+  const {intent, id} = body;
+  return request(`/batch/${intent}/${id}/detail`, {
+    method: 'POST',
+    body,
+  });
+}
+
+// 沟通信息查询
+export async function getFlowlist(body) {
+  const {intent, id} = body;
+  return request(`/${intent}/all`, {
+    method: 'POST',
+    body,
+  });
+}
+
+// 单个沟通信息查询
+export async function getSigleFlowlist(body) {
+  const {intent, id} = body;
+  return request(`/${intent}/${id}`, {
+    method: 'get',
+  });
+}
+
+
 // 批次详情查询  getBatch,batchCancel
 // export async function getBatch(body) {
 //   return request('/batch/all', {
@@ -72,4 +101,3 @@ export async function upload(formData, urlParams) {
 //     body,
 //   });
 // }
-//  batch/{intent}/{id}/detail

@@ -11,8 +11,8 @@ import renderColumns from './Colums';
 
 
 function Index({ dispatch, location, namelist }) {
-  const { nameList } = namelist;
-  console.log('nameList===>', namelist);
+  const { nameList,ivrIntents } = namelist;
+  console.log('nameList===>', nameList);
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -79,7 +79,7 @@ function Index({ dispatch, location, namelist }) {
     data: nameList || [],
     total: 0, // faqList.total,
     current: start / length + 1,
-    columns: renderColumns(dispatch),
+    columns: renderColumns(dispatch,ivrIntents),
     pageSize: length,
     loading,
     selectedRowKeys,

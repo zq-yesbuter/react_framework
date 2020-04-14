@@ -5,14 +5,14 @@ import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
 import CategoryAddFormModal from './AddFormModal';
 import DateFormat from '@/components/DateFormat';
-import CategoryQueryForm from './PictureQueryForm';
+import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { addBatch,batchRelated,batchCancel } from '@/services/nameList';
 
 
 function Index({ dispatch, location, namelist }) {
-  const { batchList } = namelist;
+  const { batchList,ivrIntents, batchCur, batchPageSize } = namelist;
   console.log('batchllist===>', batchList);
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -81,17 +81,34 @@ function Index({ dispatch, location, namelist }) {
     selectedRowKeys,
     onChange: onSelectChange,
   };
+  console.log(batchCur*batchPageSize,batchCur*batchPageSize + 1,)
   const setting = {
     data: batchList,
-    total: 0, // faqList.total,
-    current: start / length + 1,
-    columns: renderColumns(dispatch),
-    pageSize: length,
+    total:  batchList && batchList.length, // < batchCur*batchPageSize ? batchList.length : batchCur*batchPageSize + 1,
+    current: batchCur,
+    columns: renderColumns(dispatch,ivrIntents),
+    pageSize: batchPageSize,
     loading,
     selectedRowKeys,
+    prev: () => {
+
+    },
+    next: () => {
+
+    },
+    showNext: batchList && batchList.length < batchPageSize,
     // sortedInfo,
-    onChange: (start, length, sorter) => {
-      console.log('start==>', start, length, sorter);
+    onChange: (start, length) => {
+      console.log('start==>修改页码选择==》', start, length);
+      dispatch({
+        type: 'namelist/getBatch',
+        payload: {pageSize: length, pageNum: start || 1},
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: {batchRequest:{pageSize: length, pageNum: start || 1}},
+      }); 
+    
       // onChange(
       //   {
       //     start,
@@ -147,15 +164,24 @@ function Index({ dispatch, location, namelist }) {
       <CategoryQueryForm
         value={query}
         onSubmit={data => {
-          dispatch(
-            routerRedux.push({
-              // pathname: location.pathname,
-              search: queryString.stringify({
-                ...query,
-                ...data,
-              }),
-            })
-          );
+          console.log('data===>', data); 
+          dispatch({
+            type: 'namelist/save',
+            payload: {taskQueryValue:data},
+          }); 
+          dispatch({
+            type: 'namelist/getBatch',
+            payload: data,
+          });
+          // dispatch(
+          //   routerRedux.push({
+          //     // pathname: location.pathname,
+          //     search: queryString.stringify({
+          //       ...query,
+          //       ...data,
+          //     }),
+          //   })
+          // );
         }}
       />
       {renderTable(setting)}

@@ -220,6 +220,21 @@ export default {
       target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
       changeOrigin: true,
       pathRewrite,
-    }
+    },
+    '/first_entry': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/second_entry': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/interview_research': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
   },
 };
