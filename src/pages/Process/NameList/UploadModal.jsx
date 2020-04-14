@@ -49,7 +49,7 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-function ImportModal({ dispatch, visible, form, close, postList, value, onCancel, namelist}) {
+function ImportModal({ dispatch, visible, form, close, postList, value, onCancel, namelist,intent}) {
   const { ivrIntents } = namelist;
   const { getFieldDecorator, validateFields, resetFields, setFields, getFieldValue, setFieldsValue } = form;
   const [fileList, setFileList] = useState([]);
@@ -59,7 +59,8 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
   function onSumbit() {
     validateFields((err, values) => {
       if (!err) {
-        const { intent, triggerTime, scene } = values;
+        console.log('values===>',values);
+        // const { triggerTime, scene } = values;
         if (!fileList.length) {
           setFields({
             fileName: {
@@ -77,8 +78,10 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
         // console.log('fileList===>', fileList);
         fileList.forEach(file => {
           formData.append('file', file);
-        });
-        const params = { intent, triggerTime:triggerTime.format('YYYY-MM-DD HH:mm:ss'), scene}
+        }); 
+        const { scene } = ivrIntents && ivrIntents.length && ivrIntents.find(item => item.intent === intent) || {};
+        const params = { intent, scene};
+        console.log('params===>', params);
         upload({ formData, params })
           .then(({success}) => {
             console.log('data===>',success);
@@ -94,7 +97,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
               })
               .catch(e => {});
             }else{
-              message.warn('外呼文件导入为空！');
+              message.error('外呼文件导入为空！');
             }
             resetFields();
             setFileList([]);
@@ -155,7 +158,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
     setFieldsValue({ scene: null });
   }
 
-  const intent = getFieldValue('intent');
+  // const intent = getFieldValue('intent');
   return (
     <Modal
       visible={!!value}
@@ -169,7 +172,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
       }}
     >
       <Form {...formItemLayout}>
-        <Item label="选择类型">
+        {/* <Item label="选择类型">
           {getFieldDecorator('intent', {
             rules: [{ required: true, message: '请选择类型!' }],
           })(
@@ -182,7 +185,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
                 ivrIntents.map(item => <Option value={item.intent}>{item.intentDesc}</Option>)}
             </Select>
           )}
-        </Item>
+        </Item> */}
         {/* <Item label="选择模版">
           {getFieldDecorator('scence', {
             // rules: [{ required: true, message: '请选择模版!' }],
@@ -193,7 +196,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
             </Select>
           )}
         </Item> */}
-        <Item label="外呼时间" required>
+        {/* <Item label="外呼时间" required>
           {getFieldDecorator('triggerTime', {
             rules: [{ required: true, message: '请选择外呼时间!' }],
           })(
@@ -226,7 +229,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
                        })}
             </Select>
           )}
-        </Item>
+        </Item> */}
         <Item label="导入文件" required>
           {getFieldDecorator('fileName')(
             <Upload {...uploadProps}>

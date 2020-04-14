@@ -19,8 +19,8 @@ export default {
     flowList: [],
     phoneMessage: [],
     backShowTime: {},
-    requestFilter: { orderBy: { applyDate: 'DESC' }, pageSize: 50, pageNum: 1 },
     batchRequest: {pageSize: 10, pageNum: 1},
+    nameRequest: {pageSize: 10, pageNum: 1},
     ivrIntents: [],
     batchList: [],
     configValue: {},
@@ -30,6 +30,8 @@ export default {
     taskQueryValue: {},
     batchCur:1,
     batchPageSize:10,
+    nameCur:1,
+    namePageSize:10,
   },
   effects: {
     *getBatch({ payload }, { call, put, select }) {
@@ -66,7 +68,6 @@ export default {
     // 获取外呼类型
     *getIvrIntents({ payload }, { call, put, select }) {
       const ivrIntents = yield call(getIvrIntents, payload);
-      console.log('ivrIntents====>11111111',ivrIntents);
       yield put({
         type: 'save',
         payload: {
@@ -76,8 +77,11 @@ export default {
     },
 
     *getBatchDetail({ payload }, { call, put, select }) {
-      const response = yield call(getBatchDetail, payload);
+      const nameRequest = yield select(({ namelist: { nameRequest } }) => nameRequest);
+      const response = yield call(getBatchDetail, { ...nameRequest, ...payload }) || {};
       const {data:nameList} = response;
+      const nameCur = response && response.curPage;
+      const namePageSize = response && response.pageSize;
       console.log('nameLis===>',nameList);
       yield put({
         type: 'formatNameList',
@@ -85,6 +89,14 @@ export default {
           nameList,
         },
       });
+      yield put({
+        type: 'save',
+        payload: {
+          nameCur,
+          namePageSize,
+        },
+       
+      })
     },
     *configNameList({ payload }, { call, put, select }) {
       const response = yield call(getBatchDetail, payload);
@@ -197,9 +209,6 @@ export default {
         const mainMatch = /^\/AI\/outging$/.exec(pathname);
         // 名单列表
         if (match) {
-          // dispatch({
-          //   type: 'getNameList',
-          // });
           // 新的获取名单列表
           dispatch({
             type: 'getBatchDetail',

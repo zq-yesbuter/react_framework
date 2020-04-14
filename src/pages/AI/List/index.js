@@ -498,62 +498,63 @@ function ChatList({
     setOfferVisible(true);
   }
   function batchExportInvent() {
-    const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
-    const applyIds = resumeList.map(item => item.applyId);
-    const fileName = '导出邀约信息.xlsx';
-    let size = 0;
-    fetch('/data/interview/invitations/all', {
-      method: 'POST',
-      body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 500, orderBy: { applyDate: 'DESC' } }),
-      headers: {
-        Accept: 'application/vnd.ms-excel',
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(response => {
-        if (response.status >= 200 && response.status < 300) {
-          return response;
-        }
-        message.error(`请求错误 ${response.status}: 导出邀约信息时发生错误！`);
-        const errortext = codeMessage[response.status] || response.statusText;
-        const error = new Error(errortext);
-        error.name = response.status;
-        error.response = response;
-        throw error;
-      }) // 取出body
-      .then(response => response.body)
-      .then(body => {
-        const reader = body.getReader();
-        return new ReadableStream({
-          start(controller) {
-            return pump();
-            function pump() {
-              return reader
-                .read()
-                .then(res => {
-                  // res  ({ done, value })
-                  // 读不到更多数据就关闭流
-                  // console.log(res,'res');
-                  const { done, value } = res;
-                  if (done) {
-                    // console.log('end')
-                    controller.close();
-                    return;
-                  }
-                  size += value.length || 0;
-                  // console.log(size,"size")
-                  // 将下一个数据块置入流中
-                  controller.enqueue(value);
-                  return pump();
-                })
-                .catch(e => message.error(e.message));
-            }
-          },
-        });
-      })
-      .then(stream => new Response(stream))
-      .then(response => savingFile(response, fileName))
-      .catch(err => message.error(err.message));
+    
+   const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
+   const applyIds = resumeList.map(item => item.applyId);
+   const fileName = '导出邀约信息.xlsx';
+   let size = 0;
+   fetch('/data/interview/invitations/all', {
+     method: 'POST',
+     body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 500, orderBy: { applyDate: 'DESC' } }),
+     headers: {
+       Accept: 'application/vnd.ms-excel',
+       'Content-Type': 'application/json',
+     },
+   })
+     .then(response => {
+       if (response.status >= 200 && response.status < 300) {
+         return response;
+       }
+       message.error(`请求错误 ${response.status}: 导出邀约信息时发生错误！`);
+       const errortext = codeMessage[response.status] || response.statusText;
+       const error = new Error(errortext);
+       error.name = response.status;
+       error.response = response;
+       throw error;
+     }) // 取出body
+     .then(response => response.body)
+     .then(body => {
+       const reader = body.getReader();
+       return new ReadableStream({
+         start(controller) {
+           return pump();
+           function pump() {
+             return reader
+               .read()
+               .then(res => {
+                 // res  ({ done, value })
+                 // 读不到更多数据就关闭流
+                 // console.log(res,'res');
+                 const { done, value } = res;
+                 if (done) {
+                   // console.log('end')
+                   controller.close();
+                   return;
+                 }
+                 size += value.length || 0;
+                 // console.log(size,"size")
+                 // 将下一个数据块置入流中
+                 controller.enqueue(value);
+                 return pump();
+               })
+               .catch(e => message.error(e.message));
+           }
+         },
+       });
+     })
+     .then(stream => new Response(stream))
+     .then(response => savingFile(response, fileName))
+     .catch(err => message.error(err.message));
   }
   // 导出offer邀约信息
   function batchOfferInvent() {

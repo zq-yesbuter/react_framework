@@ -12,7 +12,7 @@ import { addBatch,batchRelated,batchCancel } from '@/services/nameList';
 
 
 function Index({ dispatch, location, namelist }) {
-  const { batchList,ivrIntents, batchCur, batchPageSize } = namelist;
+  const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest } = namelist;
   console.log('batchllist===>', batchList);
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -56,7 +56,6 @@ function Index({ dispatch, location, namelist }) {
 
   const query = {}; //  queryString.parse(location.search);
  
-
   const start = () => {
     setLoading(true);
     // ajax request after empty completing
@@ -81,7 +80,6 @@ function Index({ dispatch, location, namelist }) {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-  console.log(batchCur*batchPageSize,batchCur*batchPageSize + 1,)
   const setting = {
     data: batchList,
     total:  batchList && batchList.length, // < batchCur*batchPageSize ? batchList.length : batchCur*batchPageSize + 1,
@@ -91,10 +89,34 @@ function Index({ dispatch, location, namelist }) {
     loading,
     selectedRowKeys,
     prev: () => {
-
+      dispatch({
+        type: 'namelist/getBatch',
+        payload: {pageNum:batchCur-1},
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: {batchRequest:{...batchRequest,pageNum:batchCur-1 }},
+      });
     },
     next: () => {
-
+      dispatch({
+        type: 'namelist/getBatch',
+        payload: {pageNum:batchCur+1},
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: {batchRequest:{...batchRequest,pageNum:batchCur+1 }},
+      });
+    },
+    onSizeChange: pageSize => {
+      dispatch({
+        type: 'namelist/getBatch',
+        payload: {pageSize},
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: {batchRequest:{...batchRequest,pageSize }},
+      });
     },
     showNext: batchList && batchList.length < batchPageSize,
     // sortedInfo,
@@ -133,7 +155,7 @@ function Index({ dispatch, location, namelist }) {
       //   sortedInfo: sorter,
       // });
     },
-    rowKey: 'applyId',
+    rowKey: 'id',
     rowSelection: {
       selectedRowKeys,
       onChange: (selectedRowKeys, selectedRows) => {
@@ -143,6 +165,9 @@ function Index({ dispatch, location, namelist }) {
       },
     },
     importMenu,
+    handleDelete: (selectedRowKeys) => {
+      console.log('====>111',selectedRowKeys)
+    },
   };
  
   return (
@@ -191,18 +216,23 @@ function Index({ dispatch, location, namelist }) {
           setValue(null);
         }}
         onSubmit={data => {
-          console.log('data===>',data);
-           dispatch({
-            type: 'namelist/addBatchname',
-            payload: data,
-          })  
-          message.success(data.id ? '修改成功' : '新增成功');
-          // const {triggerTime,...rest } = data;
-          // addBatch({triggerTime: triggerTime.format('YYYY-MM-DD HH:mm'),...rest})
-          // .then(body => {
-                
-          // })
-          // .catch(e => {});
+          // console.log('data===>',data);
+          //  dispatch({
+          //   type: 'namelist/addBatchname',
+          //   payload: data,
+          // })  
+          // message.success(data.id ? '修改成功' : '新增成功');
+          const {triggerTime,...rest } = data;
+          // {triggerTime: triggerTime.format('YYYY-MM-DD HH:mm'),...rest}
+          addBatch(data)
+          .then(body => {
+            message.success('新增任务成功');
+            dispatch({
+              type: 'namelist/getBatch',
+              payload: {},
+            });
+          })
+          .catch(e => {});
           setValue(null);
         }}
       />

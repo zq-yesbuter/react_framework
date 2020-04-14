@@ -17,17 +17,10 @@ import { connect } from 'dva';
 import moment from 'moment';
 import queryString from 'query-string';
 import {
-  batchInvent,
-  editBatchInvitation,
-  fetchInvitation,
-  cancelInvent,
-  editInvitation,
-  addInvitation,
-  singleEditOfffer,
-  singleAddOfffer,
-  queryOffferInventIds,
-  cancelOfffer,
-} from '@/services/ai';
+  editSignel,
+  addSignel,
+  cancelSignel,
+} from '@/services/nameList';
 import { flatten } from '@/utils/utils';
 import styles from './index.less';
 
@@ -61,13 +54,13 @@ function usePrevious(value) {
 function RecordBottom({
   form,
   dispatch,
-  namelist: { jobList = [], selectJobId, backShowTime,listValue },
+  namelist: { jobList = [], selectJobId, listValue },
   location,
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
-  const { status } = listValue;
+  const { id, applyId, status,intent,invitationId } = listValue || {};
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
@@ -78,74 +71,6 @@ function RecordBottom({
       }
     }
   });
-
-  function onSubmit() {
-    validateFields((err, values) => {
-      if (!err) {
-        const { triggerTime } = values;
-        if (triggerTime < moment().add(10, 'minutes')) {
-          message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
-          return;
-        }
-        if (!values.startTime) {
-          message.error('请选择面试时间！');
-          return;
-        }
-        const startTime = values.startTime.format(format);
-        const endTime = values.startTime.add(values.diff, 'minutes').format(format);
-        const { id, applyId, status } = jobList.find(item => item.applyId === selectJobId) || {};
-        let payload = {
-          applicantId: id,
-          applyId,
-          startTime,
-          endTime,
-          triggerTime: values.triggerTime.format(format),
-        };
-        if (status === 21) {
-          if (backShowTime && backShowTime.triggerTime) {
-            if (moment(backShowTime.triggerTime) < moment().add(10, 'minutes')) {
-              message.error('当前时间和外呼时间差小于10分钟，无法更新！');
-              return;
-            }
-            if (values.startTime < moment().add(10, 'minutes')) {
-              message.error('当前时间和面试时间差小于10分钟，无法更新！');
-              return;
-            }
-          }
-          fetchInvitation({ applyIds: [applyId] })
-            .then(time => {
-              const updateId = time.length ? time.slice(-1)[0].invitationId : null;
-              payload = { ...payload, updateId };
-              editInvitation(payload)
-                .then(data => {
-                  message.success('修改邀约成功');
-                  // dispatch({
-                  //   type: 'chatrecord/updateSingleInvent',
-                  // });
-                  dispatch({
-                    type: 'chatrecord/jobAppliedAsPostAll',
-                  });
-                })
-                .catch(e => message.error(e.message));
-            })
-            .catch(e => Promise.reject(e));
-          return;
-        }
-        addInvitation(payload)
-          .then(data => {
-            message.success('新增邀约成功');
-            // dispatch({
-            //   type: 'chatrecord/updateSingleInvent',
-            // });
-
-            dispatch({
-              type: 'chatrecord/jobAppliedAsPostAll',
-            });
-          })
-          .catch(e => message.error(e.message));
-      }
-    });
-  }
 
   function disabledDate(current) {
     // Can not select days before today and today
@@ -164,33 +89,6 @@ function RecordBottom({
       disabledMinutes: () => range(0, 60).splice(0, moment().minutes() + 5),
       disabledSeconds: () => range(0, 60).splice(0, moment().seconds()),
     };
-  }
-  function cancelConfirm() {
-    if (backShowTime && backShowTime.triggerTime) {
-      if (moment(backShowTime.triggerTime) < moment().add(10, 'minutes')) {
-        message.error('当前时间和外呼时间差小于10分钟，无法取消！');
-        return;
-      }
-    }
-    const { id, applyId, status } = jobList.find(item => item.applyId === selectJobId) || {};
-    fetchInvitation({ applyIds: [applyId] }).then(time => {
-      const updateId = time.length ? time.slice(-1)[0].invitationId : null;
-      cancelInvent({ updateId })
-        .then(data => {
-          message.success('取消邀约成功!');
-          dispatch({
-            type: 'chatrecord/jobAppliedAsPostAll',
-          });
-          // dispatch({
-          //   type: 'chatrecord/queryTimeList',
-          //   payload: {
-          //     selectJobId,
-          //   },
-          // });
-          setFieldsValue({ triggerTime: null, startTime: null, diff: 60 });
-        })
-        .catch(e => message.error(e.message));
-    });
   }
 
   function quitCancel() {
@@ -293,25 +191,84 @@ function RecordBottom({
         );
     }
   }
-  const { search } = window.location;
-  // const batchName = decodeURI(search.slice(1));
+
+  function inventOnSubmit() {
+    validateFields((err, values) => {
+      if (!err) {
+        const { triggerTime } = values;
+        if (triggerTime < moment().add(10, 'minutes')) {
+          message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
+          return;
+        }
+        const { id, applyId, status } = jobList.find(item => item.applyId === selectJobId) || {};
+        let payload = {
+          triggerTime: values.triggerTime.format(format),
+          intent,
+        };
+        if(intent === 'interview_invitation') {
+          payload.startTime=values.startTime
+        }
+        if (status === 1) {
+          if (listValue && listValue.triggerTime) {
+            if (moment(listValue.triggerTime) < moment().add(10, 'minutes')) {
+              message.error('当前时间和外呼时间差小于10分钟，无法更新！');
+              return;
+            }
+            if(intent === 'interview_invitation' ){
+              if (values.startTime < moment().add(10, 'minutes')) {
+                message.error('当前时间和面试时间差小于10分钟，无法更新！');
+                return;
+              }
+            }
+          }
+          payload = { ...payload, updateId: invitationId };
+          editSignel(payload)
+            .then(data => {
+              message.success('修改邀约成功');
+            })
+            .catch(e => console.error(e.message));
+        }
+        addSignel(payload).then(data => {
+          message.success('新增邀约成功');
+        }).catch(e => console.error(e.message));
+      }
+    });
+  }
+
+  function cancelInventConfirm() {
+    if (listValue && listValue.triggerTime) {
+      if (moment(listValue.triggerTime) < moment().add(10, 'minutes')) {
+        message.error('当前时间和外呼时间差小于10分钟，无法取消！');
+        return;
+      }
+    }
  
-  const {group,intent}=queryString.parse(search);
+    cancelSignel({ intent, updateId:invitationId })
+      .then(data => {
+          message.success('取消邀约成功!');
+          setFieldsValue({ triggerTime: null });
+          if(intent === 'interview_invitation') {
+            setFieldsValue({ startTime: null, diff: 60 });
+          }
+        })
+        .catch(e => message.error(e.message));
+  }
+ 
   return (
     <div className={styles['gutter-box']}>
       <h3>外呼时间</h3>
       <div>
         {formatFieldItem(intent)}
-        <Button onClick={onSubmit} disabled={status === 24}>
+        <Button onClick={inventOnSubmit} disabled={status !== 1}>
           更新
         </Button>
-        {status === 21 ? (
+        {status === '1' ? (
           <Popconfirm
             title="外呼时间和面试时间均会被取消，确认要取消吗？"
-            onConfirm={cancelConfirm}
+            onConfirm={cancelInventConfirm}
             onCancel={quitCancel}
           >
-            <Button disabled={status !== 21} style={{ marginLeft: 20 }}>
+            <Button disabled={status !== '1'} style={{ marginLeft: 20 }}>
               取消
             </Button>
           </Popconfirm>

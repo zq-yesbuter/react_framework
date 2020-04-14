@@ -95,33 +95,29 @@ function Index({
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
-        // invitations
-        console.log('vlues===>',values);
-        const { name, intent, scene, triggerTime } = values;
+        const { name, intent, scene, triggerTime,retry } = values;
         if (triggerTime < moment().add(10, 'minutes')) {
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
         }
+        // 先建立批次
         addBatch({name, intent, scene,triggerTime:triggerTime.format('YYYY-MM-DD HH:mm:ss')})
           .then(({id}) => {
-            console.log('创建成功了===》',invitations);
-            console.log('invitations===>',invitations);
-            if(invitations && !invitations.length){
-              dispatch(routerRedux.push({
-                pathname: `/AI/outging/namelist`,
-                search: queryString.stringify({
-                  id,
-                  intent,
-                })
-              }));
-              return;
-            }
-            
-            batchRelated({id,intent,triggerTime,invitations}) 
+            // if(invitations && !invitations.length){
+            //   dispatch(routerRedux.push({
+            //     pathname: `/AI/outging/namelist`,
+            //     search: queryString.stringify({
+            //       id,
+            //       intent,
+            //     })
+            //   }));
+            //   return;
+            // }
+            batchRelated({id,intent,invitations,triggerTime,retry}) 
               .then(body => {
-                
+                message.success('任务配置成功！')
               })
-              .catch(e => {});
+              .catch(e => {message.error(e.message)});
             })
             .catch(e => {
               console.error(e)
@@ -216,7 +212,7 @@ function Index({
   function intentChange(e) {
     setFieldsValue({ scene: null });
   }
-  const intent = getFieldValue('intent');
+  const selectIntent = getFieldValue('intent');
   return (
     <Card
       bordered={false}
@@ -251,7 +247,7 @@ function Index({
             ],
             initialValue:  configValue && configValue.id ? 
             configValue.name
-            : batchName,
+            : null,
           })(<Input style={{ width: '300px' }} placeholder="请输入任务名" />)}
         </Item>
         <Item label="外呼名单" required>
@@ -277,6 +273,7 @@ function Index({
               style={{ width: '300px' }}
               placeholder="请选择外呼类型"
               onChange={() => {intentChange()}}
+              disabled
             >
               {ivrIntents &&
                 ivrIntents.length &&
@@ -295,10 +292,11 @@ function Index({
             <Select
               style={{ width: '300px' }}
               placeholder="请选择外呼场景"
+              disabled
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.filter(item => item.intent === intent)
+                ivrIntents.filter(item => item.intent === selectIntent)
                       .map(({ scene,sceneDesc }) => {
                         return (
                           <Option value={scene} key={scene}>
@@ -326,16 +324,17 @@ function Index({
             />
           )}
         </Item>
-        {/* <Item label="重复外呼">
-          {getFieldDecorator('name', {
-            // rules: [{ message: '请输入' }],s
+        <Item label="重复外呼" required>
+          {getFieldDecorator('retry', {
+             rules: [{ required: true, message: '请选择是否重复外呼!' }],
+             initialValue:"true",
           })(
             <Select style={{ width: 300 }} placeholder="请选择是否重复外呼">
-              <Option value="yes">是</Option>
-              <Option value="no">否</Option>
+              <Option value="true">是</Option>
+              <Option value="false">否</Option>
             </Select>
           )}
-        </Item> */}
+        </Item>
         {/* <Item label="面试时长">
           {getFieldDecorator('diff', {
             initialValue: 60,

@@ -16,16 +16,16 @@ const renderColumns = (dispatch,ivrIntents) => {
       key: 'tel',
       dataIndex: 'tel',
     },
-    {
-      title: '岗位',
-      key: 'jobName',
-      dataIndex: 'jobName',
-    },
-    {
-      title: '面试时长',
-      key: 'entity',
-      dataIndex: 'entity',
-    },
+    // {
+    //   title: '岗位',
+    //   key: 'jobName',
+    //   dataIndex: 'jobName',
+    // },
+    // {
+    //   title: '面试时长',
+    //   key: 'entity',
+    //   dataIndex: 'entity',
+    // },
     {
       title: '面试地址',
       key: 'address',
@@ -55,7 +55,7 @@ const renderColumns = (dispatch,ivrIntents) => {
       title: '状态',
       key: 'status',
       dataIndex: 'status',
-      render:  scene => formatTaskType(ivrIntents,'scene',scene,'sceneDesc'),
+      render:  status => formatTaskType(statusOptions,'value',status,'name'),
     },
     {
       title: '更新人',
@@ -80,7 +80,6 @@ const renderColumns = (dispatch,ivrIntents) => {
           <Fragment>
             <a
               onClick={() => {
-                console.log('listvalue====>',value)
                 dispatch({
                   type: 'namelist/save',
                   payload: {listValue:value},

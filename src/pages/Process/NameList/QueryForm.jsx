@@ -3,6 +3,7 @@ import { Form, Button, DatePicker, Select } from 'antd';
 import { connect } from 'dva';
 import mapValueToFields from '../../../utils/mapValueToFields';
 import TrimInput from '../../../components/TrimInput';
+import DateTimeRangePicker from '@/components/DateTimeRangePicker';
 
 const FormItem = Form.Item;
 const createForm = Form.create;
@@ -29,23 +30,27 @@ function QueryForm({ form, formatResult, onSubmit }) {
       <FormItem label="人才搜索">
         {getFieldDecorator('name', {})(<TrimInput className="test-input-space-name" />)}
       </FormItem>
-      <FormItem label="时间选项">
-        {getFieldDecorator('status', {})(
+      <FormItem label="时间选项"> 
+        <DateTimeRangePicker
+          names={['dateStart', 'dateEnd']}
+          form={form}
+        />
+        {/* {getFieldDecorator('triggerTime', {})(
           <DatePicker
             // showTime={{ format: 'HH:mm', minuteStep: 5 }}
             // disabledDate={disabledDate}
             format="YYYY-MM-DD HH:mm:ss"
             placeholder="请选择时间"
             style={{ width:250 }}
-          />)}
+          />)} */}
       </FormItem>
       <FormItem label="状态筛选">
-        {getFieldDecorator('status', {})( 
-          <Select allowClear placeholder="请选择岗位" style={{width:200}}>
-            {statusOptions.map(item => <Option value={item.value}>{item.name}</Option>)}
+        {getFieldDecorator('status')( 
+          <Select placeholder="请选择状态" style={{width:200}}>
+            {statusOptions.map(item => <Option value={item.value} key={item.value}>{item.name}</Option>)}
           </Select>)}
       </FormItem>
-      <FormItem label="挂机原因">
+      {/* <FormItem label="挂机原因">
         {getFieldDecorator('channel2', {})(
           <Select allowClear placeholder="请选择岗位" style={{width:200}}>
             <Option value={null}>全部</Option>
@@ -56,7 +61,7 @@ function QueryForm({ form, formatResult, onSubmit }) {
           <Select allowClear placeholder="请选择岗位" style={{width:200}}>
             <Option value={null}>全部</Option>
           </Select>)}
-      </FormItem>
+      </FormItem> */}
       <FormItem>
         <Button htmlType="submit" type="primary" className="test-input-search">
           搜索

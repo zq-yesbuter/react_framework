@@ -1,6 +1,15 @@
-import { Table, Dropdown, Button } from 'antd';
+import { Table, Dropdown, Button, Select } from 'antd';
 import React, { Fragment } from 'react';
 
+const pageOptions =[
+  {value:10,name:'10条'},
+  {value:20,name:'20条'},
+  {value:30,name:'30条'},
+  {value:50,name:'50条'},
+  {value:100,name:'100条'},
+]
+
+const { Option } = Select;
 const renderTable = ({
   data,
   columns,
@@ -18,6 +27,8 @@ const renderTable = ({
   prev,
   next,
   showNext,
+  onSizeChange,
+  handleDelete,
 }) => {
   const pagination = {
     defaultCurrent,
@@ -42,6 +53,19 @@ const renderTable = ({
   const hasSelected = selectedRowKeys.length > 0;
   return (
     <Fragment>
+      <div style={{marginTop:10}}>
+        {/* <Dropdown
+          overlay={importMenu}
+          trigger={['hover']}
+          placement="bottomCenter"
+          disabled={!hasSelected}
+        > */}
+        <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} size='middle'>删除</Button>
+        {/* </Dropdown> */}
+        <span style={{ marginLeft: 8 }}>
+          {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
+        </span>
+      </div>
       <Table
         style={{ marginTop: 15 }}
         size="small"
@@ -61,22 +85,19 @@ const renderTable = ({
             <div style={{alignItems: 'center'}}>{`当前展示第${current}页，展示${total}条`}</div>
             <Button style={{marginLeft:10}} size="small" onClick={() => prev()} disabled={current===1}>上一页</Button>
             <Button style={{marginLeft:10}} size="small" onClick={() => next()} disabled={showNext}>下一页</Button>
+            <Select
+              style={{ width: '75px', marginLeft:10 }}
+              size="small"
+              defaultValue={10}
+              onChange={onSizeChange}
+            >
+              {
+                pageOptions.map(item => <Option value={item.value}>{item.name}</Option>)
+              }
+            </Select>
           </div>
         ) : null
       }
-      <div style={{marginTop:10}}>
-        <Dropdown
-          overlay={importMenu}
-          trigger={['hover']}
-          placement="bottomCenter"
-          disabled={!hasSelected}
-        >
-          <Button type="primary">批量操作</Button>
-        </Dropdown>
-        <span style={{ marginLeft: 8 }}>
-          {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
-        </span>
-      </div>
     </Fragment>
   );
 };

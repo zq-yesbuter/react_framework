@@ -101,3 +101,40 @@ export async function getSigleFlowlist(body) {
 //     body,
 //   });
 // }
+
+// 单个修改
+export async function editSignel(body) {
+  const { updateId, intent } = body;
+  return request(`/${intent}/${updateId}`, {
+    method: 'POST',
+    body,
+  });
+}
+
+// 单个申请
+export async function addSignel(body) {
+  const { intent } = body;
+  return request(`/${intent}`, {
+    method: 'POST',
+    body,
+  });
+}
+
+// 单个取消
+export async function cancelSignel(body) {
+  const { intent, updateId } = body;
+  return request(`/${intent}/cancel/${updateId}`, {
+    method: 'POST',
+    body,
+  });
+}
+
+// 批量沟通申请
+export async function batchAdd(body) {
+  const { intent } = body;
+  return request(`/${intent}/batch`, {
+    method: 'POST',
+    body,
+  });
+}
+

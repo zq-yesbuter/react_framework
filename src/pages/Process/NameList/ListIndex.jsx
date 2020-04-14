@@ -9,9 +9,64 @@ import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 
-
+const codeMessage = {
+  200: '服务器成功返回请求的数据。',
+  201: '新建或修改数据成功。',
+  202: '一个请求已经进入后台排队（异步任务）。',
+  204: '删除数据成功。',
+  400: '发出的请求有错误，服务器没有进行新建或修改数据的操作。',
+  401: '用户没有权限（令牌、用户名、密码错误）。',
+  403: '用户得到授权，但是访问是被禁止的。',
+  404: '发出的请求针对的是不存在的记录，服务器没有进行操作。',
+  406: '请求的格式不可得。',
+  410: '请求的资源被永久删除，且不会再得到的。',
+  422: '当创建一个对象时，发生一个验证错误。',
+  500: '服务器发生错误，请检查服务器。',
+  502: '网关错误。',
+  503: '服务不可用，服务器暂时过载或维护。',
+  504: '网关超时。',
+};
+const savingFile = (response, fileName) => {
+  const that = this;
+  response.blob().then(blob => {
+    if (typeof FileReader === 'undefined') {
+      message.error('您的浏览器不支持 FileReader，请升级浏览器');
+    }
+    const reader = new FileReader();
+    reader.addEventListener('loadend', () => {
+      let resu = '';
+      try {
+        resu = JSON.parse(reader.result);
+        // resu = eval('('+ reader.result + ')')
+        if (resu.code === 500) {
+          message.error(resu.msg);
+        } else if (resu.code === 401) {
+          message.error(resu.msg);
+        }
+      } catch (e) {
+        // 捕获错误 说明是文本字符串
+        resu = reader.result;
+        downloadBlob(blob, fileName);
+      }
+    });
+    reader.readAsText(blob);
+    // 下载
+    function downloadBlob(blob, fileName) {
+      let blobUrl = window.URL.createObjectURL(blob);
+      let a = document.createElement('a');
+      a.href = blobUrl;
+      a.target = '_blank';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.download = fileName;
+      a.click();
+      window.URL.revokeObjectURL(blobUrl);
+      document.body.removeChild(a);
+    }
+  });
+};
 function Index({ dispatch, location, namelist }) {
-  const { nameList,ivrIntents } = namelist;
+  const { nameList, ivrIntents, nameCur, namePageSize, nameRequest } = namelist;
   console.log('nameList===>', nameList);
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -66,23 +121,27 @@ function Index({ dispatch, location, namelist }) {
   };
   const importMenu = (
     <Menu>
-      <Menu.Item key={1} onClick={downloadResumes}>
+      {/* <Menu.Item key={1} onClick={downloadResumes}>
         批量导出简历
-      </Menu.Item>
+      </Menu.Item> */}
       <Menu.Item key={2} onClick={batchExportInvent}>
-        批量导出面试邀约
+        批量导出沟通汇总信息
       </Menu.Item>
-      <Menu.Item key={5}>删除</Menu.Item>
+      {/* <Menu.Item key={5}>删除</Menu.Item> */}
     </Menu>
   );
+  const { search } = window.location;
+  // const batchName = decodeURI(search.slice(1));
+  const {id,intent}=queryString.parse(search);
   const setting = {
-    data: nameList || [],
-    total: 0, // faqList.total,
-    current: start / length + 1,
+    current: nameCur,
     columns: renderColumns(dispatch,ivrIntents),
-    pageSize: length,
+    pageSize: namePageSize,
     loading,
     selectedRowKeys,
+    showNext: nameList && nameList.length < namePageSize,
+    data: nameList || [],
+    total:  nameList && nameList.length,
     // sortedInfo,
     onChange: (start, length) => {
       console.log('start==>', start, length);
@@ -101,7 +160,7 @@ function Index({ dispatch, location, namelist }) {
       // );
 
       dispatch({
-        type: 'namelist/getNameList',
+        type: 'namelist/getBatchDetail',
         payload: { start, length },
       });
       setSelectedRowKeys([]);
@@ -109,6 +168,36 @@ function Index({ dispatch, location, namelist }) {
       //   selectedRows: [],
       //   sortedInfo: sorter,
       // });
+    },
+    prev: () => {
+      dispatch({
+        type: 'namelist/getBatchDetail',
+        payload: {pageNum:nameCur-1, id,intent},
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: {nameRequest:{...nameRequest,pageNum:nameCur-1 }},
+      });
+    },
+    next: () => {
+      dispatch({
+        type: 'namelist/getBatchDetail',
+        payload: {pageNum:nameCur+1,id,intent},
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: {nameRequestt:{...nameRequest,pageNum:nameCur+1 }},
+      });
+    },
+    onSizeChange: pageSize => {
+      dispatch({
+        type: 'namelist/getBatchDetail',
+        payload: {pageSize,id,intent},
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: {nameRequest:{...nameRequest,pageSize }},
+      });
     },
     rowKey: 'applyId',
     rowSelection: {
@@ -184,21 +273,75 @@ function Index({ dispatch, location, namelist }) {
   function onSubmit(values) {
     console.log('values===>', values);
     const { name } = values;
-    const reg = /^\d{1,11}$/;
     let nameObj = {};
-    if (reg.test(name)) {
-      nameObj = { tel: name, name: '' };
-    } else {
-      nameObj = { name, tel: '' };
-    }
 
     // hadleSelectedKeys([]);
     dispatch({
       type: 'namelist/getNameList',
-      payload: { ...nameObj },
+      payload: { values },
     });
   }
-  function batchExportInvent() {}
+
+  function batchExportInvent() {
+    
+    // const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
+    // const applyIds = resumeList.map(item => item.applyId);
+    // const fileName = '导出邀约信息.xlsx';
+    // let size = 0;
+    // fetch(`data/${intent}/list/all`, {
+    //   method: 'POST',
+    //   body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 500, orderBy: { applyDate: 'DESC' } }),
+    //   headers: {
+    //     Accept: 'application/vnd.ms-excel',
+    //     'Content-Type': 'application/json',
+    //   },
+    // })
+    //   .then(response => {
+    //     if (response.status >= 200 && response.status < 300) {
+    //       return response;
+    //     }
+    //     message.error(`请求错误 ${response.status}: 导出邀约信息时发生错误！`);
+    //     const errortext = codeMessage[response.status] || response.statusText;
+    //     const error = new Error(errortext);
+    //     error.name = response.status;
+    //     error.response = response;
+    //     throw error;
+    //   }) // 取出body
+    //   .then(response => response.body)
+    //   .then(body => {
+    //     const reader = body.getReader();
+    //     return new ReadableStream({
+    //       start(controller) {
+    //         return pump();
+    //         function pump() {
+    //           return reader
+    //             .read()
+    //             .then(res => {
+    //               // res  ({ done, value })
+    //               // 读不到更多数据就关闭流
+    //               // console.log(res,'res');
+    //               const { done, value } = res;
+    //               if (done) {
+    //                 // console.log('end')
+    //                 controller.close();
+    //                 return;
+    //               }
+    //               size += value.length || 0;
+    //               // console.log(size,"size")
+    //               // 将下一个数据块置入流中
+    //               controller.enqueue(value);
+    //               return pump();
+    //             })
+    //             .catch(e => message.error(e.message));
+    //         }
+    //       },
+    //     });
+    //   })
+    //   .then(stream => new Response(stream))
+    //   .then(response => savingFile(response, fileName))
+    //   .catch(err => message.error(err.message));
+  }
+
   function onExportChange() {}
 
   const hasSelected = selectedRowKeys.length > 0;
@@ -247,6 +390,7 @@ function Index({ dispatch, location, namelist }) {
         onCancel={() => {
           setValue(null);
         }}
+        intent={intent}
       />
     </Card>
   );

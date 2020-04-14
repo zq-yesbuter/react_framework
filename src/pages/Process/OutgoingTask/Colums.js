@@ -83,8 +83,14 @@ const renderColumns = (dispatch,ivrIntents) => {
                 dispatch({
                   type: 'namelist/save',
                   payload: {configValue:value},
-                });
-                dispatch(routerRedux.push(`/AI/outging/config?${name}`));
+                }); 
+                dispatch(routerRedux.push({
+                  pathname: '/AI/outging/config',
+                  search: queryString.stringify({
+                    intent,
+                    id,
+                  }),
+                }))
               }}
             >
               配置

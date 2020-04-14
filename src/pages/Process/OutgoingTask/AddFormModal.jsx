@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
-import { Form, Modal, Select ,DatePicker} from 'antd';
+import { Form, Modal, Select ,DatePicker,Input} from 'antd';
 import moment from 'moment';
 import mapValueToFields from '@/utils/mapValueToFields';
 import TrimInput from '@/components/TrimInput';
@@ -24,7 +24,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
     });
   };
 
-  const { getFieldDecorator, getFieldValue } = form;
+  const { getFieldDecorator, getFieldValue,setFieldsValue } = form;
 
   const formItemLayout = {
     labelCol: { span: 6 },
@@ -36,6 +36,10 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
   }
   const sourceId = getFieldValue('terminalType');
   getFieldDecorator('id');
+  function intentChange(e) {
+    setFieldsValue({ scene: null });
+  }
+  const intent = getFieldValue('intent');
   return (
     <Modal
       visible={!!value}
@@ -57,15 +61,15 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
                 message: '任务名必填！',
               },
             ],
-          })(<TrimInput className="test-input-space-name" placeholder="请输入任务名" />)}
+          })(<Input placeholder="请输入任务名" />)}
         </Item>
-        {/* <Item label="外呼类型" {...formItemLayout}>
+        <Item label="外呼类型" {...formItemLayout}>
           {getFieldDecorator('intent', {
-            rules: [{ required: true, message: '请选择面试时长!' }],
+            rules: [{ required: true, message: '请选择外呼类型!' }],
           })(
             <Select
-              style={{ width: '300px' }}
               placeholder="请选择外呼类型"
+              onChange={() => {intentChange()}}
             >
               {ivrIntents &&
                 ivrIntents.length &&
@@ -78,16 +82,23 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
             rules: [{ required: true, message: '请选择外呼场景!' }],
           })(
             <Select
-              style={{ width: '300px' }}
+              // style={{ width: '300px' }}
               placeholder="请选择外呼场景"
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.map(item => <Option value={item.scene}>{item.sceneDesc}</Option>)}
+                ivrIntents.filter(item => item.intent === intent)
+                      .map(({ scene,sceneDesc }) => {
+                        return (
+                          <Option value={scene} key={scene}>
+                            {sceneDesc}
+                          </Option>
+                       );
+                       })}
             </Select>
           )}
         </Item>
-        <Item label="外呼时间" required>
+        {/* <Item label="外呼时间" required {...formItemLayout}>
           {getFieldDecorator('triggerTime', {
             rules: [{ required: true, message: '请选择外呼时间!' }],
           })(
@@ -96,7 +107,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
               disabledDate={disabledDate}
               format="YYYY-MM-DD HH:mm"
               placeholder="请选择外呼时间"
-              style={{ width: 300 }}
+              style={{ width: 335 }}
             />
           )}
         </Item> */}
