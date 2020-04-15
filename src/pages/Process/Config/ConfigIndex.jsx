@@ -63,30 +63,24 @@ const formatSelectedKeys = (selectedKeys = [], jobList) => {
 
 function Index({
   dispatch,
-  visible,
   form,
-  close,
-  selectedKeys,
-  jobList,
-  resetSelectList,
-  location,
   namelist,
 }) {
   const { configValue, ivrIntents, configNameList } = namelist;
-  console.log('confifValue====>', configValue, ivrIntents );
   const { search } = window.location;
   const batchName = decodeURI(search.slice(1));
   const [diffTimeList, setDiffTimeList] = useState([]);
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
+  const [ repeat, setRepeat ] = useState(true);
 
   useEffect(() => {
     return () => {
       dispatch({
         type: 'namelist/save',
-        payload: {configNameList: []},
+        payload: { configNameList: [] },
       });
-    }
-  },[]);
+    };
+  }, []);
 
   function formatInventTime(timeList, applyId) {
     const list = timeList.filter(item => item.applyId === applyId);
@@ -95,101 +89,52 @@ function Index({
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
-        const { name, intent, scene, triggerTime,retry } = values;
+        const { name, intent, scene, triggerTime, retry } = values;
         if (triggerTime < moment().add(10, 'minutes')) {
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
         }
-        // 先建立批次
-        addBatch({name, intent, scene,triggerTime:triggerTime.format('YYYY-MM-DD HH:mm:ss')})
-          .then(({id}) => {
-            // if(invitations && !invitations.length){
-            //   dispatch(routerRedux.push({
-            //     pathname: `/AI/outging/namelist`,
-            //     search: queryString.stringify({
-            //       id,
-            //       intent,
-            //     })
-            //   }));
-            //   return;
-            // }
-            batchRelated({id,intent,invitations,triggerTime,retry}) 
-              .then(body => {
-                message.success('任务配置成功！')
-              })
-              .catch(e => {message.error(e.message)});
+        const { id } = queryString.parse(search);
+        if (configNameList && !configNameList.length) {
+          message.warn('没有名单无法设置，请先导入名单！');
+          dispatch(
+            routerRedux.push({
+              pathname: `/AI/outging/namelist`,
+              search: queryString.stringify({
+                id,
+                intent,
+              }),
             })
-            .catch(e => {
-              console.error(e)
-            });
-
-          // fetchInvitation({ applyIds })
-          //   .then(timeList => {
-          //     editBatch = editBatch.map(item => {
-          //       // console.log('timelist====>',timeList,formatInventTime(timeList, item.applyId))
-          //       return { ...item, updateId: formatInventTime(timeList, item.applyId) || null };
-          //     });
-          //     // console.log('editBatch===>',editBatch);
-          //     resolvedPromisesArray.push(editBatchInvitation({ batch: editBatch }));
-          //     if (addBatch.length) {
-          //       resolvedPromisesArray.push(batchInvent({ batch: addBatch }));
-          //     }
-          //     Promise.all(resolvedPromisesArray)
-          //       .then(data => {
-          //         let errorCount = 0;
-          //         let successCount = 0;
-          //         let success = [];
-          //         data.forEach(item => {
-          //           errorCount += item.errorCount;
-          //           successCount += item.successCount;
-          //           // success.push(item.success);
-          //         });
-          //         console.log('success===>', success);
-          //         if (!errorCount) {
-          //           message.success('批量邀约成功');
-          //         } else {
-          //           message.warn(`批量邀约成功${successCount}人，批量邀约失败${errorCount}人`);
-          //         }
-          //         // const successList = flatten(success);
-          //         // console.log(errorCount,successCount,successList);
-          //         // Modal.info({
-          //         //   title: '批量邀约成功',
-          //         //   content: (
-          //         //     <div>
-          //         //       <p>{`邀约成功${successCount}人，邀约失败${errorCount}人`}</p>
-          //         //       {formatSelectedKeys(successList,jobList).map(item =>
-          //         //         <p>{`${item ? item.name : null}邀约成功`}</p>
-          //         //       )}
-          //         //     </div>
-          //         //   ),
-          //         //   onOk() {() => close()},
-          //         // });
-          //         resetFields();
-          //         setDiffTimeList([]);
-          //         close();
-          //         dispatch({
-          //           type: 'chatrecord/jobAppliedAsPostAll',
-          //         });
-          //         // dispatch({
-          //         //   type: 'chatrecord/updateSingleInvent',
-          //         // });
-          //         resetSelectList();
-          //       })
-          //       .catch(e => message.error(e.message));
-          //   })
-          //   .catch(e => message.error(`出现错误：${e.message}`));
-       
+          );
+          return;
+        }
+        const invitations = configNameList.map(item => item.invitationId);
+        batchRelated({
+          id,
+          intent,
+          invitations,
+          triggerTime: triggerTime.format('YYYY-MM-DD HH:mm:ss'),
+          retry,
+        })
+          .then(body => {
+            message.success('任务配置成功！');
+          })
+          .catch(e => {
+            message.error(e.message);
+          });
       }
     });
   }
   function cancel() {
-    const { intent,id } = configValue;
-    batchCancel({intent,id})
-    .then(body => {
-      message.success('取消任务成功');
-      resetFields();
-    })
-    .catch(e => {message.error('取消任务失败')  });
+    const { intent, id } = configValue;
+    batchCancel({ intent, id })
+      .then(body => {
+        message.success('取消任务成功');
+        resetFields();
+      })
+      .catch(e => {
+        message.error('取消任务失败');
+      });
   }
   function disabledDate(current) {
     // Can not select days before today and today
@@ -212,6 +157,68 @@ function Index({
   function intentChange(e) {
     setFieldsValue({ scene: null });
   }
+
+  function repeatChange(e) {
+    setRepeat(e.target.checked);
+  }
+
+  function formatRepeat(repeat) {
+    if (repeat) {
+      return (
+        <div className={styles['inline-select']}>
+          {getFieldDecorator('retry', {
+            rules: [
+              {
+                required: true,
+                message: '重复外呼类型必填！',
+              },
+            ],
+            initialValue: true,
+          })(
+            <Select>
+              <Option value={true} key={true}>默认配置</Option>
+            </Select>
+          )}
+          <Checkbox checked={repeat} onChange={repeatChange}>选择重复外呼默认配置</Checkbox>
+        </div>
+      );
+    }
+    return (
+      <div className={styles['inline-select']}>
+        {getFieldDecorator(`retry['reasons']`, {
+          rules: [
+            {
+              required: true,
+              message: '请添加！',
+            },
+          ],
+        })(
+          <Select mode="tags" placeholder="输入添加">
+            <Option value="无人接听" key="无人接听">无人接听</Option>
+          </Select>
+        )}
+        {getFieldDecorator(`retry['delay']`, {
+          rules: [
+            {
+              required: true,
+              message: '请添加！',
+            },
+          ],
+        })(
+          <Select>
+            <Option value={10} key={10}>10分钟</Option>
+            <Option value={20} key={20}>20分钟</Option>
+            <Option value={30} key={30}>30分钟</Option>
+            <Option value={50} key={40}>40分钟</Option>
+            <Option value={60} key={60}>60分钟</Option>
+          </Select>
+        )}
+        <Checkbox checked={repeat} onChange={repeatChange}>选择重复外呼默认配置</Checkbox>
+      </div>
+    );
+    
+  }
+
   const selectIntent = getFieldValue('intent');
   return (
     <Card
@@ -245,9 +252,7 @@ function Index({
                 message: '任务名必填！',
               },
             ],
-            initialValue:  configValue && configValue.id ? 
-            configValue.name
-            : null,
+            initialValue: configValue && configValue.id ? configValue.name : null,
           })(<Input style={{ width: '300px' }} placeholder="请输入任务名" />)}
         </Item>
         <Item label="外呼名单" required>
@@ -264,46 +269,39 @@ function Index({
         <Item label="外呼类型">
           {getFieldDecorator('intent', {
             rules: [{ required: true, message: '请选择外呼类型!' }],
-            initialValue:
-            configValue && configValue.id ? 
-              configValue.intent
-              : null,
+            initialValue: configValue && configValue.id ? configValue.intent : null,
           })(
             <Select
               style={{ width: '300px' }}
               placeholder="请选择外呼类型"
-              onChange={() => {intentChange()}}
+              onChange={() => {
+                intentChange();
+              }}
               disabled
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.map(item => <Option value={item.intent}>{item.intentDesc}</Option>)}
+                ivrIntents.map(item => <Option value={item.intent} key={item.intent}>{item.intentDesc}</Option>)}
             </Select>
           )}
         </Item>
         <Item label="外呼场景">
           {getFieldDecorator('scene', {
             rules: [{ required: true, message: '请选择外呼场景!' }],
-            initialValue:
-            configValue && configValue.id ? 
-              configValue.scene
-              : null,
+            initialValue: configValue && configValue.id ? configValue.scene : null,
           })(
-            <Select
-              style={{ width: '300px' }}
-              placeholder="请选择外呼场景"
-              disabled
-            >
+            <Select style={{ width: '300px' }} placeholder="请选择外呼场景" disabled>
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.filter(item => item.intent === selectIntent)
-                      .map(({ scene,sceneDesc }) => {
-                        return (
-                          <Option value={scene} key={scene}>
-                            {sceneDesc}
-                          </Option>
-                       );
-                       })}
+                ivrIntents
+                  .filter(item => item.intent === selectIntent)
+                  .map(({ scene, sceneDesc }) => {
+                    return (
+                      <Option value={scene} key={scene}>
+                        {sceneDesc}
+                      </Option>
+                    );
+                  })}
             </Select>
           )}
         </Item>
@@ -311,9 +309,7 @@ function Index({
           {getFieldDecorator('triggerTime', {
             rules: [{ required: true, message: '请选择外呼时间!' }],
             initialValue:
-            configValue && configValue.id ? 
-              moment(configValue.triggerStartTime)
-              : null,
+              configValue && configValue.id ? moment(configValue.triggerStartTime) : null,
           })(
             <DatePicker
               showTime={{ format: 'HH:mm', minuteStep: 5 }}
@@ -324,133 +320,20 @@ function Index({
             />
           )}
         </Item>
-        <Item label="重复外呼" required>
+        {/* <Item label="重复外呼" required>
           {getFieldDecorator('retry', {
              rules: [{ required: true, message: '请选择是否重复外呼!' }],
-             initialValue:"true",
+             initialValue:true,
           })(
             <Select style={{ width: 300 }} placeholder="请选择是否重复外呼">
-              <Option value="true">是</Option>
-              <Option value="false">否</Option>
+              <Option value={true}>是</Option>
+              <Option value={false}>否</Option>
             </Select>
           )}
-        </Item>
-        {/* <Item label="面试时长">
-          {getFieldDecorator('diff', {
-            initialValue: 60,
-            rules: [{ required: true, message: '请选择面试时长!' }],
-          })(
-            <InputNumber
-              style={{ flex: 1 }}
-              min={0}
-              max={160}
-              formatter={value => `${value}分钟`}
-              parser={value => value.replace('分钟', '')}
-            />
-          )}
-        </Item>
-        <Item label="面试时段" required>
-          <div style={{ display: 'flex', marginLeft: 5 }}>
-            {getFieldDecorator('time')(
-              <RangePicker
-                disabledDate={disabledDate}
-                // disabledTime={disabledRangeTime}
-                showTime={{
-                  hideDisabledOptions: true,
-                  format: 'HH:mm',
-                  minuteStep: 5,
-                }}
-                format="YYYY-MM-DD HH:mm"
-              />
-            )}
-            <Button type="primary" style={{ marginLeft: 5 }} onClick={addTime}>
-              +
-            </Button>
-          </div>
-        </Item>
-        {diffTimeList.length ? (
-          <div style={{ marginLeft: 80, marginBottom: 10 }}>
-            {diffTimeList.map(([begin, end], index) => (
-              <Tag
-                key={index}
-                closable
-                color="blue"
-                onClose={() => handleClose(index)}
-                style={{ marginBottom: 5 }}
-              >
-                {`${begin.format('YYYY-MM-DD HH:mm')}  ~   ${end.format('YYYY-MM-DD HH:mm')}`}
-              </Tag>
-            ))}
-          </div>
-        ) : null} */}
-        {/* <Item label="重复外呼">
-          <div className={styles['inline-select']}>
-            {getFieldDecorator('name', {
-              defaultValue: '1',
-              // rules: [{ message: '请输入' }],
-            })(
-              <Select>
-                <Option value="1">未接听</Option>
-                <Option value="2">已拒听</Option>
-                <Option value="3">无</Option>
-              </Select>
-            )}
-            {getFieldDecorator('name1', {
-              defaultValue: '1',
-              // rules: [{ message: '请输入' }],
-            })(
-              <Select>
-                <Option value="1">1小时</Option>
-                <Option value="2">2小时</Option>
-                <Option value="3">3小时</Option>
-              </Select>
-            )}
-            {getFieldDecorator('name2', {
-              defaultValue: '1',
-              // rules: [{ message: '请输入' }],
-            })(
-              <Select>
-                <Option value="1">1次</Option>
-                <Option value="2">2次</Option>
-                <Option value="3">3次</Option>
-              </Select>
-            )}
-          </div>
-        </Item>
-        <Item label="挂机外呼">
-          <div className={styles['inline-select']}>
-            {getFieldDecorator('name', {
-              defaultValue: '1',
-              // rules: [{ message: '请输入' }],
-            })(
-              <Select>
-                <Option value="1">未接听</Option>
-                <Option value="2">已拒听</Option>
-                <Option value="3">无</Option>
-              </Select>
-            )}
-            {getFieldDecorator('name1', {
-              defaultValue: '1',
-              // rules: [{ message: '请输入' }],
-            })(
-              <Select>
-                <Option value="1">1小时</Option>
-                <Option value="2">2小时</Option>
-                <Option value="3">3小时</Option>
-              </Select>
-            )}
-            {getFieldDecorator('name2', {
-              defaultValue: '1',
-              // rules: [{ message: '请输入' }],
-            })(
-              <Select>
-                <Option value="1">1次</Option>
-                <Option value="2">2次</Option>
-                <Option value="3">3次</Option>
-              </Select>
-            )}
-          </div>
         </Item> */}
+        <Item label="重复外呼" required>
+          {formatRepeat(repeat)}
+        </Item>
         <Item {...tailLayout}>
           <Button
             htmlType="submit"
@@ -460,16 +343,18 @@ function Index({
           >
             提交任务
           </Button>
-          {configValue && configValue.id && 
+          {configValue && configValue.id && (
             <Button
               style={{ marginLeft: '10px' }}
               className="test-input-search"
-              onClick={e => {cancel()}}
+              onClick={e => {
+                cancel();
+              }}
             >
               取消任务
             </Button>
-          }
-           <Button
+          )}
+          <Button
             style={{ marginLeft: '10px' }}
             htmlType="submit"
             // className="test-input-search"
@@ -486,5 +371,4 @@ function Index({
 }
 
 const mapStateToProps = ({ namelist = {} }) => ({ namelist });
-export default connect(mapStateToProps)(
-  Form.create({})(Index));
+export default connect(mapStateToProps)(Form.create({})(Index));
