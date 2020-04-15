@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Button, DatePicker, Select } from 'antd';
+import { Form, Button, DatePicker, Select, Input } from 'antd';
 import { connect } from 'dva';
 import mapValueToFields from '../../../utils/mapValueToFields';
 import TrimInput from '../../../components/TrimInput';
@@ -26,16 +26,16 @@ function QueryForm({ form, formatResult, onSubmit }) {
     });
   };
 
-  const { getFieldDecorator, getFieldValue, resetFields } = form;
+  const { getFieldDecorator, getFieldValue, resetFields,setFieldsValue } = form;
   return (
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="任务名称">
-        {getFieldDecorator('batchName', {})(
-          <TrimInput placeholder="请输入任务名称" style={{width:200}} />
+        {getFieldDecorator('batchName')(
+          <Input placeholder="请输入任务名称" style={{width:200}} />
         )}
       </FormItem>
       <FormItem label="任务状态">
-        {getFieldDecorator('status', {})(
+        {getFieldDecorator('status')(
           <Select allowClear placeholder="请选择任务状态" style={{width:200}}>
             {statusOptions.map(item => <Option value={item.value} key={item.value}>{item.name}</Option>)}
           </Select>)}

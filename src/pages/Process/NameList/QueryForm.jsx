@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import { Form, Button, DatePicker, Select } from 'antd';
+import { Form, Button, DatePicker, Select, Input } from 'antd';
 import { connect } from 'dva';
 import mapValueToFields from '../../../utils/mapValueToFields';
 import TrimInput from '../../../components/TrimInput';
@@ -28,9 +28,9 @@ function QueryForm({ form, formatResult, onSubmit }) {
   return (
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="人才搜索">
-        {getFieldDecorator('name', {})(<TrimInput className="test-input-space-name" />)}
+        {getFieldDecorator('name')(<Input />)}
       </FormItem>
-      <FormItem label="时间选项"> 
+      <FormItem label="时间选项">
         <DateTimeRangePicker
           names={['dateStart', 'dateEnd']}
           form={form}

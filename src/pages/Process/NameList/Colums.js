@@ -80,10 +80,10 @@ const renderColumns = (dispatch,ivrIntents) => {
           <Fragment>
             <a
               onClick={() => {
-                dispatch({
-                  type: 'namelist/save',
-                  payload: {listValue:value},
-                });
+                // dispatch({
+                //   type: 'namelist/save',
+                //   payload: {listValue:value},
+                // });
                 dispatch(
                   routerRedux.push({
                     pathname: '/AI/outging/record',

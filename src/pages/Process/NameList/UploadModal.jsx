@@ -59,7 +59,6 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
   function onSumbit() {
     validateFields((err, values) => {
       if (!err) {
-        console.log('values===>',values);
         // const { triggerTime, scene } = values;
         if (!fileList.length) {
           setFields({
@@ -75,25 +74,26 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
           },
         });
         const formData = new FormData();
-        // console.log('fileList===>', fileList);
         fileList.forEach(file => {
           formData.append('file', file);
         }); 
         const { scene } = ivrIntents && ivrIntents.length && ivrIntents.find(item => item.intent === intent) || {};
         const params = { intent, scene};
-        console.log('params===>', params);
         upload({ formData, params })
           .then(({success}) => {
-            console.log('data===>',success);
             let invitations=[];
             invitations=success.map(item => item.invitationId) || [];
             const { search } = window.location;
             // const batchName = decodeURI(search.slice(1));
             const {id,intent}=queryString.parse(search);
             if(invitations.length){
-               batchRelated({id,intent,triggerTime:triggerTime.format('YYYY-MM-DD HH:mm:ss'),invitations}) 
+               batchRelated({id,intent,invitations}) 
               .then(body => {
                 message.success('外呼文件导入成功并且设置成功');
+                dispatch({
+                  type: 'namelist/getBatchDetail',
+                  payload: {id,intent},
+                });
               })
               .catch(e => {});
             }else{
@@ -109,9 +109,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
   }
 
   function beforeUpload(file) {
-    // console.log('tile===>',file,file.type, file.size)
     const fileType = [
-      //   '.doc',
       '.xls',
       '.xlsx',
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

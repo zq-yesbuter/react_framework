@@ -60,7 +60,9 @@ function RecordBottom({
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const prevSelectJobId = usePrevious(selectJobId);
   const mounted = useRef();
-  const { id, applyId, status,intent,invitationId } = listValue || {};
+  const { applyId, status } = listValue || {};
+  const { search } = window.location;
+  const {group:invitationId,intent}=queryString.parse(search);
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true;
@@ -139,7 +141,7 @@ function RecordBottom({
                 style={{ marginRight: 10 }}
               />
             )}
-            {getFieldDecorator('diff', {
+            {/* {getFieldDecorator('diff', {
               initialValue:
               status !== 11 && Object.keys(listValue).length
               ? moment(listValue.endTime).diff(listValue.startTime, 'minutes')
@@ -152,7 +154,7 @@ function RecordBottom({
                 formatter={value => `${value}分钟`}
                 parser={value => value.replace('分钟', '')}
               />
-            )}
+            )} */}
             {getFieldDecorator('startTime', {
               initialValue:
               status !== 11 && Object.keys(listValue).length
@@ -226,11 +228,11 @@ function RecordBottom({
             .then(data => {
               message.success('修改邀约成功');
             })
-            .catch(e => console.error(e.message));
+            .catch(e => message.error(e.message));
         }
         addSignel(payload).then(data => {
           message.success('新增邀约成功');
-        }).catch(e => console.error(e.message));
+        }).catch(e => message.error(e.message));
       }
     });
   }
@@ -248,27 +250,28 @@ function RecordBottom({
           message.success('取消邀约成功!');
           setFieldsValue({ triggerTime: null });
           if(intent === 'interview_invitation') {
-            setFieldsValue({ startTime: null, diff: 60 });
+            setFieldsValue({ startTime: null });
           }
         })
         .catch(e => message.error(e.message));
   }
  
+  const disabled = !(status === 1 || status === 0 || status === '1' || status === '0');
   return (
     <div className={styles['gutter-box']}>
       <h3>外呼时间</h3>
       <div>
         {formatFieldItem(intent)}
-        <Button onClick={inventOnSubmit} disabled={status !== 1}>
+        <Button onClick={inventOnSubmit} disabled={disabled}>
           更新
         </Button>
-        {status === '1' ? (
+        {!disabled ? (
           <Popconfirm
             title="外呼时间和面试时间均会被取消，确认要取消吗？"
             onConfirm={cancelInventConfirm}
             onCancel={quitCancel}
           >
-            <Button disabled={status !== '1'} style={{ marginLeft: 20 }}>
+            <Button disabled={disabled} style={{ marginLeft: 20 }}>
               取消
             </Button>
           </Popconfirm>

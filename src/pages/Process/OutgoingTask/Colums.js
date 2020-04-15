@@ -17,7 +17,7 @@ const renderColumns = (dispatch,ivrIntents) => {
       title: '任务类型',
       key: 'intent',
       dataIndex: 'intent',
-      render:  scene => formatTaskType(ivrIntents,'intent',scene,'intentDesc'),
+      render:  intent => formatTaskType(ivrIntents,'intent',intent,'intentDesc'),
     },
     // {
     //   title: '外呼流程',
@@ -74,16 +74,10 @@ const renderColumns = (dispatch,ivrIntents) => {
           <Fragment>
             <a
               onClick={() => {
-                if(id){
-                  dispatch({
-                    type: 'namelist/configNameList',
-                    payload: {id,intent},
-                  });
-                }
                 dispatch({
-                  type: 'namelist/save',
-                  payload: {configValue:value},
-                }); 
+                  type: 'namelist/configNameList',
+                  payload: {id,intent},
+                });
                 dispatch(routerRedux.push({
                   pathname: '/AI/outging/config',
                   search: queryString.stringify({

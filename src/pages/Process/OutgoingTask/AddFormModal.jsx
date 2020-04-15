@@ -73,7 +73,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.map(item => <Option value={item.intent}>{item.intentDesc}</Option>)}
+                ivrIntents.map(item => <Option value={item.intent} key={item.intent}>{item.intentDesc}</Option>)}
             </Select>
           )}
         </Item>

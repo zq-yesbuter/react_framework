@@ -8,6 +8,7 @@ import DateFormat from '../../../components/DateFormat';
 import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
+import { nameBatchDelete } from '@/services/nameList';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -67,7 +68,8 @@ const savingFile = (response, fileName) => {
 };
 function Index({ dispatch, location, namelist }) {
   const { nameList, ivrIntents, nameCur, namePageSize, nameRequest } = namelist;
-  console.log('nameList===>', nameList);
+  const { search } = window.location;
+  const {id,intent}=queryString.parse(search);
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -130,9 +132,8 @@ function Index({ dispatch, location, namelist }) {
       {/* <Menu.Item key={5}>删除</Menu.Item> */}
     </Menu>
   );
-  const { search } = window.location;
+
   // const batchName = decodeURI(search.slice(1));
-  const {id,intent}=queryString.parse(search);
   const setting = {
     current: nameCur,
     columns: renderColumns(dispatch,ivrIntents),
@@ -142,9 +143,7 @@ function Index({ dispatch, location, namelist }) {
     showNext: nameList && nameList.length < namePageSize,
     data: nameList || [],
     total:  nameList && nameList.length,
-    // sortedInfo,
     onChange: (start, length) => {
-      console.log('start==>', start, length);
       // this.setState(
       //   ({ fields }) => ({
       //     fields: {
@@ -158,7 +157,7 @@ function Index({ dispatch, location, namelist }) {
       //     this.pending = false;
       //   }
       // );
-
+      
       dispatch({
         type: 'namelist/getBatchDetail',
         payload: { start, length },
@@ -199,147 +198,119 @@ function Index({ dispatch, location, namelist }) {
         payload: {nameRequest:{...nameRequest,pageSize }},
       });
     },
-    rowKey: 'applyId',
+    rowKey: 'invitationId',
     rowSelection: {
       selectedRowKeys,
       onChange: (selectedRowKeys, selectedRows) => {
-        console.log('selectedRowKeys changed:===> ', selectedRowKeys);
         setSelectedRowKeys(selectedRowKeys);
         // this.setState({ , selectedRows });
       },
     },
     importMenu,
+    hasImport: true,
+    exportFunction: (ids) => {
+      Modal.confirm({
+        title: '导出名单',
+        content: (
+          <div>
+            <p>确认导出名单这些数据吗？</p>
+          </div>
+        ),
+        onOk: () => {
+          batchExportInvent(ids);
+        },
+        okText: '确认',
+        cancelText: '取消',
+      });
+    },
+    handleDelete: (updateIds) => {
+      Modal.confirm({
+        title: '删除',
+        content: (
+          <div>
+            <p>你确定要批量删除这些数据吗？</p>
+          </div>
+        ),
+        onOk: () => {
+          nameBatchDelete({ intent, updateIds }).then(() => {
+            dispatch({
+              type: 'namelist/getBatchDetail',
+              payload: { id, intent },
+            });
+          })
+          .catch(e => {
+            message.error(e.message);
+          });
+        },
+        okText: '确认',
+        cancelText: '取消',
+      });
+    },
   };
-  function downloadResumes() {
-    // const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
-    // const resumeIds = resumeList.map(item => item.resumeId);
-    // const fileName = '导出简历信息.zip';
-    // let size = 0;
-    // fetch('/resume/attachment/download', {
-    //   method: 'POST',
-    //   body: JSON.stringify({ resumeIds }),
-    //   headers: {
-    //     Accept: 'application/json',
-    //     'Content-Type': 'application/json; charset=utf-8',
-    //   },
-    // })
-    //   .then(response => {
-    //     if (response.status >= 200 && response.status < 300) {
-    //       return response;
-    //     }
-    //     message.error(`请求错误 ${response.status}: 导出简历时发生错误！`);
-    //     const errortext = codeMessage[response.status] || response.statusText;
-    //     const error = new Error(errortext);
-    //     error.name = response.status;
-    //     error.response = response;
-    //     throw error;
-    //   }) // 取出body
-    //   .then(response => response.body)
-    //   .then(body => {
-    //     // console.log('body====>jianli==>',body);
-    //     const reader = body.getReader();
-    //     return new ReadableStream({
-    //       start(controller) {
-    //         return pump();
-    //         function pump() {
-    //           return reader
-    //             .read()
-    //             .then(res => {
-    //               // res  ({ done, value })
-    //               // 读不到更多数据就关闭流
-    //               // console.log(res,'res');
-    //               const { done, value } = res;
-    //               if (done) {
-    //                 // console.log('end')
-    //                 controller.close();
-    //                 return;
-    //               }
-    //               size += value.length || 0;
-    //               // console.log(size,"size")
-    //               // 将下一个数据块置入流中
-    //               controller.enqueue(value);
-    //               return pump();
-    //             })
-    //             .catch(e => message.error(e.message));
-    //         }
-    //       },
-    //     });
-    //   })
-    //   .then(stream => new Response(stream))
-    //   .then(response => savingFile(response, fileName))
-    //   .catch(err => message.error(err.message));
-  }
   // 筛选条件
   function onSubmit(values) {
-    console.log('values===>', values);
-    const { name } = values;
-    let nameObj = {};
-
-    // hadleSelectedKeys([]);
     dispatch({
-      type: 'namelist/getNameList',
-      payload: { values },
+      type: 'namelist/getBatchDetail',
+      payload: { id,intent,...values },
     });
+    dispatch({
+      type: 'namelist/save',
+      payload: {nameRequest:values},
+    }); 
   }
 
-  function batchExportInvent() {
-    
-    // const resumeList = jobList.filter(item => selectedKeys.includes(item.applyId));
-    // const applyIds = resumeList.map(item => item.applyId);
-    // const fileName = '导出邀约信息.xlsx';
-    // let size = 0;
-    // fetch(`data/${intent}/list/all`, {
-    //   method: 'POST',
-    //   body: JSON.stringify({ applyIds, pageNum: 1, pageSize: 500, orderBy: { applyDate: 'DESC' } }),
-    //   headers: {
-    //     Accept: 'application/vnd.ms-excel',
-    //     'Content-Type': 'application/json',
-    //   },
-    // })
-    //   .then(response => {
-    //     if (response.status >= 200 && response.status < 300) {
-    //       return response;
-    //     }
-    //     message.error(`请求错误 ${response.status}: 导出邀约信息时发生错误！`);
-    //     const errortext = codeMessage[response.status] || response.statusText;
-    //     const error = new Error(errortext);
-    //     error.name = response.status;
-    //     error.response = response;
-    //     throw error;
-    //   }) // 取出body
-    //   .then(response => response.body)
-    //   .then(body => {
-    //     const reader = body.getReader();
-    //     return new ReadableStream({
-    //       start(controller) {
-    //         return pump();
-    //         function pump() {
-    //           return reader
-    //             .read()
-    //             .then(res => {
-    //               // res  ({ done, value })
-    //               // 读不到更多数据就关闭流
-    //               // console.log(res,'res');
-    //               const { done, value } = res;
-    //               if (done) {
-    //                 // console.log('end')
-    //                 controller.close();
-    //                 return;
-    //               }
-    //               size += value.length || 0;
-    //               // console.log(size,"size")
-    //               // 将下一个数据块置入流中
-    //               controller.enqueue(value);
-    //               return pump();
-    //             })
-    //             .catch(e => message.error(e.message));
-    //         }
-    //       },
-    //     });
-    //   })
-    //   .then(stream => new Response(stream))
-    //   .then(response => savingFile(response, fileName))
-    //   .catch(err => message.error(err.message));
+  function batchExportInvent(invitationIds) {
+    const fileName = '导出邀约信息.xlsx';
+    let size = 0;
+    fetch(`/data/${intent}/list/all`, {
+      method: 'POST',
+      body: JSON.stringify({ invitationIds, pageNum: 1, pageSize: 500, orderBy: { applyDate: 'DESC' } }),
+      headers: {
+        Accept: 'application/vnd.ms-excel',
+        'Content-Type': 'application/json',
+      },
+    })
+      .then(response => {
+        if (response.status >= 200 && response.status < 300) {
+          return response;
+        }
+        message.error(`请求错误 ${response.status}: 导出邀约信息时发生错误！`);
+        const errortext = codeMessage[response.status] || response.statusText;
+        const error = new Error(errortext);
+        error.name = response.status;
+        error.response = response;
+        throw error;
+      }) // 取出body
+      .then(response => response.body)
+      .then(body => {
+        const reader = body.getReader();
+        return new ReadableStream({
+          start(controller) {
+            return pump();
+            function pump() {
+              return reader
+                .read()
+                .then(res => {
+                  // res  ({ done, value })
+                  // 读不到更多数据就关闭流
+                  const { done, value } = res;
+                  if (done) {
+                    controller.close();
+                    return;
+                  }
+                  size += value.length || 0;
+                  // 将下一个数据块置入流中
+                  controller.enqueue(value);
+                  return pump();
+                })
+                .catch(e => message.error(e.message));
+            }
+          },
+        });
+      })
+      .then(stream => new Response(stream))
+      .then(response => savingFile(response, fileName))
+      .catch(err => message.error(err.message));
   }
 
   function onExportChange() {}

@@ -8,12 +8,11 @@ import DateFormat from '@/components/DateFormat';
 import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
-import { addBatch,batchRelated,batchCancel } from '@/services/nameList';
+import { addBatch,batchRelated,batchCancel,batchDelete } from '@/services/nameList';
 
 
 function Index({ dispatch, location, namelist }) {
   const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest } = namelist;
-  console.log('batchllist===>', batchList);
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -41,9 +40,10 @@ function Index({ dispatch, location, namelist }) {
         })
           .then(() => {
             message.success('删除成功!');
-            dispatch({
-              type: 'picture/reload',
-            });
+            // dispatch({
+            //   type: 'getBatchDetail',
+            //   payload: queryString.parse(search),
+            // });
           })
           .catch(e => {
             message.warn(e.message);
@@ -72,7 +72,6 @@ function Index({ dispatch, location, namelist }) {
   );
 
   const onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed:===> ', selectedRowKeys);
     setSelectedRowKeys({ selectedRowKeys });
   };
 
@@ -97,6 +96,7 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {batchRequest:{...batchRequest,pageNum:batchCur-1 }},
       });
+      setSelectedRowKeys({ selectedRowKeys:[] });
     },
     next: () => {
       dispatch({
@@ -107,6 +107,7 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {batchRequest:{...batchRequest,pageNum:batchCur+1 }},
       });
+      setSelectedRowKeys({ selectedRowKeys:[] });
     },
     onSizeChange: pageSize => {
       dispatch({
@@ -117,11 +118,11 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {batchRequest:{...batchRequest,pageSize }},
       });
+      setSelectedRowKeys({ selectedRowKeys:[] });
     },
     showNext: batchList && batchList.length < batchPageSize,
     // sortedInfo,
     onChange: (start, length) => {
-      console.log('start==>修改页码选择==》', start, length);
       dispatch({
         type: 'namelist/getBatch',
         payload: {pageSize: length, pageNum: start || 1},
@@ -159,14 +160,51 @@ function Index({ dispatch, location, namelist }) {
     rowSelection: {
       selectedRowKeys,
       onChange: (selectedRowKeys, selectedRows) => {
-        console.log('selectedRowKeys changed:===> ', selectedRowKeys);
         setSelectedRowKeys(selectedRowKeys);
         // this.setState({ , selectedRows });
       },
     },
     importMenu,
-    handleDelete: (selectedRowKeys) => {
-      console.log('====>111',selectedRowKeys)
+    handleDelete: (ids) => {
+      Modal.confirm({
+        title: '删除',
+        content: (
+          <div>
+            <p>你确定要批量删除这些数据吗？</p>
+          </div>
+        ),
+        onOk: () => {
+          let selectArr=[];
+          let selectObj = {};
+          ids.forEach(id => {
+            const selectObj = batchList.find(item => item.id === id);
+            selectArr.push(selectObj);
+          });
+          selectArr.forEach(item => {
+            if(Object.keys(selectObj).includes(item.intent)){
+              selectObj[item.intent].push(item.id)
+            }else{
+              selectObj[item.intent] = [item.id]
+            }
+          })
+          let questAll = [];
+          for (let item in selectObj) {
+            questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
+          }
+          Promise.all(questAll).then((result) => {
+            message.success('删除成功！');
+            dispatch({
+              type: 'namelist/getBatch',
+              payload: {},
+            });  
+            setSelectedRowKeys([]);  
+          }).catch((error) => {
+            message.error('删除失败！');
+          })
+        },
+        okText: '确认',
+        cancelText: '取消',
+      });
     },
   };
  
@@ -189,7 +227,6 @@ function Index({ dispatch, location, namelist }) {
       <CategoryQueryForm
         value={query}
         onSubmit={data => {
-          console.log('data===>', data); 
           dispatch({
             type: 'namelist/save',
             payload: {taskQueryValue:data},
@@ -198,15 +235,6 @@ function Index({ dispatch, location, namelist }) {
             type: 'namelist/getBatch',
             payload: data,
           });
-          // dispatch(
-          //   routerRedux.push({
-          //     // pathname: location.pathname,
-          //     search: queryString.stringify({
-          //       ...query,
-          //       ...data,
-          //     }),
-          //   })
-          // );
         }}
       />
       {renderTable(setting)}
@@ -216,14 +244,7 @@ function Index({ dispatch, location, namelist }) {
           setValue(null);
         }}
         onSubmit={data => {
-          // console.log('data===>',data);
-          //  dispatch({
-          //   type: 'namelist/addBatchname',
-          //   payload: data,
-          // })  
-          // message.success(data.id ? '修改成功' : '新增成功');
           const {triggerTime,...rest } = data;
-          // {triggerTime: triggerTime.format('YYYY-MM-DD HH:mm'),...rest}
           addBatch(data)
           .then(body => {
             message.success('新增任务成功');
