@@ -60,8 +60,8 @@ export async function getBatch(body) {
 
 // 上传
 export async function upload({formData, params}) {
-  const { intent, triggerTime, scene} = params;
-  return request(`/${intent}/excel?${stringify({triggerTime,scene})}`, {
+  const { intent, scene} = params;
+  return request(`/${intent}/excel?${stringify({intent,scene})}`, {
     method: 'POST',
     body: formData,
   });
@@ -138,3 +138,28 @@ export async function batchAdd(body) {
   });
 }
 
+// 批次批量删除
+export async function batchDelete(body) {
+  const { intent } = body;
+  return request(`/batch/${intent}`, {
+    method: 'DELETE',
+    body,
+  });
+}
+
+// 名单批量删除
+export async function nameBatchDelete(body) {
+  const { intent } = body;
+  return request(`/${intent}/batch`, {
+    method: 'DELETE',
+    body,
+  });
+}
+
+// // 单个名字的详情查询
+// export async function SignelQuery(body) {
+//   const { intent,detailId } = body;
+//   return request(`/${intent}/${detailId}`, {
+//     method: 'GET',
+//   });
+// }

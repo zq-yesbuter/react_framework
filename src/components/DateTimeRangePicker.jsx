@@ -8,10 +8,11 @@ class DateRangePicker extends PureComponent {
   static defaultProps = {
     names: ['begin_date', 'end_date'],
     options: [],
-    format: 'x',
+    format: 'YYYY-MM-DD HH:mm:ss',
   };
 
   render() {
+    // eslint-disable-next-line react/destructuring-assignment
     const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
     const { names: [name1, name2], format, options, ...restProps } = this.props;
     getFieldDecorator(name1, options[0] || {});

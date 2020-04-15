@@ -29,6 +29,8 @@ const renderTable = ({
   showNext,
   onSizeChange,
   handleDelete,
+  hasImport,
+  exportFunction,
 }) => {
   const pagination = {
     defaultCurrent,
@@ -60,7 +62,8 @@ const renderTable = ({
           placement="bottomCenter"
           disabled={!hasSelected}
         > */}
-        <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} size='middle'>删除</Button>
+        <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>删除</Button>
+        {hasImport ? <Button disabled={!hasSelected} onClick={() => exportFunction(selectedRowKeys)} style={{marginLeft:10}}>导出邀约信息</Button> : null}
         {/* </Dropdown> */}
         <span style={{ marginLeft: 8 }}>
           {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}

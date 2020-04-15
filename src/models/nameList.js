@@ -82,7 +82,6 @@ export default {
       const {data:nameList} = response;
       const nameCur = response && response.curPage;
       const namePageSize = response && response.pageSize;
-      console.log('nameLis===>',nameList);
       yield put({
         type: 'formatNameList',
         payload: {
@@ -137,6 +136,17 @@ export default {
         },
       });
     },
+    *getConfigValue({ payload }, { call, put, select }) {
+      const response = yield call(getBatch, payload);
+      const { data } = response;
+      // console.log('configValue====>', configValue);
+      yield put({
+        type: 'save',
+        payload: {
+          configValue:data[0],
+        },
+      });
+    },
   },
   reducers: {
     save(state, { payload }) {
@@ -168,7 +178,6 @@ export default {
     },
     getFlowList(state, { payload }) {
       const { flowList } = payload;
-      console.log('flowList====>',flowList)
       // let { timeList, selectJobId } = state;
       // if (payload && payload.selectJobId) {
       //   selectJobId = payload.selectJobId;
@@ -192,12 +201,11 @@ export default {
       //     }
       //     if (!item.notifyMessage) {
       //       item.notifyMessage = [];
-      //     }
+      //     }s
       //     return [...item.flow, ...item.notifyMessage];
       //   });
       const flatFlowList = [...flowList.flow, ...flowList.notifyMessage];
-      console.log('flatFlowList===>',flatFlowList);
-      return { ...state, flowList:flatFlowList };
+      return { ...state, flowList:flatFlowList,listValue: flowList };
     },
   },
   subscriptions: {
@@ -207,15 +215,13 @@ export default {
         const matchRecord = /^\/AI\/outging\/record/.exec(pathname);
         const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
         const mainMatch = /^\/AI\/outging$/.exec(pathname);
+        
         // 名单列表
         if (match) {
           // 新的获取名单列表
           dispatch({
             type: 'getBatchDetail',
             payload: queryString.parse(search),
-          });
-          dispatch({
-            type: 'getIvrIntents',
           });
         // 消息记录
         } else if (matchRecord) {
@@ -228,11 +234,17 @@ export default {
             type: 'getSigleFlowlist',
             payload: {id:group,intent},
           });
+
         // 配置页面
         }else if(matchConfig) {
           dispatch({
-            type: 'getIvrIntents',
+            type: 'configNameList',
+            payload: queryString.parse(search),
           });
+          dispatch({
+            type: 'getConfigValue',
+            payload: queryString.parse(search),
+          }); 
         // 任务页面
         }else if(mainMatch) {
           dispatch({
