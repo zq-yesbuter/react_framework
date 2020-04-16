@@ -3,18 +3,12 @@ import { Form, Button, DatePicker, Select, Input } from 'antd';
 import { connect } from 'dva';
 import mapValueToFields from '../../../utils/mapValueToFields';
 import TrimInput from '../../../components/TrimInput';
-// import { statusOptions } from '../contant';
+import { statusOptions } from '../contant';
 import DateTimeRangePicker from '@/components/DateTimeRangePicker';
 
 const { Option } = Select;
 const FormItem = Form.Item;
 const createForm = Form.create;
-const statusOptions = [
-  {value:'1',name:'已申请'},
-  {value:'2',name:'已完成'},
-  {value:'3',name:'已拒绝'},
-  {value:'4',name:'已接受'},
-]
 
 function QueryForm({ form, formatResult, onSubmit }) {
   const handleSubmit = e => {

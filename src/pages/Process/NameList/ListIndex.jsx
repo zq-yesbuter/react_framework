@@ -67,7 +67,8 @@ const savingFile = (response, fileName) => {
   });
 };
 function Index({ dispatch, location, namelist }) {
-  const { nameList, ivrIntents, nameCur, namePageSize, nameRequest } = namelist;
+  const { nameList, ivrIntents, nameCur, namePageSize, nameRequest, batchDetail, deleteNameList } = namelist;
+  const { status } = batchDetail;
   const { search } = window.location;
   const {id,intent}=queryString.parse(search);
   const [value, setValue] = useState(null);
@@ -81,35 +82,6 @@ function Index({ dispatch, location, namelist }) {
       });
     };
   }, []);
-
-  const handleRemoveConfirm = value => {
-    const { id } = value;
-    Modal.confirm({
-      title: '删除',
-      content: (
-        <div>
-          <p>你确定要删除该条吗</p>
-        </div>
-      ),
-      onOk: () => {
-        dispatch({
-          type: 'picture/removeCategory',
-          payload: { id },
-        })
-          .then(() => {
-            message.success('删除成功!');
-            dispatch({
-              type: 'picture/reload',
-            });
-          })
-          .catch(e => {
-            message.warn(e.message);
-          });
-      },
-      okText: '确认',
-      cancelText: '取消',
-    });
-  };
 
   const query = {}; //  queryString.parse(location.search);
 
@@ -177,6 +149,7 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {nameRequest:{...nameRequest,pageNum:nameCur-1 }},
       });
+      setSelectedRowKeys([]);
     },
     next: () => {
       dispatch({
@@ -187,6 +160,7 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {nameRequestt:{...nameRequest,pageNum:nameCur+1 }},
       });
+      setSelectedRowKeys([]);
     },
     onSizeChange: pageSize => {
       dispatch({
@@ -197,6 +171,7 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {nameRequest:{...nameRequest,pageSize }},
       });
+      setSelectedRowKeys([]);
     },
     rowKey: 'invitationId',
     rowSelection: {
@@ -208,30 +183,106 @@ function Index({ dispatch, location, namelist }) {
     },
     importMenu,
     hasImport: true,
-    exportFunction: (ids) => {
-      Modal.confirm({
-        title: '导出名单',
-        content: (
-          <div>
-            <p>确认导出名单这些数据吗？</p>
-          </div>
-        ),
-        onOk: () => {
-          batchExportInvent(ids);
-        },
-        okText: '确认',
-        cancelText: '取消',
-      });
+    formatOperation: (selectedRowKeys,hasSelected) => {
+      return (
+        <div style={{marginTop:10}}>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>删除</Button>
+          <Button disabled={!hasSelected || status === 3 || status === 4} onClick={() => exportFunction(selectedRowKeys)} style={{marginLeft:10}}>导出邀约信息</Button>
+          <span style={{ marginLeft: 8 }}>
+            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
+          </span>
+        </div>
+      )
     },
-    handleDelete: (updateIds) => {
-      Modal.confirm({
-        title: '删除',
-        content: (
-          <div>
-            <p>你确定要批量删除这些数据吗？</p>
-          </div>
-        ),
-        onOk: () => {
+  };
+  function exportFunction(ids){
+    Modal.confirm({
+      title: '导出名单',
+      content: (
+        <div>
+          <p>确认导出名单这些数据吗？</p>
+        </div>
+      ),
+      onOk: () => {
+        batchExportInvent(ids);
+      },
+      okText: '确认',
+      cancelText: '取消',
+    });
+  };
+
+  function handleDelete(updateIds){
+    Modal.confirm({
+      title: '删除',
+      content: (
+        <div>
+          <p>你确定要批量删除这些数据吗？</p>
+        </div>
+      ),
+      onOk: () => {
+        if(status === 1){
+          if(updateIds.length >= namePageSize){
+            dispatch({
+              type: 'namelist/deleteMore',
+              payload: {namePageSize,pageNum:nameCur+1 },
+            }).then(response => {
+              const {data:deleteNameList} = response;
+              if(deleteNameList.length){
+                nameBatchDelete({ intent, updateIds }).then(() => {
+                  dispatch({
+                    type: 'namelist/fetchBatchDetail',
+                    payload: { id, intent },
+                  });
+                })
+                .catch(e => {
+                  message.error(e.message);
+                });
+              }else{
+                Modal.confirm({
+                  title: '你处于待外呼状态，删除所有名单就会清除任务！',
+                  content: '你确定要批量删除这些数据吗？',
+                  onOk() {
+                    nameBatchDelete({ intent, updateIds }).then(() => {
+                      dispatch({
+                        type: 'namelist/fetchBatchDetail',
+                        payload: { id, intent },
+                      });
+                    })
+                    .catch(e => {
+                      message.error(e.message);
+                    });
+                  },
+                  onCancel() {
+                    console.log('Cancel');
+                  },
+                  okText: '确认',
+                  cancelText: '取消',
+                });
+              }
+            })
+          }else{
+            Modal.confirm({
+              title: '你处于待外呼状态，删除所有名单就会清除任务！',
+              content: '你确定要批量删除这些数据吗？',
+              onOk() {
+                nameBatchDelete({ intent, updateIds }).then(() => {
+                  dispatch({
+                    type: 'namelist/fetchBatchDetail',
+                    payload: { id, intent },
+                  });
+                })
+                .catch(e => {
+                  message.error(e.message);
+                });
+              },
+              onCancel() {
+                console.log('Cancel');
+              },
+              okText: '确认',
+              cancelText: '取消',
+            });
+          }
+        }else{
           nameBatchDelete({ intent, updateIds }).then(() => {
             dispatch({
               type: 'namelist/fetchBatchDetail',
@@ -241,12 +292,13 @@ function Index({ dispatch, location, namelist }) {
           .catch(e => {
             message.error(e.message);
           });
-        },
-        okText: '确认',
-        cancelText: '取消',
-      });
-    },
+        }       
+      },
+      okText: '确认',
+      cancelText: '取消',
+    });
   };
+
   // 筛选条件
   function onSubmit(values) {
     dispatch({
@@ -256,7 +308,7 @@ function Index({ dispatch, location, namelist }) {
     dispatch({
       type: 'namelist/save',
       payload: {nameRequest:values},
-    }); 
+    });
   }
 
   function batchExportInvent(invitationIds) {
@@ -344,6 +396,7 @@ function Index({ dispatch, location, namelist }) {
           onClick={() => {
             setValue({});
           }}
+          disabled={status === 3 || status === 4}
         >
           导入
         </Button>

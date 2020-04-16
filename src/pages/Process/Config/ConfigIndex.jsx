@@ -49,17 +49,6 @@ const tailLayout = {
     span: 16,
   },
 };
-// const tailLayout = {
-//   wrapperCol: { offset: 8, span: 20 },
-// };
-const formatSelectedKeys = (selectedKeys = [], jobList) => {
-  let arr = [];
-  selectedKeys.forEach(val => {
-    const arrItem = jobList.find(item => item.applyId === val);
-    arr.push(arrItem);
-  });
-  return arr;
-};
 
 function Index({
   dispatch,
@@ -71,7 +60,7 @@ function Index({
   const batchName = decodeURI(search.slice(1));
   const [diffTimeList, setDiffTimeList] = useState([]);
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
-  const [ repeat, setRepeat ] = useState(true);
+  const [ repeat, setRepeat ] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -126,11 +115,24 @@ function Index({
     });
   }
   function cancel() {
-    const { intent, id } = configValue;
+    const { intent, id, status} = configValue;
+    if (configNameList && !configNameList.length) {
+      message.warn('没有名单无法取消，请先导入名单！');
+      dispatch(
+        routerRedux.push({
+          pathname: `/AI/outging/namelist`,
+          search: queryString.stringify({
+            id,
+            intent,
+          }),
+        })
+      );
+      return;
+    }
     batchCancel({ intent, id })
       .then(body => {
         message.success('取消任务成功');
-        resetFields();
+        setFieldsValue({triggerTime:null});
       })
       .catch(e => {
         message.error('取消任务失败');
@@ -165,61 +167,62 @@ function Index({
   function formatRepeat(repeat) {
     if (repeat) {
       return (
-        <div className={styles['inline-select']}>
-          {getFieldDecorator('retry', {
+        <div>
+          {getFieldDecorator(`retry['reasons']`, {
             rules: [
               {
                 required: true,
-                message: '重复外呼类型必填！',
+                message: '请添加！',
               },
             ],
-            initialValue: true,
           })(
-            <Select>
-              <Option value={true} key={true}>默认配置</Option>
+            <Select mode="tags" placeholder="输入并按enter键添加" style={{width:200,marginRight:8}}>
+              <Option value="无人接听" key="无人接听">无人接听</Option>
             </Select>
           )}
-          <Checkbox checked={repeat} onChange={repeatChange}>选择重复外呼默认配置</Checkbox>
+          {getFieldDecorator(`retry['delay']`, {
+            rules: [
+              {
+                required: true,
+                message: '请添加！',
+              },
+            ],
+          })(
+            <Select style={{width:200,marginRight:10}}>
+              <Option value={10} key={10}>10分钟</Option>
+              <Option value={20} key={20}>20分钟</Option>
+              <Option value={30} key={30}>30分钟</Option>
+              <Option value={50} key={40}>40分钟</Option>
+              <Option value={60} key={60}>60分钟</Option>
+            </Select>
+          )}
+          <Checkbox checked={repeat} onChange={repeatChange}>是否重复外呼</Checkbox>
         </div>
       );
     }
     return (
-      <div className={styles['inline-select']}>
-        {getFieldDecorator(`retry['reasons']`, {
+      <div>
+        {getFieldDecorator('retry', {
           rules: [
             {
               required: true,
-              message: '请添加！',
+              message: '重复外呼类型必填！',
             },
           ],
+          initialValue: false,
         })(
-          <Select mode="tags" placeholder="输入添加">
-            <Option value="无人接听" key="无人接听">无人接听</Option>
+          <Select style={{width:200,marginRight:10}}>
+            <Option value={false} key={true}>无需重复外呼</Option>
           </Select>
         )}
-        {getFieldDecorator(`retry['delay']`, {
-          rules: [
-            {
-              required: true,
-              message: '请添加！',
-            },
-          ],
-        })(
-          <Select>
-            <Option value={10} key={10}>10分钟</Option>
-            <Option value={20} key={20}>20分钟</Option>
-            <Option value={30} key={30}>30分钟</Option>
-            <Option value={50} key={40}>40分钟</Option>
-            <Option value={60} key={60}>60分钟</Option>
-          </Select>
-        )}
-        <Checkbox checked={repeat} onChange={repeatChange}>选择重复外呼默认配置</Checkbox>
+        <Checkbox checked={repeat} onChange={repeatChange}>是否重复外呼</Checkbox>
       </div>
-    );
-    
+    );    
   }
 
   const selectIntent = getFieldValue('intent');
+  const { status} = configValue;
+  const triggerDisabled = (status === 3 || status === 4);
   return (
     <Card
       bordered={false}
@@ -235,7 +238,6 @@ function Index({
             onClick={e => {
               e.preventDefault();
               dispatch(routerRedux.goBack());
-              // dispatch(routerRedux.push('/statistics/insight/hotspotInsight'));
             }}
           >
             返回上一级
@@ -257,13 +259,7 @@ function Index({
         </Item>
         <Item label="外呼名单" required>
           <div style={{ marginLeft: 10 }}>
-            {configNameList.length
-              ? configNameList.map((item, index) => (
-                  <Tag color="blue" key={index}>
-                    {(item && item.name) || null}
-                  </Tag>
-                ))
-              : null}
+            {configNameList ? `共${configNameList.length}人` : null}
           </div>
         </Item>
         <Item label="外呼类型">
@@ -340,16 +336,18 @@ function Index({
             type="primary"
             // className="test-input-search"
             onClick={() => handleOk()}
+            disabled={triggerDisabled}
           >
-            提交任务
+            {status > 1 ? '更新任务' : '提交任务'}
           </Button>
-          {configValue && configValue.id && (
+          {status > 0 && (
             <Button
               style={{ marginLeft: '10px' }}
               className="test-input-search"
               onClick={e => {
                 cancel();
               }}
+              disabled={triggerDisabled}
             >
               取消任务
             </Button>

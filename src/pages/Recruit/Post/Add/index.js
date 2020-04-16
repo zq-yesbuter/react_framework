@@ -1,14 +1,12 @@
 import React, { Component } from 'react';
 import { routerRedux, Route, Switch, Redirect, Link } from 'dva/router';
-import { connect } from 'dva';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import ListIndex from './ListIndex';
-import NotFound from '../../404';
+import ConfigIndex from './Add';
 
-function Index({ match, routerData, location, dispatch }) {
+function Index() {
   return (
     <PageHeaderWrapper>
-      <ListIndex />
+      <ConfigIndex />
     </PageHeaderWrapper>
   );
 }

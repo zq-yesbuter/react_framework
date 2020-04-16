@@ -74,11 +74,6 @@ function Index({ dispatch, location, namelist }) {
   const onSelectChange = selectedRowKeys => {
     setSelectedRowKeys({ selectedRowKeys });
   };
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
   const setting = {
     data: batchList,
     total:  batchList && batchList.length, // < batchCur*batchPageSize ? batchList.length : batchCur*batchPageSize + 1,
@@ -96,7 +91,7 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {batchRequest:{...batchRequest,pageNum:batchCur-1 }},
       });
-      setSelectedRowKeys({ selectedRowKeys:[] });
+      setSelectedRowKeys([]);
     },
     next: () => {
       dispatch({
@@ -107,7 +102,7 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {batchRequest:{...batchRequest,pageNum:batchCur+1 }},
       });
-      setSelectedRowKeys({ selectedRowKeys:[] });
+      setSelectedRowKeys([]);
     },
     onSizeChange: pageSize => {
       dispatch({
@@ -118,7 +113,7 @@ function Index({ dispatch, location, namelist }) {
         type: 'namelist/save',
         payload: {batchRequest:{...batchRequest,pageSize }},
       });
-      setSelectedRowKeys({ selectedRowKeys:[] });
+      setSelectedRowKeys([]);
     },
     showNext: batchList && batchList.length < batchPageSize,
     // sortedInfo,
@@ -163,51 +158,65 @@ function Index({ dispatch, location, namelist }) {
         setSelectedRowKeys(selectedRowKeys);
         // this.setState({ , selectedRows });
       },
+      getCheckboxProps: ({status}) => ({
+        disabled: (status===3 ||status===4),
+      }),
     },
     importMenu,
-    handleDelete: (ids) => {
-      Modal.confirm({
-        title: '删除',
-        content: (
-          <div>
-            <p>你确定要批量删除这些数据吗？</p>
-          </div>
-        ),
-        onOk: () => {
-          let selectArr=[];
-          let selectObj = {};
-          ids.forEach(id => {
-            const selectObj = batchList.find(item => item.id === id);
-            selectArr.push(selectObj);
-          });
-          selectArr.forEach(item => {
-            if(Object.keys(selectObj).includes(item.intent)){
-              selectObj[item.intent].push(item.id)
-            }else{
-              selectObj[item.intent] = [item.id]
-            }
-          })
-          let questAll = [];
-          for (let item in selectObj) {
-            questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
-          }
-          Promise.all(questAll).then((result) => {
-            message.success('删除成功！');
-            dispatch({
-              type: 'namelist/getBatch',
-              payload: {},
-            });  
-            setSelectedRowKeys([]);  
-          }).catch((error) => {
-            message.error('删除失败！');
-          })
-        },
-        okText: '确认',
-        cancelText: '取消',
-      });
+    formatOperation: (selectedRowKeys,hasSelected) => {
+      return (
+        <div style={{marginTop:10}}>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>删除</Button>
+          <span style={{ marginLeft: 8 }}>
+            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
+          </span>
+        </div>
+      )
     },
   };
- 
+
+  function  handleDelete(ids){
+    Modal.confirm({
+      title: '删除',
+      content: (
+        <div>
+          <p>你确定要批量删除这些数据吗？</p>
+        </div>
+      ),
+      onOk: () => {
+        let selectArr=[];
+        let selectObj = {};
+        ids.forEach(id => {
+          const selectObj = batchList.find(item => item.id === id);
+          selectArr.push(selectObj);
+        });
+        selectArr.forEach(item => {
+          if(Object.keys(selectObj).includes(item.intent)){
+            selectObj[item.intent].push(item.id)
+          }else{
+            selectObj[item.intent] = [item.id]
+          }
+        })
+        let questAll = [];
+        for (let item in selectObj) {
+          questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
+        }
+        Promise.all(questAll).then((result) => {
+          message.success('删除成功！');
+          dispatch({
+            type: 'namelist/getBatch',
+            payload: {},
+          });  
+          setSelectedRowKeys([]);  
+        }).catch((error) => {
+          message.error('删除失败！');
+        })
+      },
+      okText: '确认',
+      cancelText: '取消',
+    });
+  };
+
   return (
     <Card
       bordered={false}

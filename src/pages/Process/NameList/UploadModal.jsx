@@ -79,16 +79,26 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
         const { scene } = ivrIntents && ivrIntents.length && ivrIntents.find(item => item.intent === intent) || {};
         const params = { intent, scene};
         upload({ formData, params })
-          .then(({success}) => {
+          .then(({success,successCount,errorCount,errorMessages}) => {
             let invitations=[];
             invitations=success.map(item => item.invitationId) || [];
             const { search } = window.location;
             // const batchName = decodeURI(search.slice(1));
             const {id,intent}=queryString.parse(search);
             if(invitations.length){
-               batchRelated({id,intent,invitations}) 
+               batchRelated({id,intent,invitations,scene}) 
               .then(body => {
-                message.success('外呼文件导入成功并且设置成功');
+                Modal.info({
+                  title: '导入名单信息',
+                  content: (
+                    <div>
+                      <p>{`导入成功${successCount}人`}</p>
+                      {errorCount ? <p>{`导入失败${errorCount}人`}</p> : null}
+                    </div>
+                  ),
+                  onOk() {},
+                });
+                // message.success('外呼文件导入成功并且设置成功');
                 dispatch({
                   type: 'namelist/fetchBatchDetail',
                   payload: {id,intent},

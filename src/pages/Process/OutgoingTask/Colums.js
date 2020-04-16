@@ -19,15 +19,16 @@ const renderColumns = (dispatch,ivrIntents) => {
       dataIndex: 'intent',
       render:  intent => formatTaskType(ivrIntents,'intent',intent,'intentDesc'),
     },
+    {
+      title: '外呼名单',
+      key: 'expectedCount',
+      dataIndex: 'expectedCount',
+      render: expectedCount => (`${expectedCount}人`),
+    },
     // {
     //   title: '外呼流程',
     //   key: 'terminalType',
     //   dataIndex: 'terminalType',
-    // },
-    // {
-    //   title: '外呼名单',
-    //   key: 'entity',
-    //   dataIndex: 'entity',
     // },
     // {
     //   title: '外呼号段',
@@ -69,27 +70,28 @@ const renderColumns = (dispatch,ivrIntents) => {
       dataIndex: 'id',
       width: 150,
       render: (id, value) => {
-        const { name, intent} = value || {};
+        const { name, intent,status} = value || {};
         return (
           <Fragment>
-            <a
-              onClick={() => {
-                dispatch({
-                  type: 'namelist/configNameList',
-                  payload: {id,intent},
-                });
-                dispatch(routerRedux.push({
-                  pathname: '/AI/outging/config',
-                  search: queryString.stringify({
-                    intent,
-                    id,
-                  }),
-                }))
-              }}
-            >
-              配置
-            </a>
-            <Divider type="vertical" />
+            {status > 0 ? (
+              <Fragment>
+                <a
+                  onClick={() => {
+                    dispatch(routerRedux.push({
+                      pathname: '/AI/outging/config',
+                      search: queryString.stringify({
+                        intent,
+                        id,
+                      }),
+                    }))
+                  }}
+                >
+                  配置
+                </a>
+                <Divider type="vertical" />
+              </Fragment>
+            ):null
+            }    
             <a onClick={
               () =>  {
                 if(id){

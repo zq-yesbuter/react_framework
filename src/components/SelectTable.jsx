@@ -31,6 +31,7 @@ const renderTable = ({
   handleDelete,
   hasImport,
   exportFunction,
+  formatOperation,
 }) => {
   const pagination = {
     defaultCurrent,
@@ -47,7 +48,6 @@ const renderTable = ({
       // onChange((current - 1) * pageSize, pageSize, sortedInfo);
     },
     showTotal: (total, range) => {
-      console.log('展示数据==》',range,total);
       // return `展示第${range[0]}至${range[1]}条数据，共${total}条数据`;
     },
     current,
@@ -55,20 +55,7 @@ const renderTable = ({
   const hasSelected = selectedRowKeys.length > 0;
   return (
     <Fragment>
-      <div style={{marginTop:10}}>
-        {/* <Dropdown
-          overlay={importMenu}
-          trigger={['hover']}
-          placement="bottomCenter"
-          disabled={!hasSelected}
-        > */}
-        <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>删除</Button>
-        {hasImport ? <Button disabled={!hasSelected} onClick={() => exportFunction(selectedRowKeys)} style={{marginLeft:10}}>导出邀约信息</Button> : null}
-        {/* </Dropdown> */}
-        <span style={{ marginLeft: 8 }}>
-          {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
-        </span>
-      </div>
+      {formatOperation(selectedRowKeys,hasSelected)}
       <Table
         style={{ marginTop: 15 }}
         size="small"

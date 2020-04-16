@@ -16,11 +16,7 @@ import {
 import { connect } from 'dva';
 import moment from 'moment';
 import queryString from 'query-string';
-import {
-  editSignel,
-  addSignel,
-  cancelSignel,
-} from '@/services/nameList';
+import { editSignel, addSignel, cancelSignel } from '@/services/nameList';
 import { flatten } from '@/utils/utils';
 import styles from './index.less';
 
@@ -60,8 +56,26 @@ function SingleSet({
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const { applyId, status } = listValue || {};
   const { search } = window.location;
-  const {group:invitationId,intent}=queryString.parse(search);
-  
+  const { group: invitationId, intent } = queryString.parse(search);
+
+  // const disabled = status === '3' || status === 3 || status === 4 || status === '4';
+  const sureDisabled =
+    status === -1 ||
+    status === 0 ||
+    status === '-1' ||
+    status === '0' ||
+    status === '3' ||
+    status === 3 ||
+    status === 4 ||
+    status === '4';
+  const showallTime =
+    status === '3' ||
+    status === 3 ||
+    status === 4 ||
+    status === '4' ||
+    status === 1 ||
+    status === '1';
+  const cancelDisabled = !(status === 1 || status === '1');
   function disabledDate(current) {
     // Can not select days before today and today
     return current && current < moment().subtract(1, 'days');
@@ -98,8 +112,10 @@ function SingleSet({
           <Fragment>
             {getFieldDecorator('triggerTime', {
               initialValue:
-                status !== 11 && Object.keys(listValue).length
-                  ? (listValue.triggerTime ? moment(listValue.triggerTime) : null)
+              showallTime && Object.keys(listValue).length
+                  ? listValue.triggerTime
+                    ? moment(listValue.triggerTime) || null
+                    : null
                   : null,
             })(
               <DatePicker
@@ -117,9 +133,11 @@ function SingleSet({
           <Fragment>
             {getFieldDecorator('triggerTime', {
               initialValue:
-              status !== 11 && Object.keys(listValue).length
-              ? (listValue.triggerTime ? moment(listValue.triggerTime) : null)
-              : null,
+              showallTime && Object.keys(listValue).length
+                  ? listValue.triggerTime
+                    ? moment(listValue.triggerTime) || null
+                    : null
+                  : null,
             })(
               <DatePicker
                 showTime={{ format: 'HH:mm', minuteStep: 5 }}
@@ -145,9 +163,11 @@ function SingleSet({
             )} */}
             {getFieldDecorator('startTime', {
               initialValue:
-              status !== 11 && Object.keys(listValue).length
-                ? (listValue.time ? moment(listValue.time) : null)
-                : null,
+              showallTime && Object.keys(listValue).length
+                  ? listValue.time
+                    ? moment(listValue.time)
+                    : null
+                  : null,
             })(
               <DatePicker
                 disabledDate={disabledDate}
@@ -165,7 +185,7 @@ function SingleSet({
           <Fragment>
             {getFieldDecorator('triggerTime', {
               initialValue:
-                status !== 11 && Object.keys(listValue).length
+              showallTime && Object.keys(listValue).length
                   ? moment(listValue.triggerTime) || null
                   : null,
             })(
@@ -195,8 +215,8 @@ function SingleSet({
           triggerTime: values.triggerTime.format(format),
           intent,
         };
-        if(intent === 'interview_invitation') {
-          payload.startTime=values.startTime
+        if (intent === 'interview_invitation') {
+          payload.startTime = values.startTime;
         }
         if (status === 1) {
           if (listValue && listValue.triggerTime) {
@@ -204,7 +224,7 @@ function SingleSet({
               message.error('当前时间和外呼时间差小于10分钟，无法更新！');
               return;
             }
-            if(intent === 'interview_invitation' ){
+            if (intent === 'interview_invitation') {
               if (values.startTime < moment().add(10, 'minutes')) {
                 message.error('当前时间和面试时间差小于10分钟，无法更新！');
                 return;
@@ -218,9 +238,11 @@ function SingleSet({
             })
             .catch(e => message.error(e.message));
         }
-        addSignel(payload).then(data => {
-          message.success('新增邀约成功');
-        }).catch(e => message.error(e.message));
+        addSignel(payload)
+          .then(data => {
+            message.success('新增邀约成功');
+          })
+          .catch(e => message.error(e.message));
       }
     });
   }
@@ -232,34 +254,32 @@ function SingleSet({
         return;
       }
     }
- 
-    cancelSignel({ intent, updateId:invitationId })
+
+    cancelSignel({ intent, updateId: invitationId })
       .then(data => {
-          message.success('取消邀约成功!');
-          setFieldsValue({ triggerTime: null });
-          if(intent === 'interview_invitation') {
-            setFieldsValue({ startTime: null });
-          }
-        })
-        .catch(e => message.error(e.message));
+        message.success('取消邀约成功!');
+        setFieldsValue({ triggerTime: null });
+        if (intent === 'interview_invitation') {
+          setFieldsValue({ startTime: null });
+        }
+      })
+      .catch(e => message.error(e.message));
   }
- 
-  const disabled = !(status === 1 || status === 0 || status === '1' || status === '0');
   return (
     <div className={styles['gutter-box']}>
       <h3>外呼时间</h3>
       <div>
         {formatFieldItem(intent)}
-        <Button onClick={inventOnSubmit} disabled={disabled}>
+        <Button onClick={inventOnSubmit} disabled={sureDisabled}>
           更新
         </Button>
-        {!disabled ? (
+        {cancelDisabled ? (
           <Popconfirm
             title="外呼时间和面试时间均会被取消，确认要取消吗？"
             onConfirm={cancelInventConfirm}
             onCancel={quitCancel}
           >
-            <Button disabled={disabled} style={{ marginLeft: 20 }}>
+            <Button disabled={cancelDisabled} style={{ marginLeft: 20 }}>
               取消
             </Button>
           </Popconfirm>

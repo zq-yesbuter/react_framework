@@ -70,13 +70,20 @@ export default [
           //   path: '/AI/recruit',
           //   name: '微信招聘',
           //   icon: 'barcode',
-          //   redirect: '/AI/recruit/post',
+          //   // redirect: '/AI/recruit/post',
           //   routes: [
           //     {
           //       name: '岗位维护',
           //       path: '/AI/recruit/post',
           //       component: '../pages/Recruit/Post',
           //       icon: "profile",
+          //     },
+          //     {
+          //       name: '添加岗位',
+          //       hideInMenu: true,
+          //       path: '/AI/recruit/post/add',
+          //       component: '../pages/Recruit/Post/Add',
+          //       // icon: "profile",
           //     },
           //     {
           //       component: '../pages/404.jsx',

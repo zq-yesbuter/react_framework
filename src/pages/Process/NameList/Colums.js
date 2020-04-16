@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
 import { formatTaskType } from '@/utils/utils';
-import { statusOptions } from '../contant';
+import { nameStatus } from '../contant';
 
 const renderColumns = (dispatch,ivrIntents) => {
   const columns = [
@@ -55,7 +55,7 @@ const renderColumns = (dispatch,ivrIntents) => {
       title: '状态',
       key: 'status',
       dataIndex: 'status',
-      render:  status => formatTaskType(statusOptions,'value',status,'name'),
+      render:  status => formatTaskType(nameStatus,'value',status,'name'),
     },
     {
       title: '更新人',

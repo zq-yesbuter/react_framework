@@ -19,7 +19,7 @@ export default {
     flowList: [],
     phoneMessage: [],
     backShowTime: {},
-    batchRequest: {pageSize: 10, pageNum: 1},
+    batchRequest: {orderBy: { createdDate: 'DESC' },pageSize: 10, pageNum: 1}, 
     nameRequest: {pageSize: 10, pageNum: 1},
     ivrIntents: [],
     batchList: [],
@@ -32,6 +32,8 @@ export default {
     batchPageSize:10,
     nameCur:1,
     namePageSize:10,
+    batchDetail: {},
+    deleteNameList: [],
   },
   effects: {
     *getBatch({ payload }, { call, put, select }) {
@@ -98,7 +100,7 @@ export default {
       })
     },
     *configNameList({ payload }, { call, put, select }) {
-      const response = yield call(getBatchDetail, payload);
+      const response = yield call(getBatchDetail, {...payload,pageNum: 1,pageSize: 10000});
       const {data:nameList} = response;
       yield put({
         type: 'formatConfigNameList',
@@ -147,16 +149,24 @@ export default {
         },
       });
     },
+    *getBatchDetail({ payload }, { call, put, select }) {
+      const response = yield call(getBatch, payload);
+      const { data } = response;
+      // console.log('configValue====>', configValue);
+      yield put({
+        type: 'save',
+        payload: {
+          batchDetail:data[0],
+        },
+      });
+    },
+    *deleteMore({ payload }, { call, put, select }) {
+      return yield call(getBatchDetail, {...payload});
+    },
   },
   reducers: {
     save(state, { payload }) {
       return { ...state, ...payload };
-    },
-    addBatchname(state, { payload }) {
-      const { batchList } = state;
-      batchList.unshift(payload);
-      console.log('batchList===>',batchList);
-      return { ...state };
     },
     formatNameList(state, { payload }) {
       const { nameList } = payload;
@@ -220,11 +230,21 @@ export default {
         if (match) {
           // 新的获取名单列表
           dispatch({
+            type: 'fetchIvrIntents',
+          });
+          dispatch({
             type: 'fetchBatchDetail',
             payload: queryString.parse(search),
           });
+          dispatch({
+            type: 'getBatchDetail',
+            payload: queryString.parse(search),
+          }); 
         // 消息记录
         } else if (matchRecord) {
+          dispatch({
+            type: 'fetchIvrIntents',
+          });
           dispatch({
             type: 'getMessage',
             payload: queryString.parse(search),
@@ -233,14 +253,16 @@ export default {
           dispatch({
             type: 'getSigleFlowlist',
             payload: {id:group,intent},
-          });
-
+          }); 
         // 配置页面
         }else if(matchConfig) {
-          // dispatch({
-          //   type: 'configNameList',
-          //   payload: queryString.parse(search),
-          // });
+          dispatch({
+            type: 'fetchIvrIntents',
+          });
+          dispatch({
+            type: 'configNameList',
+            payload: queryString.parse(search),
+          });
           dispatch({
             type: 'getConfigValue',
             payload: queryString.parse(search),

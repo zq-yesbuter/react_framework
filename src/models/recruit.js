@@ -215,19 +215,19 @@ export default {
         // const matchRecord = /^\/AI\/outging\/record/.exec(pathname);
         // const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
         // const mainMatch = /^\/AI\/outging$/.exec(pathname);
-        
-        // 名单列表
-        // if (match) {
-        //   dispatch({
-        //     type: 'getIvrIntents',
-        //   });
-        //   // 新的获取名单列表
-        //   dispatch({
-        //     type: 'getBatchDetail',
-        //     payload: queryString.parse(search),
-        //   });
-        // // 消息记录
-        // } 
+        console.log('match====>',match);
+        // 岗位维护
+        if (match) {
+          dispatch({
+            type: 'getIvrIntents',
+          });
+          // 新的获取名单列表
+          dispatch({
+            type: 'getBatch',
+            payload: {},
+          });
+        // 消息记录
+        } 
         
         // else if (matchRecord) {
         //   dispatch({

@@ -3,7 +3,6 @@ import { connect } from 'dva';
 import { Card, message, Button, Modal, Table,  Menu } from 'antd';
 import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
-import CategoryAddFormModal from './AddFormModal';
 import DateFormat from '@/components/DateFormat';
 import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
@@ -165,62 +164,77 @@ function Index({ dispatch, location, recruit }) {
       },
     },
     importMenu,
-    handleDelete: (ids) => {
-      Modal.confirm({
-        title: '删除',
-        content: (
-          <div>
-            <p>你确定要批量删除这些数据吗？</p>
-          </div>
-        ),
-        onOk: () => {
-          let selectArr=[];
-          let selectObj = {};
-          ids.forEach(id => {
-            const selectObj = batchList.find(item => item.id === id);
-            selectArr.push(selectObj);
-          });
-          selectArr.forEach(item => {
-            if(Object.keys(selectObj).includes(item.intent)){
-              selectObj[item.intent].push(item.id)
-            }else{
-              selectObj[item.intent] = [item.id]
-            }
-          })
-          let questAll = [];
-          for (let item in selectObj) {
-            questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
-          }
-          Promise.all(questAll).then((result) => {
-            message.success('删除成功！');
-            dispatch({
-              type: 'recruit/getBatch',
-              payload: {},
-            });  
-            setSelectedRowKeys([]);  
-          }).catch((error) => {
-            message.error('删除失败！');
-          })
-        },
-        okText: '确认',
-        cancelText: '取消',
-      });
+    formatOperation: (selectedRowKeys,hasSelected) => {
+      return (
+        <div style={{marginTop:10}}>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>发布</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>下线</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>完成</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>删除</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>简历推荐</Button>
+          <span style={{ marginLeft: 8 }}>
+            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
+          </span>
+        </div>
+      )
     },
+  };
+  
+  function  handleDelete(ids){
+    Modal.confirm({
+      title: '删除',
+      content: (
+        <div>
+          <p>你确定要批量删除这些数据吗？</p>
+        </div>
+      ),
+      onOk: () => {
+        let selectArr=[];
+        let selectObj = {};
+        ids.forEach(id => {
+          const selectObj = batchList.find(item => item.id === id);
+          selectArr.push(selectObj);
+        });
+        selectArr.forEach(item => {
+          if(Object.keys(selectObj).includes(item.intent)){
+            selectObj[item.intent].push(item.id)
+          }else{
+            selectObj[item.intent] = [item.id]
+          }
+        })
+        let questAll = [];
+        for (let item in selectObj) {
+          questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
+        }
+        Promise.all(questAll).then((result) => {
+          message.success('删除成功！');
+          dispatch({
+            type: 'recruit/getBatch',
+            payload: {},
+          });  
+          setSelectedRowKeys([]);  
+        }).catch((error) => {
+          message.error('删除失败！');
+        })
+      },
+      okText: '确认',
+      cancelText: '取消',
+    });
   };
  
   return (
     <Card
       bordered={false}
-      title="外呼任务"
+      title="岗位维护"
       extra={
         <Button
           icon="plus"
           type="primary"
           onClick={() => {
-            setValue({});
-          }}
+            dispatch(routerRedux.push('/AI/recruit/post/add'));
+           }}
         >
-          新建任务
+          新建岗位
         </Button>
       }
     >
@@ -238,25 +252,6 @@ function Index({ dispatch, location, recruit }) {
         }}
       />
       {renderTable(setting)}
-      <CategoryAddFormModal
-        value={value}
-        onCancel={() => {
-          setValue(null);
-        }}
-        onSubmit={data => {
-          const {triggerTime,...rest } = data;
-          addBatch(data)
-          .then(body => {
-            message.success('新增任务成功');
-            dispatch({
-              type: 'recruit/getBatch',
-              payload: {},
-            });
-          })
-          .catch(e => {});
-          setValue(null);
-        }}
-      />
     </Card>
   );
 }
