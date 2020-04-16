@@ -335,7 +335,7 @@ function Index({
             htmlType="submit"
             type="primary"
             // className="test-input-search"
-            onClick={() => handleOk()}
+            onClick={_.debounce(() => handleOk(),500)}
             disabled={triggerDisabled}
           >
             {status > 1 ? '更新任务' : '提交任务'}
@@ -344,9 +344,9 @@ function Index({
             <Button
               style={{ marginLeft: '10px' }}
               className="test-input-search"
-              onClick={e => {
-                cancel();
-              }}
+              onClick={_.debounce(e => {
+               cancel();
+              },500)}
               disabled={triggerDisabled}
             >
               取消任务

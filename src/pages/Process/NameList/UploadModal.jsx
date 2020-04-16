@@ -173,7 +173,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
       title="导入名单"
       destroyOnClose
       width={550}
-      onOk={onSumbit}
+      onOk={_.debounce(onSumbit,500)}
       onCancel={() => {
         setFileList([]);
         onCancel();

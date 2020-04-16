@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
 import { Form, Modal, Select ,DatePicker,Input} from 'antd';
 import moment from 'moment';
+import _ from 'lodash';
 import mapValueToFields from '@/utils/mapValueToFields';
 import TrimInput from '@/components/TrimInput';
 
@@ -16,7 +17,6 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
 
   const handleSubmit = e => {
     e.preventDefault();
-
     form.validateFields((err, values) => {
       if (!err) {
         onSubmit && onSubmit(values);
@@ -46,7 +46,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
       title={getFieldValue('id') ? '修改任务' : '添加任务'}
       destroyOnClose
       width={550}
-      onOk={handleSubmit}
+      onOk={_.debounce(handleSubmit,500)}
       onCancel={() => {
         // this.setState({ selectSource: [], categoryIconUrl: '' });
         onCancel();

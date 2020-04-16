@@ -15,6 +15,7 @@ import {
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
+import _ from 'lodash';
 import queryString from 'query-string';
 import { editSignel, addSignel, cancelSignel } from '@/services/nameList';
 import { flatten } from '@/utils/utils';
@@ -270,7 +271,7 @@ function SingleSet({
       <h3>外呼时间</h3>
       <div>
         {formatFieldItem(intent)}
-        <Button onClick={inventOnSubmit} disabled={sureDisabled}>
+        <Button onClick={_.debounce(inventOnSubmit,500)} disabled={sureDisabled}>
           更新
         </Button>
         {cancelDisabled ? (
