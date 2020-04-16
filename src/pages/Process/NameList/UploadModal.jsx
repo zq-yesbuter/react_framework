@@ -90,7 +90,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
               .then(body => {
                 message.success('外呼文件导入成功并且设置成功');
                 dispatch({
-                  type: 'namelist/getBatchDetail',
+                  type: 'namelist/fetchBatchDetail',
                   payload: {id,intent},
                 });
                 setFileList([]);

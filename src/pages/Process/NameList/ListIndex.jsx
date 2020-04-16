@@ -159,7 +159,7 @@ function Index({ dispatch, location, namelist }) {
       // );
       
       dispatch({
-        type: 'namelist/getBatchDetail',
+        type: 'namelist/fetchBatchDetail',
         payload: { start, length },
       });
       setSelectedRowKeys([]);
@@ -170,7 +170,7 @@ function Index({ dispatch, location, namelist }) {
     },
     prev: () => {
       dispatch({
-        type: 'namelist/getBatchDetail',
+        type: 'namelist/fetchBatchDetail',
         payload: {pageNum:nameCur-1, id,intent},
       });
       dispatch({
@@ -180,7 +180,7 @@ function Index({ dispatch, location, namelist }) {
     },
     next: () => {
       dispatch({
-        type: 'namelist/getBatchDetail',
+        type: 'namelist/fetchBatchDetail',
         payload: {pageNum:nameCur+1,id,intent},
       });
       dispatch({
@@ -190,7 +190,7 @@ function Index({ dispatch, location, namelist }) {
     },
     onSizeChange: pageSize => {
       dispatch({
-        type: 'namelist/getBatchDetail',
+        type: 'namelist/fetchBatchDetail',
         payload: {pageSize,id,intent},
       });
       dispatch({
@@ -234,7 +234,7 @@ function Index({ dispatch, location, namelist }) {
         onOk: () => {
           nameBatchDelete({ intent, updateIds }).then(() => {
             dispatch({
-              type: 'namelist/getBatchDetail',
+              type: 'namelist/fetchBatchDetail',
               payload: { id, intent },
             });
           })
@@ -250,7 +250,7 @@ function Index({ dispatch, location, namelist }) {
   // 筛选条件
   function onSubmit(values) {
     dispatch({
-      type: 'namelist/getBatchDetail',
+      type: 'namelist/fetchBatchDetail',
       payload: { id,intent,...values },
     });
     dispatch({

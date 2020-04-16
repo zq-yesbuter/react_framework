@@ -41,7 +41,7 @@ function Index({ dispatch, location, namelist }) {
           .then(() => {
             message.success('删除成功!');
             // dispatch({
-            //   type: 'getBatchDetail',
+            //   type: 'fetchBatchDetail',
             //   payload: queryString.parse(search),
             // });
           })
