@@ -30,10 +30,9 @@ export default [
             redirect: '/AI/outging',
           },
           {
-            path: '/AI',
+            path: '/AI/outging',
             name: '外呼管理',
             icon: 'appstore',
-            // component: '../pages/Process',
             routes: [
               {
                 name: '外呼任务',
@@ -67,6 +66,23 @@ export default [
               },
             ],
           },
+          // {
+          //   path: '/AI/recruit',
+          //   name: '微信招聘',
+          //   icon: 'barcode',
+          //   redirect: '/AI/recruit/post',
+          //   routes: [
+          //     {
+          //       name: '岗位维护',
+          //       path: '/AI/recruit/post',
+          //       component: '../pages/Recruit/Post',
+          //       icon: "profile",
+          //     },
+          //     {
+          //       component: '../pages/404.jsx',
+          //     },
+          //   ],
+          // },
           {
             component: '../pages/404.jsx',
           },

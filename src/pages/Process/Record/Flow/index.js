@@ -315,7 +315,7 @@ function RecordBottom({
   
   return (
     <div className={styles['gutter-box']}>
-      <h3>邀约记录/结果</h3>
+      <h3>外呼记录/结果</h3>
       <div className={styles.scroll}>
         <Steps progressDot direction="vertical" current={10000}>
           {flowList &&
@@ -331,8 +331,8 @@ function RecordBottom({
                   }
                   description={
                     <div>
-                      {roundStartTime ? <p>{`邀约外呼开始时间： ${roundStartTime}`}</p> : null}
-                      {roundEndTime ? <p>{`邀约外呼结束时间： ${roundEndTime}`}</p> : null}
+                      {roundStartTime ? <p>{`外呼开始时间： ${roundStartTime}`}</p> : null}
+                      {roundEndTime ? <p>{`外呼结束时间： ${roundEndTime}`}</p> : null}
                       {interviewConfirmTime ? (
                         <p style={{ color: 'red', fontWeight: 400 }}>
                           {`用户期望面试时间： ${interviewConfirmTime}`}

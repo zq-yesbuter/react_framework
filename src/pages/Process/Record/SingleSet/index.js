@@ -51,29 +51,17 @@ function usePrevious(value) {
   return ref.current;
 }
 
-function RecordBottom({
+function SingleSet({
   form,
   dispatch,
   namelist: { jobList = [], selectJobId, listValue },
   location,
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
-  const prevSelectJobId = usePrevious(selectJobId);
-  const mounted = useRef();
   const { applyId, status } = listValue || {};
   const { search } = window.location;
   const {group:invitationId,intent}=queryString.parse(search);
-  useEffect(() => {
-    if (!mounted.current) {
-      mounted.current = true;
-    } else {
-      // eslint-disable-next-line no-lonely-if
-      if (prevSelectJobId !== selectJobId) {
-        resetFields();
-      }
-    }
-  });
-
+  
   function disabledDate(current) {
     // Can not select days before today and today
     return current && current < moment().subtract(1, 'days');
@@ -111,7 +99,7 @@ function RecordBottom({
             {getFieldDecorator('triggerTime', {
               initialValue:
                 status !== 11 && Object.keys(listValue).length
-                  ? moment(listValue.triggerTime)
+                  ? (listValue.triggerTime ? moment(listValue.triggerTime) : null)
                   : null,
             })(
               <DatePicker
@@ -130,7 +118,7 @@ function RecordBottom({
             {getFieldDecorator('triggerTime', {
               initialValue:
               status !== 11 && Object.keys(listValue).length
-              ? moment(listValue.triggerTime)
+              ? (listValue.triggerTime ? moment(listValue.triggerTime) : null)
               : null,
             })(
               <DatePicker
@@ -158,7 +146,7 @@ function RecordBottom({
             {getFieldDecorator('startTime', {
               initialValue:
               status !== 11 && Object.keys(listValue).length
-                ? moment(listValue.time)
+                ? (listValue.time ? moment(listValue.time) : null)
                 : null,
             })(
               <DatePicker
@@ -178,7 +166,7 @@ function RecordBottom({
             {getFieldDecorator('triggerTime', {
               initialValue:
                 status !== 11 && Object.keys(listValue).length
-                  ? moment(listValue.triggerTime)
+                  ? moment(listValue.triggerTime) || null
                   : null,
             })(
               <DatePicker
@@ -282,4 +270,4 @@ function RecordBottom({
 }
 
 const mapStateToProps = ({ namelist = {} }) => ({ namelist });
-export default connect(mapStateToProps)(Form.create({})(RecordBottom));
+export default connect(mapStateToProps)(Form.create({})(SingleSet));

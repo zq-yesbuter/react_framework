@@ -13,7 +13,7 @@ function formatTriggerTime(timeList, applyId) {
 }
 
 export default {
-  namespace: 'namelist',
+  namespace: 'recruit',
   state: {
     nameList: [],
     flowList: [],
@@ -66,7 +66,7 @@ export default {
     },
 
     // 获取外呼类型
-    *fetchIvrIntents({ payload }, { call, put, select }) {
+    *getIvrIntents({ payload }, { call, put, select }) {
       const ivrIntents = yield call(getIvrIntents, payload);
       yield put({
         type: 'save',
@@ -76,7 +76,7 @@ export default {
       });
     },
 
-    *fetchBatchDetail({ payload }, { call, put, select }) {
+    *getBatchDetail({ payload }, { call, put, select }) {
       const nameRequest = yield select(({ namelist: { nameRequest } }) => nameRequest);
       const response = yield call(getBatchDetail, { ...nameRequest, ...payload }) || {};
       const {data:nameList} = response;
@@ -211,50 +211,55 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname, search }) => {
-        const match = /^\/AI\/outging\/namelist/.exec(pathname);
-        const matchRecord = /^\/AI\/outging\/record/.exec(pathname);
-        const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
-        const mainMatch = /^\/AI\/outging$/.exec(pathname);
+        const match = /^\/AI\/recruit\/post/.exec(pathname);
+        // const matchRecord = /^\/AI\/outging\/record/.exec(pathname);
+        // const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
+        // const mainMatch = /^\/AI\/outging$/.exec(pathname);
         
         // 名单列表
-        if (match) {
-          // 新的获取名单列表
-          dispatch({
-            type: 'fetchBatchDetail',
-            payload: queryString.parse(search),
-          });
-        // 消息记录
-        } else if (matchRecord) {
-          dispatch({
-            type: 'getMessage',
-            payload: queryString.parse(search),
-          });
-          const { group, intent } = queryString.parse(search) || {};
-          dispatch({
-            type: 'getSigleFlowlist',
-            payload: {id:group,intent},
-          });
+        // if (match) {
+        //   dispatch({
+        //     type: 'getIvrIntents',
+        //   });
+        //   // 新的获取名单列表
+        //   dispatch({
+        //     type: 'getBatchDetail',
+        //     payload: queryString.parse(search),
+        //   });
+        // // 消息记录
+        // } 
+        
+        // else if (matchRecord) {
+        //   dispatch({
+        //     type: 'getMessage',
+        //     payload: queryString.parse(search),
+        //   });
+        //   const { group, intent } = queryString.parse(search) || {};
+        //   dispatch({
+        //     type: 'getSigleFlowlist',
+        //     payload: {id:group,intent},
+        //   });
 
-        // 配置页面
-        }else if(matchConfig) {
-          // dispatch({
-          //   type: 'configNameList',
-          //   payload: queryString.parse(search),
-          // });
-          dispatch({
-            type: 'getConfigValue',
-            payload: queryString.parse(search),
-          }); 
-        // 任务页面
-        }else if(mainMatch) {
-          dispatch({
-            type: 'getBatch',
-            payload: {},
-          });
-          dispatch({
-            type: 'fetchIvrIntents',
-          });
-        }
+        // // 配置页面
+        // }else if(matchConfig) {
+        //   dispatch({
+        //     type: 'configNameList',
+        //     payload: queryString.parse(search),
+        //   });
+        //   dispatch({
+        //     type: 'getConfigValue',
+        //     payload: queryString.parse(search),
+        //   }); 
+        // // 任务页面
+        // }else if(mainMatch) {
+        //   dispatch({
+        //     type: 'getBatch',
+        //     payload: {},
+        //   });
+        //   dispatch({
+        //     type: 'getIvrIntents',
+        //   });
+        // }
       });
     },
   },

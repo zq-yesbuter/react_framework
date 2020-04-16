@@ -29,10 +29,10 @@ class DateRangePicker extends PureComponent {
         showTime
         format="YYYY-MM-DD HH:mm:ss"
         onChange={([value1, value2]) => {
-          let newStart = moment().format('x') * 1 + 10 * 60 * 1000;
+          // let newStart = moment().format('x') * 1 + 10 * 60 * 1000;
           setFieldsValue({
-            [name1]: value1 && value1 * 1 > newStart ? value1.format(format) : newStart,
-            [name2]: value2 && value2 * 1 > newStart ? value2.format(format) : newStart,
+            [name1]: value1 && value1.format(format),
+            [name2]: value2 && value2.format(format),
           });
         }}
       />

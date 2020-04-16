@@ -2,7 +2,6 @@ import React, {
   useState,
   useEffect,
   useImperativeHandle,
-  forwardRef,
   useRef,
   Fragment,
 } from 'react';
@@ -94,6 +93,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
                   type: 'namelist/getBatchDetail',
                   payload: {id,intent},
                 });
+                setFileList([]);
               })
               .catch(e => {});
             }else{
@@ -165,7 +165,7 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
       width={550}
       onOk={onSumbit}
       onCancel={() => {
-        // this.setState({ selectSource: [], categoryIconUrl: '' });
+        setFileList([]);
         onCancel();
       }}
     >
@@ -248,4 +248,4 @@ function ImportModal({ dispatch, visible, form, close, postList, value, onCancel
   );
 }
 const mapStateToProps = ({ namelist = {} }) => ({ namelist });
-export default connect(mapStateToProps)(Form.create({})(forwardRef(ImportModal)));
+export default connect(mapStateToProps)(Form.create({})(ImportModal));
