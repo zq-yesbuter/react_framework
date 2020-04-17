@@ -25,7 +25,7 @@ const { Item } = Form;
 const { Step } = Steps;
 const { RangePicker } = DatePicker;
 const { TabPane } = Tabs;
-const format = 'YYYY-MM-DD HH:mm';
+const format = 'YYYY-MM-DD HH:mm:ss';
 // const colors = ['cyan','blue','geekblue','lime','green','purple','magenta','red','volcano','orange','gold'];
 const colors = [
   '#f50',
@@ -252,7 +252,8 @@ function SingleSet({
         message.success('取消邀约成功!');
         setFieldsValue({ triggerTime: null });
         if (intent === 'interview_invitation') {
-          setFieldsValue({ params: {startTime:null}});
+          setFieldsValue({params:{startTime:null}});
+          // resetFields();
         }
         setShowCancel(false);
       })
