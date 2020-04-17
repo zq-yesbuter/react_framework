@@ -9,47 +9,47 @@ import { statusOptions } from '../contant';
 const renderColumns = (dispatch,ivrIntents) => {
   const columns = [
     {
-      title: '岗位类型',
+      title: '姓名',
       key: 'name',
       dataIndex: 'name',
     },
     {
-      title: '岗位名称',
+      title: '性别',
       key: 'intent',
       dataIndex: 'intent',
       render:  intent => formatTaskType(ivrIntents,'intent',intent,'intentDesc'),
     },
     {
-      title: '对外名称',
+      title: '年龄',
       key: 'terminalType',
       dataIndex: 'terminalType',
     },
     {
-      title: '需求部门',
+      title: '学历',
       key: 'entity',
       dataIndex: 'entity',
     },
     {
-      title: '招聘人数',
+      title: '电话',
       key: 'keywords',
       dataIndex: 'keywords',
     },
     {
-      title: '工作城市',
+      title: '邮箱',
+      key: 'triggerStartTime',
+      dataIndex: 'triggerStartTime',
+    },
+    {
+      title: '申请岗位',
       key: 'scene',
       dataIndex: 'scene',
       render:  scene => formatTaskType(ivrIntents,'scene',scene,'sceneDesc'),
     },
     {
-      title: '学历要求',
+      title: '申请时间',
       key: 'status',
       dataIndex: 'status',
       render:  status => formatTaskType(statusOptions,'value',status,'name'),
-    },
-    {
-      title: '外呼开始时间',
-      key: 'triggerStartTime',
-      dataIndex: 'triggerStartTime',
     },
     {
       title: '更新人',

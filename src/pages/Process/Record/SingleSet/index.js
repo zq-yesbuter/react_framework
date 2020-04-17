@@ -55,28 +55,17 @@ function SingleSet({
   location,
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
-  const { applyId, status } = listValue || {};
+  const { applyId } = listValue || {};
   const { search } = window.location;
-  const { group: invitationId, intent } = queryString.parse(search);
-
+  const { group: invitationId, intent, status } = queryString.parse(search);
+  const [ showCancel, setShowCancel ] = useState(true);
   // const disabled = status === '3' || status === 3 || status === 4 || status === '4';
-  const sureDisabled =
-    status === -1 ||
-    status === 0 ||
-    status === '-1' ||
-    status === '0' ||
-    status === '3' ||
-    status === 3 ||
-    status === 4 ||
-    status === '4';
+  const sureDisabled = !(status=== '1' || status==='2');
   const showallTime =
     status === '3' ||
-    status === 3 ||
-    status === 4 ||
     status === '4' ||
-    status === 1 ||
     status === '1';
-  const cancelDisabled = !(status === 1 || status === '1');
+  const cancelShow = status === '1';
   function disabledDate(current) {
     // Can not select days before today and today
     return current && current < moment().subtract(1, 'days');
@@ -211,7 +200,6 @@ function SingleSet({
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
         }
-        const { id, applyId, status } = jobList.find(item => item.applyId === selectJobId) || {};
         let payload = {
           triggerTime: values.triggerTime.format(format),
           intent,
@@ -263,6 +251,7 @@ function SingleSet({
         if (intent === 'interview_invitation') {
           setFieldsValue({ startTime: null });
         }
+        setShowCancel(false);
       })
       .catch(e => message.error(e.message));
   }
@@ -274,13 +263,13 @@ function SingleSet({
         <Button onClick={_.debounce(inventOnSubmit,500)} disabled={sureDisabled}>
           更新
         </Button>
-        {cancelDisabled ? (
+        {cancelShow && showCancel ? (
           <Popconfirm
             title="外呼时间和面试时间均会被取消，确认要取消吗？"
             onConfirm={cancelInventConfirm}
             onCancel={quitCancel}
           >
-            <Button disabled={cancelDisabled} style={{ marginLeft: 20 }}>
+            <Button disabled={!cancelShow} style={{ marginLeft: 20 }}>
               取消
             </Button>
           </Popconfirm>

@@ -86,6 +86,12 @@ export default [
           //       // icon: "profile",
           //     },
           //     {
+          //       name: '投递记录',
+          //       path: '/AI/recruit/record',
+          //       component: '../pages/Recruit/Record',
+          //       icon: "profile",
+          //     },
+          //     {
           //       component: '../pages/404.jsx',
           //     },
           //   ],

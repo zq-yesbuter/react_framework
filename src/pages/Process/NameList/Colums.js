@@ -1,10 +1,23 @@
 import React, { Fragment } from 'react';
 import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
-import { formatTaskType } from '@/utils/utils';
+import { formatNameType } from '@/utils/utils';
 import { nameStatus } from '../contant';
 
-const renderColumns = (dispatch,ivrIntents) => {
+function formatTime(intent){
+  switch (intent) {
+    case ('first_entry_invitation',
+      'interview_research_invitation'):
+      return '时间';
+    case 'second_entry_invitation':
+      return '入职时间';
+    case 'interview_invitation':
+      return '面试时间';
+    default:
+      return '时间';
+  }
+}
+const renderColumns = (dispatch,intent) => {
   const columns = [
     {
       title: '姓名',
@@ -26,36 +39,38 @@ const renderColumns = (dispatch,ivrIntents) => {
     //   key: 'entity',
     //   dataIndex: 'entity',
     // },
-    {
-      title: '面试地址',
-      key: 'address',
-      dataIndex: 'address',
-    },
+    // {
+    //   title: '面试地址',
+    //   key: 'address',
+    //   dataIndex: 'address',
+    // },
+    // {
+    //   title: '应用',
+    //   key: 'appCode',
+    //   dataIndex: 'appCode',
+    // },
     {
       title: '外呼时间',
       key: 'triggerTime',
       dataIndex: 'triggerTime',
     },
     {
-      title: '应用',
-      key: 'appCode',
-      dataIndex: 'appCode',
-    },
-    {
-      title: '待确定开始时间',
+      title: formatTime(intent),
       key: 'startTime',
       dataIndex: 'startTime',
     },
-    {
-      title: '待确定结束时间',
-      key: 'endTime',
-      dataIndex: 'endTime',
-    },
+    // {
+    //   title: '待确定结束时间',
+    //   key: 'endTime',
+    //   dataIndex: 'endTime',
+    // },
     {
       title: '状态',
       key: 'status',
       dataIndex: 'status',
-      render:  status => formatTaskType(nameStatus,'value',status,'name'),
+      render:  (status,record) => {
+        console.log('record====>',record);
+        return formatNameType(nameStatus,'value',status,'name')},
     },
     {
       title: '更新人',
@@ -75,7 +90,7 @@ const renderColumns = (dispatch,ivrIntents) => {
       dataIndex: 'invitationId',
       width: 150,
       render: (group, value) => {
-        const { intent } = value;
+        const { intent,status } = value;
         return (
           <Fragment>
             <a
@@ -90,6 +105,7 @@ const renderColumns = (dispatch,ivrIntents) => {
                     search: queryString.stringify({
                       group,
                       intent,
+                      status,
                     }),
                   })
                 );

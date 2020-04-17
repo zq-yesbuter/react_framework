@@ -189,7 +189,117 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
             ],
           })(<Input placeholder="请输入需求名称" />)}
         </Item>
-        {/* 离职ERP */}
+        <Item {...formItemLayout} label="离职ERP">
+          {getFieldDecorator('erp', {
+            rules: [
+              {
+                required: true,
+                message: '离职ERP必填！',
+              },
+            ],
+          })(<Input placeholder="请输入离职ERP" />)}
+        </Item>
+        <Item label="招聘类型" {...formItemLayout}>
+          {getFieldDecorator('type1', {
+            rules: [{ required: true, message: '请选择招聘类型!' }],
+          })(
+            <Select
+              // style={{ width: '300px' }}
+              placeholder="请选择招聘类型"
+            >
+              {ivrIntents &&
+                ivrIntents.length &&
+                ivrIntents
+                  .map(({ scene, sceneDesc }) => {
+                    return (
+                      <Option value={scene} key={scene}>
+                        {sceneDesc}
+                      </Option>
+                    );
+                  })}
+            </Select>
+          )}
+        </Item>
+        <Item {...formItemLayout} label="招聘人数">
+          {getFieldDecorator('number', {
+            rules: [
+              {
+                required: true,
+                message: '招聘人数必填！',
+              },
+            ],
+          })(<Input placeholder="请输入招聘人数" />)}
+        </Item>
+        <Item {...formItemLayout} label="对外名称">
+          {getFieldDecorator('out', {
+            rules: [
+              {
+                required: true,
+                message: '对外名称必填！',
+              },
+            ],
+          })(<Input placeholder="请输入对外名称" />)}
+        </Item>
+        <Item {...formItemLayout} label="招聘负责人">
+          {getFieldDecorator('outiner', {
+            rules: [
+              {
+                required: true,
+                message: '招聘负责人必填！',
+              },
+            ],
+          })(<Input placeholder="请输入招聘负责人" />)}
+        </Item>
+        <Item {...formItemLayout} label="汇报对象">
+          {getFieldDecorator('outinerdd', {
+            rules: [
+              {
+                required: true,
+                message: '汇报对象必填！',
+              },
+            ],
+          })(<Input placeholder="请输入汇报对象" />)}
+        </Item>
+        <Item {...formItemLayout} label="工作城市">
+          {getFieldDecorator('outinerdddd', {
+            rules: [
+              {
+                required: true,
+                message: '工作城市必填！',
+              },
+            ],
+          })(<Input placeholder="请输入工作城市" />)}
+        </Item>
+        <Item {...formItemLayout} label="学历要求">
+          {getFieldDecorator('outinerdd', {
+            rules: [
+              {
+                required: true,
+                message: '学历要求必填！',
+              },
+            ],
+          })(<Input placeholder="请输入学历要求" />)}
+        </Item>
+        <Item {...formItemLayout} label="岗位要求">
+          {getFieldDecorator('o', {
+            rules: [
+              {
+                required: true,
+                message: '岗位要求必填！',
+              },
+            ],
+          })(<Input placeholder="请输入岗位要求" />)}
+        </Item>
+        <Item {...formItemLayout} label="任职资格">
+          {getFieldDecorator('o', {
+            rules: [
+              {
+                required: true,
+                message: '任职资格必填！',
+              },
+            ],
+          })(<Input placeholder="请输入任职资格" />)}
+        </Item>
       </Form>
     </Card>
   );

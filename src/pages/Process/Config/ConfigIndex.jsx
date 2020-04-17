@@ -50,17 +50,13 @@ const tailLayout = {
   },
 };
 
-function Index({
-  dispatch,
-  form,
-  namelist,
-}) {
+function Index({ dispatch, form, namelist }) {
   const { configValue, ivrIntents, configNameList } = namelist;
   const { search } = window.location;
   const batchName = decodeURI(search.slice(1));
   const [diffTimeList, setDiffTimeList] = useState([]);
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
-  const [ repeat, setRepeat ] = useState(false);
+  const [repeat, setRepeat] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -78,7 +74,11 @@ function Index({
   function handleOk() {
     validateFields((err, values) => {
       if (!err) {
-        const { name, intent, scene, triggerTime, retry } = values;
+        const { name, intent, scene, triggerTime } = values;
+        let { retry, sure } = values;
+        if (sure === false) {
+          retry = false;
+        }
         if (triggerTime < moment().add(10, 'minutes')) {
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
@@ -115,7 +115,7 @@ function Index({
     });
   }
   function cancel() {
-    const { intent, id, status} = configValue;
+    const { intent, id, status } = configValue;
     if (configNameList && !configNameList.length) {
       message.warn('没有名单无法取消，请先导入名单！');
       dispatch(
@@ -132,7 +132,7 @@ function Index({
     batchCancel({ intent, id })
       .then(body => {
         message.success('取消任务成功');
-        setFieldsValue({triggerTime:null});
+        setFieldsValue({ triggerTime: null });
       })
       .catch(e => {
         message.error('取消任务失败');
@@ -160,69 +160,84 @@ function Index({
     setFieldsValue({ scene: null });
   }
 
-  function repeatChange(e) {
-    setRepeat(e.target.checked);
+  function formRepeatChange(e) {
+    setRepeat(e);
   }
 
   function formatRepeat(repeat) {
-    if (repeat) {
-      return (
-        <div>
-          {getFieldDecorator(`retry['reasons']`, {
-            rules: [
-              {
-                required: true,
-                message: '请添加！',
-              },
-            ],
-          })(
-            <Select mode="tags" placeholder="输入并按enter键添加" style={{width:200,marginRight:8}}>
-              <Option value="无人接听" key="无人接听">无人接听</Option>
-            </Select>
-          )}
-          {getFieldDecorator(`retry['delay']`, {
-            rules: [
-              {
-                required: true,
-                message: '请添加！',
-              },
-            ],
-          })(
-            <Select style={{width:200,marginRight:10}}>
-              <Option value={10} key={10}>10分钟</Option>
-              <Option value={20} key={20}>20分钟</Option>
-              <Option value={30} key={30}>30分钟</Option>
-              <Option value={50} key={40}>40分钟</Option>
-              <Option value={60} key={60}>60分钟</Option>
-            </Select>
-          )}
-          <Checkbox checked={repeat} onChange={repeatChange}>是否重复外呼</Checkbox>
-        </div>
-      );
-    }
     return (
       <div>
-        {getFieldDecorator('retry', {
-          rules: [
-            {
-              required: true,
-              message: '重复外呼类型必填！',
-            },
-          ],
+        {getFieldDecorator('sure', {
           initialValue: false,
         })(
-          <Select style={{width:200,marginRight:10}}>
-            <Option value={false} key={true}>无需重复外呼</Option>
+          <Select
+            style={{ width: 200, marginRight: 10 }}
+            onChange={formRepeatChange}
+            placeholder="请选择是否重复外呼"
+          >
+            <Option value={true} key={true}>
+              是
+            </Option>
+            <Option value={false} key={false}>
+              否
+            </Option>
           </Select>
         )}
-        <Checkbox checked={repeat} onChange={repeatChange}>是否重复外呼</Checkbox>
+        {repeat ? (
+          <Fragment>
+            {getFieldDecorator(`retry['reasons']`, {
+              rules: [
+                {
+                  required: true,
+                  message: '请添加！',
+                },
+              ],
+            })(
+              <Select
+                mode="tags"
+                placeholder="输入并按enter键添加"
+                style={{ width: 200, marginRight: 8 }}
+              >
+                <Option value="无人接听" key="无人接听">
+                  无人接听
+                </Option>
+              </Select>
+            )}
+            {getFieldDecorator(`retry['delay']`, {
+              rules: [
+                {
+                  required: true,
+                  message: '请添加！',
+                },
+              ],
+            })(
+              <Select style={{ width: 200, marginRight: 10 }}>
+                <Option value={10} key={10}>
+                  10分钟
+                </Option>
+                <Option value={20} key={20}>
+                  20分钟
+                </Option>
+                <Option value={30} key={30}>
+                  30分钟
+                </Option>
+                <Option value={50} key={40}>
+                  40分钟
+                </Option>
+                <Option value={60} key={60}>
+                  60分钟
+                </Option>
+              </Select>
+            )}
+          </Fragment>
+        ) : null}
       </div>
-    );    
+    );
   }
 
   const selectIntent = getFieldValue('intent');
-  const { status} = configValue;
-  const triggerDisabled = (status === 3 || status === 4);
+  const { status } = configValue;
+  const triggerDisabled = status === 3 || status === 4;
   return (
     <Card
       bordered={false}
@@ -277,7 +292,11 @@ function Index({
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.map(item => <Option value={item.intent} key={item.intent}>{item.intentDesc}</Option>)}
+                ivrIntents.map(item => (
+                  <Option value={item.intent} key={item.intent}>
+                    {item.intentDesc}
+                  </Option>
+                ))}
             </Select>
           )}
         </Item>
@@ -331,23 +350,24 @@ function Index({
           {formatRepeat(repeat)}
         </Item>
         <Item {...tailLayout}>
-          <Button
-            htmlType="submit"
-            type="primary"
-            // className="test-input-search"
-            onClick={_.debounce(() => handleOk(),500)}
-            disabled={triggerDisabled}
-          >
-            {status > 1 ? '更新任务' : '提交任务'}
-          </Button>
-          {status > 0 && (
+          {status < 3 && (
+            <Button
+              htmlType="submit"
+              type="primary"
+              // className="test-input-search"
+              onClick={_.debounce(() => handleOk(), 500)}
+              disabled={triggerDisabled}
+            >
+              {status > 1 ? '更新任务' : '提交任务'}
+            </Button>
+          )}
+          {status === 1 && (
             <Button
               style={{ marginLeft: '10px' }}
               className="test-input-search"
               onClick={_.debounce(e => {
-               cancel();
-              },500)}
-              disabled={triggerDisabled}
+                cancel();
+              }, 500)}
             >
               取消任务
             </Button>

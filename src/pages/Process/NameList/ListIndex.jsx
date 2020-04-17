@@ -108,7 +108,7 @@ function Index({ dispatch, location, namelist }) {
   // const batchName = decodeURI(search.slice(1));
   const setting = {
     current: nameCur,
-    columns: renderColumns(dispatch,ivrIntents),
+    columns: renderColumns(dispatch,intent),
     pageSize: namePageSize,
     loading,
     selectedRowKeys,
@@ -239,8 +239,8 @@ function Index({ dispatch, location, namelist }) {
                 });
               }else{
                 Modal.confirm({
-                  title: '你处于待外呼状态，删除所有名单就会清除任务！',
-                  content: '你确定要批量删除这些数据吗？',
+                  title: '该任务处于待外呼状态，您确认要删除勾选的名单数据吗？',
+                  content: '所有名单都被删除时任务会自动回退到【已创建】状态',
                   onOk() {
                     nameBatchDelete({ intent, updateIds }).then(() => {
                       dispatch({
@@ -262,8 +262,8 @@ function Index({ dispatch, location, namelist }) {
             })
           }else{
             Modal.confirm({
-              title: '你处于待外呼状态，删除所有名单就会清除任务！',
-              content: '你确定要批量删除这些数据吗？',
+              title: '该任务处于待外呼状态，您确认要删除勾选的名单数据吗？',
+              content: '所有名单都被删除时任务会自动回退到【已创建】状态',
               onOk() {
                 nameBatchDelete({ intent, updateIds }).then(() => {
                   dispatch({

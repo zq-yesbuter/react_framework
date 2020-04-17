@@ -245,11 +245,11 @@ export default {
           dispatch({
             type: 'fetchIvrIntents',
           });
+          const { group, intent } = queryString.parse(search) || {};
           dispatch({
             type: 'getMessage',
-            payload: queryString.parse(search),
+            payload: {group, intent},
           });
-          const { group, intent } = queryString.parse(search) || {};
           dispatch({
             type: 'getSigleFlowlist',
             payload: {id:group,intent},
