@@ -208,11 +208,11 @@ function ImportModal({
       case 'interview_research_invitation':
         return ['候选人姓名','电话','邮箱（此列勿删，保持为空）','时间（此列勿删，保持为空）','HR姓名','HR联系人电话','岗位（此列勿删，保持为空）']
       case 'second_entry_invitation': 
-        return ['候选人姓名','电话','邮箱（此列勿删，保持为空）','入职时间','HR姓名','HR联系人电话','岗位（此列勿删，保持为空）']
+        return ['候选人姓名','电话','邮箱（此列勿删，保持为空）','入职时间（格式需精确到秒，保持如下格式）','HR姓名','HR联系人电话','岗位（此列勿删，保持为空）']
       case 'interview_invitation':
-        return ['候选人姓名','电话','邮箱（此列勿删，保持为空）','面试时间','HR姓名','HR联系人电话','岗位']
+        return ['候选人姓名','电话','邮箱（此列勿删，保持为空）','面试时间（格式需精确到秒，保持如下格式）','HR姓名','HR联系人电话','岗位']
       default:
-        return ['候选人姓名','电话','邮箱','面试时间','HR姓名','HR联系人电话','岗位'];
+        return ['候选人姓名','电话','邮箱','面试时间（格式需精确到秒,保持如下格式）','HR姓名','HR联系人电话','岗位'];
     }
   }
 
@@ -224,7 +224,7 @@ function ImportModal({
     option.fileName = '导入模版';
     option.datas=[
       {
-        sheetData:[],
+        sheetData:[{one:'梁主任',two:'18608001700',three:'test@jd.com',four:'2020-04-20 09:00:00',five:'胡女士',six:'18608001700',seven:'产品岗'}],
         sheetName:'导入模版',
         // sheetFilter:['two','one'],
         sheetHeader:formatHeader(intent),

@@ -228,7 +228,17 @@ function Index({ dispatch, location, namelist }) {
             }).then(response => {
               const {data:deleteNameList} = response;
               if(deleteNameList.length){
-                nameBatchDelete({ intent, updateIds }).then(() => {
+                nameBatchDelete({ intent, updateIds }).then(({ success, successCount, errorCount, errorMessages }) => {
+                  Modal.info({
+                    title: '删除信息反馈',
+                    content: (
+                      <div>
+                        <p>{`删除成功${successCount}人`}</p>
+                        {errorCount ? <p>{`删除失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
+                      </div>
+                    ),
+                    onOk() {},
+                  });
                   dispatch({
                     type: 'namelist/fetchBatchDetail',
                     payload: { id, intent },
@@ -242,7 +252,17 @@ function Index({ dispatch, location, namelist }) {
                   title: '该任务处于待外呼状态，您确认要删除勾选的名单数据吗？',
                   content: '所有名单都被删除时任务会自动回退到【已创建】状态',
                   onOk() {
-                    nameBatchDelete({ intent, updateIds }).then(() => {
+                    nameBatchDelete({ intent, updateIds }).then(({ success, successCount, errorCount, errorMessages }) => {
+                      Modal.info({
+                        title: '删除信息反馈',
+                        content: (
+                          <div>
+                            <p>{`删除成功${successCount}人`}</p>
+                            {errorCount ? <p>{`删除失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
+                          </div>
+                        ),
+                        onOk() {},
+                      });
                       dispatch({
                         type: 'namelist/fetchBatchDetail',
                         payload: { id, intent },
@@ -265,7 +285,17 @@ function Index({ dispatch, location, namelist }) {
               title: '该任务处于待外呼状态，您确认要删除勾选的名单数据吗？',
               content: '所有名单都被删除时任务会自动回退到【已创建】状态',
               onOk() {
-                nameBatchDelete({ intent, updateIds }).then(() => {
+                nameBatchDelete({ intent, updateIds }).then(({ success, successCount, errorCount, errorMessages }) => {
+                  Modal.info({
+                    title: '删除信息反馈',
+                    content: (
+                      <div>
+                        <p>{`删除成功${successCount}人`}</p>
+                        {errorCount ? <p>{`删除失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
+                      </div>
+                    ),
+                    onOk() {},
+                  });
                   dispatch({
                     type: 'namelist/fetchBatchDetail',
                     payload: { id, intent },
@@ -283,7 +313,17 @@ function Index({ dispatch, location, namelist }) {
             });
           }
         }else{
-          nameBatchDelete({ intent, updateIds }).then(() => {
+          nameBatchDelete({ intent, updateIds }).then(({ success, successCount, errorCount, errorMessages }) => {
+            Modal.info({
+              title: '删除信息反馈',
+              content: (
+                <div>
+                  <p>{`删除成功${successCount}人`}</p>
+                  {errorCount ? <p>{`删除失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
+                </div>
+              ),
+              onOk() {},
+            });
             dispatch({
               type: 'namelist/fetchBatchDetail',
               payload: { id, intent },
@@ -373,7 +413,7 @@ function Index({ dispatch, location, namelist }) {
       bordered={false}
       title={
         <Fragment>
-          {`外呼任务${name} - 外呼名单`}
+          {`任务${name} - 外呼名单`}
           <a
             href="javascript:;"
             style={{

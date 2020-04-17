@@ -62,7 +62,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist,subm
                 message: '任务名必填！',
               },
             ],
-          })(<Input placeholder="请输入任务名" />)}
+          })(<TrimInput placeholder="请输入任务名" />)}
         </Item>
         <Item label="外呼类型" {...formItemLayout}>
           {getFieldDecorator('intent', {

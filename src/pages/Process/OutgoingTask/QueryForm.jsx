@@ -25,7 +25,7 @@ function QueryForm({ form, formatResult, onSubmit }) {
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="任务名称">
         {getFieldDecorator('batchName')(
-          <Input placeholder="请输入任务名称" style={{width:200}} />
+          <TrimInput placeholder="请输入任务名称" style={{width:200}} />
         )}
       </FormItem>
       <FormItem label="任务状态">

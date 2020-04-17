@@ -29,7 +29,7 @@ function QueryForm({ form, formatResult, onSubmit }) {
   return (
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="人才搜索">
-        {getFieldDecorator('name')(<Input />)}
+        {getFieldDecorator('name')(<TrimInput />)}
       </FormItem>
       <FormItem label="状态筛选">
         {getFieldDecorator('status')( 

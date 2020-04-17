@@ -1,32 +1,51 @@
-import React from 'react';
+
+import React, { PureComponent } from 'react';
 import { Input } from 'antd';
 
-function TrimTextArea({ onChange = () => {}, onBlur = () => {}, props }) {
-  return (
-    <Input.TextArea
-      maxLength="100"
-      {...props}
-      onBlur={e => {
-        e.target.value = (e.target.value || '').trim();
-        onChange(e);
-        onBlur(e);
-      }}
-    />
-  );
+class TrimTextArea extends PureComponent {
+  static defaultProps = {
+    onChange: () => {},
+    onBlur: () => {},
+  };
+
+  render() {
+    return (
+      <Input.TextArea
+        maxLength="100"
+        {...this.props}
+        onBlur={e => {
+          e.target.value = (e.target.value || '').trim();
+          // eslint-disable-next-line react/destructuring-assignment
+          this.props.onChange(e);
+          // eslint-disable-next-line react/destructuring-assignment
+          this.props.onBlur(e);
+        }}
+      />
+    );
+  }
 }
 
-function TrimInput({ onChange = () => {}, onBlur = () => {}, props }) {
-  return (
-    <Input
-      maxLength="30"
-      {...props}
-      onBlur={e => {
-        e.target.value = (e.target.value || '').trim();
-        onChange(e);
-        onBlur(e);
-      }}
-    />
-  );
+class TrimInput extends PureComponent {
+  static defaultProps = {
+    onChange: () => {},
+    onBlur: () => {},
+  };
+
+  render() {
+    return (
+      <Input
+        maxLength="30"
+        {...this.props}
+        onBlur={e => {
+          e.target.value = (e.target.value || '').trim();
+          // eslint-disable-next-line react/destructuring-assignment
+          this.props.onChange(e);
+          // eslint-disable-next-line react/destructuring-assignment
+          this.props.onBlur(e);
+        }}
+      />
+    );
+  }
 }
 
 TrimInput.TextArea = TrimTextArea;

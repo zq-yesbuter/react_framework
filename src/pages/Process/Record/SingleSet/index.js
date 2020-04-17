@@ -207,7 +207,7 @@ function SingleSet({
           intent,
         };
         if (intent === 'interview_invitation') {
-          payload.startTime = values.startTime;
+          payload.startTime = values.startTime.format(format);
         }
         if (status === '1') {
           if (listValue && listValue.triggerTime) {
