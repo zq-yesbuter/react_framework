@@ -216,6 +216,20 @@ function ImportModal({
     }
   }
 
+   function formatData(intent) {
+    switch (intent) {
+      case 'first_entry_invitation':
+        return [{one:'梁主任',two:'18608001700',three:'test@jd.com',four:'',five:'胡女士',six:'18608001700',seven:''}];
+      case 'interview_research_invitation':
+       return [{one:'梁主任',two:'18608001700',three:'',four:'',five:'胡女士',six:'18608001700',seven:''}];
+      case 'second_entry_invitation': 
+        return [{one:'梁主任',two:'18608001700',three:'',four:'2020-04-20 09:00:00',five:'胡女士',six:'18608001700',seven:''}];
+      case 'interview_invitation':
+       return [{one:'梁主任',two:'18608001700',three:'',four:'2020-04-20 09:00:00',five:'胡女士',six:'18608001700',seven:'产品岗'}];
+      default:
+        return [{one:'梁主任',two:'18608001700',three:'test@jd.com',four:'2020-04-20 09:00:00',five:'胡女士',six:'18608001700',seven:'产品岗'}];
+    }
+  }
   // 下载导入模版
   function templatedownload() {
     const { search } = window.location;
@@ -224,7 +238,7 @@ function ImportModal({
     option.fileName = '导入模版';
     option.datas=[
       {
-        sheetData:[{one:'梁主任',two:'18608001700',three:'test@jd.com',four:'2020-04-20 09:00:00',five:'胡女士',six:'18608001700',seven:'产品岗'}],
+        sheetData:formatData(intent),
         sheetName:'导入模版',
         // sheetFilter:['two','one'],
         sheetHeader:formatHeader(intent),

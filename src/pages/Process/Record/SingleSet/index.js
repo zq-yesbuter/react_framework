@@ -153,7 +153,7 @@ function SingleSet({
               />
             )} */}  
             <span>面试时间：</span>
-            {getFieldDecorator('startTime', {
+            {getFieldDecorator(`params['startTime']`, {
               initialValue:
               showallTime && Object.keys(listValue).length
                   ? listValue.time
@@ -197,7 +197,7 @@ function SingleSet({
   function inventOnSubmit() {
     validateFields((err, values) => {
       if (!err) {
-        const { triggerTime } = values;
+        const { triggerTime, params } = values;
         if (triggerTime < moment().add(10, 'minutes')) {
           message.error('外呼时间请设置为大于当前时间10分钟以上哦！');
           return;
@@ -207,20 +207,20 @@ function SingleSet({
           intent,
         };
         if (intent === 'interview_invitation') {
-          payload.startTime = values.startTime.format(format);
+          payload.params = {startTime: params.startTime ? params.startTime.format(format) : null};
         }
-        if (status === '1') {
+        if (status === '1' || status === '2' ) {
           if (listValue && listValue.triggerTime) {
             if (moment(listValue.triggerTime) < moment().add(10, 'minutes')) {
               message.error('当前时间和外呼时间差小于10分钟，无法更新！');
               return;
             }
-            if (intent === 'interview_invitation') {
-              if (values.startTime < moment().add(10, 'minutes')) {
-                message.error('当前时间和面试时间差小于10分钟，无法更新！');
-                return;
-              }
-            }
+            // if (intent === 'interview_invitation') {
+            //   if (values.startTime < moment().add(10, 'minutes')) {
+            //     message.error('当前时间和面试时间差小于10分钟，无法更新！');
+            //     return;
+            //   }
+            // }
           }
           payload = { ...payload, updateId: invitationId };
           editSignel(payload)
@@ -252,7 +252,7 @@ function SingleSet({
         message.success('取消邀约成功!');
         setFieldsValue({ triggerTime: null });
         if (intent === 'interview_invitation') {
-          setFieldsValue({ startTime: null });
+          setFieldsValue({ params: {startTime:null}});
         }
         setShowCancel(false);
       })
