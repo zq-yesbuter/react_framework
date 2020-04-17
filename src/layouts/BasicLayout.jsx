@@ -106,7 +106,6 @@ const BasicLayout = props => {
       });
     }
   };
-  console.log('{children}==>',children)
   return (
     <ProLayout
       logo={logo}

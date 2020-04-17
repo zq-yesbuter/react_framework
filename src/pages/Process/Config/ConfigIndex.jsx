@@ -57,6 +57,8 @@ function Index({ dispatch, form, namelist }) {
   const [diffTimeList, setDiffTimeList] = useState([]);
   const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
   const [repeat, setRepeat] = useState(false);
+  const [cancelLoading, setCancelLoading] = useState(false);
+  const [sureLoading, setSureLoading] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -98,6 +100,7 @@ function Index({ dispatch, form, namelist }) {
           return;
         }
         const invitations = configNameList.map(item => item.invitationId);
+        setSureLoading(true);
         batchRelated({
           id,
           intent,
@@ -107,9 +110,15 @@ function Index({ dispatch, form, namelist }) {
         })
           .then(body => {
             message.success('任务配置成功！');
+            setSureLoading(false);
+            dispatch({
+              type: 'namelist/getConfigValue',
+              payload: queryString.parse(search),
+            });
           })
           .catch(e => {
             message.error(e.message);
+            setSureLoading(false);
           });
       }
     });
@@ -129,13 +138,20 @@ function Index({ dispatch, form, namelist }) {
       );
       return;
     }
+    setCancelLoading(true);
     batchCancel({ intent, id })
       .then(body => {
         message.success('取消任务成功');
         setFieldsValue({ triggerTime: null });
+        setCancelLoading(false);
+        dispatch({
+          type: 'namelist/getConfigValue',
+          payload: queryString.parse(search),
+        });
       })
       .catch(e => {
         message.error('取消任务失败');
+        setCancelLoading(false);
       });
   }
   function disabledDate(current) {
@@ -165,10 +181,23 @@ function Index({ dispatch, form, namelist }) {
   }
 
   function formatRepeat(repeat) {
+    let retry = false;
+    if (configNameList && configNameList.length) {
+      const retries = configNameList[0].retries;
+      if (retries && retries.length) {
+        let obj = {};
+        retries.forEach(item => Object.assign(obj, item));
+        retry= obj || false;
+      }
+    }
+
+    // setFieldsValue({'sure':(retry && Object.keys(retry).length) ? true : false})
+    const sure = getFieldValue('sure');
+    console.log('=====>',retry, getFieldValue('sure'),(retry && Object.keys(retry).length) );
     return (
       <div>
         {getFieldDecorator('sure', {
-          initialValue: false,
+          initialValue: (retry && Object.keys(retry).length) ? true : false,
         })(
           <Select
             style={{ width: 200, marginRight: 10 }}
@@ -183,7 +212,7 @@ function Index({ dispatch, form, namelist }) {
             </Option>
           </Select>
         )}
-        {repeat ? (
+        { sure ? (
           <Fragment>
             {getFieldDecorator(`retry['reasons']`, {
               rules: [
@@ -192,6 +221,7 @@ function Index({ dispatch, form, namelist }) {
                   message: '请添加！',
                 },
               ],
+              initialValue: (retry && Object.keys(retry).length) ? retry['reasons'] : [],
             })(
               <Select
                 mode="tags"
@@ -210,6 +240,7 @@ function Index({ dispatch, form, namelist }) {
                   message: '请添加！',
                 },
               ],
+              initialValue: (retry && Object.keys(retry).length) ? retry['delayed'] / 60 : null,
             })(
               <Select style={{ width: 200, marginRight: 10 }}>
                 <Option value={10} key={10}>
@@ -324,7 +355,11 @@ function Index({ dispatch, form, namelist }) {
           {getFieldDecorator('triggerTime', {
             rules: [{ required: true, message: '请选择外呼时间!' }],
             initialValue:
-              configValue && configValue.id ? moment(configValue.triggerStartTime) : null,
+              configValue && configValue.id
+                ? configValue.triggerStartTime
+                  ? moment(configValue.triggerStartTime)
+                  : null
+                : null,
           })(
             <DatePicker
               showTime={{ format: 'HH:mm', minuteStep: 5 }}
@@ -355,19 +390,19 @@ function Index({ dispatch, form, namelist }) {
               htmlType="submit"
               type="primary"
               // className="test-input-search"
-              onClick={_.debounce(() => handleOk(), 500)}
+              onClick={() => handleOk()}
               disabled={triggerDisabled}
+              loading={sureLoading}
             >
-              {status > 1 ? '更新任务' : '提交任务'}
+              {status > 0 ? '更新任务' : '提交任务'}
             </Button>
           )}
           {status === 1 && (
             <Button
               style={{ marginLeft: '10px' }}
               className="test-input-search"
-              onClick={_.debounce(e => {
-                cancel();
-              }, 500)}
+              loading={cancelLoading}
+              onClick={e => cancel()}
             >
               取消任务
             </Button>

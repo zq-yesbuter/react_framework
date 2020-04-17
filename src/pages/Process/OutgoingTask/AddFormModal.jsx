@@ -9,7 +9,7 @@ import TrimInput from '@/components/TrimInput';
 const Option = Select.Option;
 const { Item } = Form;
 
-function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
+function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist,submitLoading}) {
   const { ivrIntents } = namelist;
   useEffect(() => {
     return () => {};
@@ -46,11 +46,12 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist}) {
       title={getFieldValue('id') ? '修改任务' : '添加任务'}
       destroyOnClose
       width={550}
-      onOk={_.debounce(handleSubmit,500)}
+      onOk={handleSubmit}
       onCancel={() => {
         // this.setState({ selectSource: [], categoryIconUrl: '' });
         onCancel();
       }}
+      confirmLoading={submitLoading}
     >
       <Form layout="horizontal">
         <Item {...formItemLayout} label="任务名">

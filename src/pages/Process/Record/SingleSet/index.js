@@ -121,6 +121,7 @@ function SingleSet({
       case 'interview_invitation':
         return (
           <Fragment>
+            <span>外呼时间：</span>
             {getFieldDecorator('triggerTime', {
               initialValue:
               showallTime && Object.keys(listValue).length
@@ -150,7 +151,8 @@ function SingleSet({
                 formatter={value => `${value}分钟`}
                 parser={value => value.replace('分钟', '')}
               />
-            )} */}
+            )} */}  
+            <span>面试时间：</span>
             {getFieldDecorator('startTime', {
               initialValue:
               showallTime && Object.keys(listValue).length
@@ -257,7 +259,7 @@ function SingleSet({
   }
   return (
     <div className={styles['gutter-box']}>
-      <h3>外呼时间</h3>
+      <h3>设置外呼时间</h3>
       <div>
         {formatFieldItem(intent)}
         <Button onClick={_.debounce(inventOnSubmit,500)} disabled={sureDisabled}>

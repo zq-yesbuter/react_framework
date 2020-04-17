@@ -16,6 +16,8 @@ function Index({ dispatch, location, namelist }) {
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [submitLoading,  setSubmitLoading] = useState(false);
+
   useEffect(() => {
     // return () => {
     //   dispatch({
@@ -202,7 +204,26 @@ function Index({ dispatch, location, namelist }) {
           questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
         }
         Promise.all(questAll).then((result) => {
-          message.success('删除成功！');
+          let successCount = 0;
+          let errorCount = 0;
+          let errorMessages = [];
+          if(result && result.length) {
+            result.forEach(item => {
+              successCount += item.successCount;
+              errorCount += item.errorCount;
+              errorMessages = errorMessages.concat(item.errorMessages);
+            })
+          }
+          Modal.info({
+            title: '删除信息反馈',
+            content: (
+              <div>
+                <p>{`删除成功${successCount}条`}</p>
+                {errorCount ? <p>{`删除失败${errorCount}条${errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
+              </div>
+            ),
+            onOk() {},
+          });
           dispatch({
             type: 'namelist/getBatch',
             payload: {},
@@ -252,8 +273,10 @@ function Index({ dispatch, location, namelist }) {
         onCancel={() => {
           setValue(null);
         }}
+        submitLoading={submitLoading}
         onSubmit={data => {
           const {triggerTime,...rest } = data;
+          setSubmitLoading(true);
           addBatch(data)
           .then(body => {
             message.success('新增任务成功');
@@ -261,8 +284,9 @@ function Index({ dispatch, location, namelist }) {
               type: 'namelist/getBatch',
               payload: {},
             });
+            setSubmitLoading(false);
           })
-          .catch(e => {});
+          .catch(e => {setSubmitLoading(false);});
           setValue(null);
         }}
       />

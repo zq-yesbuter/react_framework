@@ -1,13 +1,13 @@
 import React, { Fragment } from 'react';
 import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
+import _ from 'lodash';
 import { formatNameType } from '@/utils/utils';
 import { nameStatus } from '../contant';
 
-function formatTime(intent){
+function formatTime(intent) {
   switch (intent) {
-    case ('first_entry_invitation',
-      'interview_research_invitation'):
+    case ('first_entry_invitation', 'interview_research_invitation'):
       return '时间';
     case 'second_entry_invitation':
       return '入职时间';
@@ -17,7 +17,7 @@ function formatTime(intent){
       return '时间';
   }
 }
-const renderColumns = (dispatch,intent) => {
+const renderColumns = (dispatch, intent) => {
   const columns = [
     {
       title: '姓名',
@@ -29,11 +29,21 @@ const renderColumns = (dispatch,intent) => {
       key: 'tel',
       dataIndex: 'tel',
     },
-    // {
-    //   title: '岗位',
-    //   key: 'jobName',
-    //   dataIndex: 'jobName',
-    // },
+    {
+      title: '岗位',
+      key: 'job',
+      dataIndex: 'job',
+    },
+    {
+      title: '外呼时间',
+      key: 'triggerTime',
+      dataIndex: 'triggerTime',
+    },
+    {
+      title: formatTime(intent),
+      key: 'startTime',
+      dataIndex: 'startTime',
+    },
     // {
     //   title: '面试时长',
     //   key: 'entity',
@@ -49,16 +59,6 @@ const renderColumns = (dispatch,intent) => {
     //   key: 'appCode',
     //   dataIndex: 'appCode',
     // },
-    {
-      title: '外呼时间',
-      key: 'triggerTime',
-      dataIndex: 'triggerTime',
-    },
-    {
-      title: formatTime(intent),
-      key: 'startTime',
-      dataIndex: 'startTime',
-    },
     // {
     //   title: '待确定结束时间',
     //   key: 'endTime',
@@ -68,9 +68,9 @@ const renderColumns = (dispatch,intent) => {
       title: '状态',
       key: 'status',
       dataIndex: 'status',
-      render:  (status,record) => {
-        console.log('record====>',record);
-        return formatNameType(nameStatus,'value',status,'name')},
+      render: (status, record) => {
+        return formatNameType(nameStatus, 'value', status, 'name');
+      },
     },
     {
       title: '更新人',
@@ -90,7 +90,7 @@ const renderColumns = (dispatch,intent) => {
       dataIndex: 'invitationId',
       width: 150,
       render: (group, value) => {
-        const { intent,status } = value;
+        const { intent, status } = value;
         return (
           <Fragment>
             <a
@@ -127,7 +127,7 @@ const renderColumns = (dispatch,intent) => {
     //   key: 'entity2',
     //   dataIndex: 'entity3',
     // },
-    
+
     // {
     //   title: 'contact',
     //   key: 'contact',
@@ -135,6 +135,13 @@ const renderColumns = (dispatch,intent) => {
     // },
   ];
 
-  return columns;
+  const cloneColumns = _.cloneDeep(columns);
+  if (intent !== 'interview_invitation') {
+    cloneColumns.splice(2, 1);
+  }
+  if (intent === 'first_entry_invitation' || intent === 'interview_research_invitation') {
+    cloneColumns.splice(3, 1);
+  }
+  return cloneColumns;
 };
 export default renderColumns;

@@ -65,6 +65,7 @@ function ImportModal({
   } = form;
   const [fileList, setFileList] = useState([]);
   const [jobPostVisible, setJobPostVisible] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
 
   // 导入名单
   function onSumbit() {
@@ -92,6 +93,7 @@ function ImportModal({
           (ivrIntents && ivrIntents.length && ivrIntents.find(item => item.intent === intent)) ||
           {};
         const params = { intent, scene };
+        setConfirmLoading(true);
         upload({ formData, params })
           .then(({ success, successCount, errorCount, errorMessages }) => {
             let invitations = [];
@@ -107,7 +109,7 @@ function ImportModal({
                     content: (
                       <div>
                         <p>{`导入成功${successCount}人`}</p>
-                        {errorCount ? <p>{`导入失败${errorCount}人`}</p> : null}
+                        {errorCount ? <p>{`导入失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
                       </div>
                     ),
                     onOk() {},
@@ -118,16 +120,21 @@ function ImportModal({
                     payload: { id, intent },
                   });
                   setFileList([]);
+                  setConfirmLoading(false);
                 })
-                .catch(e => {});
+                .catch(e => {setConfirmLoading(false);});
             } else {
               message.error('外呼文件导入为空！');
+              setConfirmLoading(false);
             }
             resetFields();
             setFileList([]);
             onCancel();
           })
-          .catch(e => message.error(e.message));
+          .catch(e => {
+            message.error(e.message);
+            setConfirmLoading(false);
+          });
       }
     });
   }
@@ -235,11 +242,12 @@ function ImportModal({
       title="导入名单"
       destroyOnClose
       width={550}
-      onOk={_.debounce(onSumbit, 500)}
+      onOk={onSumbit}
       onCancel={() => {
         setFileList([]);
         onCancel();
       }}
+      confirmLoading={confirmLoading}
     >
       <Form {...formItemLayout}>
         <div style={{ textAlign: 'right' }}>
