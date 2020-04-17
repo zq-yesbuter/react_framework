@@ -120,6 +120,8 @@ function Index({ dispatch, form, namelist }) {
             message.error(e.message);
             setSureLoading(false);
           });
+      }else{
+        message.error('请添加重复外呼配置！');
       }
     });
   }
@@ -177,31 +179,34 @@ function Index({ dispatch, form, namelist }) {
   }
 
   function formRepeatChange(e) {
-    setRepeat(e);
+    // setRepeat(e);
+    
   }
 
   function formatRepeat(repeat) {
-    let retry = false;
+    let retry = {};
     if (configNameList && configNameList.length) {
-      const retries = configNameList[0].retries;
+      const { retries } = configNameList[0] || {};
       if (retries && retries.length) {
-        let obj = {};
-        retries.forEach(item => Object.assign(obj, item));
-        retry= obj || false;
+        retries.forEach(item => Object.assign(retry, item));
       }
     }
-
-    // setFieldsValue({'sure':(retry && Object.keys(retry).length) ? true : false})
-    const sure = getFieldValue('sure');
-    console.log('=====>',retry, getFieldValue('sure'),(retry && Object.keys(retry).length) );
+    const showSure = getFieldValue('sure') === undefined ? (retry && Object.keys(retry).length) : (getFieldValue('sure'));
+    // console.log('=====>',getFieldValue('sure'),getFieldValue('sure') === undefined,(retry && Object.keys(retry).length),getFieldValue('sure'));
     return (
       <div>
         {getFieldDecorator('sure', {
-          initialValue: (retry && Object.keys(retry).length) ? true : false,
+          initialValue: (retry && Object.keys(retry).length) ? true : undefined,
+          rules: [
+            {
+              required: true,
+              message: '请选择！',
+            },
+          ],
         })(
           <Select
             style={{ width: 200, marginRight: 10 }}
-            onChange={formRepeatChange}
+            // onChange={formRepeatChange}
             placeholder="请选择是否重复外呼"
           >
             <Option value={true} key={true}>
@@ -212,16 +217,16 @@ function Index({ dispatch, form, namelist }) {
             </Option>
           </Select>
         )}
-        { sure ? (
+        { showSure ? (
           <Fragment>
             {getFieldDecorator(`retry['reasons']`, {
+              initialValue: (retry && Object.keys(retry).length) ? retry['reasons'] : [],
               rules: [
                 {
                   required: true,
                   message: '请添加！',
                 },
               ],
-              initialValue: (retry && Object.keys(retry).length) ? retry['reasons'] : [],
             })(
               <Select
                 mode="tags"
@@ -234,13 +239,13 @@ function Index({ dispatch, form, namelist }) {
               </Select>
             )}
             {getFieldDecorator(`retry['delay']`, {
+              initialValue: (retry && Object.keys(retry).length) ? retry['delayed'] / 60 : null,
               rules: [
                 {
                   required: true,
                   message: '请添加！',
                 },
               ],
-              initialValue: (retry && Object.keys(retry).length) ? retry['delayed'] / 60 : null,
             })(
               <Select style={{ width: 200, marginRight: 10 }}>
                 <Option value={10} key={10}>

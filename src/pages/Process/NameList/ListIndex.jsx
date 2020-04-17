@@ -68,7 +68,7 @@ const savingFile = (response, fileName) => {
 };
 function Index({ dispatch, location, namelist }) {
   const { nameList, ivrIntents, nameCur, namePageSize, nameRequest, batchDetail, deleteNameList } = namelist;
-  const { status } = batchDetail;
+  const { status,name } = batchDetail;
   const { search } = window.location;
   const {id,intent}=queryString.parse(search);
   const [value, setValue] = useState(null);
@@ -373,7 +373,7 @@ function Index({ dispatch, location, namelist }) {
       bordered={false}
       title={
         <Fragment>
-          外呼名单
+          {`外呼任务${name} - 外呼名单`}
           <a
             href="javascript:;"
             style={{

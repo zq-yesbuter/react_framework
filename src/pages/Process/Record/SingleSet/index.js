@@ -209,7 +209,7 @@ function SingleSet({
         if (intent === 'interview_invitation') {
           payload.startTime = values.startTime;
         }
-        if (status === 1) {
+        if (status === '1') {
           if (listValue && listValue.triggerTime) {
             if (moment(listValue.triggerTime) < moment().add(10, 'minutes')) {
               message.error('当前时间和外呼时间差小于10分钟，无法更新！');
@@ -228,6 +228,7 @@ function SingleSet({
               message.success('修改邀约成功');
             })
             .catch(e => message.error(e.message));
+            return;
         }
         addSignel(payload)
           .then(data => {
