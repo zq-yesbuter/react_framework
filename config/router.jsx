@@ -89,8 +89,35 @@ export default [
           //       name: '投递记录',
           //       path: '/AI/recruit/record',
           //       component: '../pages/Recruit/Record',
-          //       icon: "profile",
+          //       icon: "file-text",
           //     },
+          //     {
+          //       name: '面试管理',
+          //       path: '/AI/recruit/interview',
+          //       component: '../pages/Recruit/Interview',
+          //       icon: "read",
+          //     },
+          //     {
+          //       name: '内推记录',
+          //       path: '/AI/recruit/manPush',
+          //       component: '../pages/Recruit/ManPush',
+          //       icon: "book",
+          //     },
+          //     {
+          //       name: '岗位推荐',
+          //       hideInMenu: true,
+          //       path: '/AI/recruit/manPush/post',
+          //       component: '../pages/Recruit/ManPush',
+          //       icon: "book",
+          //     },
+          //     {
+          //       name: '简历推荐',
+          //       hideInMenu: true,
+          //       path: '/AI/recruit/manPush/man',
+          //       component: '../pages/Recruit/ManPush',
+          //       icon: "book",
+          //     },
+              
           //     {
           //       component: '../pages/404.jsx',
           //     },

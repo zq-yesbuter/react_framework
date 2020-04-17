@@ -73,7 +73,7 @@ const renderColumns = (dispatch,ivrIntents) => {
         const { name, intent,status} = value || {};
         return (
           <Fragment>
-            {status > 0 ? (
+            {status > -1 ? (
               <Fragment>
                 <a
                   onClick={() => {

@@ -4,7 +4,6 @@ import queryString from 'query-string';
 import { Divider } from 'antd';
 import renderTable from '@/components/SelectTable';
 import { formatTaskType } from '@/utils/utils';
-import { statusOptions } from '../contant';
 
 const renderColumns = (dispatch,ivrIntents) => {
   const columns = [
@@ -49,7 +48,6 @@ const renderColumns = (dispatch,ivrIntents) => {
       title: '申请时间',
       key: 'status',
       dataIndex: 'status',
-      render:  status => formatTaskType(statusOptions,'value',status,'name'),
     },
     {
       title: '更新人',

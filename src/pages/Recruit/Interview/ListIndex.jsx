@@ -130,25 +130,6 @@ function Index({ dispatch, location, recruit }) {
         type: 'recruit/save',
         payload: {batchRequest:{pageSize: length, pageNum: start || 1}},
       }); 
-    
-      // onChange(
-      //   {
-      //     start,
-      //     length,
-      //     status,
-      //   },
-      //   () => {
-      //     onSubmit({
-      //       start,
-      //       length,
-      //       status,
-      //       modelCode,
-      //       order: sorter.columnKey,
-      //       dir: sorter.order,
-      //     });
-      //     this.pending = false;
-      //   }
-      // );
       setSelectedRowKeys([]);
       // this.setState({
       //   selectedRows: [],
@@ -167,8 +148,10 @@ function Index({ dispatch, location, recruit }) {
     formatOperation: (selectedRowKeys,hasSelected) => {
       return (
         <div style={{marginTop:10}}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>移入面试</Button>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>筛选未通过</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>安排面试时间</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>人机面试邀约</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>确定面试</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>取消面试</Button>
           <span style={{ marginLeft: 8 }}>
             {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
           </span>
@@ -222,7 +205,7 @@ function Index({ dispatch, location, recruit }) {
   return (
     <Card
       bordered={false}
-      title="投递记录"
+      title="面试管理"
       extra={
         <Button
           icon="plus"

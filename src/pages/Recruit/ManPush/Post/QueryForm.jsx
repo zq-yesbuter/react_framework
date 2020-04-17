@@ -1,7 +1,6 @@
 import React, { PureComponent } from 'react';
 import { Form, Button, DatePicker, Select, Input } from 'antd';
 import { connect } from 'dva';
-import mapValueToFields from '../../../utils/mapValueToFields';
 // import { statusOptions } from '../contant';
 import DateTimeRangePicker from '@/components/DateTimeRangePicker';
 
