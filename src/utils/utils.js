@@ -140,7 +140,7 @@ export function formatTaskType(ivrIntents, key, keyValue, value) {
 }
 
 export function formatNameType(ivrIntents, key, keyValue, value, record) {
-  const { operator } = record;
+  const { operator, appCode } = record;
   const ivrValue = ivrIntents && ivrIntents.find(e => e[key] === keyValue) || {};
-  return ivrValue && Object.keys(ivrValue).length ? (operator === 'JDJR' && keyValue !== '0' ? `${ivrValue[value]}(重复外呼)` : ivrValue[value]) : null
+  return ivrValue && Object.keys(ivrValue).length ? (operator === appCode && keyValue !== '0' && appCode ? `${ivrValue[value]}(重复外呼)` : ivrValue[value]) : null
 }
