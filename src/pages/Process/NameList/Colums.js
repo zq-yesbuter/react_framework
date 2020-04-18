@@ -69,7 +69,7 @@ const renderColumns = (dispatch, intent) => {
       key: 'status',
       dataIndex: 'status',
       render: (status, record) => {
-        return formatNameType(nameStatus, 'value', status, 'name');
+        return formatNameType(nameStatus, 'value', status, 'name',record);
       },
     },
     {

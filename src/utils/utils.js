@@ -134,12 +134,13 @@ export function getRoutes(path, routerData) {
   return renderRoutes;
 }
 
-export function formatTaskType(ivrIntents,key,keyValue,value) {
+export function formatTaskType(ivrIntents, key, keyValue, value) {
   const ivrValue = ivrIntents && ivrIntents.find(e => e[key] === keyValue) || {};
   return ivrValue && Object.keys(ivrValue).length ? ivrValue[value] : null
 }
 
-export function formatNameType(ivrIntents,key,keyValue,value) {
+export function formatNameType(ivrIntents, key, keyValue, value, record) {
+  const { operator } = record;
   const ivrValue = ivrIntents && ivrIntents.find(e => e[key] === keyValue) || {};
-  return ivrValue && Object.keys(ivrValue).length ? ivrValue[value] : null
+  return ivrValue && Object.keys(ivrValue).length ? (operator === 'JDJR' && keyValue !== '0' ? `${ivrValue[value]}(重复外呼)` : ivrValue[value]) : null
 }
