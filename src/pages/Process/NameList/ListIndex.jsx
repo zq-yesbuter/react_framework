@@ -66,13 +66,20 @@ const savingFile = (response, fileName) => {
     }
   });
 };
-function Index({ dispatch, location, namelist }) {
-  const { nameList, ivrIntents, nameCur, namePageSize, nameRequest, batchDetail, deleteNameList } = namelist;
-  const { status,name } = batchDetail;
+function Index({ dispatch, location, namelist, loading }) {
+  const {
+    nameList,
+    ivrIntents,
+    nameCur,
+    namePageSize,
+    nameRequest,
+    batchDetail,
+    deleteNameList,
+  } = namelist;
+  const { status, name } = batchDetail;
   const { search } = window.location;
-  const {id,intent}=queryString.parse(search);
+  const { id, intent } = queryString.parse(search);
   const [value, setValue] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   useEffect(() => {
@@ -84,15 +91,6 @@ function Index({ dispatch, location, namelist }) {
   }, []);
 
   const query = {}; //  queryString.parse(location.search);
-
-  const start = () => {
-    setLoading(true);
-    // ajax request after empty completing
-    setTimeout(() => {
-      setSelectedRowKeys([]);
-      setLoading(false);
-    }, 1000);
-  };
   const importMenu = (
     <Menu>
       {/* <Menu.Item key={1} onClick={downloadResumes}>
@@ -108,13 +106,13 @@ function Index({ dispatch, location, namelist }) {
   // const batchName = decodeURI(search.slice(1));
   const setting = {
     current: nameCur,
-    columns: renderColumns(dispatch,intent),
+    columns: renderColumns(dispatch, intent),
     pageSize: namePageSize,
     loading,
     selectedRowKeys,
     showNext: nameList && nameList.length < namePageSize,
     data: nameList || [],
-    total:  nameList && nameList.length,
+    total: nameList && nameList.length,
     onChange: (start, length) => {
       // this.setState(
       //   ({ fields }) => ({
@@ -129,7 +127,7 @@ function Index({ dispatch, location, namelist }) {
       //     this.pending = false;
       //   }
       // );
-      
+
       dispatch({
         type: 'namelist/fetchBatchDetail',
         payload: { start, length },
@@ -143,33 +141,33 @@ function Index({ dispatch, location, namelist }) {
     prev: () => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: {pageNum:nameCur-1, id,intent},
+        payload: { pageNum: nameCur - 1, id, intent },
       });
       dispatch({
         type: 'namelist/save',
-        payload: {nameRequest:{...nameRequest,pageNum:nameCur-1 }},
+        payload: { nameRequest: { ...nameRequest, pageNum: nameCur - 1 } },
       });
       setSelectedRowKeys([]);
     },
     next: () => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: {pageNum:nameCur+1,id,intent},
+        payload: { pageNum: nameCur + 1, id, intent },
       });
       dispatch({
         type: 'namelist/save',
-        payload: {nameRequestt:{...nameRequest,pageNum:nameCur+1 }},
+        payload: { nameRequestt: { ...nameRequest, pageNum: nameCur + 1 } },
       });
       setSelectedRowKeys([]);
     },
     onSizeChange: pageSize => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: {pageSize,id,intent},
+        payload: { pageSize, id, intent },
       });
       dispatch({
         type: 'namelist/save',
-        payload: {nameRequest:{...nameRequest,pageSize }},
+        payload: { nameRequest: { ...nameRequest, pageSize } },
       });
       setSelectedRowKeys([]);
     },
@@ -183,19 +181,27 @@ function Index({ dispatch, location, namelist }) {
     },
     importMenu,
     hasImport: true,
-    formatOperation: (selectedRowKeys,hasSelected) => {
+    formatOperation: (selectedRowKeys, hasSelected) => {
       return (
-        <div style={{marginTop:10}}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>删除</Button>
-          <Button disabled={!hasSelected || status === 3 || status === 4} onClick={() => exportFunction(selectedRowKeys)} style={{marginLeft:10}}>导出邀约信息</Button>
+        <div style={{ marginTop: 10 }}>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>
+            删除
+          </Button>
+          <Button
+            disabled={!hasSelected || status === 3 || status === 4}
+            onClick={() => exportFunction(selectedRowKeys)}
+            style={{ marginLeft: 10 }}
+          >
+            导出邀约信息
+          </Button>
           <span style={{ marginLeft: 8 }}>
             {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
           </span>
         </div>
-      )
+      );
     },
   };
-  function exportFunction(ids){
+  function exportFunction(ids) {
     Modal.confirm({
       title: '导出名单',
       content: (
@@ -209,9 +215,9 @@ function Index({ dispatch, location, namelist }) {
       okText: '确认',
       cancelText: '取消',
     });
-  };
+  }
 
-  function handleDelete(updateIds){
+  function handleDelete(updateIds) {
     Modal.confirm({
       title: '删除',
       content: (
@@ -220,57 +226,71 @@ function Index({ dispatch, location, namelist }) {
         </div>
       ),
       onOk: () => {
-        if(status === 1){
-          if(updateIds.length >= namePageSize){
+        if (status === 1) {
+          if (updateIds.length >= namePageSize) {
             dispatch({
               type: 'namelist/deleteMore',
-              payload: {namePageSize,pageNum:nameCur+1 },
+              payload: { namePageSize, pageNum: nameCur + 1 },
             }).then(response => {
-              const {data:deleteNameList} = response;
-              if(deleteNameList.length){
-                nameBatchDelete({ intent, updateIds }).then(({ success, successCount, errorCount, errorMessages }) => {
-                  Modal.info({
-                    title: '删除信息反馈',
-                    content: (
-                      <div>
-                        <p>{`删除成功${successCount}人`}</p>
-                        {errorCount ? <p>{`删除失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
-                      </div>
-                    ),
-                    onOk() {},
+              const { data: deleteNameList } = response;
+              if (deleteNameList.length) {
+                nameBatchDelete({ intent, updateIds })
+                  .then(({ success, successCount, errorCount, errorMessages }) => {
+                    Modal.info({
+                      title: '删除信息反馈',
+                      content: (
+                        <div>
+                          <p>{`删除成功${successCount}人`}</p>
+                          {errorCount ? (
+                            <p>{`删除失败${errorCount}人${
+                              errorMessages && errorMessages.length
+                                ? `，错误原因【${errorMessages.join(',')}`
+                                : ''
+                            }】`}</p>
+                          ) : null}
+                        </div>
+                      ),
+                      onOk() {},
+                    });
+                    dispatch({
+                      type: 'namelist/fetchBatchDetail',
+                      payload: { id, intent },
+                    });
+                  })
+                  .catch(e => {
+                    message.error(e.message);
                   });
-                  dispatch({
-                    type: 'namelist/fetchBatchDetail',
-                    payload: { id, intent },
-                  });
-                })
-                .catch(e => {
-                  message.error(e.message);
-                });
-              }else{
+              } else {
                 Modal.confirm({
                   title: '该任务处于待外呼状态，您确认要删除勾选的名单数据吗？',
                   content: '所有名单都被删除时任务会自动回退到【已创建】状态',
                   onOk() {
-                    nameBatchDelete({ intent, updateIds }).then(({ success, successCount, errorCount, errorMessages }) => {
-                      Modal.info({
-                        title: '删除信息反馈',
-                        content: (
-                          <div>
-                            <p>{`删除成功${successCount}人`}</p>
-                            {errorCount ? <p>{`删除失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
-                          </div>
-                        ),
-                        onOk() {},
+                    nameBatchDelete({ intent, updateIds })
+                      .then(({ success, successCount, errorCount, errorMessages }) => {
+                        Modal.info({
+                          title: '删除信息反馈',
+                          content: (
+                            <div>
+                              <p>{`删除成功${successCount}人`}</p>
+                              {errorCount ? (
+                                <p>{`删除失败${errorCount}人${
+                                  errorMessages && errorMessages.length
+                                    ? `，错误原因【${errorMessages.join(',')}`
+                                    : ''
+                                }】`}</p>
+                              ) : null}
+                            </div>
+                          ),
+                          onOk() {},
+                        });
+                        dispatch({
+                          type: 'namelist/fetchBatchDetail',
+                          payload: { id, intent },
+                        });
+                      })
+                      .catch(e => {
+                        message.error(e.message);
                       });
-                      dispatch({
-                        type: 'namelist/fetchBatchDetail',
-                        payload: { id, intent },
-                      });
-                    })
-                    .catch(e => {
-                      message.error(e.message);
-                    });
                   },
                   onCancel() {
                     console.log('Cancel');
@@ -279,31 +299,38 @@ function Index({ dispatch, location, namelist }) {
                   cancelText: '取消',
                 });
               }
-            })
-          }else{
+            });
+          } else {
             Modal.confirm({
               title: '该任务处于待外呼状态，您确认要删除勾选的名单数据吗？',
               content: '所有名单都被删除时任务会自动回退到【已创建】状态',
               onOk() {
-                nameBatchDelete({ intent, updateIds }).then(({ success, successCount, errorCount, errorMessages }) => {
-                  Modal.info({
-                    title: '删除信息反馈',
-                    content: (
-                      <div>
-                        <p>{`删除成功${successCount}人`}</p>
-                        {errorCount ? <p>{`删除失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
-                      </div>
-                    ),
-                    onOk() {},
+                nameBatchDelete({ intent, updateIds })
+                  .then(({ success, successCount, errorCount, errorMessages }) => {
+                    Modal.info({
+                      title: '删除信息反馈',
+                      content: (
+                        <div>
+                          <p>{`删除成功${successCount}人`}</p>
+                          {errorCount ? (
+                            <p>{`删除失败${errorCount}人${
+                              errorMessages && errorMessages.length
+                                ? `，错误原因【${errorMessages.join(',')}`
+                                : ''
+                            }】`}</p>
+                          ) : null}
+                        </div>
+                      ),
+                      onOk() {},
+                    });
+                    dispatch({
+                      type: 'namelist/fetchBatchDetail',
+                      payload: { id, intent },
+                    });
+                  })
+                  .catch(e => {
+                    message.error(e.message);
                   });
-                  dispatch({
-                    type: 'namelist/fetchBatchDetail',
-                    payload: { id, intent },
-                  });
-                })
-                .catch(e => {
-                  message.error(e.message);
-                });
               },
               onCancel() {
                 console.log('Cancel');
@@ -312,42 +339,49 @@ function Index({ dispatch, location, namelist }) {
               cancelText: '取消',
             });
           }
-        }else{
-          nameBatchDelete({ intent, updateIds }).then(({ success, successCount, errorCount, errorMessages }) => {
-            Modal.info({
-              title: '删除信息反馈',
-              content: (
-                <div>
-                  <p>{`删除成功${successCount}人`}</p>
-                  {errorCount ? <p>{`删除失败${errorCount}人${errorMessages && errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
-                </div>
-              ),
-              onOk() {},
+        } else {
+          nameBatchDelete({ intent, updateIds })
+            .then(({ success, successCount, errorCount, errorMessages }) => {
+              Modal.info({
+                title: '删除信息反馈',
+                content: (
+                  <div>
+                    <p>{`删除成功${successCount}人`}</p>
+                    {errorCount ? (
+                      <p>{`删除失败${errorCount}人${
+                        errorMessages && errorMessages.length
+                          ? `，错误原因【${errorMessages.join(',')}`
+                          : ''
+                      }】`}</p>
+                    ) : null}
+                  </div>
+                ),
+                onOk() {},
+              });
+              dispatch({
+                type: 'namelist/fetchBatchDetail',
+                payload: { id, intent },
+              });
+            })
+            .catch(e => {
+              message.error(e.message);
             });
-            dispatch({
-              type: 'namelist/fetchBatchDetail',
-              payload: { id, intent },
-            });
-          })
-          .catch(e => {
-            message.error(e.message);
-          });
-        }       
+        }
       },
       okText: '确认',
       cancelText: '取消',
     });
-  };
+  }
 
   // 筛选条件
   function onSubmit(values) {
     dispatch({
       type: 'namelist/fetchBatchDetail',
-      payload: { id,intent,...values },
+      payload: { id, intent, ...values },
     });
     dispatch({
       type: 'namelist/save',
-      payload: {nameRequest:values},
+      payload: { nameRequest: values },
     });
   }
 
@@ -356,7 +390,12 @@ function Index({ dispatch, location, namelist }) {
     let size = 0;
     fetch(`/data/${intent}/list/all`, {
       method: 'POST',
-      body: JSON.stringify({ invitationIds, pageNum: 1, pageSize: 500, orderBy: { applyDate: 'DESC' } }),
+      body: JSON.stringify({
+        invitationIds,
+        pageNum: 1,
+        pageSize: 500,
+        orderBy: { applyDate: 'DESC' },
+      }),
       headers: {
         Accept: 'application/vnd.ms-excel',
         'Content-Type': 'application/json',
@@ -460,8 +499,16 @@ function Index({ dispatch, location, namelist }) {
   );
 }
 
-export default connect(({ namelist }) => {
-  return {
+export default connect(
+  ({
     namelist,
-  };
-})(Index);
+    loading: {
+      effects: { 'namelist/fetchBatchDetail': loading },
+    },
+  }) => {
+    return {
+      namelist,
+      loading,
+    };
+  }
+)(Index);

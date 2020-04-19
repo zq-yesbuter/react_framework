@@ -12,6 +12,7 @@ import {
   Tag,
   Popconfirm,
   Tabs,
+  Spin,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -99,6 +100,7 @@ function RecordBottom({
     phoneMessage,
     offerPhoneMessage,
   },
+  loading,
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const prevSelectJobId = usePrevious(selectJobId);
@@ -308,79 +310,52 @@ function RecordBottom({
     resetFields();
   }
 
-  const { status } = jobList.find(item => item.applyId === selectJobId) || {};
-  // console.log('status===>1111111',status,backShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
-  // console.log('status===>1111111',status,offerBackShowTime,'=====>',moment(backShowTime.endTime).diff(backShowTime.interviewTime,'minutes'))
-  console.log('flowList==>', flowList);
-  
   return (
     <div className={styles['gutter-box']}>
       <h3>外呼记录/结果</h3>
       <div className={styles.scroll}>
-        <Steps progressDot direction="vertical" current={10000}>
-          {flowList &&
-            flowList.length &&
-            flowList.map(
-              (
-                { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
-                index
-              ) => (
-                <Step
-                  title={
-                    channel ? `【${formatPhoneStatus(status)}】` : `【${formatStatus(status)}】`
-                  }
-                  description={
-                    <div>
-                      {roundStartTime ? <p>{`外呼开始时间： ${roundStartTime}`}</p> : null}
-                      {roundEndTime ? <p>{`外呼结束时间： ${roundEndTime}`}</p> : null}
-                      {interviewConfirmTime ? (
-                        <p style={{ color: 'red', fontWeight: 400 }}>
-                          {`用户期望面试时间： ${interviewConfirmTime}`}
-                        </p>
-                      ) : null}
-                      <p>{channel ? null : remark}</p>
-                    </div>
-                  }
-                  key={index}
-                />
-              )
-            )}
-        </Steps>
-        {/* <Steps progressDot direction="vertical" current={10000}>
-              {phoneMessage &&
-                phoneMessage.length &&
-                phoneMessage.map(
-                  (
-                    { status },
-                    index
-                  ) => (
-                    <Step
-                      title={`【${formatPhoneStatus(status)}】`}
-                      key={index}
-                    />
-                  )
-                )}
-            </Steps> */}
-       
-        {/* <Steps progressDot direction="vertical" current={10000}>
-              {offerPhoneMessage &&
-                offerPhoneMessage.length &&
-                offerPhoneMessage.map(
-                  (
-                    { status },
-                    index
-                  ) => (
-                    <Step
-                      title={`【${formatPhoneStatus(status)}】`}
-                      key={index}
-                    />
-                  )
-                )}
-            </Steps> */}
+        {loading ? (
+          <Spin style={{ marginTop: 50 }} />
+        ) : (
+          <Steps progressDot direction="vertical" current={10000}>
+            {flowList &&
+              flowList.length &&
+              flowList.map(
+                (
+                  { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
+                  index
+                ) => (
+                  <Step
+                    title={
+                      channel ? `【${formatPhoneStatus(status)}】` : `【${formatStatus(status)}】`
+                    }
+                    description={
+                      <div>
+                        {roundStartTime ? <p>{`外呼开始时间： ${roundStartTime}`}</p> : null}
+                        {roundEndTime ? <p>{`外呼结束时间： ${roundEndTime}`}</p> : null}
+                        {interviewConfirmTime ? (
+                          <p style={{ color: 'red', fontWeight: 400 }}>
+                            {`用户期望面试时间： ${interviewConfirmTime}`}
+                          </p>
+                        ) : null}
+                        <p>{channel ? null : remark}</p>
+                      </div>
+                    }
+                    key={index}
+                  />
+                )
+              )}
+          </Steps>
+        )}
       </div>
     </div>
   );
 }
 
-const mapStateToProps = ({ namelist = {} }) => ({ namelist });
+const mapStateToProps = ({
+  namelist = {},
+  loading: {
+    effects: { 'namelist/getSigleFlowlist': loading },
+  },
+}) => ({ namelist, loading });
 export default connect(mapStateToProps)(Form.create({})(RecordBottom));

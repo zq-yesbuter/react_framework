@@ -11,6 +11,7 @@ import styles from './index.less';
 function RecordList({
   dispatch,
   namelist: { messageList = [], newTalk, noLoading = false, bottomLoading = false },
+  loading,
 }) {
   const chatRef = useRef(null);
   const intervalRef = useRef(null);
@@ -245,13 +246,13 @@ function RecordList({
 
   function bottomLoadingHtml() {
     // const {  } = chatrecord;
-    // if (bottomLoading) {
-    //   return (
-    //     <div className={styles.bottomLoading}>
-    //       <Spin />
-    //     </div>
-    //   );
-    // }
+    if (loading) {
+      return (
+        <div className={styles.bottomLoading}>
+          <Spin />
+        </div>
+      );
+    }
     return null;
   }
 
@@ -268,4 +269,11 @@ function RecordList({
   );
 }
 
-export default connect(({ namelist = {} }) => ({ namelist }))(RecordList);
+export default connect(
+  ({
+    namelist = {},
+    loading: {
+      effects: { 'namelist/getMessage': loading },
+    },
+  }) => ({ namelist, loading })
+)(RecordList);

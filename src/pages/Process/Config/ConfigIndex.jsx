@@ -50,7 +50,7 @@ const tailLayout = {
   },
 };
 
-function Index({ dispatch, form, namelist }) {
+function Index({ dispatch, form, namelist, loading }) {
   const { configValue, ivrIntents, configNameList } = namelist;
   const { search } = window.location;
   const batchName = decodeURI(search.slice(1));
@@ -120,7 +120,7 @@ function Index({ dispatch, form, namelist }) {
             message.error(e.message);
             setSureLoading(false);
           });
-      }else{
+      } else {
         message.error('请添加重复外呼配置！');
       }
     });
@@ -180,7 +180,16 @@ function Index({ dispatch, form, namelist }) {
 
   function formRepeatChange(e) {
     // setRepeat(e);
-    
+    if (!e) {
+      const newConfigNameList = _.cloneDeep(configNameList);
+      if (newConfigNameList && newConfigNameList.length) {
+        newConfigNameList[0].retries = {};
+      }
+      dispatch({
+        type: 'namelist/save',
+        payload: { configNameList: newConfigNameList },
+      });
+    }
   }
 
   function formatRepeat(repeat) {
@@ -191,12 +200,15 @@ function Index({ dispatch, form, namelist }) {
         retries.forEach(item => Object.assign(retry, item));
       }
     }
-    const showSure = getFieldValue('sure') === undefined ? (retry && Object.keys(retry).length) : (getFieldValue('sure'));
+    const showSure =
+      getFieldValue('sure') === undefined || getFieldValue('sure') === false
+        ? retry && Object.keys(retry).length
+        : getFieldValue('sure');
     // console.log('=====>',getFieldValue('sure'),getFieldValue('sure') === undefined,(retry && Object.keys(retry).length),getFieldValue('sure'));
     return (
       <div>
         {getFieldDecorator('sure', {
-          initialValue: (retry && Object.keys(retry).length) ? true : undefined,
+          initialValue: retry && Object.keys(retry).length ? true : false,
           rules: [
             {
               required: true,
@@ -206,7 +218,7 @@ function Index({ dispatch, form, namelist }) {
         })(
           <Select
             style={{ width: 200, marginRight: 10 }}
-            // onChange={formRepeatChange}
+            onChange={formRepeatChange}
             placeholder="请选择是否重复外呼"
           >
             <Option value={true} key={true}>
@@ -217,10 +229,10 @@ function Index({ dispatch, form, namelist }) {
             </Option>
           </Select>
         )}
-        { showSure ? (
+        {showSure ? (
           <Fragment>
             {getFieldDecorator(`retry['reasons']`, {
-              initialValue: (retry && Object.keys(retry).length) ? retry['reasons'] : [],
+              initialValue: retry && Object.keys(retry).length ? retry['reasons'] : [],
               rules: [
                 {
                   required: true,
@@ -239,7 +251,7 @@ function Index({ dispatch, form, namelist }) {
               </Select>
             )}
             {getFieldDecorator(`retry['delay']`, {
-              initialValue: (retry && Object.keys(retry).length) ? retry['delayed'] / 60 : null,
+              initialValue: retry && Object.keys(retry).length ? retry['delayed'] / 60 : null,
               rules: [
                 {
                   required: true,
@@ -277,6 +289,7 @@ function Index({ dispatch, form, namelist }) {
   return (
     <Card
       bordered={false}
+      loading={loading}
       title={
         <Fragment>
           任务配置
@@ -398,13 +411,14 @@ function Index({ dispatch, form, namelist }) {
               onClick={() => handleOk()}
               disabled={triggerDisabled}
               loading={sureLoading}
+              style={{ marginRight: '10px' }}
             >
               {status > 0 ? '更新任务' : '提交任务'}
             </Button>
           )}
           {status === 1 && (
             <Button
-              style={{ marginLeft: '10px' }}
+              style={{ marginRight: '10px' }}
               className="test-input-search"
               loading={cancelLoading}
               onClick={e => cancel()}
@@ -413,7 +427,6 @@ function Index({ dispatch, form, namelist }) {
             </Button>
           )}
           <Button
-            style={{ marginLeft: '10px' }}
             htmlType="submit"
             // className="test-input-search"
             onClick={() => {
@@ -428,5 +441,10 @@ function Index({ dispatch, form, namelist }) {
   );
 }
 
-const mapStateToProps = ({ namelist = {} }) => ({ namelist });
+const mapStateToProps = ({
+  namelist = {},
+  loading: {
+    effects: { 'namelist/getConfigValue': loading },
+  },
+}) => ({ namelist, loading });
 export default connect(mapStateToProps)(Form.create({})(Index));

@@ -1,6 +1,14 @@
 import { message } from 'antd';
 import queryString from 'query-string';
-import { jobAppliedAsPostAll, fetchMessage, getIvrIntents, getBatch, getBatchDetail, getFlowlist, getSigleFlowlist} from '../services/nameList';
+import {
+  jobAppliedAsPostAll,
+  fetchMessage,
+  getIvrIntents,
+  getBatch,
+  getBatchDetail,
+  getFlowlist,
+  getSigleFlowlist,
+} from '../services/nameList';
 import { getDateString, flatten } from '../utils/utils';
 
 function formatInventTime(timeList, applyId) {
@@ -19,8 +27,8 @@ export default {
     flowList: [],
     phoneMessage: [],
     backShowTime: {},
-    batchRequest: {pageSize: 10, pageNum: 1},
-    nameRequest: {pageSize: 10, pageNum: 1},
+    batchRequest: { pageSize: 10, pageNum: 1 },
+    nameRequest: { pageSize: 10, pageNum: 1 },
     ivrIntents: [],
     batchList: [],
     configValue: {},
@@ -28,17 +36,17 @@ export default {
     invitations: [],
     configNameList: [],
     taskQueryValue: {},
-    batchCur:1,
-    batchPageSize:10,
-    nameCur:1,
-    namePageSize:10,
+    batchCur: 1,
+    batchPageSize: 10,
+    nameCur: 1,
+    namePageSize: 10,
   },
   effects: {
     *getBatch({ payload }, { call, put, select }) {
       try {
         const batchRequest = yield select(({ namelist: { batchRequest } }) => batchRequest);
         const batchObj = yield call(getBatch, { ...batchRequest, ...payload });
-        const batchList = batchObj && batchObj.data || [];
+        const batchList = (batchObj && batchObj.data) || [];
         const batchCur = batchObj && batchObj.curPage;
         const batchPageSize = batchObj && batchObj.pageSize;
         yield put({
@@ -79,7 +87,7 @@ export default {
     *getBatchDetail({ payload }, { call, put, select }) {
       const nameRequest = yield select(({ namelist: { nameRequest } }) => nameRequest);
       const response = yield call(getBatchDetail, { ...nameRequest, ...payload }) || {};
-      const {data:nameList} = response;
+      const { data: nameList } = response;
       const nameCur = response && response.curPage;
       const namePageSize = response && response.pageSize;
       yield put({
@@ -94,12 +102,11 @@ export default {
           nameCur,
           namePageSize,
         },
-       
-      })
+      });
     },
     *configNameList({ payload }, { call, put, select }) {
       const response = yield call(getBatchDetail, payload);
-      const {data:nameList} = response;
+      const { data: nameList } = response;
       yield put({
         type: 'formatConfigNameList',
         payload: {
@@ -143,7 +150,7 @@ export default {
       yield put({
         type: 'save',
         payload: {
-          configValue:data[0],
+          configValue: data[0],
         },
       });
     },
@@ -155,26 +162,26 @@ export default {
     addBatchname(state, { payload }) {
       const { batchList } = state;
       batchList.unshift(payload);
-      console.log('batchList===>',batchList);
+      console.log('batchList===>', batchList);
       return { ...state };
     },
     formatNameList(state, { payload }) {
       const { nameList } = payload;
       const flatNameList = nameList.map(item => {
-        let obj={};
-        item.expected.forEach(item => Object.assign(obj, item) )
-        return {...item,...obj}
-      })
-      return { ...state,nameList:flatNameList };
+        let obj = {};
+        item.expected.forEach(item => Object.assign(obj, item));
+        return { ...item, ...obj };
+      });
+      return { ...state, nameList: flatNameList };
     },
     formatConfigNameList(state, { payload }) {
       const { nameList } = payload;
       const flatNameList = nameList.map(item => {
-        let obj={};
-        item.expected.forEach(item => Object.assign(obj, item) )
-        return {...item,...obj}
-      })
-      return { ...state,configNameList:flatNameList };
+        let obj = {};
+        item.expected.forEach(item => Object.assign(obj, item));
+        return { ...item, ...obj };
+      });
+      return { ...state, configNameList: flatNameList };
     },
     getFlowList(state, { payload }) {
       const { flowList } = payload;
@@ -193,7 +200,7 @@ export default {
       // const list = timeList.filter(item => item.applyId === selectJobId);
       // const backShowTime = list.length ? list.slice(-1)[0] : {};
 
-      // flatFlowList = 
+      // flatFlowList =
       //   flowList.filter(item => item.flow.length > 0 || item.notifyMessage.length > 0)
       //   .map(item => {
       //     if (!item.flow) {
@@ -205,7 +212,7 @@ export default {
       //     return [...item.flow, ...item.notifyMessage];
       //   });
       const flatFlowList = [...flowList.flow, ...flowList.notifyMessage];
-      return { ...state, flowList:flatFlowList,listValue: flowList };
+      return { ...state, flowList: flatFlowList, listValue: flowList };
     },
   },
   subscriptions: {
@@ -215,20 +222,19 @@ export default {
         // const matchRecord = /^\/AI\/outging\/record/.exec(pathname);
         // const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
         // const mainMatch = /^\/AI\/outging$/.exec(pathname);
-        console.log('match====>',match);
         // 岗位维护
-        if (match) {
-          dispatch({
-            type: 'getIvrIntents',
-          });
-          // 新的获取名单列表
-          dispatch({
-            type: 'getBatch',
-            payload: {},
-          });
-        // 消息记录
-        } 
-        
+        // if (match) {
+        //   dispatch({
+        //     type: 'getIvrIntents',
+        //   });
+        //   // 新的获取名单列表
+        //   dispatch({
+        //     type: 'getBatch',
+        //     payload: {},
+        //   });
+        // // 消息记录
+        // }
+
         // else if (matchRecord) {
         //   dispatch({
         //     type: 'getMessage',
@@ -249,7 +255,7 @@ export default {
         //   dispatch({
         //     type: 'getConfigValue',
         //     payload: queryString.parse(search),
-        //   }); 
+        //   });
         // // 任务页面
         // }else if(mainMatch) {
         //   dispatch({
