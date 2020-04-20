@@ -8,33 +8,44 @@ import { formatTaskType } from '@/utils/utils';
 const renderColumns = (dispatch,ivrIntents) => {
   const columns = [
     {
-      title: '推荐人',
+      title: '姓名',
       key: 'name',
       dataIndex: 'name',
     },
     {
-      title: '推荐岗位',
+      title: '性别',
       key: 'intent',
       dataIndex: 'intent',
       render:  intent => formatTaskType(ivrIntents,'intent',intent,'intentDesc'),
     },
     {
-      title: '查看记录',
+      title: '年龄',
       key: 'terminalType',
       dataIndex: 'terminalType',
     },
     {
-      title: '转发记录',
+      title: '学历',
       key: 'entity',
       dataIndex: 'entity',
     },
     {
-      title: '投递记录',
+      title: '电话',
       key: 'keywords',
       dataIndex: 'keywords',
     },
     {
-      title: '分享时间',
+      title: '邮箱',
+      key: 'triggerStartTime',
+      dataIndex: 'triggerStartTime',
+    },
+    {
+      title: '申请岗位',
+      key: 'scene',
+      dataIndex: 'scene',
+      render:  scene => formatTaskType(ivrIntents,'scene',scene,'sceneDesc'),
+    },
+    {
+      title: '申请时间',
       key: 'status',
       dataIndex: 'status',
     },

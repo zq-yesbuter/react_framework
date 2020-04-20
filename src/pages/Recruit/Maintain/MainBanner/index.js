@@ -2,16 +2,16 @@ import React, { Component } from 'react';
 import { routerRedux, Route, Switch, Redirect, Link } from 'dva/router';
 import { connect } from 'dva';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import ListIndex from './Post';
+import ListIndex from './ListIndex';
 
 const tabs = [
   {
-    key: '/AI/recruit/manPush/post',
-    tab: '岗位推荐',
+    key: '/AI/recruit/maintain/mainBanner',
+    tab: '社招首页banner',
   },
   {
-    key: '/AI/recruit/manPush/man',
-    tab: '简历推荐',
+    key: '/AI/recruit/maintain/mainInformation',
+    tab: '首页信息',
   },
 ];
 function Index({ match, routerData, location, dispatch }) {

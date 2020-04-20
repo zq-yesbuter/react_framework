@@ -148,7 +148,8 @@ function Index({ dispatch, location, recruit }) {
     formatOperation: (selectedRowKeys,hasSelected) => {
       return (
         <div style={{marginTop:10}}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>导出</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>移入面试</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>筛选未通过</Button>
           <span style={{ marginLeft: 8 }}>
             {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
           </span>

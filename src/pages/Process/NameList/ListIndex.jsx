@@ -188,7 +188,7 @@ function Index({ dispatch, location, namelist, loading }) {
             删除
           </Button>
           <Button
-            disabled={!hasSelected || status === 3 || status === 4}
+            disabled={!hasSelected}
             onClick={() => exportFunction(selectedRowKeys)}
             style={{ marginLeft: 10 }}
           >

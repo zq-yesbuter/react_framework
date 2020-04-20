@@ -100,6 +100,7 @@ export default [
           //     {
           //       name: '内推记录',
           //       path: '/AI/recruit/manPush',
+          //       redirect: '/AI/recruit/manPush/post',
           //       component: '../pages/Recruit/ManPush',
           //       icon: "book",
           //     },
@@ -107,17 +108,37 @@ export default [
           //       name: '岗位推荐',
           //       hideInMenu: true,
           //       path: '/AI/recruit/manPush/post',
-          //       component: '../pages/Recruit/ManPush',
+          //       component: '../pages/Recruit/ManPush/Post',
           //       icon: "book",
           //     },
           //     {
           //       name: '简历推荐',
           //       hideInMenu: true,
           //       path: '/AI/recruit/manPush/man',
-          //       component: '../pages/Recruit/ManPush',
+          //       component: '../pages/Recruit/ManPush/Man',
           //       icon: "book",
           //     },
-              
+          //     {
+          //       name: '企业维护',
+          //       path: '/AI/recruit/maintain',
+          //       redirect: '/AI/recruit/maintain/mainBanner',
+          //       component: '../pages/Recruit/Maintain',
+          //       icon: "setting",
+          //     },
+          //     {
+          //       name: '社招首页banner',
+          //       path: '/AI/recruit/maintain/mainBanner',
+          //       component: '../pages/Recruit/Maintain/MainBanner',
+          //       hideInMenu: true,
+          //       icon: "setting",
+          //     },
+          //     {
+          //       name: '首页信息',
+          //       path: '/AI/recruit/maintain/mainInformation',
+          //       component: '../pages/Recruit/Maintain/MainInformation',
+          //       hideInMenu: true,
+          //       icon: "setting",
+          //     },
           //     {
           //       component: '../pages/404.jsx',
           //     },

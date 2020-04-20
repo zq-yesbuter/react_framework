@@ -148,7 +148,10 @@ function Index({ dispatch, location, recruit }) {
     formatOperation: (selectedRowKeys,hasSelected) => {
       return (
         <div style={{marginTop:10}}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>导出</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>安排面试时间</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>人机面试邀约</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>确定面试</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>取消面试</Button>
           <span style={{ marginLeft: 8 }}>
             {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
           </span>
@@ -202,7 +205,7 @@ function Index({ dispatch, location, recruit }) {
   return (
     <Card
       bordered={false}
-      title="内推记录"
+      title="面试管理"
       extra={
         <Button
           icon="plus"
