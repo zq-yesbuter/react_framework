@@ -17,7 +17,7 @@ function formatTime(intent) {
       return '时间';
   }
 }
-const renderColumns = (dispatch, intent) => {
+const renderColumns = (dispatch, intent, setShowVisible) => {
   const columns = [
     {
       title: '姓名',
@@ -99,16 +99,27 @@ const renderColumns = (dispatch, intent) => {
                 //   type: 'namelist/save',
                 //   payload: {listValue:value},
                 // });
-                dispatch(
-                  routerRedux.push({
-                    pathname: '/AI/outging/record',
-                    search: queryString.stringify({
-                      group,
-                      intent,
-                      status,
-                    }),
-                  })
-                );
+
+                // dispatch(
+                //   routerRedux.push({
+                //     pathname: '/AI/outging/record',
+                //     search: queryString.stringify({
+                //       group,
+                //       intent,
+                //       status,
+                //     }),
+                //   })
+                // );
+                dispatch({
+                  type: 'namelist/getMessage',
+                  payload: {group, intent},
+                });
+                dispatch({
+                  type: 'namelist/getSigleFlowlist',
+                  // payload: {id:group,intent},
+                  payload: {id:'653b8e0b-154b-43c4-913f-263c0c67d4c5',intent},
+                }); 
+                setShowVisible(true);
               }}
             >
               查看记录

@@ -322,7 +322,7 @@ function RecordBottom({
               flowList.length &&
               flowList.map(
                 (
-                  { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel },
+                  { status, roundStartTime, remark, interviewConfirmTime, roundEndTime, channel, messages},
                   index
                 ) => (
                   <Step
@@ -332,13 +332,16 @@ function RecordBottom({
                     description={
                       <div>
                         {roundStartTime ? <p>{`外呼开始时间： ${roundStartTime}`}</p> : null}
+                        {messages && messages.length ? messages.map(({intent,participant,content}) => (
+                            participant === 'JDGR' ? <span>{`${intent}`}</span> : <p style={{color:'#1890FF'}}>{`#${content}`}</p>
+                        )) : null}
                         {roundEndTime ? <p>{`外呼结束时间： ${roundEndTime}`}</p> : null}
                         {interviewConfirmTime ? (
                           <p style={{ color: 'red', fontWeight: 400 }}>
                             {`用户期望面试时间： ${interviewConfirmTime}`}
                           </p>
                         ) : null}
-                        <p>{channel ? null : remark}</p>
+                        <p>{channel ? null : (remark ? remark.slice(remark.indexOf('#') + 1) : remark)}</p>
                       </div>
                     }
                     key={index}

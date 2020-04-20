@@ -9,6 +9,7 @@ import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { nameBatchDelete } from '@/services/nameList';
+import Record from '../Record';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -81,6 +82,7 @@ function Index({ dispatch, location, namelist, loading }) {
   const { id, intent } = queryString.parse(search);
   const [value, setValue] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [showVisible,setShowVisible] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -106,7 +108,7 @@ function Index({ dispatch, location, namelist, loading }) {
   // const batchName = decodeURI(search.slice(1));
   const setting = {
     current: nameCur,
-    columns: renderColumns(dispatch, intent),
+    columns: renderColumns(dispatch, intent,setShowVisible),
     pageSize: namePageSize,
     loading,
     selectedRowKeys,
@@ -494,6 +496,10 @@ function Index({ dispatch, location, namelist, loading }) {
           setValue(null);
         }}
         intent={intent}
+      />
+      <Record 
+        visible={showVisible}
+        onClose={() => setShowVisible(false)}
       />
     </Card>
   );

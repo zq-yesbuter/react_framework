@@ -1,20 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect,Fragment } from 'react';
 import { connect } from 'dva';
-import { Card, message, Button, Modal, Table,  Menu } from 'antd';
+import { Card, message, Button, Modal, Table, Menu, Form,Input,Row,Col,Upload,Icon} from 'antd';
 import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
 import DateFormat from '@/components/DateFormat';
 import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
-import renderColumns from './Colums';
-import { addBatch,batchRelated,batchCancel,batchDelete } from '@/services/nameList';
+import { addBatch, batchRelated, batchCancel, batchDelete } from '@/services/nameList';
+import DateTimeRangePicker from '@/components/DateTimeRangePicker';
 
-
-function Index({ dispatch, location, recruit }) {
-  const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest } = recruit;
+const { Item } = Form;
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 8 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 16 },
+  },
+};
+const tailFormItemLayout = {
+  wrapperCol: {
+    xs: {
+      span: 24,
+      offset: 0,
+    },
+    sm: {
+      span: 16,
+      offset: 8,
+    },
+  },
+};
+function Index({ dispatch, location, recruit, form }) {
+  const { batchList, ivrIntents, batchCur, batchPageSize, batchRequest } = recruit;
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [imageUrl,setImageUrl] = useState();
   useEffect(() => {
     // return () => {
     //   dispatch({
@@ -22,219 +45,129 @@ function Index({ dispatch, location, recruit }) {
     //   });
     // };
   }, []);
-
-  const handleRemoveConfirm = value => {
-    const { id } = value;
-    Modal.confirm({
-      title: '删除',
-      content: (
-        <div>
-          <p>你确定要删除该条吗</p>
-        </div>
-      ),
-      onOk: () => {
-        dispatch({
-          type: 'picture/removeCategory',
-          payload: { id },
-        })
-          .then(() => {
-            message.success('删除成功!');
-            // dispatch({
-            //   type: 'getBatchDetail',
-            //   payload: queryString.parse(search),
-            // });
-          })
-          .catch(e => {
-            message.warn(e.message);
-          });
-      },
-      okText: '确认',
-      cancelText: '取消',
-    });
-  };
-
+  const { getFieldDecorator, getFieldValue, resetFields,setFieldsValue } = form;
   const query = {}; //  queryString.parse(location.search);
- 
-  const start = () => {
-    setLoading(true);
-    // ajax request after empty completing
-    setTimeout(() => {
-      setSelectedRowKeys([]);
-      setLoading(false);
-    }, 1000);
-  };
 
-  const importMenu = (
-    <Menu>
-      <Menu.Item key={5}>删除</Menu.Item>
-    </Menu>
-  );
-
-  const onSelectChange = selectedRowKeys => {
-    setSelectedRowKeys({ selectedRowKeys });
-  };
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
-  const setting = {
-    data: batchList,
-    total:  batchList && batchList.length, // < batchCur*batchPageSize ? batchList.length : batchCur*batchPageSize + 1,
-    current: batchCur,
-    columns: renderColumns(dispatch,ivrIntents),
-    pageSize: batchPageSize,
-    loading,
-    selectedRowKeys,
-    prev: () => {
-      dispatch({
-        type: 'recruit/getBatch',
-        payload: {pageNum:batchCur-1},
-      });
-      dispatch({
-        type: 'recruit/save',
-        payload: {batchRequest:{...batchRequest,pageNum:batchCur-1 }},
-      });
-      setSelectedRowKeys({ selectedRowKeys:[] });
-    },
-    next: () => {
-      dispatch({
-        type: 'recruit/getBatch',
-        payload: {pageNum:batchCur+1},
-      });
-      dispatch({
-        type: 'recruit/save',
-        payload: {batchRequest:{...batchRequest,pageNum:batchCur+1 }},
-      });
-      setSelectedRowKeys({ selectedRowKeys:[] });
-    },
-    onSizeChange: pageSize => {
-      dispatch({
-        type: 'recruit/getBatch',
-        payload: {pageSize},
-      });
-      dispatch({
-        type: 'recruit/save',
-        payload: {batchRequest:{...batchRequest,pageSize }},
-      });
-      setSelectedRowKeys({ selectedRowKeys:[] });
-    },
-    showNext: batchList && batchList.length < batchPageSize,
-    // sortedInfo,
-    onChange: (start, length) => {
-      dispatch({
-        type: 'recruit/getBatch',
-        payload: {pageSize: length, pageNum: start || 1},
-      });
-      dispatch({
-        type: 'recruit/save',
-        payload: {batchRequest:{pageSize: length, pageNum: start || 1}},
-      }); 
-      setSelectedRowKeys([]);
-      // this.setState({
-      //   selectedRows: [],
-      //   sortedInfo: sorter,
-      // });
-    },
-    rowKey: 'id',
-    rowSelection: {
-      selectedRowKeys,
-      onChange: (selectedRowKeys, selectedRows) => {
-        setSelectedRowKeys(selectedRowKeys);
-        // this.setState({ , selectedRows });
-      },
-    },
-    importMenu,
-    formatOperation: (selectedRowKeys,hasSelected) => {
-      return (
-        <div style={{marginTop:10}}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>安排面试时间</Button>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>人机面试邀约</Button>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>确定面试</Button>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)} style={{ marginLeft: 8 }}>取消面试</Button>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
-          </span>
-        </div>
-      )
-    },
-  };
-  
-  function  handleDelete(ids){
-    Modal.confirm({
-      title: '删除',
-      content: (
-        <div>
-          <p>你确定要批量删除这些数据吗？</p>
-        </div>
-      ),
-      onOk: () => {
-        let selectArr=[];
-        let selectObj = {};
-        ids.forEach(id => {
-          const selectObj = batchList.find(item => item.id === id);
-          selectArr.push(selectObj);
-        });
-        selectArr.forEach(item => {
-          if(Object.keys(selectObj).includes(item.intent)){
-            selectObj[item.intent].push(item.id)
-          }else{
-            selectObj[item.intent] = [item.id]
-          }
-        })
-        let questAll = [];
-        for (let item in selectObj) {
-          questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
-        }
-        Promise.all(questAll).then((result) => {
-          message.success('删除成功！');
-          dispatch({
-            type: 'recruit/getBatch',
-            payload: {},
-          });  
-          setSelectedRowKeys([]);  
-        }).catch((error) => {
-          message.error('删除失败！');
-        })
-      },
-      okText: '确认',
-      cancelText: '取消',
+  const handleSubmit = e => {
+    e.preventDefault();
+    form.validateFields((err, values) => {
+      if (!err) {
+        console.log('values===>',values);
+      }
     });
   };
- 
+
+  function beforeUpload(file) {
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
+  }
+
+  const uploadButton = (
+    <div>
+      <Icon type={loading ? 'loading' : 'plus'} />
+      <div className="ant-upload-text">Upload</div>
+    </div>
+  );
+  const handleChange = info => {
+    if (info.file.status === 'uploading') {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(info.file.originFileObj, imageUrl =>
+        this.setState({
+          imageUrl,
+          loading: false,
+        }),
+      );
+    }
+  };
+  function getBase64(img, callback) {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => callback(reader.result));
+    reader.readAsDataURL(img);
+  }
   return (
-    <Card
-      bordered={false}
-      title="面试管理"
-      extra={
-        <Button
-          icon="plus"
-          type="primary"
-          onClick={() => {
-            dispatch(routerRedux.push('/AI/recruit/post/add'));
-           }}
-        >
-          新建岗位
-        </Button>
-      }
-    >
-      <CategoryQueryForm
-        value={query}
-        onSubmit={data => {
-          dispatch({
-            type: 'recruit/save',
-            payload: {taskQueryValue:data},
-          }); 
-          dispatch({
-            type: 'recruit/getBatch',
-            payload: data,
-          });
-        }}
-      />
-      {renderTable(setting)}
+    <Card bordered={false} title="配置首页banner">
+      <Form onSubmit={handleSubmit} {...formItemLayout}>
+        <Item label="分类消息">
+          <Input placeholder="请输入分类消息" style={{ width: 200 }} />
+        </Item>
+        <Item label="分类标题">
+          {getFieldDecorator('batchName')(
+            <Input placeholder="请输入分类标题" style={{ width: 200 }} />
+          )}
+        </Item>
+        <Item label="分类顺序">
+          {getFieldDecorator('batchName')(
+            <Input placeholder="请输入分类顺序" style={{ width: 200 }} />
+          )}
+        </Item>
+        <Item label="分类内容">
+          {getFieldDecorator('batchName')(
+            <Input placeholder="请输入分类内容" style={{ width: 200 }} />
+          )}
+        </Item>
+        <Item label="分类小类">
+          <Fragment>
+            <div>最多配置5个小类，图片尺寸700*560</div>
+            小类信息
+          </Fragment>
+          <div style={{display:'flex'}}>
+            <div>
+              {getFieldDecorator('fileName')(
+                <Upload
+                  name="avatar"
+                  listType="picture-card"
+                  className="avatar-uploader"
+                  showUploadList={false}
+                  action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                  beforeUpload={beforeUpload}
+                  onChange={handleChange}
+                >
+                  {imageUrl ? <img src={imageUrl} alt="avatar" style={{ width: '100%' }} /> : uploadButton}
+                </Upload>
+              )}
+            </div>
+            <div>
+              <Item label="投递时间" {...formItemLayout}>
+                <DateTimeRangePicker names={['dateStart', 'dateEnd']} form={form} />
+              </Item>
+              <Item label="名称" {...formItemLayout}>
+                {getFieldDecorator('batchName')(
+                  <Input placeholder="请输入任务名称" style={{ width: 200 }} />
+                )}
+              </Item>
+            </div>
+          </div>
+        </Item>
+        <Item {...tailFormItemLayout}>
+          <Button htmlType="submit" type="primary" className="test-input-search">
+            保存
+          </Button>
+          <Button
+            style={{ margin: '0 10px' }}
+            className="test-input-search"
+            onClick={e => {
+              resetFields();
+              handleSubmit(e);
+            }}
+          >
+            重置
+          </Button>
+        </Item>
+      </Form>
     </Card>
   );
 }
 
 const mapStateToProps = ({ recruit = {} }) => ({ recruit });
-export default connect(mapStateToProps)(Index);
+export default connect(mapStateToProps)(Form.create({})(Index));
