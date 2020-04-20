@@ -30,6 +30,13 @@ export default [
             redirect: '/AI/outging',
           },
           {
+            name: '旧版AI',
+            hideInMenu: true,
+            path: '/AI/AI',
+            component: '../pages/AI',
+            icon: "align-left",
+          },
+          {
             path: '/AI/outging',
             name: '外呼管理',
             icon: 'appstore',

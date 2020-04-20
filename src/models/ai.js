@@ -135,18 +135,18 @@ export default {
         // const applyIds = jobList.filter(item => item.status > 20).map(item => item.applyId);
         const applyIds = jobList.map(item => item.applyId) || [];
         if (applyIds.length) {
-          yield put({
-            type: 'fetchInvitation',
-            payload: {
-              applyIds,
-            },
-          });
-          yield put({
-            type: 'queryOffferInvent',
-            payload: {
-              applyIds,
-            },
-          });
+          // yield put({
+          //   type: 'fetchInvitation',
+          //   payload: {
+          //     applyIds,
+          //   },
+          // });
+          // yield put({
+          //   type: 'queryOffferInvent',
+          //   payload: {
+          //     applyIds,
+          //   },
+          // });
         }
         const resumeId = jobList[0].resumeId;
         yield put({
@@ -199,7 +199,8 @@ export default {
           payload: { timeList },
         });
       } catch (e) {
-        return Promise.reject(e);
+        message.error(e.message);
+        // return Promise.reject(e);
       }
     },
     // 获取offer邀约时间
@@ -223,7 +224,8 @@ export default {
           payload: { timeList },
         });
       } catch (e) {
-        return Promise.reject(e);
+        message.error(e.message);
+        // return Promise.reject(e);
       }
     },
     *addInvitation({ payload }, { call, put, select }) {
@@ -313,15 +315,15 @@ export default {
               applyIds,
             },
           });
-          yield put({
-            type: 'queryOffferInvent',
-            payload: {
-              applyIds,
-            },
-          });
+          // yield put({
+          //   type: 'queryOffferInvent',
+          //   payload: {
+          //     applyIds,
+          //   },
+          // });
         }
       } catch (e) {
-        return Promise.reject(e);
+        // return Promise.reject(e);
       }
     },
     *updateSingleInvent({ payload }, { call, put, select }) {
@@ -459,34 +461,34 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname }) => {
-        const match = /^\/AI/.exec(pathname);
+        const match = /^\/AI\/AI/.exec(pathname);
         if (match) {
-          // dispatch({
-          //   type: 'jobAppliedAsPostAll',
-          // }).then(data => {
-          // console.log('=======>gogogogo')
-          // let { search, origin } = document.location || {};
-          // if (!search) {
-          //   search = localStorage.getItem('token');
-          // }
-          // let stocks = new EventSource(`/sse/messages${search}`);
-          // stocks.onopen = () => {
-          //   console.log('open==>');
-          // }
-          // stocks.onmessage = (event) => {
-          //   console.log('message===>',event);
-          //   dispatch({
-          //     type: 'save',
-          //     payload: {
-          //       showNotice: true,
-          //     },
-          //   });
-          // };
-          // stocks.onerror = (event) => {
-          //   console.log('error==>');
-          //   // new EventSource(`/sse/messages${search}`);
-          // };
-          // });
+          dispatch({
+            type: 'jobAppliedAsPostAll',
+          }).then(data => {
+          console.log('=======>gogogogo')
+        //   let { search, origin } = document.location || {};
+        //   if (!search) {
+        //     search = localStorage.getItem('token');
+        //   }
+        //   let stocks = new EventSource(`/sse/messages${search}`);
+        //   stocks.onopen = () => {
+        //     console.log('open==>');
+        //   }
+        //   stocks.onmessage = (event) => {
+        //     console.log('message===>',event);
+        //     dispatch({
+        //       type: 'save',
+        //       payload: {
+        //         showNotice: true,
+        //       },
+        //     });
+        //   };
+        //   stocks.onerror = (event) => {
+        //     console.log('error==>');
+        //     // new EventSource(`/sse/messages${search}`);
+        //   };
+          });
         }
       });
     },
