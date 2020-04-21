@@ -1,6 +1,5 @@
 import fetch from 'dva/fetch';
-import { notification, message } from 'antd';
-import { parse, stringify } from 'qs';
+import { notification } from 'antd';
 import { routerRedux } from 'dva/router';
 
 const codeMessage = {
@@ -42,12 +41,14 @@ function checkStatus(response) {
 function checkResult(response, options) {
   if (response.code === 0 || response.success) {
     return response.data;
-  } else if (response.code === 'NOT_LOGIN') {
+  } 
+  if (response.code === 'NOT_LOGIN') {
     const error = new Error('未登录');
     error.name = 401;
     error.response = response;
     throw error;
   }
+  // eslint-disable-next-line no-shadow
   const message = response.message || response.msg || '未知错误';
   if (!options.ignoreError) {
     notification.error({
@@ -101,7 +102,12 @@ export default function request(url, options) {
       };
     }
   }
-
+  
+  function loginRedirect() {
+    const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}/AI`)}`;
+    window.location.href = returnUrl;
+  }
+  
   return fetch(url, newOptions)
     .then(checkStatus)
     .then(response => {
@@ -143,7 +149,3 @@ export default function request(url, options) {
     });
 }
 
-export function loginRedirect() {
-  const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}/AI`)}`;
-  window.location.href = returnUrl;
-}

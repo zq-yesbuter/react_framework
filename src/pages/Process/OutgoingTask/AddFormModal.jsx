@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Form, Modal, Select } from 'antd';
 import TrimInput from '@/components/TrimInput';
 
-const { Option} = Select.Option;
+const { Option} = Select;
 const { Item } = Form;
 
 function AddFormModal({ form, onCancel, onSubmit, value ,namelist,submitLoading}) {
