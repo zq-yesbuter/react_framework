@@ -1,6 +1,4 @@
 import React, { Fragment } from 'react';
-import { routerRedux } from 'dva/router';
-import queryString from 'query-string';
 import _ from 'lodash';
 import { formatNameType } from '@/utils/utils';
 import { nameStatus } from '../contant';
@@ -17,7 +15,7 @@ function formatTime(intent) {
       return '时间';
   }
 }
-const renderColumns = (dispatch, intent, setShowVisible) => {
+const renderColumns = (dispatch, showIntent, setShowVisible) => {
   const columns = [
     {
       title: '姓名',
@@ -40,37 +38,23 @@ const renderColumns = (dispatch, intent, setShowVisible) => {
       dataIndex: 'triggerTime',
     },
     {
-      title: formatTime(intent),
+      title: formatTime(showIntent),
       key: 'startTime',
       dataIndex: 'startTime',
     },
-    // {
-    //   title: '面试时长',
-    //   key: 'entity',
-    //   dataIndex: 'entity',
-    // },
-    // {
-    //   title: '面试地址',
-    //   key: 'address',
-    //   dataIndex: 'address',
-    // },
-    // {
-    //   title: '应用',
-    //   key: 'appCode',
-    //   dataIndex: 'appCode',
-    // },
-    // {
-    //   title: '待确定结束时间',
-    //   key: 'endTime',
-    //   dataIndex: 'endTime',
-    // },
     {
       title: '状态',
       key: 'status',
       dataIndex: 'status',
       render: (status, record) => {
-        return formatNameType(nameStatus, 'value', status, 'name',record);
+        return formatNameType(nameStatus, 'value', status, 'name', record);
       },
+    },
+    {
+      title: '挂机原因',
+      key: 'result', 
+      dataIndex: 'result',
+      render: result => (result && result.indexOf('#') >0 ? result.slice(result.indexOf('#') + 1) : result)
     },
     {
       title: '更新人',
@@ -90,7 +74,7 @@ const renderColumns = (dispatch, intent, setShowVisible) => {
       dataIndex: 'invitationId',
       width: 150,
       render: (group, value) => {
-        const { intent, status } = value;
+        const { intent } = value;
         return (
           <Fragment>
             <a
@@ -112,12 +96,12 @@ const renderColumns = (dispatch, intent, setShowVisible) => {
                 // );
                 dispatch({
                   type: 'namelist/getMessage',
-                  payload: {group, intent},
+                  payload: { group, intent },
                 });
                 dispatch({
                   type: 'namelist/getSigleFlowlist',
-                  payload: {id:group,intent},
-                }); 
+                  payload: { id: group, intent },
+                });
                 setShowVisible(true);
               }}
             >
@@ -133,23 +117,37 @@ const renderColumns = (dispatch, intent, setShowVisible) => {
     //   dataIndex: 'entity1',
     // },
     // {
-    //   title: '挂机原因',
-    //   key: 'entity2',
-    //   dataIndex: 'entity3',
-    // },
-
-    // {
     //   title: 'contact',
     //   key: 'contact',
     //   dataIndex: 'contact',
     // },
+      // {
+    //   title: '面试时长',
+    //   key: 'entity',
+    //   dataIndex: 'entity',
+    // },
+    // {
+    //   title: '面试地址',
+    //   key: 'address',
+    //   dataIndex: 'address',
+    // },
+    // {
+    //   title: '应用',
+    //   key: 'appCode',
+    //   dataIndex: 'appCode',
+    // },
+    // {
+    //   title: '待确定结束时间',
+    //   key: 'endTime',
+    //   dataIndex: 'endTime',
+    // },
   ];
 
   const cloneColumns = _.cloneDeep(columns);
-  if (intent !== 'interview_invitation') {
+  if (showIntent !== 'interview_invitation') {
     cloneColumns.splice(2, 1);
   }
-  if (intent === 'first_entry_invitation' || intent === 'interview_research_invitation') {
+  if (showIntent === 'first_entry_invitation' || showIntent === 'interview_research_invitation') {
     cloneColumns.splice(3, 1);
   }
   return cloneColumns;

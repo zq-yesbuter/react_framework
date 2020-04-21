@@ -1,18 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
-import { Card, message, Button, Modal, Table,  Menu } from 'antd';
-import queryString from 'query-string';
+import { Card, message, Button, Modal, Menu } from 'antd';
 import { routerRedux } from 'dva/router';
-import DateFormat from '@/components/DateFormat';
 import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
-import { addBatch,batchRelated,batchCancel,batchDelete } from '@/services/nameList';
+import { batchDelete } from '@/services/nameList';
 
 
-function Index({ dispatch, location, recruit }) {
+function Index({ dispatch, recruit }) {
   const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest } = recruit;
-  const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   useEffect(() => {
@@ -23,46 +20,7 @@ function Index({ dispatch, location, recruit }) {
     // };
   }, []);
 
-  const handleRemoveConfirm = value => {
-    const { id } = value;
-    Modal.confirm({
-      title: '删除',
-      content: (
-        <div>
-          <p>你确定要删除该条吗</p>
-        </div>
-      ),
-      onOk: () => {
-        dispatch({
-          type: 'picture/removeCategory',
-          payload: { id },
-        })
-          .then(() => {
-            message.success('删除成功!');
-            // dispatch({
-            //   type: 'getBatchDetail',
-            //   payload: queryString.parse(search),
-            // });
-          })
-          .catch(e => {
-            message.warn(e.message);
-          });
-      },
-      okText: '确认',
-      cancelText: '取消',
-    });
-  };
-
   const query = {}; //  queryString.parse(location.search);
- 
-  const start = () => {
-    setLoading(true);
-    // ajax request after empty completing
-    setTimeout(() => {
-      setSelectedRowKeys([]);
-      setLoading(false);
-    }, 1000);
-  };
 
   const importMenu = (
     <Menu>
@@ -70,14 +28,8 @@ function Index({ dispatch, location, recruit }) {
     </Menu>
   );
 
-  const onSelectChange = selectedRowKeys => {
-    setSelectedRowKeys({ selectedRowKeys });
-  };
 
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
+
   const setting = {
     data: batchList,
     total:  batchList && batchList.length, // < batchCur*batchPageSize ? batchList.length : batchCur*batchPageSize + 1,
@@ -200,7 +152,7 @@ function Index({ dispatch, location, recruit }) {
           }
         })
         let questAll = [];
-        for (let item in selectObj) {
+        for (const item in selectObj) {
           questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
         }
         Promise.all(questAll).then((result) => {

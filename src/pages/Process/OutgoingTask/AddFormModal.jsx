@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'dva';
-import { Form, Modal, Select ,DatePicker,Input} from 'antd';
-import moment from 'moment';
-import _ from 'lodash';
-import mapValueToFields from '@/utils/mapValueToFields';
+import { Form, Modal, Select } from 'antd';
 import TrimInput from '@/components/TrimInput';
 
-const Option = Select.Option;
+const { Option} = Select.Option;
 const { Item } = Form;
 
-function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist,submitLoading}) {
+function AddFormModal({ form, onCancel, onSubmit, value ,namelist,submitLoading}) {
   const { ivrIntents } = namelist;
   useEffect(() => {
     return () => {};
@@ -19,7 +16,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist,subm
     e.preventDefault();
     form.validateFields((err, values) => {
       if (!err) {
-        onSubmit && onSubmit(values);
+        if(onSubmit){onSubmit(values)};
       }
     });
   };
@@ -30,17 +27,14 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist,subm
     labelCol: { span: 6 },
     wrapperCol: { span: 16 },
   };
-  function disabledDate(current) {
-    // Can not select days before today and today
-    return current && current < moment().subtract(1, 'days');
-  }
-  const sourceId = getFieldValue('terminalType');
+
   getFieldDecorator('id');
-  function intentChange(e) {
+  function intentChange() {
     setFieldsValue({ scene: null });
   }
   const intent = getFieldValue('intent');
   return (
+    // eslint-disable-next-line react/jsx-filename-extension
     <Modal
       visible={!!value}
       title={getFieldValue('id') ? '修改任务' : '添加任务'}
@@ -99,19 +93,6 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value ,namelist,subm
             </Select>
           )}
         </Item>
-        {/* <Item label="外呼时间" required {...formItemLayout}>
-          {getFieldDecorator('triggerTime', {
-            rules: [{ required: true, message: '请选择外呼时间!' }],
-          })(
-            <DatePicker
-              showTime={{ format: 'HH:mm', minuteStep: 5 }}
-              disabledDate={disabledDate}
-              format="YYYY-MM-DD HH:mm"
-              placeholder="请选择外呼时间"
-              style={{ width: 335 }}
-            />
-          )}
-        </Item> */}
       </Form>
     </Modal>
   );

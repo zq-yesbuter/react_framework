@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
 import { Divider } from 'antd';
-import renderTable from '@/components/SelectTable';
 import { formatTaskType } from '@/utils/utils';
 import { statusOptions } from '../contant';
 
@@ -25,16 +24,6 @@ const renderColumns = (dispatch,ivrIntents) => {
       dataIndex: 'expectedCount',
       render: expectedCount => (`${expectedCount}人`),
     },
-    // {
-    //   title: '外呼流程',
-    //   key: 'terminalType',
-    //   dataIndex: 'terminalType',
-    // },
-    // {
-    //   title: '外呼号段',
-    //   key: 'keywords',
-    //   dataIndex: 'keywords',
-    // },
     {
       title: '外呼开始时间',
       key: 'triggerStartTime',

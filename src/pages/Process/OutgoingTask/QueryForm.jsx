@@ -1,14 +1,12 @@
-import React, { PureComponent } from 'react';
-import { Form, Button, DatePicker, Select, Input } from 'antd';
+import React from 'react';
+import { Form, Button, Select } from 'antd';
 import { connect } from 'dva';
-import mapValueToFields from '../../../utils/mapValueToFields';
 import TrimInput from '../../../components/TrimInput';
 import { statusOptions } from '../contant';
 import DateTimeRangePicker from '@/components/DateTimeRangePicker';
 
 const { Option } = Select;
 const FormItem = Form.Item;
-const createForm = Form.create;
 
 function QueryForm({ form, formatResult, onSubmit }) {
   const handleSubmit = e => {
@@ -20,7 +18,7 @@ function QueryForm({ form, formatResult, onSubmit }) {
     });
   };
 
-  const { getFieldDecorator, getFieldValue, resetFields,setFieldsValue } = form;
+  const { getFieldDecorator, resetFields } = form;
   return (
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="任务名称">

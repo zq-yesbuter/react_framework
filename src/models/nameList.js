@@ -1,16 +1,5 @@
-import { message } from 'antd';
 import queryString from 'query-string';
-import { jobAppliedAsPostAll, fetchMessage, getIvrIntents, getBatch, getBatchDetail, getFlowlist, getSigleFlowlist} from '../services/nameList';
-import { getDateString, flatten } from '../utils/utils';
-
-function formatInventTime(timeList, applyId) {
-  const list = timeList.filter(item => item.applyId === applyId);
-  return list.length ? list.slice(-1)[0].interviewTime : null;
-}
-function formatTriggerTime(timeList, applyId) {
-  const list = timeList.filter(item => item.applyId === applyId);
-  return list.length ? list.slice(-1)[0].triggerTime : null;
-}
+import { fetchMessage, getIvrIntents, getBatch, getBatchDetail, getFlowlist, getSigleFlowlist} from '../services/nameList';
 
 export default {
   namespace: 'namelist',
@@ -19,8 +8,8 @@ export default {
     flowList: [],
     phoneMessage: [],
     backShowTime: {},
-    batchRequest: {orderBy: { createdDate: 'DESC' },pageSize: 10, pageNum: 1}, 
-    nameRequest: {pageSize: 10, pageNum: 1},
+    batchRequest: {orderBy: { createdDate: 'DESC' },pageSize: 50, pageNum: 1}, 
+    nameRequest: {pageSize: 50, pageNum: 1},
     ivrIntents: [],
     batchList: [],
     configValue: {},
@@ -29,9 +18,9 @@ export default {
     configNameList: [],
     taskQueryValue: {},
     batchCur:1,
-    batchPageSize:10,
+    batchPageSize:50,
     nameCur:1,
-    namePageSize:10,
+    namePageSize:50,
     batchDetail: {},
     deleteNameList: [],
   },

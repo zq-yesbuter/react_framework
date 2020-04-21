@@ -1,14 +1,6 @@
 import { stringify } from 'qs';
 import request from '../utils/request';
 
-// 名单信息
-export async function jobAppliedAsPostAll(params) {
-  return request(`/tenant/job/applicants/all?${stringify(params)}`, {
-    method: 'GET',
-    ignoreError: true,
-  });
-}
-
 // 消息记录信息查询
 export async function fetchMessage(params) {
   return request(`/messages?${stringify(params)}`, {
@@ -17,7 +9,7 @@ export async function fetchMessage(params) {
 }
 
 // 获取外呼类型
-export async function getIvrIntents(params) {
+export async function getIvrIntents() {
   return request('/ivr/intents', {
     method: 'GET',
   });
@@ -25,7 +17,7 @@ export async function getIvrIntents(params) {
 
 // 批次创建
 export async function addBatch(body) {
-  const {intent } = body;
+  const { intent } = body;
   return request(`/batch/${intent}`, {
     method: 'POST',
     body,
@@ -34,7 +26,7 @@ export async function addBatch(body) {
 
 // 批次关联
 export async function batchRelated(body) {
-  const {intent, id } = body;
+  const { intent, id } = body;
   return request(`/batch/${intent}/${id}/related`, {
     method: 'POST',
     body,
@@ -43,7 +35,7 @@ export async function batchRelated(body) {
 
 // 批次取消
 export async function batchCancel(body) {
-  const {intent, id} = body;
+  const { intent, id } = body;
   return request(`/batch/${intent}/${id}/cancel`, {
     method: 'POST',
     body,
@@ -59,9 +51,9 @@ export async function getBatch(body) {
 }
 
 // 上传
-export async function upload({formData, params}) {
-  const { intent, scene} = params;
-  return request(`/${intent}/excel?${stringify({intent,scene})}`, {
+export async function upload({ formData, params }) {
+  const { intent, scene } = params;
+  return request(`/${intent}/excel?${stringify({ intent, scene })}`, {
     method: 'POST',
     body: formData,
   });
@@ -69,7 +61,7 @@ export async function upload({formData, params}) {
 
 // 批次详情查询
 export async function getBatchDetail(body) {
-  const {intent, id} = body;
+  const { intent, id } = body;
   return request(`/batch/${intent}/${id}/detail`, {
     method: 'POST',
     body,
@@ -78,7 +70,7 @@ export async function getBatchDetail(body) {
 
 // 沟通信息查询
 export async function getFlowlist(body) {
-  const {intent, id} = body;
+  const { intent } = body;
   return request(`/${intent}/all`, {
     method: 'POST',
     body,
@@ -87,20 +79,11 @@ export async function getFlowlist(body) {
 
 // 单个沟通信息查询
 export async function getSigleFlowlist(body) {
-  const {intent, id} = body;
+  const { intent, id } = body;
   return request(`/${intent}/${id}`, {
     method: 'get',
   });
 }
-
-
-// 批次详情查询  getBatch,batchCancel
-// export async function getBatch(body) {
-//   return request('/batch/all', {
-//     method: 'POST',
-//     body,
-//   });
-// }
 
 // 单个修改
 export async function editSignel(body) {
@@ -155,11 +138,3 @@ export async function nameBatchDelete(body) {
     body,
   });
 }
-
-// // 单个名字的详情查询
-// export async function SignelQuery(body) {
-//   const { intent,detailId } = body;
-//   return request(`/${intent}/${detailId}`, {
-//     method: 'GET',
-//   });
-// }

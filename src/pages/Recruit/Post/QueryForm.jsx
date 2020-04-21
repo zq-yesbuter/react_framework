@@ -28,35 +28,24 @@ function QueryForm({ form, formatResult, onSubmit }) {
 
   const { getFieldDecorator, getFieldValue, resetFields,setFieldsValue } = form;
   return (
-    <Form layout="inline" onSubmit={handleSubmit}>
-      <FormItem label="任务名称">
-        {getFieldDecorator('batchName')(
-          <Input placeholder="请输入任务名称" style={{width:200}} />
-        )}
-      </FormItem>
-      <FormItem label="任务状态">
-        {getFieldDecorator('status')(
-          <Select allowClear placeholder="请选择任务状态" style={{width:200}}>
-            {statusOptions.map(item => <Option value={item.value} key={item.value}>{item.name}</Option>)}
-          </Select>)}
-      </FormItem>
-      <FormItem label="时间选项"> 
+    <Form layout="inline" onSubmit={handleSubmit}> 
+      <FormItem label="时间筛选"> 
         <DateTimeRangePicker
           names={['dateStart', 'dateEnd']}
           form={form}
         />
-        {/* {getFieldDecorator('triggerTime', {})(
-          <DatePicker
-            // showTime={{ format: 'HH:mm', minuteStep: 5 }}
-            // disabledDate={disabledDate}
-            format="YYYY-MM-DD HH:mm:ss"
-            placeholder="请选择时间"
-            style={{ width:250 }}
-          />)} */}
       </FormItem>
-      {/* <FormItem label="人才搜索">
-        {getFieldDecorator('channel', {})(<TrimInput className="test-input-space-name" />)}
-      </FormItem> */}
+      <FormItem label="状态筛选">
+        {getFieldDecorator('status')(
+          <Select allowClear placeholder="请选择状态" style={{width:200}}>
+            {statusOptions.map(item => <Option value={item.value} key={item.value}>{item.name}</Option>)}
+          </Select>)}
+      </FormItem>
+      <FormItem label="岗位搜索">
+        {getFieldDecorator('batchName')(
+          <Input placeholder="请输入岗位" style={{width:200}} />
+        )}
+      </FormItem>
       <FormItem>
         <Button htmlType="submit" type="primary" className="test-input-search">
           搜索

@@ -1,17 +1,15 @@
+/* eslint-disable guard-for-in */
 import React, { useState, useEffect } from 'react';
 import { connect } from 'dva';
-import { Card, message, Button, Modal, Table,  Menu } from 'antd';
-import queryString from 'query-string';
-import { routerRedux } from 'dva/router';
+import { Card, message, Button, Modal } from 'antd';
 import CategoryAddFormModal from './AddFormModal';
-import DateFormat from '@/components/DateFormat';
 import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
-import { addBatch,batchRelated,batchCancel,batchDelete } from '@/services/nameList';
+import { addBatch,batchDelete } from '@/services/nameList';
 
 
-function Index({ dispatch, location, namelist }) {
+function Index({ dispatch, namelist }) {
   const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest } = namelist;
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -26,59 +24,10 @@ function Index({ dispatch, location, namelist }) {
     // };
   }, []);
 
-  const handleRemoveConfirm = value => {
-    const { id } = value;
-    Modal.confirm({
-      title: '删除',
-      content: (
-        <div>
-          <p>你确定要删除该条吗</p>
-        </div>
-      ),
-      onOk: () => {
-        dispatch({
-          type: 'picture/removeCategory',
-          payload: { id },
-        })
-          .then(() => {
-            message.success('删除成功!');
-            // dispatch({
-            //   type: 'fetchBatchDetail',
-            //   payload: queryString.parse(search),
-            // });
-          })
-          .catch(e => {
-            message.warn(e.message);
-          });
-      },
-      okText: '确认',
-      cancelText: '取消',
-    });
-  };
-
-  const query = {}; //  queryString.parse(location.search);
- 
-  const start = () => {
-    setLoading(true);
-    // ajax request after empty completing
-    setTimeout(() => {
-      setSelectedRowKeys([]);
-      setLoading(false);
-    }, 1000);
-  };
-
-  const importMenu = (
-    <Menu>
-      <Menu.Item key={5}>删除</Menu.Item>
-    </Menu>
-  );
-
-  const onSelectChange = selectedRowKeys => {
-    setSelectedRowKeys({ selectedRowKeys });
-  };
+  const query = {}; 
   const setting = {
     data: batchList,
-    total:  batchList && batchList.length, // < batchCur*batchPageSize ? batchList.length : batchCur*batchPageSize + 1,
+    total:  batchList && batchList.length,
     current: batchCur,
     columns: renderColumns(dispatch,ivrIntents),
     pageSize: batchPageSize,
@@ -118,7 +67,6 @@ function Index({ dispatch, location, namelist }) {
       setSelectedRowKeys([]);
     },
     showNext: batchList && batchList.length < batchPageSize,
-    // sortedInfo,
     onChange: (start, length) => {
       dispatch({
         type: 'namelist/getBatch',
@@ -156,21 +104,20 @@ function Index({ dispatch, location, namelist }) {
     rowKey: 'id',
     rowSelection: {
       selectedRowKeys,
-      onChange: (selectedRowKeys, selectedRows) => {
-        setSelectedRowKeys(selectedRowKeys);
+      onChange: (selectedKeys) => {
+        setSelectedRowKeys({selectedRowKeys:selectedKeys});
         // this.setState({ , selectedRows });
       },
       getCheckboxProps: ({status}) => ({
         disabled: (status===3 ||status===4),
       }),
     },
-    importMenu,
-    formatOperation: (selectedRowKeys,hasSelected) => {
+    formatOperation: (selectedKeys,hasSelected) => {
       return (
         <div style={{marginTop:10}}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>删除</Button>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedKeys)}>删除</Button>
           <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
+            {hasSelected ? `已选择 ${selectedKeys.length} 项` : ''}
           </span>
         </div>
       )
@@ -186,11 +133,11 @@ function Index({ dispatch, location, namelist }) {
         </div>
       ),
       onOk: () => {
-        let selectArr=[];
-        let selectObj = {};
+        const selectArr=[];
+        const selectObj = {};
         ids.forEach(id => {
-          const selectObj = batchList.find(item => item.id === id);
-          selectArr.push(selectObj);
+          const obj = batchList.find(item => item.id === id);
+          selectArr.push(obj);
         });
         selectArr.forEach(item => {
           if(Object.keys(selectObj).includes(item.intent)){
@@ -199,10 +146,12 @@ function Index({ dispatch, location, namelist }) {
             selectObj[item.intent] = [item.id]
           }
         })
-        let questAll = [];
-        for (let item in selectObj) {
+        const questAll = [];
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item in selectObj) {
           questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
         }
+        // eslint-disable-next-line compat/compat
         Promise.all(questAll).then((result) => {
           let successCount = 0;
           let errorCount = 0;
@@ -229,8 +178,8 @@ function Index({ dispatch, location, namelist }) {
             payload: {},
           });  
           setSelectedRowKeys([]);  
-        }).catch((error) => {
-          message.error('删除失败！');
+        }).catch(e => {
+          message.error(`删除失败！${e.message}`);
         })
       },
       okText: '确认',
@@ -275,10 +224,9 @@ function Index({ dispatch, location, namelist }) {
         }}
         submitLoading={submitLoading}
         onSubmit={data => {
-          const {triggerTime,...rest } = data;
           setSubmitLoading(true);
           addBatch(data)
-          .then(body => {
+          .then(() => {
             message.success('新增任务成功');
             dispatch({
               type: 'namelist/getBatch',
@@ -286,7 +234,7 @@ function Index({ dispatch, location, namelist }) {
             });
             setSubmitLoading(false);
           })
-          .catch(e => {setSubmitLoading(false);});
+          .catch(() => {setSubmitLoading(false);});
           setValue(null);
         }}
       />

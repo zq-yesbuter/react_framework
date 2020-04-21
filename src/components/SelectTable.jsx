@@ -1,4 +1,4 @@
-import { Table, Dropdown, Button, Select } from 'antd';
+import { Table, Button, Select } from 'antd';
 import React, { Fragment } from 'react';
 
 const pageOptions =[
@@ -16,42 +16,37 @@ const renderTable = ({
   total,
   loading,
   onChange,
-  pageSize = 10,
+  // pageSize = 10,
   rowSelection,
-  sortedInfo,
   current,
-  defaultCurrent = 1,
+  // defaultCurrent = 1,
   selectedRowKeys,
-  importMenu,
   rowKey,
   prev,
   next,
   showNext,
   onSizeChange,
-  handleDelete,
-  hasImport,
-  exportFunction,
   formatOperation,
 }) => {
-  const pagination = {
-    defaultCurrent,
-    total,
-    pageSize,
-    showSizeChanger: true,
-    showQuickJumper: true,
-    pageSizeOptions: ['10', '20', '50', '100'],
-    // onShowSizeChange: (current, pageSize) => {
-    //   onChange((current - 1) * pageSize, pageSize, sortedInfo);
-    // },
-    onChange: (current, pageSize) => {
-      onChange(current + 1, pageSize);
-      // onChange((current - 1) * pageSize, pageSize, sortedInfo);
-    },
-    showTotal: (total, range) => {
-      // return `展示第${range[0]}至${range[1]}条数据，共${total}条数据`;
-    },
-    current,
-  };
+  // const pagination = {
+  //   defaultCurrent,
+  //   total,
+  //   pageSize,
+  //   showSizeChanger: true,
+  //   showQuickJumper: true,
+  //   pageSizeOptions: ['10', '20', '50', '100'],
+  //   // onShowSizeChange: (current, pageSize) => {
+  //   //   onChange((current - 1) * pageSize, pageSize, sortedInfo);
+  //   // },
+  //   onChange: (current, pageSize) => {
+  //     onChange(current + 1, pageSize);
+  //     // onChange((current - 1) * pageSize, pageSize, sortedInfo);
+  //   },
+  //   showTotal: (total, range) => {
+  //     // return `展示第${range[0]}至${range[1]}条数据，共${total}条数据`;
+  //   },
+  //   current,
+  // };
   const hasSelected = selectedRowKeys.length > 0;
   return (
     <Fragment>
@@ -78,7 +73,7 @@ const renderTable = ({
             <Select
               style={{ width: '75px', marginLeft:10 }}
               size="small"
-              defaultValue={10}
+              defaultValue={50}
               onChange={onSizeChange}
             >
               {

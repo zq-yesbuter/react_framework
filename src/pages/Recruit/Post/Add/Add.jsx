@@ -1,6 +1,6 @@
 import React, { useState, useEffect ,Fragment} from 'react';
 import { connect } from 'dva';
-import { Form, Modal, Select, DatePicker, Input, Card } from 'antd';
+import { Form, Modal, Select, DatePicker, Card } from 'antd';
 import moment from 'moment';
 import { routerRedux } from 'dva/router';
 import mapValueToFields from '@/utils/mapValueToFields';
@@ -8,7 +8,7 @@ import TrimInput from '@/components/TrimInput';
 
 const Option = Select.Option;
 const { Item } = Form;
-
+const { TextArea } = TrimInput;
 function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
   const { ivrIntents } = recruit;
   console.log('ivrIntents====>', recruit);
@@ -47,7 +47,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
       bordered={false}
       title={
         <Fragment>
-          任务配置
+          添加岗位
           <a
             href="javascript:;"
             style={{
@@ -75,6 +75,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
               onChange={() => {
                 intentChange();
               }}
+              style={{width:400}}
             >
               {ivrIntents &&
                 ivrIntents.length &&
@@ -94,17 +95,17 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '需求编号必填！',
               },
             ],
-          })(<Input placeholder="请输入需求编号" />)}
+          })(<TrimInput placeholder="请输入需求编号" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="需求名称">
-          {getFieldDecorator('name', {
+          {getFieldDecorator('name6', {
             rules: [
               {
                 required: true,
                 message: '需求名称必填！',
               },
             ],
-          })(<Input placeholder="请输入需求名称" />)}
+          })(<TrimInput placeholder="请输入需求名称" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="岗位名称">
           {getFieldDecorator('jobName', {
@@ -114,15 +115,16 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '岗位名称必填！',
               },
             ],
-          })(<Input placeholder="请输入岗位名称" />)}
+          })(<TrimInput placeholder="请输入岗位名称" style={{width:400}} />)}
         </Item>
         <Item label="需求部门" {...formItemLayout}>
-          {getFieldDecorator('scene', {
+          {getFieldDecorator('scene4', {
             rules: [{ required: true, message: '请选择需求部门!' }],
           })(
             <Select
               // style={{ width: '300px' }}
               placeholder="请选择需求部门"
+              style={{width:400}}
             >
               {ivrIntents &&
                 ivrIntents.length &&
@@ -138,12 +140,12 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
           )}
         </Item>
         <Item label="岗位职级" {...formItemLayout}>
-          {getFieldDecorator('scene', {
+          {getFieldDecorator('scene1', {
             rules: [{ required: true, message: '请选择岗位职级!' }],
           })(
             <Select
-              // style={{ width: '300px' }}
               placeholder="请选择岗位职级"
+              style={{width:400}}
             >
               {ivrIntents &&
                 ivrIntents.length &&
@@ -163,8 +165,8 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
             rules: [{ required: true, message: '请选择需求来源!' }],
           })(
             <Select
-              // style={{ width: '300px' }}
               placeholder="请选择需求来源"
+              style={{width:400}}
             >
               {ivrIntents &&
                 ivrIntents.length &&
@@ -187,7 +189,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '需求名称必填！',
               },
             ],
-          })(<Input placeholder="请输入需求名称" />)}
+          })(<TrimInput placeholder="请输入需求名称" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="离职ERP">
           {getFieldDecorator('erp', {
@@ -197,15 +199,15 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '离职ERP必填！',
               },
             ],
-          })(<Input placeholder="请输入离职ERP" />)}
+          })(<TrimInput placeholder="请输入离职ERP" style={{width:400}} />)}
         </Item>
         <Item label="招聘类型" {...formItemLayout}>
           {getFieldDecorator('type1', {
             rules: [{ required: true, message: '请选择招聘类型!' }],
           })(
             <Select
-              // style={{ width: '300px' }}
               placeholder="请选择招聘类型"
+              style={{width:400}}
             >
               {ivrIntents &&
                 ivrIntents.length &&
@@ -228,7 +230,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '招聘人数必填！',
               },
             ],
-          })(<Input placeholder="请输入招聘人数" />)}
+          })(<TrimInput placeholder="请输入招聘人数" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="对外名称">
           {getFieldDecorator('out', {
@@ -238,7 +240,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '对外名称必填！',
               },
             ],
-          })(<Input placeholder="请输入对外名称" />)}
+          })(<TrimInput placeholder="请输入对外名称" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="招聘负责人">
           {getFieldDecorator('outiner', {
@@ -248,17 +250,17 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '招聘负责人必填！',
               },
             ],
-          })(<Input placeholder="请输入招聘负责人" />)}
+          })(<TrimInput placeholder="请输入招聘负责人" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="汇报对象">
-          {getFieldDecorator('outinerdd', {
+          {getFieldDecorator('ou', {
             rules: [
               {
                 required: true,
                 message: '汇报对象必填！',
               },
             ],
-          })(<Input placeholder="请输入汇报对象" />)}
+          })(<TrimInput placeholder="请输入汇报对象" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="工作城市">
           {getFieldDecorator('outinerdddd', {
@@ -268,7 +270,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '工作城市必填！',
               },
             ],
-          })(<Input placeholder="请输入工作城市" />)}
+          })(<TrimInput placeholder="请输入工作城市" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="学历要求">
           {getFieldDecorator('outinerdd', {
@@ -278,7 +280,7 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '学历要求必填！',
               },
             ],
-          })(<Input placeholder="请输入学历要求" />)}
+          })(<TrimInput placeholder="请输入学历要求" style={{width:400}} />)}
         </Item>
         <Item {...formItemLayout} label="岗位要求">
           {getFieldDecorator('o', {
@@ -288,17 +290,17 @@ function AddFormModal({ dispatch, form, onCancel, onSubmit, value, recruit }) {
                 message: '岗位要求必填！',
               },
             ],
-          })(<Input placeholder="请输入岗位要求" />)}
+          })(<TextArea placeholder="请输入岗位要求" style={{width:400}} rows={4} />)}
         </Item>
         <Item {...formItemLayout} label="任职资格">
-          {getFieldDecorator('o', {
+          {getFieldDecorator('o4', {
             rules: [
               {
                 required: true,
                 message: '任职资格必填！',
               },
             ],
-          })(<Input placeholder="请输入任职资格" />)}
+          })(<TextArea placeholder="请输入任职资格" style={{width:400}} rows={4} />)}
         </Item>
       </Form>
     </Card>

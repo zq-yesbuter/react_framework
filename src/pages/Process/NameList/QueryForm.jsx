@@ -1,20 +1,12 @@
-import React, { PureComponent } from 'react';
-import { Form, Button, DatePicker, Select, Input } from 'antd';
+import React from 'react';
+import { Form, Button, Select } from 'antd';
 import { connect } from 'dva';
-import mapValueToFields from '../../../utils/mapValueToFields';
-import TrimInput from '../../../components/TrimInput';
-import DateTimeRangePicker from '@/components/DateTimeRangePicker';
+import TrimInput from '../../../components/TrimInput'; 
 import { nameStatus } from '../contant';
 
 const FormItem = Form.Item;
-const createForm = Form.create;
 const { Option } = Select;
-// const statusOptions = [
-//   {value:1,name:'已申请'},
-//   {value:2,name:'已完成'},
-//   {value:3,name:'已拒绝'},
-//   {value:4,name:'已接受'},
-// ]
+
 function QueryForm({ form, formatResult, onSubmit }) {
   const handleSubmit = e => {
     e.preventDefault();
@@ -24,31 +16,27 @@ function QueryForm({ form, formatResult, onSubmit }) {
       }
     });
   };
-
-  const { getFieldDecorator, getFieldValue, resetFields } = form;
+  // // 此处注意useImperativeHandle方法的的第一个参数是目标元素的ref引用
+  // useImperativeHandle(ref, () => ({
+  //   // reset 就是暴露给父组件的方法
+  //   reset: () => {
+  //     const { getFieldDecorator, resetFields } = form;
+      
+  //   }
+  // }));
+  const { getFieldDecorator, resetFields } = form;
   return (
+    // eslint-disable-next-line react/jsx-filename-extension
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="人才搜索">
         {getFieldDecorator('name')(<TrimInput />)}
       </FormItem>
       <FormItem label="状态筛选">
-        {getFieldDecorator('status')( 
+        {getFieldDecorator('status')(
           <Select placeholder="请选择状态" style={{width:200}}>
             {nameStatus.map(item => <Option value={item.value} key={item.value}>{item.name}</Option>)}
           </Select>)}
       </FormItem>
-      {/* <FormItem label="挂机原因">
-        {getFieldDecorator('channel2', {})(
-          <Select allowClear placeholder="请选择岗位" style={{width:200}}>
-            <Option value={null}>全部</Option>
-          </Select>)}
-      </FormItem>
-      <FormItem label="岗位筛选">
-        {getFieldDecorator('channel3', {})(
-          <Select allowClear placeholder="请选择岗位" style={{width:200}}>
-            <Option value={null}>全部</Option>
-          </Select>)}
-      </FormItem> */}
       <FormItem>
         <Button htmlType="submit" type="primary" className="test-input-search">
           搜索
