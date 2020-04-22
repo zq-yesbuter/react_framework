@@ -25,6 +25,68 @@ function Index({ dispatch, namelist }) {
   }, []);
 
   const query = {}; 
+  function  handleDelete(ids){
+    Modal.confirm({
+      title: '删除',
+      content: (
+        <div>
+          <p>你确定要批量删除这些数据吗？</p>
+        </div>
+      ),
+      onOk: () => {
+        const selectArr=[];
+        const selectObj = {};
+        ids.forEach(id => {
+          const obj = batchList.find(item => item.id === id);
+          selectArr.push(obj);
+        });
+        selectArr.forEach(item => {
+          if(Object.keys(selectObj).includes(item.intent)){
+            selectObj[item.intent].push(item.id)
+          }else{
+            selectObj[item.intent] = [item.id]
+          }
+        })
+        const questAll = [];
+        // eslint-disable-next-line no-restricted-syntax
+        for (const item in selectObj) {
+          questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
+        }
+        // eslint-disable-next-line compat/compat
+        Promise.all(questAll).then((result) => {
+          let successCount = 0;
+          let errorCount = 0;
+          let errorMessages = [];
+          if(result && result.length) {
+            result.forEach(item => {
+              successCount += item.successCount;
+              errorCount += item.errorCount;
+              errorMessages = errorMessages.concat(item.errorMessages);
+            })
+          }
+          Modal.info({
+            title: '删除信息反馈',
+            content: (
+              <div>
+                <p>{`删除成功${successCount}条`}</p>
+                {errorCount ? <p>{`删除失败${errorCount}条${errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
+              </div>
+            ),
+            onOk() {},
+          });
+          dispatch({
+            type: 'namelist/getBatch',
+            payload: {},
+          });  
+          setSelectedRowKeys([]);  
+        }).catch(e => {
+          message.error(`删除失败！${e.message}`);
+        })
+      },
+      okText: '确认',
+      cancelText: '取消',
+    });
+  };
   const setting = {
     data: batchList,
     total:  batchList && batchList.length,
@@ -104,87 +166,27 @@ function Index({ dispatch, namelist }) {
     rowKey: 'id',
     rowSelection: {
       selectedRowKeys,
-      onChange: (selectedKeys) => {
-        setSelectedRowKeys({selectedRowKeys:selectedKeys});
+      // eslint-disable-next-line no-shadow
+      onChange: (selectedRowKeys) => {
+        setSelectedRowKeys(selectedRowKeys);
         // this.setState({ , selectedRows });
       },
       getCheckboxProps: ({status}) => ({
         disabled: (status===3 ||status===4),
       }),
     },
-    formatOperation: (selectedKeys,hasSelected) => {
+    formatOperation: (selectedRowKeys, hasSelected) => {
       return (
-        <div style={{marginTop:10}}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedKeys)}>删除</Button>
+        <div style={{ marginTop: 10 }}>
+          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>
+            删除
+          </Button>
           <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `已选择 ${selectedKeys.length} 项` : ''}
+            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
           </span>
         </div>
-      )
+      );
     },
-  };
-
-  function  handleDelete(ids){
-    Modal.confirm({
-      title: '删除',
-      content: (
-        <div>
-          <p>你确定要批量删除这些数据吗？</p>
-        </div>
-      ),
-      onOk: () => {
-        const selectArr=[];
-        const selectObj = {};
-        ids.forEach(id => {
-          const obj = batchList.find(item => item.id === id);
-          selectArr.push(obj);
-        });
-        selectArr.forEach(item => {
-          if(Object.keys(selectObj).includes(item.intent)){
-            selectObj[item.intent].push(item.id)
-          }else{
-            selectObj[item.intent] = [item.id]
-          }
-        })
-        const questAll = [];
-        // eslint-disable-next-line no-restricted-syntax
-        for (const item in selectObj) {
-          questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
-        }
-        // eslint-disable-next-line compat/compat
-        Promise.all(questAll).then((result) => {
-          let successCount = 0;
-          let errorCount = 0;
-          let errorMessages = [];
-          if(result && result.length) {
-            result.forEach(item => {
-              successCount += item.successCount;
-              errorCount += item.errorCount;
-              errorMessages = errorMessages.concat(item.errorMessages);
-            })
-          }
-          Modal.info({
-            title: '删除信息反馈',
-            content: (
-              <div>
-                <p>{`删除成功${successCount}条`}</p>
-                {errorCount ? <p>{`删除失败${errorCount}条${errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
-              </div>
-            ),
-            onOk() {},
-          });
-          dispatch({
-            type: 'namelist/getBatch',
-            payload: {},
-          });  
-          setSelectedRowKeys([]);  
-        }).catch(e => {
-          message.error(`删除失败！${e.message}`);
-        })
-      },
-      okText: '确认',
-      cancelText: '取消',
-    });
   };
 
   return (
