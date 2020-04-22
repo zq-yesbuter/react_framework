@@ -1,11 +1,25 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Avatar, Spin } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
+import _ from 'lodash';
 import styles from './index.less';
 
-function RecordList({ namelist: { messageList = [] }, loading }) {
+function RecordList({ namelist: { messageList = [] }, loading, dispatch }) {
   const chatRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      // 对信息列表信息置空
+      dispatch({
+        type: 'namelist/save',
+        payload: { messageList: [] },
+      });
+      if(chatRef && chatRef.current){
+        chatRef.current.scrollTop = 0;
+      }
+    };
+  }, []);
 
   function typeComponent(message) {
     const newMessage = JSON.parse(message);
@@ -137,7 +151,7 @@ function RecordList({ namelist: { messageList = [] }, loading }) {
     <div className={styles.chatContent}>
       {bottomLoadingHtml()}
       <div className={styles.chatPanel}>
-        <div className={styles.chatPanelContainer} ref={chatRef}>
+        <div className={styles.chatPanelContainer} ref={chatRef} id='chatRecordRef'>
           <ul className={styles.chatList}>{chatList()}</ul>
         </div>
       </div>

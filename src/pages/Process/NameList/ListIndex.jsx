@@ -506,6 +506,9 @@ function Index({ dispatch, namelist, loading }) {
             type: 'namelist/save',
             payload: { messageList: []},
           });
+          if(document.getElementById('chatRecordRef')){
+            document.getElementById('chatRecordRef').scrollTop = 0;
+          }
         }}
       />
     </Card>

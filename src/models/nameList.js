@@ -47,7 +47,7 @@ export default {
     },
 
     // 获取微信聊天记录
-    *getMessage({ payload }, { call, put, select }) {
+    *getMessage({ payload }, { call, put }) {
       const messageList = yield call(fetchMessage, payload);
       yield put({
         type: 'save',
@@ -58,7 +58,7 @@ export default {
     },
 
     // 获取外呼类型
-    *fetchIvrIntents({ payload }, { call, put, select }) {
+    *fetchIvrIntents({ payload }, { call, put }) {
       const ivrIntents = yield call(getIvrIntents, payload);
       yield put({
         type: 'save',
@@ -216,6 +216,13 @@ export default {
         const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
         const mainMatch = /^\/AI\/outging$/.exec(pathname);
         
+        if(!match){
+          // 重置消息列表避免bug
+          dispatch({
+            type: 'save',
+            payload:{messageList:[]},
+          });
+        }
         // 名单列表
         if (match) {
           // 新的获取名单列表
