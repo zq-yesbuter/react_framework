@@ -23,6 +23,7 @@ export default {
     namePageSize:50,
     batchDetail: {},
     deleteNameList: [],
+    messageList: [],
   },
   effects: {
     *getBatch({ payload }, { call, put, select }) {

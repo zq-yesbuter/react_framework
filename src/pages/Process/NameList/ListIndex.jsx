@@ -500,7 +500,13 @@ function Index({ dispatch, namelist, loading }) {
       />
       <Record 
         visible={showVisible}
-        onClose={() => setShowVisible(false)}
+        onClose={() => {
+          setShowVisible(false);
+          dispatch({
+            type: 'namelist/save',
+            payload: { messageList: []},
+          });
+        }}
       />
     </Card>
   );
