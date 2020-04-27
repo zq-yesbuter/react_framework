@@ -138,3 +138,11 @@ export async function nameBatchDelete(body) {
     body,
   });
 }
+
+// 批次详情结果查询
+export async function getResult(body) {
+  const { intent,id } = body;
+  return request(`/batch/${intent}/${id}/detail/results`, {
+    method: 'GET',
+  });
+}

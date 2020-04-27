@@ -10,7 +10,7 @@ import { addBatch,batchDelete } from '@/services/nameList';
 
 
 function Index({ dispatch, namelist }) {
-  const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest } = namelist;
+  const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest, batchTotal } = namelist;
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -89,10 +89,10 @@ function Index({ dispatch, namelist }) {
   };
   const setting = {
     data: batchList,
-    total:  batchList && batchList.length,
+    total:  batchTotal,
     current: batchCur,
-    columns: renderColumns(dispatch,ivrIntents),
     pageSize: batchPageSize,
+    columns: renderColumns(dispatch,ivrIntents),
     loading,
     selectedRowKeys,
     prev: () => {
@@ -129,39 +129,16 @@ function Index({ dispatch, namelist }) {
       setSelectedRowKeys([]);
     },
     showNext: batchList && batchList.length < batchPageSize,
-    onChange: (start, length) => {
+    onChange: (pageNum, pageSize) => {
       dispatch({
         type: 'namelist/getBatch',
-        payload: {pageSize: length, pageNum: start || 1},
+        payload: {pageNum,pageSize},
       });
       dispatch({
         type: 'namelist/save',
-        payload: {batchRequest:{pageSize: length, pageNum: start || 1}},
-      }); 
-    
-      // onChange(
-      //   {
-      //     start,
-      //     length,
-      //     status,
-      //   },
-      //   () => {
-      //     onSubmit({
-      //       start,
-      //       length,
-      //       status,
-      //       modelCode,
-      //       order: sorter.columnKey,
-      //       dir: sorter.order,
-      //     });
-      //     this.pending = false;
-      //   }
-      // );
+        payload: {batchRequest:{...batchRequest,pageNum, pageSize}},
+      });
       setSelectedRowKeys([]);
-      // this.setState({
-      //   selectedRows: [],
-      //   sortedInfo: sorter,
-      // });
     },
     rowKey: 'id',
     rowSelection: {

@@ -1,5 +1,5 @@
 import queryString from 'query-string';
-import { fetchMessage, getIvrIntents, getBatch, getBatchDetail, getFlowlist, getSigleFlowlist} from '../services/nameList';
+import { fetchMessage, getIvrIntents, getBatch, getBatchDetail, getFlowlist, getSigleFlowlist,getResult} from '../services/nameList';
 
 export default {
   namespace: 'namelist',
@@ -19,11 +19,14 @@ export default {
     taskQueryValue: {},
     batchCur:1,
     batchPageSize:50,
+    batchTotal: 0,
     nameCur:1,
     namePageSize:50,
+    nameTotal:0,
     batchDetail: {},
     deleteNameList: [],
     messageList: [],
+    resultList: [],
   },
   effects: {
     *getBatch({ payload }, { call, put, select }) {
@@ -33,12 +36,14 @@ export default {
         const batchList = batchObj && batchObj.data || [];
         const batchCur = batchObj && batchObj.curPage;
         const batchPageSize = batchObj && batchObj.pageSize;
+        const batchTotal = batchObj && batchObj.total;
         yield put({
           type: 'save',
           payload: {
             batchList,
             batchCur,
             batchPageSize,
+            batchTotal,
           },
         });
       } catch (e) {
@@ -74,6 +79,7 @@ export default {
       const {data:nameList} = response;
       const nameCur = response && response.curPage;
       const namePageSize = response && response.pageSize;
+      const nameTotal = response && response.total;
       yield put({
         type: 'formatNameList',
         payload: {
@@ -85,8 +91,8 @@ export default {
         payload: {
           nameCur,
           namePageSize,
+          nameTotal,
         },
-       
       })
     },
     *configNameList({ payload }, { call, put, select }) {
@@ -152,6 +158,15 @@ export default {
     },
     *deleteMore({ payload }, { call, put, select }) {
       return yield call(getBatchDetail, {...payload});
+    },
+    *getResult({ payload }, { call, put }) {
+      const resultList = yield call(getResult, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          resultList,
+        },
+      });
     },
   },
   reducers: {
@@ -235,6 +250,10 @@ export default {
           });
           dispatch({
             type: 'getBatchDetail',
+            payload: queryString.parse(search),
+          }); 
+          dispatch({
+            type: 'getResult',
             payload: queryString.parse(search),
           }); 
         // 消息记录
