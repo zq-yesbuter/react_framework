@@ -59,6 +59,11 @@ function Index({ onClose, visible,namelist:{nameList,listValue},dispatch }) {
               }
               const group = nameList[index-1] && nameList[index-1].invitationId;
               if(group) {
+                // 重置消息列表避免bug
+                dispatch({
+                  type: 'namelist/save',
+                  payload: { messageList: [] },
+                });
                 dispatch({
                   type: 'namelist/getMessage',
                   payload: { group, intent },
@@ -84,6 +89,11 @@ function Index({ onClose, visible,namelist:{nameList,listValue},dispatch }) {
               }
               const group = nameList[index+1] && nameList[index+1].invitationId;
               if(group) {
+                // 重置消息列表避免bug
+                dispatch({
+                  type: 'namelist/save',
+                  payload: { messageList: [] },
+                });
                 dispatch({
                   type: 'namelist/getMessage',
                   payload: { group, intent },
