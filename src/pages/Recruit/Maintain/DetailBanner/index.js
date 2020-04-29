@@ -16,7 +16,7 @@ const tabs = [
   {
     key: '/AI/recruit/maintain/listbanner',
     tab: '岗位列表banner',
-  },
+  },  
   {
     key: '/AI/recruit/maintain/detailbanner',
     tab: '详情列表banner',

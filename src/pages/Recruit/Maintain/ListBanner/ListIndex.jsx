@@ -25,7 +25,7 @@ function Index({ dispatch, location, recruit, form }) {
   const [initalValue, setInitalValue] = useState([{}]);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [imageUrl, setImageUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState();
   useEffect(() => {
     // return () => {
     //   dispatch({
@@ -46,15 +46,15 @@ function Index({ dispatch, location, recruit, form }) {
   };
 
   function beforeUpload(file) {
-    // const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    // if (!isJpgOrPng) {
-    //   message.error('You can only upload JPG/PNG file!');
-    // }
-    // const isLt2M = file.size / 1024 / 1024 < 2;
-    // if (!isLt2M) {
-    //   message.error('Image must smaller than 2MB!');
-    // }
-    // return isJpgOrPng && isLt2M;
+    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+    if (!isJpgOrPng) {
+      message.error('You can only upload JPG/PNG file!');
+    }
+    const isLt2M = file.size / 1024 / 1024 < 2;
+    if (!isLt2M) {
+      message.error('Image must smaller than 2MB!');
+    }
+    return isJpgOrPng && isLt2M;
   }
 
   const uploadButton = (
@@ -69,35 +69,30 @@ function Index({ dispatch, location, recruit, form }) {
     reader.readAsDataURL(img);
   }
   const handleChange = info => {
-    // if (info.file.status === 'uploading') {
-    //   setLoading(true);
-    //   return;
-    // }
-    // if (info.file.status === 'done') {
-    //   // Get this url from response in real world.
-    //   getBase64(
-    //     info.file.originFileObj,
-    //     imageUrl => console.log('imageUrl===>', imageUrl)
-    //     // this.setState({
-    //     //   imageUrl,
-    //     //   loading: false,
-    //     // })
-    //   );
-    // }
+    if (info.file.status === 'uploading') {
+      setLoading(true);
+      return;
+    }
+    if (info.file.status === 'done') {
+      // Get this url from response in real world.
+      getBase64(
+        info.file.originFileObj,
+        imageUrl => console.log('imageUrl===>', imageUrl)
+        // this.setState({
+        //   imageUrl,
+        //   loading: false,
+        // })
+      );
+    }
   };
 
   function upload(file) {
     const formData = new FormData();
     formData.append('file', file);
-    console.log('触发====》');
     imageUpload(formData)
-      .then(({url}) => {
+      .then(data => {
         message.success('上传图片成功');
-        if(url){
-          setImageUrl(url)
-        }
-        console.log('data===>', url);
-        
+        console.log('data===>', data);
       })
       .catch(e => message.error(e.message));
   }
@@ -105,7 +100,7 @@ function Index({ dispatch, location, recruit, form }) {
   function addConfig() {
     const newData = _.cloneDeep(initalValue);
     if(newData.length>4){
-      message.error('最多只能配置五条！');
+      message.error('最多智能配置五条！');
       return;
     }
     newData.push({});
@@ -137,7 +132,7 @@ function Index({ dispatch, location, recruit, form }) {
               <Item style={{ width: 200 }}>
                 {getFieldDecorator(`batch[${index}].fileName`)(
                   <Upload
-                    // name="avatar"
+                    name="avatar"
                     listType="picture-card"
                     className="avatar-uploader"
                     showUploadList={false}
@@ -149,7 +144,7 @@ function Index({ dispatch, location, recruit, form }) {
                       <img src={imageUrl} alt="avatar" style={{ width: '100%' }} />
                     ) : (
                       uploadButton
-                    )} 
+                    )}
                   </Upload>
                 )}
               </Item>

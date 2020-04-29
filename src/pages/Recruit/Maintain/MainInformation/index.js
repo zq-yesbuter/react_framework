@@ -13,6 +13,14 @@ const tabs = [
     key: '/AI/recruit/maintain/mainInformation',
     tab: '首页信息',
   },
+  {
+    key: '/AI/recruit/maintain/listbanner',
+    tab: '岗位列表banner',
+  },
+  {
+    key: '/AI/recruit/maintain/detailbanner',
+    tab: '详情列表banner',
+  },
 ];
 function Index({ match, routerData, location, dispatch }) {
   return (

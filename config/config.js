@@ -236,5 +236,15 @@ export default {
       changeOrigin: true,
       pathRewrite,
     },
+    '/image': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
+    '/config': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
   },
 };
