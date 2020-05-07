@@ -73,6 +73,7 @@ function Index({ dispatch, namelist, loading }) {
     namePageSize,
     nameRequest,
     batchDetail,
+    nameTotal,
   } = namelist;
   const { status, name } = batchDetail;
   const { search } = window.location;
@@ -342,31 +343,17 @@ function Index({ dispatch, namelist, loading }) {
     selectedRowKeys,
     showNext: nameList && nameList.length < namePageSize,
     data: nameList || [],
-    total: nameList && nameList.length,
-    onChange: (start, length) => {
-      // this.setState(
-      //   ({ fields }) => ({
-      //     fields: {
-      //       ...fields,
-      //       start,
-      //       length,
-      //     },
-      //   }),
-      //   () => {
-      //     this.handleSubmit();
-      //     this.pending = false;
-      //   }
-      // );
-
+    total: nameTotal,
+    onChange: (pageNum, pageSize) => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: { start, length },
+        payload: { pageNum, pageSize, id, intent },
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: { nameRequest: { ...nameRequest, pageNum, pageSize } },
       });
       setSelectedRowKeys([]);
-      // this.setState({
-      //   selectedRows: [],
-      //   sortedInfo: sorter,
-      // });
     },
     prev: () => {
       dispatch({

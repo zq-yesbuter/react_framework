@@ -40,11 +40,15 @@ function formatRemark(channel, remark) {
   return remark && remark.indexOf('#') > 0 ? remark.slice(remark.indexOf('#') + 1) : remark;
 }
 
-function RecordBottom({ namelist: { flowList }, loading }) {
+function RecordBottom({ namelist: { flowList, listValue }, loading }) {
   return (
     <div className={styles['gutter-box']}>
       <h3>外呼记录/结果</h3>
       <div className={styles.scroll}>
+        <div style={{ display: 'flex', justifyContent: 'space-between',marginTop:20 }}>
+          <span><span style={{fontWeight:'bold'}}>姓名：</span>{listValue && listValue.name}</span>
+          <div><span style={{fontWeight:'bold'}}>电话：</span>{listValue && listValue.tel}</div>
+        </div>
         {loading ? (
           <Spin style={{ marginTop: 50 }} />
         ) : (

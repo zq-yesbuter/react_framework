@@ -1,14 +1,15 @@
-import React, { Component, Fragment,forwardRef } from 'react';
-import { routerRedux, Route, Switch, Redirect, Link } from 'dva/router';
+import React, { Fragment } from 'react';
+import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
-import { Row, Col, Card, Drawer, Button } from 'antd';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import { Row, Col, Drawer, Button, message } from 'antd';
 import SingleSet from './SingleSet';
 import ChatRecord from './ChatRecord';
 import Flow from './Flow';
 import styles from './index.less';
 
-function Index({ onClose, visible }) {
+function Index({ onClose, visible,namelist:{nameList,listValue},dispatch }) {
+  const { intent,invitationId} = listValue;
+  const index = nameList.findIndex(item => item.invitationId === invitationId )
   return (
     // <PageHeaderWrapper
     //   title={
@@ -29,24 +30,89 @@ function Index({ onClose, visible }) {
     //       </a>
     //     </Fragment>
     //   }
-      // breadcrumb={{
-      //   routes: [
-      //     { path: '/AI/outging', breadcrumbName: '外呼任务' },
-      //     { path: '/AI/namelist', breadcrumbName: '外呼名单' },
-      //     { path: '/AI/record', breadcrumbName: '外呼记录' },
-      //   ],
-      //   itemRender: (route, params, routes, paths) => {
-      //     return <Link to={route.path}>{route.breadcrumbName}</Link>;
-      //   },
-      // }}
+    // breadcrumb={{
+    //   routes: [
+    //     { path: '/AI/outging', breadcrumbName: '外呼任务' },
+    //     { path: '/AI/namelist', breadcrumbName: '外呼名单' },
+    //     { path: '/AI/record', breadcrumbName: '外呼记录' },
+    //   ],
+    //   itemRender: (route, params, routes, paths) => {
+    //     return <Link to={route.path}>{route.breadcrumbName}</Link>;
+    //   },
+    // }}
     // >
     // </PageHeaderWrapper>
     <Drawer
-      title="查看记录"
+      title={
+        <Fragment>
+          查看记录
+          <Button
+            style={{
+              marginLeft: 10,
+            }}
+            disabled={index === 0}
+            onClick={e => {
+              e.preventDefault();
+              if(index === 0){
+                message.warn('已经是第一条了，没有上一条了～');
+                return;
+              }
+              const group = nameList[index-1] && nameList[index-1].invitationId;
+              if(group) {
+                // 重置消息列表避免bug
+                dispatch({
+                  type: 'namelist/save',
+                  payload: { messageList: [] },
+                });
+                dispatch({
+                  type: 'namelist/getMessage',
+                  payload: { group, intent },
+                });
+                dispatch({
+                  type: 'namelist/getSigleFlowlist',
+                  payload: { id: group, intent },
+                });
+              }
+            }}
+          >
+            上一条
+          </Button>
+          <Button
+            style={{
+              marginLeft: 10,
+            }}
+            disabled={index === nameList.length-1}
+            onClick={()=>{
+              if(index === nameList.length){
+                message.warn('已经是最后一条了，没有下一条了～');
+                return;
+              }
+              const group = nameList[index+1] && nameList[index+1].invitationId;
+              if(group) {
+                // 重置消息列表避免bug
+                dispatch({
+                  type: 'namelist/save',
+                  payload: { messageList: [] },
+                });
+                dispatch({
+                  type: 'namelist/getMessage',
+                  payload: { group, intent },
+                });
+                dispatch({
+                  type: 'namelist/getSigleFlowlist',
+                  payload: { id: group, intent },
+                });
+              }
+            }}
+          >
+            下一条
+          </Button>
+        </Fragment>
+      }
       width={1200}
       onClose={onClose}
       visible={visible}
-      bodyStyle={{ background:'#f7f7f7' }}
+      bodyStyle={{ background: '#f7f7f7' }}
       className={styles.record}
     >
       <Row gutter={12}>

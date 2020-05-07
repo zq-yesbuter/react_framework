@@ -1,5 +1,13 @@
 import queryString from 'query-string';
-import { fetchMessage, getIvrIntents, getBatch, getBatchDetail, getFlowlist, getSigleFlowlist} from '../services/nameList';
+import {
+  fetchMessage,
+  getIvrIntents,
+  getBatch,
+  getBatchDetail,
+  getFlowlist,
+  getSigleFlowlist,
+  getResult,
+} from '../services/nameList';
 
 export default {
   namespace: 'namelist',
@@ -8,8 +16,8 @@ export default {
     flowList: [],
     phoneMessage: [],
     backShowTime: {},
-    batchRequest: {orderBy: { createdDate: 'DESC' },pageSize: 50, pageNum: 1}, 
-    nameRequest: {pageSize: 50, pageNum: 1},
+    batchRequest: { orderBy: { createdDate: 'DESC' }, pageSize: 50, pageNum: 1 },
+    nameRequest: { pageSize: 50, pageNum: 1 },
     ivrIntents: [],
     batchList: [],
     configValue: {},
@@ -17,28 +25,33 @@ export default {
     invitations: [],
     configNameList: [],
     taskQueryValue: {},
-    batchCur:1,
-    batchPageSize:50,
-    nameCur:1,
-    namePageSize:50,
+    batchCur: 1,
+    batchPageSize: 50,
+    batchTotal: 0,
+    nameCur: 1,
+    namePageSize: 50,
+    nameTotal: 0,
     batchDetail: {},
     deleteNameList: [],
     messageList: [],
+    resultList: [],
   },
   effects: {
     *getBatch({ payload }, { call, put, select }) {
       try {
         const batchRequest = yield select(({ namelist: { batchRequest } }) => batchRequest);
         const batchObj = yield call(getBatch, { ...batchRequest, ...payload });
-        const batchList = batchObj && batchObj.data || [];
+        const batchList = (batchObj && batchObj.data) || [];
         const batchCur = batchObj && batchObj.curPage;
         const batchPageSize = batchObj && batchObj.pageSize;
+        const batchTotal = batchObj && batchObj.total;
         yield put({
           type: 'save',
           payload: {
             batchList,
             batchCur,
             batchPageSize,
+            batchTotal,
           },
         });
       } catch (e) {
@@ -71,9 +84,10 @@ export default {
     *fetchBatchDetail({ payload }, { call, put, select }) {
       const nameRequest = yield select(({ namelist: { nameRequest } }) => nameRequest);
       const response = yield call(getBatchDetail, { ...nameRequest, ...payload }) || {};
-      const {data:nameList} = response;
+      const { data: nameList } = response;
       const nameCur = response && response.curPage;
       const namePageSize = response && response.pageSize;
+      const nameTotal = response && response.total;
       yield put({
         type: 'formatNameList',
         payload: {
@@ -85,13 +99,13 @@ export default {
         payload: {
           nameCur,
           namePageSize,
+          nameTotal,
         },
-       
-      })
+      });
     },
-    *configNameList({ payload }, { call, put, select }) {
-      const response = yield call(getBatchDetail, {...payload,pageNum: 1,pageSize: 10000});
-      const {data:nameList} = response;
+    *configNameList({ payload }, { call, put }) {
+      const response = yield call(getBatchDetail, { ...payload, pageNum: 1, pageSize: 10000 });
+      const { data: nameList } = response;
       yield put({
         type: 'formatConfigNameList',
         payload: {
@@ -110,7 +124,7 @@ export default {
     //       });
     //     }
     //   },
-    *getFlowlist({ payload }, { call, put, select }) {
+    *getFlowlist({ payload }, { call, put }) {
       const flowList = yield call(getFlowlist, payload);
       yield put({
         type: 'getFlowList',
@@ -119,7 +133,7 @@ export default {
         },
       });
     },
-    *getSigleFlowlist({ payload }, { call, put, select }) {
+    *getSigleFlowlist({ payload }, { call, put }) {
       const flowList = yield call(getSigleFlowlist, payload);
       yield put({
         type: 'getFlowList',
@@ -128,30 +142,39 @@ export default {
         },
       });
     },
-    *getConfigValue({ payload }, { call, put, select }) {
+    *getConfigValue({ payload }, { call, put }) {
       const response = yield call(getBatch, payload);
       const { data } = response;
       // console.log('configValue====>', configValue);
       yield put({
         type: 'save',
         payload: {
-          configValue:data[0],
+          configValue: data[0],
         },
       });
     },
-    *getBatchDetail({ payload }, { call, put, select }) {
+    *getBatchDetail({ payload }, { call, put }) {
       const response = yield call(getBatch, payload);
       const { data } = response;
       // console.log('configValue====>', configValue);
       yield put({
         type: 'save',
         payload: {
-          batchDetail:data[0],
+          batchDetail: data[0],
         },
       });
     },
-    *deleteMore({ payload }, { call, put, select }) {
-      return yield call(getBatchDetail, {...payload});
+    *deleteMore({ payload }, { call}) {
+      return yield call(getBatchDetail, { ...payload });
+    },
+    *getResult({ payload }, { call, put }) {
+      const resultList = yield call(getResult, payload);
+      yield put({
+        type: 'save',
+        payload: {
+          resultList,
+        },
+      });
     },
   },
   reducers: {
@@ -161,23 +184,24 @@ export default {
     formatNameList(state, { payload }) {
       const { nameList } = payload;
       const flatNameList = nameList.map(item => {
-        let obj={};
-        item.expected.forEach(item => Object.assign(obj, item) )
-        return {...item,...obj}
-      })
-      return { ...state,nameList:flatNameList };
+        let obj = {};
+        item.expected.forEach(item => Object.assign(obj, item));
+        return { ...item, ...obj };
+      });
+      return { ...state, nameList: flatNameList };
     },
     formatConfigNameList(state, { payload }) {
       const { nameList } = payload;
       const flatNameList = nameList.map(item => {
-        let obj={};
-        item.expected.forEach(item => Object.assign(obj, item) )
-        return {...item,...obj}
-      })
-      return { ...state,configNameList:flatNameList };
+        let obj = {};
+        item.expected.forEach(item => Object.assign(obj, item));
+        return { ...item, ...obj };
+      });
+      return { ...state, configNameList: flatNameList };
     },
     getFlowList(state, { payload }) {
       const { flowList } = payload;
+      const { flow = [] } = flowList;
       // let { timeList, selectJobId } = state;
       // if (payload && payload.selectJobId) {
       //   selectJobId = payload.selectJobId;
@@ -193,7 +217,7 @@ export default {
       // const list = timeList.filter(item => item.applyId === selectJobId);
       // const backShowTime = list.length ? list.slice(-1)[0] : {};
 
-      // flatFlowList = 
+      // flatFlowList =
       //   flowList.filter(item => item.flow.length > 0 || item.notifyMessage.length > 0)
       //   .map(item => {
       //     if (!item.flow) {
@@ -204,8 +228,14 @@ export default {
       //     }s
       //     return [...item.flow, ...item.notifyMessage];
       //   });
-      const flatFlowList = [...flowList.flow, ...flowList.notifyMessage];
-      return { ...state, flowList:flatFlowList,listValue: flowList };
+      const flatFlowList = flow.reduce((arr, item) => {
+        arr.push(item);
+        if (item.notifyMessage && item.notifyMessage.length) {
+          item.notifyMessage.forEach(val => arr.push(val));
+        }
+        return arr;
+      }, []);
+      return { ...state, flowList: flatFlowList, listValue: flowList };
     },
   },
   subscriptions: {
@@ -221,7 +251,7 @@ export default {
           // 重置消息列表避免bug
           dispatch({
             type: 'save',
-            payload:{messageList:[]},
+            payload: { messageList: [] },
           });
         }
         // 名单列表
@@ -237,8 +267,12 @@ export default {
           dispatch({
             type: 'getBatchDetail',
             payload: queryString.parse(search),
-          }); 
-        // 消息记录
+          });
+          dispatch({
+            type: 'getResult',
+            payload: queryString.parse(search),
+          });
+          // 消息记录
         } else if (matchRecord) {
           dispatch({
             type: 'fetchIvrIntents',
@@ -246,14 +280,14 @@ export default {
           const { group, intent } = queryString.parse(search) || {};
           dispatch({
             type: 'getMessage',
-            payload: {group, intent},
+            payload: { group, intent },
           });
           dispatch({
             type: 'getSigleFlowlist',
-            payload: {id:group,intent},
-          }); 
-        // 配置页面
-        }else if(matchConfig) {
+            payload: { id: group, intent },
+          });
+          // 配置页面
+        } else if (matchConfig) {
           dispatch({
             type: 'fetchIvrIntents',
           });
@@ -264,9 +298,9 @@ export default {
           dispatch({
             type: 'getConfigValue',
             payload: queryString.parse(search),
-          }); 
-        // 任务页面
-        }else if(mainMatch) {
+          });
+          // 任务页面
+        } else if (mainMatch) {
           dispatch({
             type: 'getBatch',
             payload: {dataStatus:1},

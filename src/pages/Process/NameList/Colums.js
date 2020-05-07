@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import _ from 'lodash';
+import moment from 'moment';
 import { formatNameType } from '@/utils/utils';
 import { nameStatus } from '../contant';
 
@@ -55,6 +56,18 @@ const renderColumns = (dispatch, showIntent, setShowVisible) => {
       key: 'result', 
       dataIndex: 'result',
       render: result => (result && result.indexOf('#') >0 ? result.slice(result.indexOf('#') + 1) : result)
+    },
+    {
+      title: '通话时长(秒)',
+      key: 'roundStartTime', 
+      dataIndex: 'roundStartTime',
+      render: (roundStartTime,record) => {
+        const { roundEndTime } = record;
+        if(roundEndTime && roundStartTime){
+          return (moment(roundEndTime)-moment(roundStartTime))/1000;
+        }
+        return '';
+      }
     },
     {
       title: '更新人',
