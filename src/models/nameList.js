@@ -215,6 +215,7 @@ export default {
         const matchRecord = /^\/AI\/outging\/record/.exec(pathname);
         const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
         const mainMatch = /^\/AI\/outging$/.exec(pathname);
+        const deleteMatch = /^\/AI\/outging\/delete/.exec(pathname);
         
         if(!match){
           // 重置消息列表避免bug
@@ -268,7 +269,15 @@ export default {
         }else if(mainMatch) {
           dispatch({
             type: 'getBatch',
-            payload: {},
+            payload: {dataStatus:1},
+          });
+          dispatch({
+            type: 'fetchIvrIntents',
+          });
+        }else if(deleteMatch) {
+          dispatch({
+            type: 'getBatch',
+            payload: {dataStatus:2},
           });
           dispatch({
             type: 'fetchIvrIntents',
