@@ -69,7 +69,7 @@ function Index({ dispatch, namelist }) {
             }
             Modal.info({
               title: '删除信息反馈',
-              content: ( 
+              content: (
                 <div>
                   <p>{`删除成功${successCount}条`}</p>
                   {errorCount ? (
@@ -157,22 +157,22 @@ function Index({ dispatch, namelist }) {
         // this.setState({ , selectedRows });
       },
       getCheckboxProps: ({ status }) => ({
-        disabled: isAllDelete ? false : (status === 3 || status === 4),
+        disabled: isAllDelete ? false : status === 3 || status === 4,
       }),
     },
     formatOperation: (selectedRowKeys, hasSelected) => {
       return (
         <div style={{ marginTop: 10 }}>
-          {isDelete ? null : 
-          <Fragment>
-            <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>
-              删除
-            </Button>
-            <span style={{ marginLeft: 8 }}>
-              {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
-            </span>
-          </Fragment>
-          }
+          {isDelete ? null : (
+            <Fragment>
+              <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>
+                删除
+              </Button>
+              <span style={{ marginLeft: 8 }}>
+                {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
+              </span>
+            </Fragment>
+          )}
         </div>
       );
     },
@@ -184,31 +184,31 @@ function Index({ dispatch, namelist }) {
       title="外呼任务"
       extra={
         <Fragment>
-          {isDelete ? null :
-          <Button
-            icon="plus"
-            type="primary"
-            onClick={() => {
-              setValue({});
-            }}
-          >
-            新建任务
-          </Button>
-          }
-          {isAllDelete ? 
+          {isDelete ? null : (
+            <Button
+              icon="plus"
+              type="primary"
+              onClick={() => {
+                setValue({});
+              }}
+            >
+              新建任务
+            </Button>
+          )}
+          {isAllDelete ? (
             <Button
               onClick={() => {
                 dispatch(
                   routerRedux.push({
                     pathname: '/AI/outging/delete',
-                    }),
+                  })
                 );
               }}
-              style={{marginLeft:10}}
+              style={{ marginLeft: 10 }}
             >
               已删除任务
-            </Button> : null
-          }
+            </Button>
+          ) : null}
         </Fragment>
       }
     >
@@ -218,11 +218,11 @@ function Index({ dispatch, namelist }) {
           const payload = isDelete ? { dataStatus: 2, ...data } : data;
           dispatch({
             type: 'namelist/save',
-            payload: { taskQueryValue: data},
+            payload: { taskQueryValue: data },
           });
           dispatch({
             type: 'namelist/save',
-            payload: { batchRequest: { ...batchRequest, dataStatus: 2} },
+            payload: { batchRequest: isDelete ? { ...batchRequest, dataStatus: 2 } : batchRequest },
           });
           dispatch({
             type: 'namelist/getBatch',
