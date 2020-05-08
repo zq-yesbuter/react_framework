@@ -5,7 +5,7 @@ import { Divider } from 'antd';
 import { formatTaskType } from '@/utils/utils';
 import { statusOptions } from '../contant';
 
-const renderColumns = (dispatch,ivrIntents) => {
+const renderColumns = (dispatch, ivrIntents) => {
   const columns = [
     {
       title: '任务名',
@@ -16,13 +16,13 @@ const renderColumns = (dispatch,ivrIntents) => {
       title: '任务类型',
       key: 'intent',
       dataIndex: 'intent',
-      render:  intent => formatTaskType(ivrIntents,'intent',intent,'intentDesc'),
+      render: intent => formatTaskType(ivrIntents, 'intent', intent, 'intentDesc'),
     },
     {
       title: '外呼名单',
       key: 'expectedCount',
       dataIndex: 'expectedCount',
-      render: expectedCount => (`${expectedCount}人`),
+      render: expectedCount => `${expectedCount}人`,
     },
     {
       title: '外呼开始时间',
@@ -33,13 +33,13 @@ const renderColumns = (dispatch,ivrIntents) => {
       title: '场景',
       key: 'scene',
       dataIndex: 'scene',
-      render:  scene => formatTaskType(ivrIntents,'scene',scene,'sceneDesc'),
+      render: scene => formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
     },
     {
       title: '状态',
       key: 'status',
       dataIndex: 'status',
-      render:  status => formatTaskType(statusOptions,'value',status,'name'),
+      render: status => formatTaskType(statusOptions, 'value', status, 'name'),
     },
     {
       title: '更新人',
@@ -59,43 +59,42 @@ const renderColumns = (dispatch,ivrIntents) => {
       dataIndex: 'id',
       width: 150,
       render: (id, value) => {
-        const { name, intent,status} = value || {};
+        const { name, intent, status } = value || {};
+        const { pathname } = window.location;
+        const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
+        const search = isDelete ? { dataStatus: 2, intent, id } : { intent, id };
         return (
           <Fragment>
             {status > -1 ? (
               <Fragment>
                 <a
                   onClick={() => {
-                    dispatch(routerRedux.push({
-                      pathname: '/AI/outging/config',
-                      search: queryString.stringify({
-                        intent,
-                        id,
-                      }),
-                    }))
+                    dispatch(
+                      routerRedux.push({
+                        pathname: '/AI/outging/config',
+                        search: queryString.stringify(search),
+                      })
+                    );
                   }}
                 >
                   配置
                 </a>
                 <Divider type="vertical" />
               </Fragment>
-            ):null
-            }    
-            <a onClick={
-              () =>  {
-                if(id){
-                  dispatch(routerRedux.push({
-                    pathname: '/AI/outging/namelist',
-                    search: queryString.stringify({
-                      intent,
-                      id,
-                    }),
-                  })
-                )
+            ) : null}
+            <a
+              onClick={() => {
+                if (id) {
+                  dispatch(
+                    routerRedux.push({
+                      pathname: '/AI/outging/namelist',
+                      search: queryString.stringify(search),
+                    })
+                  );
                 }
               }}
             >
-            名单
+              名单
             </a>
           </Fragment>
         );

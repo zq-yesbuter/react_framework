@@ -40,7 +40,8 @@ export default {
     *getBatch({ payload }, { call, put, select }) {
       try {
         const batchRequest = yield select(({ namelist: { batchRequest } }) => batchRequest);
-        const batchObj = yield call(getBatch, { ...batchRequest, ...payload });
+        const taskQueryValue = yield select(({ namelist: { taskQueryValue } }) => taskQueryValue);
+        const batchObj = yield call(getBatch, { ...batchRequest,...taskQueryValue, ...payload });
         const batchList = (batchObj && batchObj.data) || [];
         const batchCur = batchObj && batchObj.curPage;
         const batchPageSize = batchObj && batchObj.pageSize;
@@ -225,7 +226,7 @@ export default {
       //     }
       //     if (!item.notifyMessage) {
       //       item.notifyMessage = [];
-      //     }s
+      //     }
       //     return [...item.flow, ...item.notifyMessage];
       //   });
       const flatFlowList = flow.reduce((arr, item) => {
@@ -246,6 +247,7 @@ export default {
         const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
         const mainMatch = /^\/AI\/outging$/.exec(pathname);
         const deleteMatch = /^\/AI\/outging\/delete/.exec(pathname);
+        const deleteAll = /^\/AI\/outging\/deleteAll/.exec(pathname);
         
         if(!match){
           // 重置消息列表避免bug
@@ -300,7 +302,7 @@ export default {
             payload: queryString.parse(search),
           });
           // 任务页面
-        } else if (mainMatch) {
+        } else if (mainMatch || deleteAll)  {
           dispatch({
             type: 'getBatch',
             payload: {dataStatus:1},

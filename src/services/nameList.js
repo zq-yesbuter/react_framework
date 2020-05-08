@@ -79,8 +79,8 @@ export async function getFlowlist(body) {
 
 // 单个沟通信息查询
 export async function getSigleFlowlist(body) {
-  const { intent, id } = body;
-  return request(`/${intent}/${id}`, {
+  const { intent, id, dataStatus } = body;
+  return request(`/${intent}/${id}?${stringify({dataStatus})}`, {
     method: 'get',
   });
 }

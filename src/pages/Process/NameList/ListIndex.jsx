@@ -67,20 +67,13 @@ const savingFile = (response, fileName) => {
   });
 };
 function Index({ dispatch, namelist, loading }) {
-  const {
-    nameList,
-    nameCur,
-    namePageSize,
-    nameRequest,
-    batchDetail,
-    nameTotal,
-  } = namelist;
+  const { nameList, nameCur, namePageSize, nameRequest, batchDetail, nameTotal } = namelist;
   const { status, name } = batchDetail;
   const { search } = window.location;
-  const { id, intent } = queryString.parse(search);
+  const { id, intent, dataStatus } = queryString.parse(search);
   const [value, setValue] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [showVisible,setShowVisible] = useState(false);
+  const [showVisible, setShowVisible] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -93,9 +86,7 @@ function Index({ dispatch, namelist, loading }) {
   const query = {}; //  queryString.parse(location.search);
   const importMenu = (
     <Menu>
-      <Menu.Item key={2}>
-        批量导出沟通汇总信息
-      </Menu.Item>
+      <Menu.Item key={2}>批量导出沟通汇总信息</Menu.Item>
     </Menu>
   );
 
@@ -124,11 +115,12 @@ function Index({ dispatch, namelist, loading }) {
                         <div>
                           <p>{`删除成功${successCount}人`}</p>
                           {errorCount ? (
-                            <p>{`删除失败${errorCount}人${
-                              errorMessages && errorMessages.length
-                                ? `，错误原因【${errorMessages.join(',')}`
-                                : ''
-                            }】`}
+                            <p>
+                              {`删除失败${errorCount}人${
+                                errorMessages && errorMessages.length
+                                  ? `，错误原因【${errorMessages.join(',')}`
+                                  : ''
+                              }】`}
                             </p>
                           ) : null}
                         </div>
@@ -156,11 +148,12 @@ function Index({ dispatch, namelist, loading }) {
                             <div>
                               <p>{`删除成功${successCount}人`}</p>
                               {errorCount ? (
-                                <p>{`删除失败${errorCount}人${
-                                  errorMessages && errorMessages.length
-                                    ? `，错误原因【${errorMessages.join(',')}`
-                                    : ''
-                                }】`}
+                                <p>
+                                  {`删除失败${errorCount}人${
+                                    errorMessages && errorMessages.length
+                                      ? `，错误原因【${errorMessages.join(',')}`
+                                      : ''
+                                  }】`}
                                 </p>
                               ) : null}
                             </div>
@@ -197,11 +190,12 @@ function Index({ dispatch, namelist, loading }) {
                         <div>
                           <p>{`删除成功${successCount}人`}</p>
                           {errorCount ? (
-                            <p>{`删除失败${errorCount}人${
-                              errorMessages && errorMessages.length
-                                ? `，错误原因【${errorMessages.join(',')}`
-                                : ''
-                            }】`}
+                            <p>
+                              {`删除失败${errorCount}人${
+                                errorMessages && errorMessages.length
+                                  ? `，错误原因【${errorMessages.join(',')}`
+                                  : ''
+                              }】`}
                             </p>
                           ) : null}
                         </div>
@@ -233,11 +227,12 @@ function Index({ dispatch, namelist, loading }) {
                   <div>
                     <p>{`删除成功${successCount}人`}</p>
                     {errorCount ? (
-                      <p>{`删除失败${errorCount}人${
-                        errorMessages && errorMessages.length
-                          ? `，错误原因【${errorMessages.join(',')}`
-                          : ''
-                      }】`}
+                      <p>
+                        {`删除失败${errorCount}人${
+                          errorMessages && errorMessages.length
+                            ? `，错误原因【${errorMessages.join(',')}`
+                            : ''
+                        }】`}
                       </p>
                     ) : null}
                   </div>
@@ -337,7 +332,7 @@ function Index({ dispatch, namelist, loading }) {
   }
   const setting = {
     current: nameCur,
-    columns: renderColumns(dispatch, intent,setShowVisible),
+    columns: renderColumns(dispatch, intent, setShowVisible),
     pageSize: namePageSize,
     loading,
     selectedRowKeys,
@@ -392,7 +387,7 @@ function Index({ dispatch, namelist, loading }) {
     rowSelection: {
       selectedRowKeys,
       // eslint-disable-next-line no-shadow
-      onChange: (selectedRowKeys) => {
+      onChange: selectedRowKeys => {
         setSelectedRowKeys(selectedRowKeys);
         // this.setState({ , selectedRows });
       },
@@ -423,13 +418,16 @@ function Index({ dispatch, namelist, loading }) {
 
   // 筛选条件
   function onSubmit(values) {
+    const payload = dataStatus ? { dataStatus: 2, id, intent, ...values } : { id, intent, ...values };
     dispatch({
       type: 'namelist/fetchBatchDetail',
-      payload: { id, intent, ...values },
+      payload,
     });
     dispatch({
       type: 'namelist/save',
-      payload: { nameRequest: { ...nameRequest, ...values} },
+      payload: dataStatus
+        ? { nameRequest: { ...nameRequest, dataStatus: 2, ...values } }
+        : { nameRequest: { ...nameRequest, ...values } },
     });
   }
 
@@ -449,7 +447,7 @@ function Index({ dispatch, namelist, loading }) {
               e.preventDefault();
               dispatch({
                 type: 'namelist/save',
-                payload: { nameRequest: {pageSize: 50, pageNum: 1} },
+                payload: { nameRequest: { pageSize: 50, pageNum: 1 } },
               });
               dispatch(routerRedux.goBack());
             }}
@@ -485,15 +483,15 @@ function Index({ dispatch, namelist, loading }) {
         }}
         intent={intent}
       />
-      <Record 
+      <Record
         visible={showVisible}
         onClose={() => {
           setShowVisible(false);
           dispatch({
             type: 'namelist/save',
-            payload: { messageList: []},
+            payload: { messageList: [] },
           });
-          if(document.getElementById('chatRecordRef')){
+          if (document.getElementById('chatRecordRef')) {
             document.getElementById('chatRecordRef').scrollTop = 0;
           }
         }}
@@ -501,7 +499,7 @@ function Index({ dispatch, namelist, loading }) {
     </Card>
   );
 }
-  
+
 // }
 
 export default connect(

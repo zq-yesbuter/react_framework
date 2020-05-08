@@ -1,15 +1,17 @@
 import React, { Fragment } from 'react';
-import { routerRedux } from 'dva/router';
 import { connect } from 'dva';
 import { Row, Col, Drawer, Button, message } from 'antd';
+import queryString from 'query-string';
 import SingleSet from './SingleSet';
 import ChatRecord from './ChatRecord';
 import Flow from './Flow';
 import styles from './index.less';
 
-function Index({ onClose, visible,namelist:{nameList,listValue},dispatch }) {
-  const { intent,invitationId} = listValue;
-  const index = nameList.findIndex(item => item.invitationId === invitationId )
+function Index({ onClose, visible, namelist: { nameList, listValue }, dispatch }) {
+  const { invitationId, intent } = listValue || {};
+  const { search } = window.location;
+  const { dataStatus } = queryString.parse(search);
+  const index = nameList.findIndex(item => item.invitationId === invitationId);
   return (
     // <PageHeaderWrapper
     //   title={
@@ -53,12 +55,12 @@ function Index({ onClose, visible,namelist:{nameList,listValue},dispatch }) {
             disabled={index === 0}
             onClick={e => {
               e.preventDefault();
-              if(index === 0){
+              if (index === 0) {
                 message.warn('已经是第一条了，没有上一条了～');
                 return;
               }
-              const group = nameList[index-1] && nameList[index-1].invitationId;
-              if(group) {
+              const group = nameList[index - 1] && nameList[index - 1].invitationId;
+              if (group) {
                 // 重置消息列表避免bug
                 dispatch({
                   type: 'namelist/save',
@@ -66,11 +68,13 @@ function Index({ onClose, visible,namelist:{nameList,listValue},dispatch }) {
                 });
                 dispatch({
                   type: 'namelist/getMessage',
-                  payload: { group, intent },
+                  payload: dataStatus ? { group, intent, dataStatus: 2 } : { group, intent },
                 });
                 dispatch({
                   type: 'namelist/getSigleFlowlist',
-                  payload: { id: group, intent },
+                  payload: dataStatus
+                    ? { id: group, intent, dataStatus: 2 }
+                    : { id: group, intent },
                 });
               }
             }}
@@ -81,14 +85,14 @@ function Index({ onClose, visible,namelist:{nameList,listValue},dispatch }) {
             style={{
               marginLeft: 10,
             }}
-            disabled={index === nameList.length-1}
-            onClick={()=>{
-              if(index === nameList.length){
+            disabled={index === nameList.length - 1}
+            onClick={() => {
+              if (index === nameList.length) {
                 message.warn('已经是最后一条了，没有下一条了～');
                 return;
               }
-              const group = nameList[index+1] && nameList[index+1].invitationId;
-              if(group) {
+              const group = nameList[index + 1] && nameList[index + 1].invitationId;
+              if (group) {
                 // 重置消息列表避免bug
                 dispatch({
                   type: 'namelist/save',
@@ -96,11 +100,13 @@ function Index({ onClose, visible,namelist:{nameList,listValue},dispatch }) {
                 });
                 dispatch({
                   type: 'namelist/getMessage',
-                  payload: { group, intent },
+                  payload: dataStatus ? { group, intent, dataStatus: 2 } : { group, intent },
                 });
                 dispatch({
                   type: 'namelist/getSigleFlowlist',
-                  payload: { id: group, intent },
+                  payload: dataStatus
+                    ? { id: group, intent, dataStatus: 2 }
+                    : { id: group, intent },
                 });
               }
             }}

@@ -1,31 +1,33 @@
 /* eslint-disable guard-for-in */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, message, Button, Modal } from 'antd';
+import { routerRedux } from 'dva/router';
 import CategoryAddFormModal from './AddFormModal';
 import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
-import { addBatch,batchDelete } from '@/services/nameList';
-
+import { addBatch, batchDelete } from '@/services/nameList';
 
 function Index({ dispatch, namelist }) {
-  const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest, batchTotal } = namelist;
+  const { batchList, ivrIntents, batchCur, batchPageSize, batchRequest, batchTotal } = namelist;
   const [value, setValue] = useState(null);
   const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [submitLoading,  setSubmitLoading] = useState(false);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   useEffect(() => {
     // return () => {
     //   dispatch({
-    //     type: 'picture/init',
+    //     type: 'picture/init',l
     //   });
     // };
   }, []);
-
-  const query = {}; 
-  function  handleDelete(ids){
+  const { pathname } = window.location;
+  const isAllDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'deleteAll';
+  const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
+  const query = {};
+  function handleDelete(ids) {
     Modal.confirm({
       title: '删除',
       content: (
@@ -34,97 +36,103 @@ function Index({ dispatch, namelist }) {
         </div>
       ),
       onOk: () => {
-        const selectArr=[];
+        const selectArr = [];
         const selectObj = {};
         ids.forEach(id => {
           const obj = batchList.find(item => item.id === id);
           selectArr.push(obj);
         });
         selectArr.forEach(item => {
-          if(Object.keys(selectObj).includes(item.intent)){
-            selectObj[item.intent].push(item.id)
-          }else{
-            selectObj[item.intent] = [item.id]
+          if (Object.keys(selectObj).includes(item.intent)) {
+            selectObj[item.intent].push(item.id);
+          } else {
+            selectObj[item.intent] = [item.id];
           }
-        })
+        });
         const questAll = [];
         // eslint-disable-next-line no-restricted-syntax
         for (const item in selectObj) {
-          questAll.push(batchDelete({ intent:item, ids:selectObj[item] }) )
+          questAll.push(batchDelete({ intent: item, ids: selectObj[item] }));
         }
         // eslint-disable-next-line compat/compat
-        Promise.all(questAll).then((result) => {
-          let successCount = 0;
-          let errorCount = 0;
-          let errorMessages = [];
-          if(result && result.length) {
-            result.forEach(item => {
-              successCount += item.successCount;
-              errorCount += item.errorCount;
-              errorMessages = errorMessages.concat(item.errorMessages);
-            })
-          }
-          Modal.info({
-            title: '删除信息反馈',
-            content: (
-              <div>
-                <p>{`删除成功${successCount}条`}</p>
-                {errorCount ? <p>{`删除失败${errorCount}条${errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''}】`}</p> : null}
-              </div>
-            ),
-            onOk() {},
+        Promise.all(questAll)
+          .then(result => {
+            let successCount = 0;
+            let errorCount = 0;
+            let errorMessages = [];
+            if (result && result.length) {
+              result.forEach(item => {
+                successCount += item.successCount;
+                errorCount += item.errorCount;
+                errorMessages = errorMessages.concat(item.errorMessages);
+              });
+            }
+            Modal.info({
+              title: '删除信息反馈',
+              content: ( 
+                <div>
+                  <p>{`删除成功${successCount}条`}</p>
+                  {errorCount ? (
+                    <p>{`删除失败${errorCount}条${
+                      errorMessages.length ? `，错误原因【${errorMessages.join(',')}` : ''
+                    }】`}</p>
+                  ) : null}
+                </div>
+              ),
+              onOk() {},
+            });
+            dispatch({
+              type: 'namelist/getBatch',
+              payload: {},
+            });
+            setSelectedRowKeys([]);
+          })
+          .catch(e => {
+            message.error(`删除失败！${e.message}`);
           });
-          dispatch({
-            type: 'namelist/getBatch',
-            payload: {},
-          });  
-          setSelectedRowKeys([]);  
-        }).catch(e => {
-          message.error(`删除失败！${e.message}`);
-        })
       },
       okText: '确认',
       cancelText: '取消',
     });
-  };
+  }
   const setting = {
     data: batchList,
-    total:  batchTotal,
+    total: batchTotal,
     current: batchCur,
     pageSize: batchPageSize,
-    columns: renderColumns(dispatch,ivrIntents),
+    columns: renderColumns(dispatch, ivrIntents),
     loading,
     selectedRowKeys,
     prev: () => {
       dispatch({
         type: 'namelist/getBatch',
-        payload: {pageNum:batchCur-1},
+        payload: { pageNum: batchCur - 1 },
       });
       dispatch({
         type: 'namelist/save',
-        payload: {batchRequest:{...batchRequest,pageNum:batchCur-1 }},
+        payload: { batchRequest: { ...batchRequest, pageNum: batchCur - 1 } },
       });
       setSelectedRowKeys([]);
     },
     next: () => {
       dispatch({
         type: 'namelist/getBatch',
-        payload: {pageNum:batchCur+1},
+        payload: { pageNum: batchCur + 1 },
       });
       dispatch({
         type: 'namelist/save',
-        payload: {batchRequest:{...batchRequest,pageNum:batchCur+1 }},
+        payload: { batchRequest: { ...batchRequest, pageNum: batchCur + 1 } },
       });
       setSelectedRowKeys([]);
     },
     onSizeChange: pageSize => {
       dispatch({
         type: 'namelist/getBatch',
-        payload: {pageSize},
+        payload: { pageSize },
       });
       dispatch({
         type: 'namelist/save',
-        payload: {batchRequest:{...batchRequest,pageSize }},
+        payload: { batchRequest: { ...batchRequest, pageSize } },
       });
       setSelectedRowKeys([]);
     },
@@ -132,11 +140,11 @@ function Index({ dispatch, namelist }) {
     onChange: (pageNum, pageSize) => {
       dispatch({
         type: 'namelist/getBatch',
-        payload: {pageNum,pageSize},
+        payload: { pageNum, pageSize },
       });
       dispatch({
         type: 'namelist/save',
-        payload: {batchRequest:{...batchRequest,pageNum, pageSize}},
+        payload: { batchRequest: { ...batchRequest, pageNum, pageSize } },
       });
       setSelectedRowKeys([]);
     },
@@ -144,23 +152,27 @@ function Index({ dispatch, namelist }) {
     rowSelection: {
       selectedRowKeys,
       // eslint-disable-next-line no-shadow
-      onChange: (selectedRowKeys) => {
+      onChange: selectedRowKeys => {
         setSelectedRowKeys(selectedRowKeys);
         // this.setState({ , selectedRows });
       },
-      getCheckboxProps: ({status}) => ({
-        disabled: (status===3 ||status===4),
+      getCheckboxProps: ({ status }) => ({
+        disabled: isAllDelete ? false : (status === 3 || status === 4),
       }),
     },
     formatOperation: (selectedRowKeys, hasSelected) => {
       return (
         <div style={{ marginTop: 10 }}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>
-            删除
-          </Button>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
-          </span>
+          {isDelete ? null : 
+          <Fragment>
+            <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>
+              删除
+            </Button>
+            <span style={{ marginLeft: 8 }}>
+              {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
+            </span>
+          </Fragment>
+          }
         </div>
       );
     },
@@ -171,27 +183,50 @@ function Index({ dispatch, namelist }) {
       bordered={false}
       title="外呼任务"
       extra={
-        <Button
-          icon="plus"
-          type="primary"
-          onClick={() => {
-            setValue({});
-          }}
-        >
-          新建任务
-        </Button>
+        <Fragment>
+          {isDelete ? null :
+          <Button
+            icon="plus"
+            type="primary"
+            onClick={() => {
+              setValue({});
+            }}
+          >
+            新建任务
+          </Button>
+          }
+          {isAllDelete ? 
+            <Button
+              onClick={() => {
+                dispatch(
+                  routerRedux.push({
+                    pathname: '/AI/outging/delete',
+                    }),
+                );
+              }}
+              style={{marginLeft:10}}
+            >
+              已删除任务
+            </Button> : null
+          }
+        </Fragment>
       }
     >
       <CategoryQueryForm
         value={query}
         onSubmit={data => {
+          const payload = isDelete ? { dataStatus: 2, ...data } : data;
           dispatch({
             type: 'namelist/save',
-            payload: {taskQueryValue:data},
-          }); 
+            payload: { taskQueryValue: data},
+          });
+          dispatch({
+            type: 'namelist/save',
+            payload: { batchRequest: { ...batchRequest, dataStatus: 2} },
+          });
           dispatch({
             type: 'namelist/getBatch',
-            payload: data,
+            payload,
           });
         }}
       />
@@ -205,15 +240,17 @@ function Index({ dispatch, namelist }) {
         onSubmit={data => {
           setSubmitLoading(true);
           addBatch(data)
-          .then(() => {
-            message.success('新增任务成功');
-            dispatch({
-              type: 'namelist/getBatch',
-              payload: {},
+            .then(() => {
+              message.success('新增任务成功');
+              dispatch({
+                type: 'namelist/getBatch',
+                payload: {},
+              });
+              setSubmitLoading(false);
+            })
+            .catch(() => {
+              setSubmitLoading(false);
             });
-            setSubmitLoading(false);
-          })
-          .catch(() => {setSubmitLoading(false);});
           setValue(null);
         }}
       />

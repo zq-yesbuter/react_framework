@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import _ from 'lodash';
 import moment from 'moment';
+import queryString from 'query-string';
 import { formatNameType } from '@/utils/utils';
 import { nameStatus } from '../contant';
 
@@ -53,21 +54,22 @@ const renderColumns = (dispatch, showIntent, setShowVisible) => {
     },
     {
       title: '挂机原因',
-      key: 'result', 
+      key: 'result',
       dataIndex: 'result',
-      render: result => (result && result.indexOf('#') >0 ? result.slice(result.indexOf('#') + 1) : result)
+      render: result =>
+        result && result.indexOf('#') > 0 ? result.slice(result.indexOf('#') + 1) : result,
     },
     {
       title: '通话时长(秒)',
-      key: 'roundStartTime', 
+      key: 'roundStartTime',
       dataIndex: 'roundStartTime',
-      render: (roundStartTime,record) => {
+      render: (roundStartTime, record) => {
         const { roundEndTime } = record;
-        if(roundEndTime && roundStartTime){
-          return (moment(roundEndTime)-moment(roundStartTime))/1000;
+        if (roundEndTime && roundStartTime) {
+          return (moment(roundEndTime) - moment(roundStartTime)) / 1000;
         }
         return '';
-      }
+      },
     },
     {
       title: '更新人',
@@ -92,28 +94,24 @@ const renderColumns = (dispatch, showIntent, setShowVisible) => {
           <Fragment>
             <a
               onClick={() => {
-                // dispatch({
-                //   type: 'namelist/save',
-                //   payload: {listValue:value},
-                // });
-
+                const { search } = window.location;
+                const { dataStatus } = queryString.parse(search);
                 // dispatch(
                 //   routerRedux.push({
-                //     pathname: '/AI/outging/record',
-                //     search: queryString.stringify({
-                //       group,
-                //       intent,
-                //       status,
+                //     pathname: '/AI/outging/namelist',
+                //     search: queryString.stringify({...queryString.parse(search),invitationId:
                 //     }),
                 //   })
                 // );
                 dispatch({
                   type: 'namelist/getMessage',
-                  payload: { group, intent },
+                  payload: dataStatus ? { group, intent, dataStatus: 2 } : { group, intent },
                 });
                 dispatch({
                   type: 'namelist/getSigleFlowlist',
-                  payload: { id: group, intent },
+                  payload: dataStatus
+                    ? { id: group, intent, dataStatus: 2 }
+                    : { id: group, intent },
                 });
                 setShowVisible(true);
               }}
@@ -134,7 +132,7 @@ const renderColumns = (dispatch, showIntent, setShowVisible) => {
     //   key: 'contact',
     //   dataIndex: 'contact',
     // },
-      // {
+    // {
     //   title: '面试时长',
     //   key: 'entity',
     //   dataIndex: 'entity',

@@ -46,9 +46,16 @@ export default [
                 path: '/AI/outging',
                 component: '../pages/Process/OutgoingTask',
                 icon: "align-left",
+              },  
+              {
+                name: '外呼任务-均可删除列表', 
+                hideInMenu: true,
+                path: '/AI/outging/deleteAll',
+                component: '../pages/Process/OutgoingTask',
+                icon: "align-left",
               },
               {
-                name: '外呼任务-删除', 
+                name: '外呼任务-已删除列表', 
                 hideInMenu: true,
                 path: '/AI/outging/delete',
                 component: '../pages/Process/OutgoingTask',
