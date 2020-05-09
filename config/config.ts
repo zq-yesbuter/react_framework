@@ -3,13 +3,9 @@ import defaultSettings from './defaultSettings'; // https://umijs.org/config/
 import slash from 'slash2';
 import webpackPlugin from './plugin.config';
 import routes from './router';
+import proxy from './proxy';
 
-const { pwa, primaryColor, menuDarkBg } = defaultSettings;
-
-const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION, API = 'MOCK' } = process.env;
-const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
-
-const buildEnv = process.env.BUILD_ENV;
+const { pwa, primaryColor } = defaultSettings;
 
 let publicPath = '//static-cdjr.jd.com/human_resources_platform/';
 if (process.env.BUILD_ENV === 'development') {
@@ -18,25 +14,6 @@ if (process.env.BUILD_ENV === 'development') {
   publicPath = '//test-static-cdjr.jd.com/human_resources_platform/';
 }
 
-// proxy control
-const { proxyUrl = '', proxyPort = '', proxyPath = '', pathRewrite = {} } = {
-  MOCK: {
-    proxyUrl: 'yapi.cbpmgt.com',
-    proxyPort: '80',
-    proxyPath: '/mock/276',
-    pathRewrite: {
-      '/api': '/',
-    },
-  },
-  DEV: {
-    proxyUrl: 'jddai.jd.com',
-    proxyPort: '8088',
-    proxyPath: '',
-    Host: 'jddai.jd.com',
-    domain: 'jddai.jd.com',
-    domainPort: '8088',
-  },
-}[API];
 const plugins = [
   [
     'umi-plugin-react',
@@ -84,22 +61,7 @@ const plugins = [
     },
   ],
 ];
-// 针对 preview.pro.ant.design 的 GA 统计代码
 
-// if (isAntDesignProPreview) {
-//   plugins.push([
-//     'umi-plugin-ga',
-//     {
-//       code: 'UA-72788897-6',
-//     },
-//   ]);
-//   plugins.push([
-//     'umi-plugin-pro',
-//     {
-//       serverUrl: 'https://ant-design-pro.netlify.com',
-//     },
-//   ]);
-// }
 export default {
   plugins,
   block: {
@@ -111,7 +73,11 @@ export default {
   targets: {
     ie: 11,
   },
-  devtool: isAntDesignProPreview ? 'source-map' : false,
+  devtool: 'source-map',
+  // resolve: {
+  //   // Add '.ts' and '.tsx' as resolvable extensions.
+  //   extensions: ['', '.webpack.js', '.web.js', '.ts', '.tsx', '.js'],
+  // },
   // umi routes: https://umijs.org/zh/guide/router.html
   routes,
   // Theme for antd: https://ant.design/docs/react/customize-theme-cn
@@ -158,93 +124,5 @@ export default {
     basePath: '/',
   },
   chainWebpack: webpackPlugin,
-  proxy: {
-    // '/ws': {
-    //   // secure: false,
-    //   ws:true,
-    //   target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-    //   changeOrigin: true,
-    //   pathRewrite,
-    // },
-    '/sse': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/offer': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/tenant': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/messages': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/interview': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/resume': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/data': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/authenticate': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/ivr': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/batch': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/common': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/first_entry': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/second_entry': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/interview_research': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/image': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-    '/config': {
-      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
-      changeOrigin: true,
-      pathRewrite,
-    },
-  },
+  proxy,
 };

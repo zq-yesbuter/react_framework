@@ -3,7 +3,7 @@ import _ from 'lodash';
 import { formatNameType } from '@/utils/utils';
 import { nameStatus } from '../contant';
 
-function formatTime(intent) {
+function formatTime(intent:string) {
   switch (intent) {
     case ('first_entry_invitation', 'interview_research_invitation'):
       return '时间';
@@ -15,7 +15,7 @@ function formatTime(intent) {
       return '时间';
   }
 }
-const renderColumns = (dispatch, showIntent, setShowVisible) => {
+const renderColumns = (dispatch:Function, showIntent:string, setShowVisible:any) => {
   const columns = [
     {
       title: '姓名',
@@ -46,7 +46,7 @@ const renderColumns = (dispatch, showIntent, setShowVisible) => {
       title: '状态',
       key: 'status',
       dataIndex: 'status',
-      render: (status, record) => {
+      render: (status:string | number, record:any) => {
         return formatNameType(nameStatus, 'value', status, 'name', record);
       },
     },
@@ -54,7 +54,7 @@ const renderColumns = (dispatch, showIntent, setShowVisible) => {
       title: '挂机原因',
       key: 'result', 
       dataIndex: 'result',
-      render: result => (result && result.indexOf('#') >0 ? result.slice(result.indexOf('#') + 1) : result)
+      render: (result:string) => (result && result.indexOf('#') >0 ? result.slice(result.indexOf('#') + 1) : result)
     },
     {
       title: '更新人',
@@ -73,7 +73,7 @@ const renderColumns = (dispatch, showIntent, setShowVisible) => {
       key: 'invitationId',
       dataIndex: 'invitationId',
       width: 150,
-      render: (group, value) => {
+      render: (group:string|number, value:{intent:string|any}) => {
         const { intent } = value;
         return (
           <Fragment>

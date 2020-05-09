@@ -5,7 +5,13 @@ import moment from 'moment';
 import _ from 'lodash';
 import styles from './index.less';
 
-function RecordList({ namelist: { messageList = [] }, loading, dispatch }) {
+interface Props {
+  namelist:any;
+  loading:boolean;
+  dispatch:Function;
+}
+function RecordList(props:Props) {
+  const { namelist: { messageList = [] }, loading, dispatch } = props;
   const chatRef = useRef(null);
 
   useEffect(() => {
@@ -15,13 +21,14 @@ function RecordList({ namelist: { messageList = [] }, loading, dispatch }) {
         type: 'namelist/save',
         payload: { messageList: [] },
       });
+      console.log('chatRef===>',chatRef);
       if(chatRef && chatRef.current){
         chatRef.current.scrollTop = 0;
       }
     };
   }, []);
 
-  function typeComponent(message) {
+  function typeComponent(message:any) {
     const newMessage = JSON.parse(message);
     // eslint-disable-next-line compat/compat
     const [[type, value]] = Object.entries(newMessage);
@@ -73,7 +80,7 @@ function RecordList({ namelist: { messageList = [] }, loading, dispatch }) {
   function chatList() {
     const reg = /^JDGR/;
     if (messageList && messageList.length) {
-      return messageList.map(item => {
+      return messageList.map((item:{from:string;bizId:number|string;sheadUrl:string;timestamp:string|number|Date;message:string}) => {
         return (
           <li
             key={`${item.bizId}`}

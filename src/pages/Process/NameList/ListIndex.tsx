@@ -4,8 +4,7 @@ import { Card, message, Button, Modal, Menu } from 'antd';
 import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
 import UploadModal from './UploadModal';
-// eslint-disable-next-line import/extensions
-import QueryForm from './QueryForm.jsx';
+import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { nameBatchDelete } from '@/services/nameList';
@@ -28,9 +27,9 @@ const codeMessage = {
   503: '服务不可用，服务器暂时过载或维护。',
   504: '网关超时。',
 };
-const savingFile = (response, fileName) => {
+const savingFile = (response: any, fileName: string) => {
   // 下载
-  function downloadBlob(blob) {
+  function downloadBlob(blob: any) {
     const blobUrl = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = blobUrl;
@@ -42,13 +41,13 @@ const savingFile = (response, fileName) => {
     window.URL.revokeObjectURL(blobUrl);
     document.body.removeChild(a);
   }
-  response.blob().then(blob => {
+  response.blob().then((blob: any) => {
     if (typeof FileReader === 'undefined') {
       message.error('您的浏览器不支持 FileReader，请升级浏览器');
     }
-    const reader = new FileReader();
+    const reader: { result: any; addEventListener: any; readAsText: any } = new FileReader();
     reader.addEventListener('loadend', () => {
-      let resu = '';
+      let resu:any= '';
       try {
         resu = JSON.parse(reader.result);
         // resu = eval('('+ reader.result + ')')
@@ -66,20 +65,37 @@ const savingFile = (response, fileName) => {
     reader.readAsText(blob);
   });
 };
-function Index({ dispatch, namelist, loading }) {
-  const {
-    nameList,
-    nameCur,
-    namePageSize,
-    nameRequest,
-    batchDetail,
-  } = namelist;
+
+interface Props {
+  dispatch: Function;
+  namelist: any;
+  loading: boolean;
+}
+
+interface ErrorProps {
+  successCount: number;
+  errorCount: number;
+  errorMessages: string;
+}
+interface Request {
+  name:string | number;
+  response:any;
+}
+
+interface Search {
+  name:string;
+  status:string;
+}
+
+function Index(props: Props) {
+  const { dispatch, namelist, loading } = props;
+  const { nameList, nameCur, namePageSize, nameRequest, batchDetail } = namelist;
   const { status, name } = batchDetail;
   const { search } = window.location;
   const { id, intent } = queryString.parse(search);
   const [value, setValue] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [showVisible,setShowVisible] = useState(false);
+  const [showVisible, setShowVisible] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -92,13 +108,11 @@ function Index({ dispatch, namelist, loading }) {
   const query = {}; //  queryString.parse(location.search);
   const importMenu = (
     <Menu>
-      <Menu.Item key={2}>
-        批量导出沟通汇总信息
-      </Menu.Item>
+      <Menu.Item key={2}>批量导出沟通汇总信息</Menu.Item>
     </Menu>
   );
 
-  function handleDelete(updateIds) {
+  function handleDelete(updateIds: string[] | number[]) {
     Modal.confirm({
       title: '删除',
       content: (
@@ -112,7 +126,7 @@ function Index({ dispatch, namelist, loading }) {
             dispatch({
               type: 'namelist/deleteMore',
               payload: { namePageSize, pageNum: nameCur + 1 },
-            }).then(response => {
+            }).then((response: { data: any }) => {
               const { data: deleteNameList } = response;
               if (deleteNameList.length) {
                 nameBatchDelete({ intent, updateIds })
@@ -123,11 +137,12 @@ function Index({ dispatch, namelist, loading }) {
                         <div>
                           <p>{`删除成功${successCount}人`}</p>
                           {errorCount ? (
-                            <p>{`删除失败${errorCount}人${
-                              errorMessages && errorMessages.length
-                                ? `，错误原因【${errorMessages.join(',')}`
-                                : ''
-                            }】`}
+                            <p>
+                              {`删除失败${errorCount}人${
+                                errorMessages && errorMessages.length
+                                  ? `，错误原因【${errorMessages.join(',')}`
+                                  : ''
+                              }】`}
                             </p>
                           ) : null}
                         </div>
@@ -155,11 +170,12 @@ function Index({ dispatch, namelist, loading }) {
                             <div>
                               <p>{`删除成功${successCount}人`}</p>
                               {errorCount ? (
-                                <p>{`删除失败${errorCount}人${
-                                  errorMessages && errorMessages.length
-                                    ? `，错误原因【${errorMessages.join(',')}`
-                                    : ''
-                                }】`}
+                                <p>
+                                  {`删除失败${errorCount}人${
+                                    errorMessages && errorMessages.length
+                                      ? `，错误原因【${errorMessages.join(',')}`
+                                      : ''
+                                  }】`}
                                 </p>
                               ) : null}
                             </div>
@@ -189,18 +205,20 @@ function Index({ dispatch, namelist, loading }) {
               content: '所有名单都被删除时任务会自动回退到【已创建】状态',
               onOk() {
                 nameBatchDelete({ intent, updateIds })
-                  .then(({ successCount, errorCount, errorMessages }) => {
+                  .then((response) => {
+                    const { successCount, errorCount, errorMessages } = response;
                     Modal.info({
                       title: '删除信息反馈',
                       content: (
                         <div>
                           <p>{`删除成功${successCount}人`}</p>
                           {errorCount ? (
-                            <p>{`删除失败${errorCount}人${
-                              errorMessages && errorMessages.length
-                                ? `，错误原因【${errorMessages.join(',')}`
-                                : ''
-                            }】`}
+                            <p>
+                              {`删除失败${errorCount}人${
+                                errorMessages && errorMessages.length
+                                  ? `，错误原因【${errorMessages.join(',')}`
+                                  : ''
+                              }】`}
                             </p>
                           ) : null}
                         </div>
@@ -212,7 +230,7 @@ function Index({ dispatch, namelist, loading }) {
                       payload: { id, intent },
                     });
                   })
-                  .catch(e => {
+                  .catch((e: any) => {
                     message.error(e.message);
                   });
               },
@@ -232,11 +250,12 @@ function Index({ dispatch, namelist, loading }) {
                   <div>
                     <p>{`删除成功${successCount}人`}</p>
                     {errorCount ? (
-                      <p>{`删除失败${errorCount}人${
-                        errorMessages && errorMessages.length
-                          ? `，错误原因【${errorMessages.join(',')}`
-                          : ''
-                      }】`}
+                      <p>
+                        {`删除失败${errorCount}人${
+                          errorMessages && errorMessages.length
+                            ? `，错误原因【${errorMessages.join(',')}`
+                            : ''
+                        }】`}
                       </p>
                     ) : null}
                   </div>
@@ -257,7 +276,7 @@ function Index({ dispatch, namelist, loading }) {
       cancelText: '取消',
     });
   }
-  function batchExportInvent(invitationIds) {
+  function batchExportInvent(invitationIds: string[] | number[]) {
     const fileName = '导出邀约信息.xlsx';
     // eslint-disable-next-line no-unused-vars
     let size = 0;
@@ -274,19 +293,19 @@ function Index({ dispatch, namelist, loading }) {
         'Content-Type': 'application/json',
       },
     })
-      .then(response => {
+      .then((response:{errortext:any;status:number|string;statusText:string}) => {
         if (response.status >= 200 && response.status < 300) {
           return response;
         }
         message.error(`请求错误 ${response.status}: 导出邀约信息时发生错误！`);
         const errortext = codeMessage[response.status] || response.statusText;
-        const error = new Error(errortext);
+        const error:Request = new Error(errortext);
         error.name = response.status;
         error.response = response;
         throw error;
       }) // 取出body
-      .then(response => response.body)
-      .then(body => {
+      .then((response:any) => response.body)
+      .then((body:any) => {
         const reader = body.getReader();
         // eslint-disable-next-line compat/compat
         return new ReadableStream({
@@ -294,7 +313,7 @@ function Index({ dispatch, namelist, loading }) {
             function pump() {
               return reader
                 .read()
-                .then(res => {
+                .then((res:{done:any,value:any}) => {
                   // res  ({ done, value })
                   // 读不到更多数据就关闭流
                   // eslint-disable-next-line no-shadow
@@ -308,18 +327,18 @@ function Index({ dispatch, namelist, loading }) {
                   controller.enqueue(value);
                   return pump();
                 })
-                .catch(e => message.error(e.message));
+                .catch((e:{message:string}) => message.error(e.message));
             }
             return pump();
           },
         });
       })
       // eslint-disable-next-line compat/compat
-      .then(stream => new Response(stream))
-      .then(response => savingFile(response, fileName))
-      .catch(err => message.error(err.message));
+      .then((stream:any) => new Response(stream))
+      .then((response:any) => savingFile(response, fileName))
+      .catch((err:{message:any}) => message.error(err.message));
   }
-  function exportFunction(ids) {
+  function exportFunction(ids:string[]|number[]) {
     Modal.confirm({
       title: '导出名单',
       content: (
@@ -336,28 +355,14 @@ function Index({ dispatch, namelist, loading }) {
   }
   const setting = {
     current: nameCur,
-    columns: renderColumns(dispatch, intent,setShowVisible),
+    columns: renderColumns(dispatch, intent, setShowVisible),
     pageSize: namePageSize,
     loading,
     selectedRowKeys,
     showNext: nameList && nameList.length < namePageSize,
     data: nameList || [],
     total: nameList && nameList.length,
-    onChange: (start, length) => {
-      // this.setState(
-      //   ({ fields }) => ({
-      //     fields: {
-      //       ...fields,
-      //       start,
-      //       length,
-      //     },
-      //   }),
-      //   () => {
-      //     this.handleSubmit();
-      //     this.pending = false;
-      //   }
-      // );
-
+    onChange: (start: number, length:number) => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
         payload: { start, length },
@@ -390,7 +395,7 @@ function Index({ dispatch, namelist, loading }) {
       });
       setSelectedRowKeys([]);
     },
-    onSizeChange: pageSize => {
+    onSizeChange: (pageSize: number) => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
         payload: { pageSize, id, intent },
@@ -404,8 +409,7 @@ function Index({ dispatch, namelist, loading }) {
     rowKey: 'invitationId',
     rowSelection: {
       selectedRowKeys,
-      // eslint-disable-next-line no-shadow
-      onChange: (selectedRowKeys) => {
+      onChange: (selectedRowKeys: string[] | number[]) => {
         setSelectedRowKeys(selectedRowKeys);
         // this.setState({ , selectedRows });
       },
@@ -435,14 +439,14 @@ function Index({ dispatch, namelist, loading }) {
   };
 
   // 筛选条件
-  function onSubmit(values) {
+  function onSubmit(values:Search) {
     dispatch({
       type: 'namelist/fetchBatchDetail',
       payload: { id, intent, ...values },
     });
     dispatch({
       type: 'namelist/save',
-      payload: { nameRequest: { ...nameRequest, ...values} },
+      payload: { nameRequest: { ...nameRequest, ...values } },
     });
   }
 
@@ -462,7 +466,7 @@ function Index({ dispatch, namelist, loading }) {
               e.preventDefault();
               dispatch({
                 type: 'namelist/save',
-                payload: { nameRequest: {pageSize: 50, pageNum: 1} },
+                payload: { nameRequest: { pageSize: 50, pageNum: 1 } },
               });
               dispatch(routerRedux.goBack());
             }}
@@ -498,15 +502,15 @@ function Index({ dispatch, namelist, loading }) {
         }}
         intent={intent}
       />
-      <Record 
+      <Record
         visible={showVisible}
         onClose={() => {
           setShowVisible(false);
           dispatch({
             type: 'namelist/save',
-            payload: { messageList: []},
+            payload: { messageList: [] },
           });
-          if(document.getElementById('chatRecordRef')){
+          if (document.getElementById('chatRecordRef')) {
             document.getElementById('chatRecordRef').scrollTop = 0;
           }
         }}
@@ -514,7 +518,7 @@ function Index({ dispatch, namelist, loading }) {
     </Card>
   );
 }
-  
+
 // }
 
 export default connect(

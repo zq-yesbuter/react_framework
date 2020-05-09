@@ -98,6 +98,7 @@ export default config => {
         },
       },
     });
+  config.resolve.set('extensions',["", ".webpack.js", ".web.js", ".ts", ".tsx", ".js"]);
 };
 
 const getAntdSerials = color => {

@@ -8,10 +8,16 @@ import DateTimeRangePicker from '@/components/DateTimeRangePicker';
 const { Option } = Select;
 const FormItem = Form.Item;
 
-function QueryForm({ form, formatResult, onSubmit }) {
-  const handleSubmit = e => {
+interface Props {
+  form: any;
+  formatResult: any;
+  onSubmit: any;
+}
+function QueryForm(props:Props) {
+  const { form, formatResult, onSubmit } = props;
+  const handleSubmit = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
     e.preventDefault();
-    form.validateFields((err, values) => {
+    form.validateFields((err: any, values: any) => {
       if (!err) {
         onSubmit(typeof formatResult === 'function' ? formatResult(values) : values);
       }
@@ -20,7 +26,9 @@ function QueryForm({ form, formatResult, onSubmit }) {
 
   const { getFieldDecorator, resetFields } = form;
   return (
-    <Form layout="inline" onSubmit={handleSubmit}>
+    <Form 
+      layout="inline" 
+      onSubmit={handleSubmit}>
       <FormItem label="任务名称">
         {getFieldDecorator('batchName')(
           <TrimInput placeholder="请输入任务名称" style={{width:200}} />

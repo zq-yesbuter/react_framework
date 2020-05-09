@@ -7,10 +7,16 @@ import { nameStatus } from '../contant';
 const FormItem = Form.Item;
 const { Option } = Select;
 
-function QueryForm({ form, formatResult, onSubmit }) {
-  const handleSubmit = e => {
+interface Props {
+  form: any;
+  formatResult: any;
+  onSubmit: any;
+}
+function QueryForm(props:Props) {
+  const { form, formatResult, onSubmit } = props;
+  const handleSubmit = (e:any) => {
     e.preventDefault();
-    form.validateFields((err, values) => {
+    form.validateFields((err:any, values:any) => {
       if (!err) {
         onSubmit(typeof formatResult === 'function' ? formatResult(values) : values);
       }

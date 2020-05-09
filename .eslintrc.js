@@ -1,6 +1,7 @@
 module.exports = {
-  parser: 'babel-eslint',
+  parser: ['babel-eslint', '@typescript-eslint/parser'],
   extends: ['airbnb', 'prettier', 'plugin:compat/recommended'],
+  plugins: ['@typescript-eslint'],
   env: {
     browser: true,
     node: true,
@@ -23,6 +24,10 @@ module.exports = {
     'jsx-a11y/anchor-is-valid': 0,
     'jsx-a11y/label-has-associated-control': 0,
     'consistent-return': 0,
+    // 禁止使用 var
+    'no-var': 'error',
+    // 优先使用 interface 而不是 type
+    '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
   },
   settings: {
     polyfills: ['fetch', 'promises', 'url'],

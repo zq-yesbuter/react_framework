@@ -3,25 +3,40 @@ import { connect } from 'dva';
 import { Form, Modal, Select } from 'antd';
 import TrimInput from '@/components/TrimInput';
 
-const { Option} = Select;
+const { Option } = Select;
 const { Item } = Form;
 
-function AddFormModal({ form, onCancel, onSubmit, value ,namelist,submitLoading}) {
+interface Props {
+  form: any;
+  onCancel: any;
+  onSubmit: any;
+  value: any;
+  namelist: any;
+  submitLoading: boolean;
+}
+interface Item {
+  scene: string;
+  sceneDesc: string;
+}
+function AddFormModal(props: Props) {
+  const { form, onCancel, onSubmit, value, namelist, submitLoading } = props;
   const { ivrIntents } = namelist;
   useEffect(() => {
-    return () => {};
+    return () => { };
   }, []);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    form.validateFields((err, values) => {
+    form.validateFields((err: any, values: any) => {
       if (!err) {
-        if(onSubmit){onSubmit(values)};
+        if (onSubmit) {
+          onSubmit(values);
+        }
       }
     });
   };
 
-  const { getFieldDecorator, getFieldValue,setFieldsValue } = form;
+  const { getFieldDecorator, getFieldValue, setFieldsValue } = form;
 
   const formItemLayout = {
     labelCol: { span: 6 },
@@ -34,7 +49,6 @@ function AddFormModal({ form, onCancel, onSubmit, value ,namelist,submitLoading}
   }
   const intent = getFieldValue('intent');
   return (
-    // eslint-disable-next-line react/jsx-filename-extension
     <Modal
       visible={!!value}
       title={getFieldValue('id') ? '修改任务' : '添加任务'}
@@ -64,11 +78,19 @@ function AddFormModal({ form, onCancel, onSubmit, value ,namelist,submitLoading}
           })(
             <Select
               placeholder="请选择外呼类型"
-              onChange={() => {intentChange()}}
+              onChange={() => {
+                intentChange();
+              }}
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.map(item => <Option value={item.intent} key={item.intent}>{item.intentDesc}</Option>)}
+                ivrIntents.map(
+                  (item: { intent: string | number | undefined; intentDesc: string }) => (
+                    <Option value={item.intent} key={item.intent}>
+                      {item.intentDesc}
+                    </Option>
+                  )
+                )}
             </Select>
           )}
         </Item>
@@ -82,14 +104,16 @@ function AddFormModal({ form, onCancel, onSubmit, value ,namelist,submitLoading}
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.filter(item => item.intent === intent)
-                      .map(({ scene,sceneDesc }) => {
-                        return (
-                          <Option value={scene} key={scene}>
-                            {sceneDesc}
-                          </Option>
-                       );
-                       })}
+                ivrIntents
+                  .filter((item: { intent: any }) => item.intent === intent)
+                  .map((item:Item) => {
+                    const { scene, sceneDesc } = item;
+                    return (
+                      <Option value={scene} key={scene}>
+                        {sceneDesc}
+                      </Option>
+                    );
+                  })}
             </Select>
           )}
         </Item>

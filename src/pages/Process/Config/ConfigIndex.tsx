@@ -1,30 +1,14 @@
 import React, { useState, useEffect, Fragment } from 'react';
-import {
-  Input,
-  Button,
-  Card,
-  Select,
-  Form,
-  Icon,
-  DatePicker,
-  Tag,
-  message,
-} from 'antd';
+import { Input, Button, Card, Select, Form, DatePicker, message } from 'antd';
 import { connect } from 'dva';
-import { routerRedux, Link } from 'dva/router';
+import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
 import _ from 'lodash';
 import moment from 'moment';
-import { addBatch, batchRelated, batchCancel } from '@/services/nameList';
-import { flatten } from '@/utils/utils';
-import styles from './index.less';
-import TrimInput from '@/components/TrimInput';
-import mapValueToFields from '@/utils/mapValueToFields';
+import { batchRelated, batchCancel } from '@/services/nameList';
 
 const { Option } = Select;
-const { Search } = Input;
 const { Item } = Form;
-const { MonthPicker, RangePicker } = DatePicker;
 const formItemLayout = {
   labelCol: {
     span: 8,
@@ -40,14 +24,17 @@ const tailLayout = {
     span: 16,
   },
 };
-
-function Index({ dispatch, form, namelist, loading }) {
+interface Props {
+  dispatch: Function;
+  form: any;
+  namelist: any;
+  loading: boolean;
+}
+function Index(props: Props) {
+  const { dispatch, form, namelist, loading } = props;
   const { configValue, ivrIntents, configNameList } = namelist;
   const { search } = window.location;
-  const batchName = decodeURI(search.slice(1));
-  const [diffTimeList, setDiffTimeList] = useState([]);
-  const { getFieldDecorator, validateFields, resetFields, getFieldValue, setFieldsValue } = form;
-  const [repeat, setRepeat] = useState(false);
+  const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = form;
   const [cancelLoading, setCancelLoading] = useState(false);
   const [sureLoading, setSureLoading] = useState(false);
 
@@ -60,14 +47,10 @@ function Index({ dispatch, form, namelist, loading }) {
     };
   }, []);
 
-  function formatInventTime(timeList, applyId) {
-    const list = timeList.filter(item => item.applyId === applyId);
-    return list.length ? list.slice(-1)[0].invitationId : null;
-  }
   function handleOk() {
-    validateFields((err, values) => {
+    validateFields((err: any, values: any) => {
       if (!err) {
-        const { name, intent, scene, triggerTime } = values;
+        const { intent, triggerTime } = values;
         let { retry, sure } = values;
         if (sure === false) {
           retry = false;
@@ -90,7 +73,7 @@ function Index({ dispatch, form, namelist, loading }) {
           );
           return;
         }
-        const invitations = configNameList.map(item => item.invitationId);
+        const invitations = configNameList.map((item: any) => item.invitationId);
         setSureLoading(true);
         batchRelated({
           id,
@@ -99,7 +82,7 @@ function Index({ dispatch, form, namelist, loading }) {
           triggerTime: triggerTime.format('YYYY-MM-DD HH:mm:ss'),
           retry,
         })
-          .then(body => {
+          .then(() => {
             message.success('任务配置成功！');
             setSureLoading(false);
             dispatch({
@@ -117,7 +100,7 @@ function Index({ dispatch, form, namelist, loading }) {
     });
   }
   function cancel() {
-    const { intent, id, status } = configValue;
+    const { intent, id } = configValue;
     if (configNameList && !configNameList.length) {
       message.warn('没有名单无法取消，请先导入名单！');
       dispatch(
@@ -147,29 +130,16 @@ function Index({ dispatch, form, namelist, loading }) {
         setCancelLoading(false);
       });
   }
-  function disabledDate(current) {
+  function disabledDate(current: any) {
     // Can not select days before today and today
     return current && current < moment().subtract(1, 'days');
   }
-  function addTime() {
-    if (!getFieldValue('time')) {
-      message.warn('请选择时间段再添加！');
-      return;
-    }
-    setDiffTimeList([...diffTimeList, getFieldValue('time')]);
-    setFieldsValue({ time: '' });
-  }
-  function handleClose(index) {
-    const newDiffTimeList = [...diffTimeList];
-    newDiffTimeList.splice(index, 1);
-    setDiffTimeList(newDiffTimeList);
-  }
 
-  function intentChange(e) {
+  function intentChange() {
     setFieldsValue({ scene: null });
   }
 
-  function formRepeatChange(e) {
+  function formRepeatChange(e: any) {
     // setRepeat(e);
     if (!e) {
       const newConfigNameList = _.cloneDeep(configNameList);
@@ -183,12 +153,12 @@ function Index({ dispatch, form, namelist, loading }) {
     }
   }
 
-  function formatRepeat(repeat) {
+  function formatRepeat() {
     let retry = {};
     if (configNameList && configNameList.length) {
       const { retries } = configNameList[0] || {};
       if (retries && retries.length) {
-        retries.forEach(item => Object.assign(retry, item));
+        retries.forEach((item: any) => Object.assign(retry, item));
       }
     }
     const showSure =
@@ -332,7 +302,7 @@ function Index({ dispatch, form, namelist, loading }) {
             >
               {ivrIntents &&
                 ivrIntents.length &&
-                ivrIntents.map(item => (
+                ivrIntents.map((item: { intent: string; intentDesc: string }) => (
                   <Option value={item.intent} key={item.intent}>
                     {item.intentDesc}
                   </Option>
@@ -349,8 +319,11 @@ function Index({ dispatch, form, namelist, loading }) {
               {ivrIntents &&
                 ivrIntents.length &&
                 ivrIntents
-                  .filter(item => item.intent === selectIntent)
-                  .map(({ scene, sceneDesc }) => {
+                  .filter(
+                    (item: { intent: string; intentDesc?: string }) => item.intent === selectIntent
+                  )
+                  .map((val: { scene: string; sceneDesc: string }) => {
+                    const { scene, sceneDesc } = val;
                     return (
                       <Option value={scene} key={scene}>
                         {sceneDesc}
@@ -391,7 +364,7 @@ function Index({ dispatch, form, namelist, loading }) {
           )}
         </Item> */}
         <Item label="重复外呼" required>
-          {formatRepeat(repeat)}
+          {formatRepeat()}
         </Item>
         <Item {...tailLayout}>
           {status < 3 && (
