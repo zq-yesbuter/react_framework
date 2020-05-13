@@ -13,7 +13,7 @@ interface Props {
   onSubmit: any;
 }
 function QueryForm(props:Props) {
-  const { form, formatResult, onSubmit } = props;
+  const { form, formatResult, onSubmit,namelist:{resultList} } = props;
   const handleSubmit = (e:any) => {
     e.preventDefault();
     form.validateFields((err:any, values:any) => {
@@ -43,6 +43,12 @@ function QueryForm(props:Props) {
             {nameStatus.map(item => <Option value={item.value} key={item.value}>{item.name}</Option>)}
           </Select>)}
       </FormItem>
+      <FormItem label="挂机原因">
+        {getFieldDecorator('result')(
+          <Select placeholder="请选择挂机原因" style={{width:200}}>
+            {resultList && resultList.length && resultList.map(item => <Option value={item} key={item}>{item && item.indexOf('#') >0 ? item.slice(item.indexOf('#') + 1) : item}</Option>)}
+          </Select>)}
+      </FormItem>
       <FormItem>
         <Button htmlType="submit" type="primary" className="test-input-search">
           搜索
@@ -62,5 +68,5 @@ function QueryForm(props:Props) {
   );
 }
 
-const mapStateToProps = ({ chatrecord = {} }) => ({ chatrecord });
+const mapStateToProps = ({ namelist = {} }) => ({ namelist });
 export default connect(mapStateToProps)(Form.create({})(QueryForm));

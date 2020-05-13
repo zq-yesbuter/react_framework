@@ -16,10 +16,10 @@ const renderTable = ({
   total,
   loading,
   onChange,
-  // pageSize = 10,
+  pageSize = 50,
   rowSelection,
   current,
-  // defaultCurrent = 1,
+  defaultCurrent = 1,
   selectedRowKeys,
   rowKey,
   prev,
@@ -28,25 +28,26 @@ const renderTable = ({
   onSizeChange,
   formatOperation,
 }) => {
-  // const pagination = {
-  //   defaultCurrent,
-  //   total,
-  //   pageSize,
-  //   showSizeChanger: true,
-  //   showQuickJumper: true,
-  //   pageSizeOptions: ['10', '20', '50', '100'],
-  //   // onShowSizeChange: (current, pageSize) => {
-  //   //   onChange((current - 1) * pageSize, pageSize, sortedInfo);
-  //   // },
-  //   onChange: (current, pageSize) => {
-  //     onChange(current + 1, pageSize);
-  //     // onChange((current - 1) * pageSize, pageSize, sortedInfo);
-  //   },
-  //   showTotal: (total, range) => {
-  //     // return `展示第${range[0]}至${range[1]}条数据，共${total}条数据`;
-  //   },
-  //   current,
-  // };
+  const pagination = {
+    defaultCurrent,
+    total,
+    pageSize,
+    showSizeChanger: true,
+    showQuickJumper: true,
+    pageSizeOptions: ['10', '20', '50', '100'],
+    // onShowSizeChange: (current, pageSize) => {
+    //   onChange((current - 1) * pageSize, pageSize, sortedInfo);
+    // },
+    // onChange: (current, pageSize) => {
+    //   console.log('current===>',current,'pageSize===>',pageSize);
+    //   onChange(current, pageSize);
+    //   // onChange((current - 1) * pageSize, pageSize, sortedInfo);
+    // },
+    showTotal: (total, range) => {
+      return `展示第${range[0]}至${range[1]}条数据，共${total}条数据`;
+    },
+    current,
+  };
   const hasSelected = selectedRowKeys.length > 0;
   return (
     <Fragment>
@@ -54,17 +55,17 @@ const renderTable = ({
       <Table
         style={{ marginTop: 15 }}
         size="small"
-        pagination={false}
+        pagination={pagination}
         dataSource={data || []}
         columns={columns || []}
         rowKey={rowKey}
         loading={loading || false}
         rowSelection={{ ...rowSelection }}
         onChange={(page, filter, sorter) => {
-          onChange((page.current - 1) * page.pageSize, page.pageSize, sorter);
+          onChange(page.current, page.pageSize, sorter);
         }}
       />
-      {total ? 
+      {/* {total ? 
         (
           <div style={{display:'flex',justifyContent: 'flex-end',margin:'10px 0' }}>
             <div style={{alignItems: 'center'}}>{`当前展示第${current}页，展示${total}条`}</div>
@@ -82,7 +83,7 @@ const renderTable = ({
             </Select>
           </div>
         ) : null
-      }
+      } */}
     </Fragment>
   );
 };

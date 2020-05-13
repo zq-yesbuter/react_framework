@@ -135,6 +135,14 @@ function RecordList(props:Props) {
         // }
       });
     }
+    if (loading) {
+      return (
+        <div className={styles.bottomLoading}>
+          <Spin />
+        </div>
+      );
+    } 
+
     return (
       <div className={styles.noContent}>
         <span>暂时没有沟通记录</span>
@@ -142,21 +150,8 @@ function RecordList(props:Props) {
     );
   }
 
-  function bottomLoadingHtml() {
-    // const {  } = chatrecord;
-    if (loading) {
-      return (
-        <div className={styles.bottomLoading}>
-          <Spin />
-        </div>
-      );
-    }
-    return null;
-  }
-
   return (
     <div className={styles.chatContent}>
-      {bottomLoadingHtml()}
       <div className={styles.chatPanel}>
         <div className={styles.chatPanelContainer} ref={chatRef} id='chatRecordRef'>
           <ul className={styles.chatList}>{chatList()}</ul>

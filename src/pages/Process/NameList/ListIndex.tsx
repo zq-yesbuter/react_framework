@@ -89,10 +89,10 @@ interface Search {
 
 function Index(props: Props) {
   const { dispatch, namelist, loading } = props;
-  const { nameList, nameCur, namePageSize, nameRequest, batchDetail } = namelist;
+  const { nameList, nameCur, namePageSize, nameRequest, batchDetail, nameTotal } = namelist;
   const { status, name } = batchDetail;
   const { search } = window.location;
-  const { id, intent } = queryString.parse(search);
+  const { id, intent, dataStatus } = queryString.parse(search);
   const [value, setValue] = useState(null);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [showVisible, setShowVisible] = useState(false);
@@ -361,17 +361,17 @@ function Index(props: Props) {
     selectedRowKeys,
     showNext: nameList && nameList.length < namePageSize,
     data: nameList || [],
-    total: nameList && nameList.length,
-    onChange: (start: number, length:number) => {
+    total: nameTotal,
+    onChange: (pageNum, pageSize) => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: { start, length },
+        payload: { pageNum, pageSize, id, intent },
+      });
+      dispatch({
+        type: 'namelist/save',
+        payload: { nameRequest: { ...nameRequest, pageNum, pageSize } },
       });
       setSelectedRowKeys([]);
-      // this.setState({
-      //   selectedRows: [],
-      //   sortedInfo: sorter,
-      // });
     },
     prev: () => {
       dispatch({
@@ -439,14 +439,17 @@ function Index(props: Props) {
   };
 
   // 筛选条件
-  function onSubmit(values:Search) {
+  function onSubmit(values) {
+    const payload = dataStatus ? { dataStatus: 2, id, intent, ...values } : { id, intent, ...values };
     dispatch({
       type: 'namelist/fetchBatchDetail',
-      payload: { id, intent, ...values },
+      payload,
     });
     dispatch({
       type: 'namelist/save',
-      payload: { nameRequest: { ...nameRequest, ...values } },
+      payload: dataStatus
+        ? { nameRequest: { ...nameRequest, dataStatus: 2, ...values } }
+        : { nameRequest: { ...nameRequest, ...values } },
     });
   }
 

@@ -62,8 +62,11 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
       key: 'id',
       dataIndex: 'id',
       width: 150,
-      render: (id: string, value: Value) => {
-        const { intent, status } = value || {};
+      render: (id, value) => {
+        const { name, intent, status } = value || {};
+        const { pathname } = window.location;
+        const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
+        const search = isDelete ? { dataStatus: 2, intent, id } : { intent, id };
         return (
           <Fragment>
             {status > -1 ? (
@@ -73,10 +76,7 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
                     dispatch(
                       routerRedux.push({
                         pathname: '/AI/outging/config',
-                        search: queryString.stringify({
-                          intent,
-                          id,
-                        }),
+                        search: queryString.stringify(search),
                       })
                     );
                   }}
@@ -92,10 +92,7 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
                   dispatch(
                     routerRedux.push({
                       pathname: '/AI/outging/namelist',
-                      search: queryString.stringify({
-                        intent,
-                        id,
-                      }),
+                      search: queryString.stringify(search),
                     })
                   );
                 }

@@ -79,8 +79,8 @@ export async function getFlowlist(body) {
 
 // 单个沟通信息查询
 export async function getSigleFlowlist(body) {
-  const { intent, id } = body;
-  return request(`/${intent}/${id}`, {
+  const { intent, id, dataStatus } = body;
+  return request(`/${intent}/${id}?${stringify({dataStatus})}`, {
     method: 'get',
   });
 }
@@ -136,5 +136,13 @@ export async function nameBatchDelete(body) {
   return request(`/${intent}/batch`, {
     method: 'DELETE',
     body,
+  });
+}
+
+// 批次详情结果查询
+export async function getResult(body) {
+  const { intent,id } = body;
+  return request(`/batch/${intent}/${id}/detail/results`, {
+    method: 'GET',
   });
 }
