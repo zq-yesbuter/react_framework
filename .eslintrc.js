@@ -1,7 +1,7 @@
 module.exports = {
   parser: ['babel-eslint', '@typescript-eslint/parser'],
   extends: ['airbnb', 'prettier', 'plugin:compat/recommended'],
-  plugins: ['@typescript-eslint'],
+  plugins: ['@typescript-eslint',"react-hooks"],
   env: {
     browser: true,
     node: true,
@@ -28,6 +28,8 @@ module.exports = {
     'no-var': 'error',
     // 优先使用 interface 而不是 type
     '@typescript-eslint/consistent-type-definitions': ['error', 'interface'],
+    "react-hooks/rules-of-hooks": "error", // 检查 Hook 的规则
+    "react-hooks/exhaustive-deps": "warn" // 检查 effect 的依赖
   },
   settings: {
     polyfills: ['fetch', 'promises', 'url'],

@@ -5,7 +5,7 @@ import styles from './index.less';
 
 const { Step } = Steps;
 
-function formatStatus(status:number) {
+function formatStatus(status:number):string {
   switch (status) {
     case 0:
       return '邀约取消';
@@ -21,7 +21,7 @@ function formatStatus(status:number) {
       return '无';
   }
 }
-function formatPhoneStatus(status:number) {
+function formatPhoneStatus(status:number):string {
   switch (status) {
     case 0:
       return '短信已发送';
@@ -33,7 +33,7 @@ function formatPhoneStatus(status:number) {
       return '无';
   }
 }
-function formatRemark(channel:string|number, remark:string) {
+function formatRemark(channel:string|number, remark:string):string|null {
   if (channel) {
     return null;
   }
