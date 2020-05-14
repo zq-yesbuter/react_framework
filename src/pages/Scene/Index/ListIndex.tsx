@@ -3,12 +3,10 @@ import { connect } from 'dva';
 import { Card, message, Button, Modal, Menu } from 'antd';
 import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
-import UploadModal from './UploadModal';
 import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { nameBatchDelete } from '@/services/nameList';
-import Record from '../Record';
 
 const codeMessage = {
   200: '服务器成功返回请求的数据。',
@@ -47,7 +45,7 @@ const savingFile = (response: any, fileName: string) => {
     }
     const reader: { result: any; addEventListener: any; readAsText: any } = new FileReader();
     reader.addEventListener('loadend', () => {
-      let resu:any= '';
+      let resu: any = '';
       try {
         resu = JSON.parse(reader.result);
         // resu = eval('('+ reader.result + ')')
@@ -79,19 +77,19 @@ interface ErrorProps {
   // cb: (error: Error) => void;
 }
 interface Request {
-  name:string | number;
-  response:any;
+  name: string | number;
+  response: any;
 }
 
 interface Search {
-  name:string;
-  status:string;
+  name: string;
+  status: string;
 }
 
 interface Response {
-  errortext:any;
-  status:number|string;
-  statusText:string;
+  errortext: any;
+  status: number | string;
+  statusText: string;
 }
 
 function Index(props: Props) {
@@ -127,7 +125,7 @@ function Index(props: Props) {
           <p>你确定要批量删除这些数据吗？</p>
         </div>
       ),
-      onOk: ():any => {
+      onOk: (): any => {
         if (status === 1) {
           if (updateIds.length >= namePageSize) {
             dispatch({
@@ -137,7 +135,7 @@ function Index(props: Props) {
               const { data: deleteNameList } = response;
               if (deleteNameList.length) {
                 nameBatchDelete({ intent, updateIds })
-                  .then((errorProps:ErrorProps):void => {
+                  .then((errorProps: ErrorProps): void => {
                     const { successCount, errorCount, errorMessages } = errorProps;
                     Modal.info({
                       title: '删除信息反馈',
@@ -162,7 +160,7 @@ function Index(props: Props) {
                       payload: { id, intent },
                     });
                   })
-                  .catch((e:any) => {
+                  .catch((e: any) => {
                     message.error(e.message);
                   });
               } else {
@@ -171,7 +169,7 @@ function Index(props: Props) {
                   content: '所有名单都被删除时任务会自动回退到【已创建】状态',
                   onOk() {
                     nameBatchDelete({ intent, updateIds })
-                      .then((errorProps:ErrorProps) => {
+                      .then((errorProps: ErrorProps) => {
                         const { successCount, errorCount, errorMessages } = errorProps;
                         Modal.info({
                           title: '删除信息反馈',
@@ -196,7 +194,7 @@ function Index(props: Props) {
                           payload: { id, intent },
                         });
                       })
-                      .catch((e:any) => {
+                      .catch((e: any) => {
                         message.error(e.message);
                       });
                   },
@@ -214,7 +212,7 @@ function Index(props: Props) {
               content: '所有名单都被删除时任务会自动回退到【已创建】状态',
               onOk() {
                 nameBatchDelete({ intent, updateIds })
-                  .then((errorProps:ErrorProps) => {
+                  .then((errorProps: ErrorProps) => {
                     const { successCount, errorCount, errorMessages } = errorProps;
                     Modal.info({
                       title: '删除信息反馈',
@@ -252,8 +250,8 @@ function Index(props: Props) {
           }
         } else {
           nameBatchDelete({ intent, updateIds })
-            .then((errorProps:ErrorProps) => {
-            const { successCount, errorCount, errorMessages } = errorProps;
+            .then((errorProps: ErrorProps) => {
+              const { successCount, errorCount, errorMessages } = errorProps;
               Modal.info({
                 title: '删除信息反馈',
                 content: (
@@ -277,7 +275,7 @@ function Index(props: Props) {
                 payload: { id, intent },
               });
             })
-            .catch((e:any) => {
+            .catch((e: any) => {
               message.error(e.message);
             });
         }
@@ -303,7 +301,7 @@ function Index(props: Props) {
         'Content-Type': 'application/json',
       },
     })
-      .then((response:Response) => {
+      .then((response: Response) => {
         if (response.status >= 200 && response.status < 300) {
           return response;
         }
@@ -314,8 +312,8 @@ function Index(props: Props) {
         error.response = response;
         throw error;
       }) // 取出body
-      .then((response:any) => response.body)
-      .then((body:any) => {
+      .then((response: any) => response.body)
+      .then((body: any) => {
         const reader = body.getReader();
         // eslint-disable-next-line compat/compat
         return new ReadableStream({
@@ -323,7 +321,7 @@ function Index(props: Props) {
             function pump() {
               return reader
                 .read()
-                .then((res:{done:any,value:any}) => {
+                .then((res: { done: any; value: any }) => {
                   // res  ({ done, value })
                   // 读不到更多数据就关闭流
                   // eslint-disable-next-line no-shadow
@@ -337,18 +335,18 @@ function Index(props: Props) {
                   controller.enqueue(value);
                   return pump();
                 })
-                .catch((e:{message:string}) => message.error(e.message));
+                .catch((e: { message: string }) => message.error(e.message));
             }
             return pump();
           },
         });
       })
       // eslint-disable-next-line compat/compat
-      .then((stream:any) => new Response(stream))
-      .then((response:any) => savingFile(response, fileName))
-      .catch((err:{message:any}) => message.error(err.message));
+      .then((stream: any) => new Response(stream))
+      .then((response: any) => savingFile(response, fileName))
+      .catch((err: { message: any }) => message.error(err.message));
   }
-  function exportFunction(ids:string[]|number[]) {
+  function exportFunction(ids: string[] | number[]) {
     Modal.confirm({
       title: '导出名单',
       content: (
@@ -372,7 +370,7 @@ function Index(props: Props) {
     showNext: nameList && nameList.length < namePageSize,
     data: nameList || [],
     total: nameTotal,
-    onChange: (pageNum:number, pageSize:number) => {
+    onChange: (pageNum: number, pageSize: number) => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
         payload: { pageNum, pageSize, id, intent },
@@ -425,31 +423,14 @@ function Index(props: Props) {
     },
     importMenu,
     hasImport: true,
-    // eslint-disable-next-line no-shadow
-    formatOperation: (selectedRowKeys:string[]|number[], hasSelected:string[]|number[]) => {
-      return (
-        <div style={{ marginTop: 10 }}>
-          <Button disabled={!hasSelected} onClick={() => handleDelete(selectedRowKeys)}>
-            删除
-          </Button>
-          <Button
-            disabled={!hasSelected}
-            onClick={() => exportFunction(selectedRowKeys)}
-            style={{ marginLeft: 10 }}
-          >
-            导出邀约信息
-          </Button>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
-          </span>
-        </div>
-      );
-    },
+    hideSelect: true,
   };
 
   // 筛选条件
-  function onSubmit(values:any) {
-    const payload = dataStatus ? { dataStatus: 2, id, intent, ...values } : { id, intent, ...values };
+  function onSubmit(values: any) {
+    const payload = dataStatus
+      ? { dataStatus: 2, id, intent, ...values }
+      : { id, intent, ...values };
     dispatch({
       type: 'namelist/fetchBatchDetail',
       payload,
@@ -465,80 +446,39 @@ function Index(props: Props) {
   return (
     <Card
       bordered={false}
-      title={
-        <Fragment>
-          {`任务${name} - 外呼名单`}
-          <a
-            href="javascript:;"
-            style={{
-              padding: '5px 15px',
-              fontSize: 14,
-            }}
-            onClick={e => {
-              e.preventDefault();
-              dispatch({
-                type: 'namelist/save',
-                payload: { nameRequest: { pageSize: 50, pageNum: 1 } },
-              });
-              dispatch(routerRedux.goBack());
-            }}
-          >
-            返回上一级
-          </a>
-        </Fragment>
-      }
+      title="场景配置"
       extra={
         <Button
-          icon="upload"
+          icon="plus"
           type="primary"
           onClick={() => {
-            setValue({});
+            dispatch(
+              routerRedux.push({pathname:'/AI/scene/add'})
+            )
           }}
-          disabled={status === 3 || status === 4}
         >
-          导入
+          新增场景
         </Button>
       }
     >
       <QueryForm
         value={query}
-        onSubmit={(data:any) => {
+        onSubmit={(data: any) => {
           onSubmit(data);
         }}
       />
       {renderTable(setting)}
-      <UploadModal
-        value={value}
-        onCancel={() => {
-          setValue(null);
-        }}
-        intent={intent}
-      />
-      <Record
-        visible={showVisible}
-        onClose={() => {
-          setShowVisible(false);
-          dispatch({
-            type: 'namelist/save',
-            payload: { messageList: [] },
-          });
-          if (document.getElementById('chatRecordRef')) {
-            document.getElementById('chatRecordRef').scrollTop = 0;
-          }
-        }}
-      />
     </Card>
   );
 }
 
-
 export default connect(
-  (
-    {namelist,
+  ({
+    namelist,
     loading: {
-      effects: { 'namelist/fetchBatchDetail': loading } ,
-    },}
-  ) => {
+      effects: { 'namelist/fetchBatchDetail': loading },
+    },
+  }) => {
     return {
       namelist,
       loading,

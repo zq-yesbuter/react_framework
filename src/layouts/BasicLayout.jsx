@@ -120,7 +120,7 @@ const BasicLayout = props => {
       breadcrumbRender={(routers = []) => [
         {
           path: '/',
-          breadcrumbName: '首页',
+          breadcrumbName: '招聘外呼',
         },
         ...routers,
       ]}

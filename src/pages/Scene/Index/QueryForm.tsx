@@ -2,7 +2,6 @@ import React from 'react';
 import { Form, Button, Select } from 'antd';
 import { connect } from 'dva';
 import TrimInput from '../../../components/TrimInput';
-import { nameStatus } from '../contant';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -40,28 +39,13 @@ function QueryForm(props: Props) {
   return (
     // eslint-disable-next-line react/jsx-filename-extension
     <Form layout="inline" onSubmit={handleSubmit}>
-      <FormItem label="人才搜索">{getFieldDecorator('name')(<TrimInput />)}</FormItem>
+      <FormItem label="搜索">{getFieldDecorator('name')(<TrimInput placeholder='请输入场景名字' />)}</FormItem>
       <FormItem label="状态筛选">
         {getFieldDecorator('status')(
           <Select placeholder="请选择状态" style={{ width: 200 }}>
-            {nameStatus.map(item => (
-              <Option value={item.value} key={item.value}>
-                {item.name}
-              </Option>
-            ))}
-          </Select>
-        )}
-      </FormItem>
-      <FormItem label="挂机原因">
-        {getFieldDecorator('result')(
-          <Select placeholder="请选择挂机原因" style={{ width: 200 }}>
-            {resultList &&
-              resultList.length &&
-              resultList.map((item: string) => (
-                <Option value={item} key={item}>
-                  {item && item.indexOf('#') > 0 ? item.slice(item.indexOf('#') + 1) : item}
-                </Option>
-              ))}
+            <Option value={1} key={1}>
+              1
+            </Option>
           </Select>
         )}
       </FormItem>

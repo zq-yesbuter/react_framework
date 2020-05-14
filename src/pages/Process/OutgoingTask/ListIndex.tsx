@@ -142,7 +142,7 @@ function Index(props:Props) {
       setSelectedRowKeys([]);
     },
     showNext: batchList && batchList.length < batchPageSize,
-    onChange: (start:number, length:number) => {
+    onChange: (pageNum:number, pageSize:number) => {
       dispatch({
         type: 'namelist/getBatch',
         payload: { pageNum, pageSize },

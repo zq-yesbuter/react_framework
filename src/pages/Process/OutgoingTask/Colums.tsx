@@ -62,8 +62,8 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
       key: 'id',
       dataIndex: 'id',
       width: 150,
-      render: (id, value) => {
-        const { name, intent, status } = value || {};
+      render: (id:number|string, value:Value) => {
+        const { intent, status } = value || {};
         const { pathname } = window.location;
         const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
         const search = isDelete ? { dataStatus: 2, intent, id } : { intent, id };

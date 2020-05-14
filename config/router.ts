@@ -23,11 +23,11 @@ export default [
         routes: [
           {
             path: '/',
-            redirect: '/AI/outging',
+            redirect: '/AI/scene',
           },
           {
             path: '/AI',
-            redirect: '/AI/outging',
+            redirect: '/AI/scene',
           },
           {
             name: '旧版AI',
@@ -37,13 +37,39 @@ export default [
             icon: "align-left",
           },
           {
-            path: '/AI/outging',
-            name: '外呼管理',
+            name: '招聘外呼',
             icon: 'appstore',
             routes: [
               {
+                name: '场景配置',
+                path: '/AI/scene',
+                component: '../pages/Scene/Index',
+                icon: "barcode",
+              },
+              {
+                name: '新增场景配置',
+                hideInMenu: true,
+                path: '/AI/scene/add',
+                component: '../pages/Scene/Add',
+                icon: "align-left",
+              },
+              {
                 name: '外呼任务',
                 path: '/AI/outging',
+                component: '../pages/Process/OutgoingTask',
+                icon: "align-left",
+              },
+              {
+                name: '外呼任务-均可删除列表', 
+                hideInMenu: true,
+                path: '/AI/outging/deleteAll',
+                component: '../pages/Process/OutgoingTask',
+                icon: "align-left",
+              },
+              {
+                name: '外呼任务-已删除列表', 
+                hideInMenu: true,
+                path: '/AI/outging/delete',
                 component: '../pages/Process/OutgoingTask',
                 icon: "align-left",
               },
@@ -67,6 +93,12 @@ export default [
                 path: '/AI/outging/record',
                 component: '../pages/Process/Record',
                 // icon: 'smile',
+              },
+              {
+                name: '简历预览',
+                path: '/AI/resume',
+                component: '../pages/Resume/Index',
+                icon: "solution",
               },
               {
                 component: '../pages/404.jsx',

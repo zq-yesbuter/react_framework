@@ -1,33 +1,37 @@
-import { Table, Button, Select } from 'antd';
+import { Table, Select } from 'antd';
 import React, { Fragment } from 'react';
 
-const pageOptions =[
-  {value:10,name:'10条'},
-  {value:20,name:'20条'},
-  {value:30,name:'30条'},
-  {value:50,name:'50条'},
-  {value:100,name:'100条'},
-]
-
-const { Option } = Select;
-const renderTable = ({
-  data,
-  columns,
-  total,
-  loading,
-  onChange,
-  pageSize = 50,
-  rowSelection,
-  current,
-  defaultCurrent = 1,
-  selectedRowKeys,
-  rowKey,
-  prev,
-  next,
-  showNext,
-  onSizeChange,
-  formatOperation,
-}) => {
+interface Props {
+  data: any;
+  columns: any;
+  total: number | string;
+  loading: boolean;
+  onChange: Function;
+  pageSize: number = 50;
+  rowSelection: any;
+  current: number | string;
+  defaultCurrent: number | string = 1;
+  selectedRowKeys: any;
+  rowKey: any;
+  formatOperation: Function;
+  hideSelect: boolean;
+}
+const renderTable = (props: Props): any => {
+  const {
+    data,
+    columns,
+    total,
+    loading,
+    onChange,
+    pageSize = 50,
+    rowSelection,
+    current,
+    defaultCurrent = 1,
+    selectedRowKeys,
+    rowKey,
+    formatOperation,
+    hideSelect,
+  } = props;
   const pagination = {
     defaultCurrent,
     total,
@@ -43,7 +47,7 @@ const renderTable = ({
     //   onChange(current, pageSize);
     //   // onChange((current - 1) * pageSize, pageSize, sortedInfo);
     // },
-    showTotal: (total, range) => {
+    showTotal: (total:number|string, range:number|string) => {
       return `展示第${range[0]}至${range[1]}条数据，共${total}条数据`;
     },
     current,
@@ -51,7 +55,7 @@ const renderTable = ({
   const hasSelected = selectedRowKeys.length > 0;
   return (
     <Fragment>
-      {formatOperation(selectedRowKeys,hasSelected)}
+      {formatOperation && formatOperation(selectedRowKeys, hasSelected)}
       <Table
         style={{ marginTop: 15 }}
         size="small"
@@ -60,7 +64,7 @@ const renderTable = ({
         columns={columns || []}
         rowKey={rowKey}
         loading={loading || false}
-        rowSelection={{ ...rowSelection }}
+        rowSelection={hideSelect ? false : { ...rowSelection }}
         onChange={(page, filter, sorter) => {
           onChange(page.current, page.pageSize, sorter);
         }}

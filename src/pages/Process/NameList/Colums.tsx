@@ -17,7 +17,7 @@ function formatTime(intent:string) {
       return '时间';
   }
 }
-const renderColumns = (dispatch:Function, showIntent:string, setShowVisible:any) => {
+const renderColumns = (dispatch:Function, showIntent:any, setShowVisible:any) => {
   const columns = [
     {
       title: '姓名',
@@ -56,14 +56,14 @@ const renderColumns = (dispatch:Function, showIntent:string, setShowVisible:any)
       title: '挂机原因',
       key: 'result',
       dataIndex: 'result',
-      render: result =>
+      render: (result:string) =>
         result && result.indexOf('#') > 0 ? result.slice(result.indexOf('#') + 1) : result,
     },
     {
       title: '通话时长(秒)',
       key: 'roundStartTime',
       dataIndex: 'roundStartTime',
-      render: (roundStartTime, record) => {
+      render: (roundStartTime:Date|number|string, record:any) => {
         const { roundEndTime } = record;
         if (roundEndTime && roundStartTime) {
           return (moment(roundEndTime) - moment(roundStartTime)) / 1000;
