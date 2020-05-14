@@ -23,36 +23,36 @@ export default [
         routes: [
           {
             path: '/',
-            redirect: '/AI/scene',
+            redirect: '/AI/outging',
           },
           {
             path: '/AI',
-            redirect: '/AI/scene',
+            redirect: '/AI/outging',
           },
-          {
-            name: '旧版AI',
-            hideInMenu: true,
-            path: '/AI/AI',
-            component: '../pages/AI',
-            icon: "align-left",
-          },
+          // {
+          //   name: '旧版AI',
+          //   hideInMenu: true,
+          //   path: '/AI/AI',
+          //   component: '../pages/AI',
+          //   icon: "align-left",
+          // },
           {
             name: '招聘外呼',
             icon: 'appstore',
             routes: [
-              {
-                name: '场景配置',
-                path: '/AI/scene',
-                component: '../pages/Scene/Index',
-                icon: "barcode",
-              },
-              {
-                name: '新增场景配置',
-                hideInMenu: true,
-                path: '/AI/scene/add',
-                component: '../pages/Scene/Add',
-                icon: "align-left",
-              },
+              // {
+              //   name: '场景配置',
+              //   path: '/AI/scene',
+              //   component: '../pages/Scene/Index',
+              //   icon: "barcode",
+              // },
+              // {
+              //   name: '新增场景配置',
+              //   hideInMenu: true,
+              //   path: '/AI/scene/add',
+              //   component: '../pages/Scene/Add',
+              //   icon: "align-left",
+              // },
               {
                 name: '外呼任务',
                 path: '/AI/outging',
@@ -96,6 +96,7 @@ export default [
               },
               {
                 name: '简历预览',
+                hideInMenu: true,
                 path: '/AI/resume',
                 component: '../pages/Resume/Index',
                 icon: "solution",

@@ -25,14 +25,31 @@ const formItemLayout = {
     sm: { span: 20 },
   },
 };
-function ImportModal({
-  dispatch,
-  form,
-  value,
-  onCancel,
-  namelist,
-  intent,
-}) {
+
+interface Props {
+  dispatch: Function;
+  form:any;
+  value:any;
+  onCancel:Function;
+  namelist:any;
+  intent:string;
+}
+interface Response {
+  success?:any;
+  successCount?:string|number;
+  errorCount?:string|number;
+  errorMessages?:string[];
+}
+
+function ImportModal(props:Props) {
+  const {
+    dispatch,
+    form,
+    value,
+    onCancel,
+    namelist,
+    intent,
+  } = props;
   const { ivrIntents } = namelist;
   const {
     getFieldDecorator,
@@ -45,7 +62,7 @@ function ImportModal({
 
   // 导入名单
   function onSumbit() {
-    validateFields((err ) => {
+    validateFields((err:Error) => {
       if (!err) {
         // const { triggerTime, scene } = values;
         if (!fileList.length) {
@@ -66,14 +83,15 @@ function ImportModal({
           formData.append('file', file);
         });
         const { scene } =
-          (ivrIntents && ivrIntents.length && ivrIntents.find(item => item.intent === intent)) ||
+          (ivrIntents && ivrIntents.length && ivrIntents.find((item:{intent:string}) => item.intent === intent)) ||
           {};
         const params = { intent, scene };
         setConfirmLoading(true);
         upload({ formData, params })
-          .then(({ success, successCount, errorCount, errorMessages }) => {
+          .then((response:Response) => {
+            const { success, successCount, errorCount, errorMessages } = response;
             let invitations = [];
-            invitations = success.map(item => item.invitationId) || [];
+            invitations = success.map((item:{invitationId:string|number}) => item.invitationId) || [];
             const { search } = window.location;
             // const batchName = decodeURI(search.slice(1));
             const { id } = queryString.parse(search);
@@ -105,7 +123,7 @@ function ImportModal({
             }
             resetFields();
             setFileList([]);
-            onCancel();
+            onCancel && onCancel();
           })
           .catch(e => {
             message.error(e.message);
@@ -115,7 +133,7 @@ function ImportModal({
     });
   }
 
-  function beforeUpload(file) {
+  function beforeUpload(file:any) {
     const fileType = [
       '.xls',
       '.xlsx',
