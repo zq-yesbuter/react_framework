@@ -44,6 +44,7 @@ function ResumeIndex(props: Props) {
       return;
     },
     fileList,
+    customRequest:() => {}, // 阻止上传的默认行为
   };
   return (
     <Card
