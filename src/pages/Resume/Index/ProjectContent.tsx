@@ -26,10 +26,11 @@ function Project({projects}:{projects:any}):any {
                   }`}
                 </Paragraph>
                 </Paragraph>
-                <p
-                  id={`projectContent-${index}`}
-                >
-                  {item.content}
+                <p>
+                  {item.content && `项目内容：${item.content}`}
+                </p>
+                <p>
+                  {item.work && `项目职责：${item.work}`}
                 </p>
               </div>
             </Fragment>

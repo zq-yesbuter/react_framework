@@ -76,7 +76,7 @@ function ResumeIndex(props: Props) {
       <div style={{ height: '100%' }}>
         {!detail ? (
           <div className={styles['upload-div']}>
-            <h1 className={styles['upload-div-header']}>简历解析体验</h1>
+            <h1 className={styles['upload-div-header']}>简历智能解析</h1>
             <Dragger {...uploadProps}>
               {loading ? (
                 <span style={{ color: '#32325d', fontSize: 18 }}>简历上传解析中······</span>

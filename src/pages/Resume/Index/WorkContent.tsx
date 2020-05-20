@@ -25,7 +25,8 @@ function Resume({ companies }: { companies: any }) {
                   }`}
                 </Paragraph>
                 </Paragraph>
-                <p id={`workContent-${index}`}>{item.work}</p>
+                <p>{item.content && `工作内容：${item.content}`}</p>
+                <p>{item.work && `工作职责：${item.work}`}</p>
               </div>
             </Fragment>
           ))}
