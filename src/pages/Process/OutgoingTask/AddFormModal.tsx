@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { connect } from 'dva';
 import { Form, Modal, Select } from 'antd';
+import _ from 'lodash';
 import TrimInput from '@/components/TrimInput';
 
 const { Option } = Select;
@@ -47,7 +48,16 @@ function AddFormModal(props: Props) {
   function intentChange() {
     setFieldsValue({ scene: null });
   }
+
+  function unique(array:any) {
+    var obj = {};
+    return array.filter(function(item:any){
+        return obj.hasOwnProperty(item.intent) ? false : (obj[item.intent] = true)
+    })
+  }
+
   const intent = getFieldValue('intent');
+  const newIvrIntents = unique(_.cloneDeep(ivrIntents));
   return (
     <Modal
       visible={!!value}
@@ -82,9 +92,9 @@ function AddFormModal(props: Props) {
                 intentChange();
               }}
             >
-              {ivrIntents &&
-                ivrIntents.length &&
-                ivrIntents.map(
+              {newIvrIntents &&
+                newIvrIntents.length &&
+                newIvrIntents.map(
                   (item: { intent: string | number | undefined; intentDesc: string }) => (
                     <Option value={item.intent} key={item.intent}>
                       {item.intentDesc}
