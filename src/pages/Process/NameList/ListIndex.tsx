@@ -92,7 +92,7 @@ interface ErrorMsg extends Error {
 function Index(props: Props) {
   const { dispatch, namelist, loading } = props;
   const { nameList, nameCur, namePageSize, nameRequest, batchDetail, nameTotal } = namelist;
-  const { status, name } = batchDetail;
+  const { status, name, scene } = batchDetail;
   const { search } = window.location;
   const { id, intent, dataStatus } = queryString.parse(search);
   const [value, setValue] = useState(false);
@@ -510,6 +510,7 @@ function Index(props: Props) {
           setValue(false);
         }}
         intent={intent}
+        scene={scene}
       />
       <Record
         visible={showVisible}

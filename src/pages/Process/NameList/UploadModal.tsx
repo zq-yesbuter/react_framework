@@ -33,6 +33,7 @@ interface Props {
   onCancel:Function;
   namelist:any;
   intent:string;
+  scene:string;
 }
 interface Response {
   success?:any;
@@ -49,6 +50,7 @@ function ImportModal(props:Props) {
     onCancel,
     namelist,
     intent,
+    scene,
   } = props;
   const { ivrIntents } = namelist;
   const {
@@ -82,9 +84,9 @@ function ImportModal(props:Props) {
         fileList.forEach(file => {
           formData.append('file', file);
         });
-        const { scene } =
-          (ivrIntents && ivrIntents.length && ivrIntents.find((item:{intent:string}) => item.intent === intent)) ||
-          {};
+        // const { scene } =
+        //   (ivrIntents && ivrIntents.length && ivrIntents.find((item:{intent:string}) => item.intent === intent)) ||
+        //   {};
         const params = { intent, scene };
         setConfirmLoading(true);
         upload({ formData, params })
