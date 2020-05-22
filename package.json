@@ -124,9 +124,7 @@
     "umi-plugin-pro": "^1.0.3",
     "umi-types": "^0.5.14"
   },
-  "optionalDependencies": {
-    "puppeteer": "^1.17.0"
-  },
+  "optionalDependencies": {},
   "engines": {
     "node": ">=10.0.0"
   },
