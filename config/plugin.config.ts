@@ -57,7 +57,6 @@ export default config => {
       },
     ]);
   } // optimize chunks
-
   config.optimization // share the same chunks across different modules
     .runtimeChunk(false)
     .splitChunks({
