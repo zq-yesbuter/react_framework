@@ -16,7 +16,6 @@ import { connect } from 'dva';
 import _ from 'lodash';
 import user from '@/assets/user.svg';
 import classnames from 'classnames';
-import PDF from 'react-pdf-js';
 import PDFJS from 'pdfjs-dist';
 import moment from 'moment';
 import NomalRangePicker from './NomalRangePicker';

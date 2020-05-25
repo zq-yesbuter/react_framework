@@ -26,10 +26,10 @@ function Project({projects}:{projects:any}):any {
                   }`}
                 </Paragraph>
                 </Paragraph>
-                <p>
+                <p style={{whiteSpace: 'pre-line'}} >
                   {item.content && `项目内容：${item.content}`}
                 </p>
-                <p>
+                <p style={{whiteSpace: 'pre-line'}} >
                   {item.work && `项目职责：${item.work}`}
                 </p>
               </div>

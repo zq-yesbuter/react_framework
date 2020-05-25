@@ -25,8 +25,8 @@ function Resume({ companies }: { companies: any }) {
                   }`}
                 </Paragraph>
                 </Paragraph>
-                <p>{item.content && `工作内容：${item.content}`}</p>
-                <p>{item.work && `工作职责：${item.work}`}</p>
+                <p style={{whiteSpace: 'pre-line'}} >{item.content && `工作内容：${item.content}`}</p>
+                <p style={{whiteSpace: 'pre-line'}} >{item.work && `工作职责：${item.work}`}</p>
               </div>
             </Fragment>
           ))}
