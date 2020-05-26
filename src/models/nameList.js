@@ -10,7 +10,7 @@ import {
   getResult,
 } from '../services/nameList';
 
-const now = moment().subtract('days', 14);
+const now = moment().subtract(14,'days');
 const deadLine = moment();
 const format = 'YYYY-MM-DD HH:mm:ss';
 const batchRequest = {

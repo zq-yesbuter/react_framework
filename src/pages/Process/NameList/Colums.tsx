@@ -7,7 +7,9 @@ import { nameStatus } from '../contant';
 
 function formatTime(intent:string) {
   switch (intent) {
-    case ('first_entry_invitation', 'interview_research_invitation'):
+    case 'first_entry_invitation':
+      return '时间';
+    case 'interview_research_invitation':
       return '时间';
     case 'second_entry_invitation':
       return '入职时间';
@@ -17,7 +19,7 @@ function formatTime(intent:string) {
       return '时间';
   }
 }
-const renderColumns = (dispatch:Function, showIntent:any, setShowVisible:any) => {
+const renderColumns = (dispatch:Function, showIntent:string, setShowVisible:Function) => {
   const columns = [
     {
       title: '姓名',
@@ -63,7 +65,7 @@ const renderColumns = (dispatch:Function, showIntent:any, setShowVisible:any) =>
       title: '通话时长(秒)',
       key: 'roundStartTime',
       dataIndex: 'roundStartTime',
-      render: (roundStartTime:Date|number|string, record:any) => {
+      render: (roundStartTime:any, record:any) => {
         const { roundEndTime } = record;
         if (roundEndTime && roundStartTime) {
           return (moment(roundEndTime) - moment(roundStartTime)) / 1000;

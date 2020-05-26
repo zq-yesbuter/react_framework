@@ -9,6 +9,7 @@ import Link from 'umi/link';
 import { connect } from 'dva';
 import { Icon } from 'antd';
 import { Route, Redirect, Switch, routerRedux } from 'dva/router';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import Authorized from '@/utils/Authorized';
 import RightContent from '@/components/GlobalHeader/RightContent';
 import { isAntDesignPro } from '@/utils/utils';
@@ -138,7 +139,9 @@ const BasicLayout = props => {
       {...props}
       {...settings}
     >
-      {children}
+      <PageHeaderWrapper>
+        {children}
+      </PageHeaderWrapper>
     </ProLayout>
   );
 };
