@@ -94,7 +94,7 @@ function Index(props: Props) {
   const { nameList, nameCur, namePageSize, nameRequest, batchDetail, nameTotal } = namelist;
   const { status, name, scene } = batchDetail;
   const { search } = window.location;
-  const { id, intent, dataStatus } = queryString.parse(search);
+  const { id, intent, dataStatus, createdTime } = queryString.parse(search);
   const [value, setValue] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [showVisible, setShowVisible] = useState(false);
@@ -154,7 +154,7 @@ function Index(props: Props) {
                     });
                     dispatch({
                       type: 'namelist/fetchBatchDetail',
-                      payload: { id, intent },
+                      payload: { id, intent, createdTime },
                     });
                   })
                   .catch((e: any) => {
@@ -188,7 +188,7 @@ function Index(props: Props) {
                         });
                         dispatch({
                           type: 'namelist/fetchBatchDetail',
-                          payload: { id, intent },
+                          payload: { id, intent, createdTime },
                         });
                       })
                       .catch((e: any) => {
@@ -231,7 +231,7 @@ function Index(props: Props) {
                     });
                     dispatch({
                       type: 'namelist/fetchBatchDetail',
-                      payload: { id, intent },
+                      payload: { id, intent, createdTime },
                     });
                   })
                   .catch((e: any) => {
@@ -269,7 +269,7 @@ function Index(props: Props) {
               });
               dispatch({
                 type: 'namelist/fetchBatchDetail',
-                payload: { id, intent },
+                payload: { id, intent, createdTime },
               });
             })
             .catch((e: any) => {
@@ -370,7 +370,7 @@ function Index(props: Props) {
     onChange: (pageNum: number, pageSize: number) => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: { pageNum, pageSize, id, intent },
+        payload: { pageNum, pageSize, id, intent, createdTime },
       });
       dispatch({
         type: 'namelist/save',
@@ -381,7 +381,7 @@ function Index(props: Props) {
     prev: () => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: { pageNum: nameCur - 1, id, intent },
+        payload: { pageNum: nameCur - 1, id, intent, createdTime },
       });
       dispatch({
         type: 'namelist/save',
@@ -392,7 +392,7 @@ function Index(props: Props) {
     next: () => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: { pageNum: nameCur + 1, id, intent },
+        payload: { pageNum: nameCur + 1, id, intent, createdTime},
       });
       dispatch({
         type: 'namelist/save',
@@ -403,7 +403,7 @@ function Index(props: Props) {
     onSizeChange: (pageSize: number) => {
       dispatch({
         type: 'namelist/fetchBatchDetail',
-        payload: { pageSize, id, intent },
+        payload: { pageSize, id, intent, createdTime },
       });
       dispatch({
         type: 'namelist/save',
@@ -445,8 +445,8 @@ function Index(props: Props) {
   // 筛选条件
   function onSubmit(values: any) {
     const payload = dataStatus
-      ? { dataStatus: 2, id, intent, ...values }
-      : { id, intent, ...values };
+      ? { dataStatus: 2, id, intent, createdTime, ...values }
+      : { id, intent,createdTime, ...values };
     dispatch({
       type: 'namelist/fetchBatchDetail',
       payload,

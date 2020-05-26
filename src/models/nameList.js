@@ -1,4 +1,5 @@
 import queryString from 'query-string';
+import moment from 'moment';
 import {
   fetchMessage,
   getIvrIntents,
@@ -9,6 +10,17 @@ import {
   getResult,
 } from '../services/nameList';
 
+const now = moment().subtract('days', 14);
+const deadLine = moment();
+const format = 'YYYY-MM-DD HH:mm:ss';
+const batchRequest = {
+  orderBy: { createdDate: 'DESC' },
+  pageSize: 50,
+  pageNum: 1,
+  dateStart: now.format(format),
+  dateEnd: deadLine.format(format),
+};
+
 export default {
   namespace: 'namelist',
   state: {
@@ -16,7 +28,7 @@ export default {
     flowList: [],
     phoneMessage: [],
     backShowTime: {},
-    batchRequest: { orderBy: { createdDate: 'DESC' }, pageSize: 50, pageNum: 1 },
+    batchRequest: batchRequest,
     nameRequest: { pageSize: 50, pageNum: 1 },
     ivrIntents: [],
     batchList: [],
@@ -41,7 +53,7 @@ export default {
       try {
         const batchRequest = yield select(({ namelist: { batchRequest } }) => batchRequest);
         const taskQueryValue = yield select(({ namelist: { taskQueryValue } }) => taskQueryValue);
-        const batchObj = yield call(getBatch, { ...batchRequest,...taskQueryValue, ...payload });
+        const batchObj = yield call(getBatch, { ...batchRequest, ...taskQueryValue, ...payload });
         const batchList = (batchObj && batchObj.data) || [];
         const batchCur = batchObj && batchObj.curPage;
         const batchPageSize = batchObj && batchObj.pageSize;
@@ -165,7 +177,7 @@ export default {
         },
       });
     },
-    *deleteMore({ payload }, { call}) {
+    *deleteMore({ payload }, { call }) {
       return yield call(getBatchDetail, { ...payload });
     },
     *getResult({ payload }, { call, put }) {
@@ -248,8 +260,8 @@ export default {
         const mainMatch = /^\/AI\/outging$/.exec(pathname);
         const deleteMatch = /^\/AI\/outging\/delete/.exec(pathname);
         const deleteAll = /^\/AI\/outging\/deleteAll/.exec(pathname);
-        
-        if(!match){
+
+        if (!match) {
           // 重置消息列表避免bug
           dispatch({
             type: 'save',
@@ -302,18 +314,18 @@ export default {
             payload: queryString.parse(search),
           });
           // 任务页面
-        } else if (mainMatch || deleteAll)  {
+        } else if (mainMatch || deleteAll) {
           dispatch({
             type: 'getBatch',
-            payload: {dataStatus:1},
+            payload: { dataStatus: 1 ,...batchRequest},
           });
           dispatch({
             type: 'fetchIvrIntents',
           });
-        }else if(deleteMatch) {
+        } else if (deleteMatch) {
           dispatch({
             type: 'getBatch',
-            payload: {dataStatus:2},
+            payload: { dataStatus: 2 },
           });
           dispatch({
             type: 'fetchIvrIntents',

@@ -1,12 +1,16 @@
 import React from 'react';
 import { Form, Button, Select } from 'antd';
 import { connect } from 'dva';
+import moment from 'moment';
 import TrimInput from '../../../components/TrimInput';
 import { statusOptions } from '../contant';
 import DateTimeRangePicker from '@/components/DateTimeRangePicker';
 
 const { Option } = Select;
 const FormItem = Form.Item;
+const now = moment().subtract('days', 14);
+const deadLine = moment();
+const format = 'YYYY-MM-DD HH:mm:ss';
 
 interface Props {
   form: any;
@@ -44,6 +48,14 @@ function QueryForm(props:Props) {
         <DateTimeRangePicker
           names={['dateStart', 'dateEnd']}
           form={form}
+          options={[
+            {
+              initialValue: now.format(format),
+            },
+            {
+              initialValue: deadLine.format(format),
+            },
+          ]}
         />
         {/* {getFieldDecorator('triggerTime', {})(
           <DatePicker

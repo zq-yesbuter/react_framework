@@ -7,17 +7,23 @@ import CategoryAddFormModal from './AddFormModal';
 import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
-import { addBatch,batchDelete } from '@/services/nameList';
+import { addBatch, batchDelete } from '@/services/nameList';
 
 interface Props {
   dispatch: Function;
   namelist: any;
+  loading: boolean;
 }
-function Index(props:Props) {
-  const { dispatch, namelist } = props;
-  const { batchList,ivrIntents, batchCur, batchPageSize,batchRequest,batchTotal } = namelist;
+interface ErrorProps {
+  successCount?: number | undefined;
+  errorCount?: number | undefined;
+  errorMessages?: string[];
+}
+
+function Index(props: Props) {
+  const { dispatch, namelist, loading } = props;
+  const { batchList, ivrIntents, batchCur, batchPageSize, batchRequest, batchTotal } = namelist;
   const [value, setValue] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [submitLoading, setSubmitLoading] = useState(false);
 
@@ -41,17 +47,17 @@ function Index(props:Props) {
         </div>
       ),
       onOk: () => {
-        const selectArr: Array<string>=[];
+        const selectArr: Array<string> = [];
         const selectObj = {};
         ids.forEach((id: string) => {
-          const obj = batchList.find((item: { id: string,intent: string }) => item.id === id);
+          const obj = batchList.find((item: { id: string; intent: string }) => item.id === id);
           selectArr.push(obj);
         });
-        selectArr.forEach((item:any) => {
-          if(Object.keys(selectObj).includes(item.intent)){
-            selectObj[item.intent].push(item.id)
-          }else{
-            selectObj[item.intent] = [item.id]
+        selectArr.forEach((item: any) => {
+          if (Object.keys(selectObj).includes(item.intent)) {
+            selectObj[item.intent].push(item.id);
+          } else {
+            selectObj[item.intent] = [item.id];
           }
         });
         const questAll = [];
@@ -64,11 +70,11 @@ function Index(props:Props) {
           .then(result => {
             let successCount = 0;
             let errorCount = 0;
-            let errorMessages = [];
+            let errorMessages: any[] = [];
             if (result && result.length) {
-              result.forEach(item => {
-                successCount += item.successCount;
-                errorCount += item.errorCount;
+              result.forEach((item: ErrorProps) => {
+                successCount += item.successCount || 0;
+                errorCount += item.errorCount || 0;
                 errorMessages = errorMessages.concat(item.errorMessages);
               });
             }
@@ -142,7 +148,7 @@ function Index(props:Props) {
       setSelectedRowKeys([]);
     },
     showNext: batchList && batchList.length < batchPageSize,
-    onChange: (pageNum:number, pageSize:number) => {
+    onChange: (pageNum: number, pageSize: number) => {
       dispatch({
         type: 'namelist/getBatch',
         payload: { pageNum, pageSize },
@@ -157,11 +163,11 @@ function Index(props:Props) {
     rowSelection: {
       selectedRowKeys,
       // eslint-disable-next-line no-shadow
-      onChange: (selectedRowKeys:string[]|number[]) => {
+      onChange: (selectedRowKeys: string[] | number[]) => {
         setSelectedRowKeys(selectedRowKeys);
         // this.setState({ , selectedRows });
       },
-      getCheckboxProps: ({ status }:{status:number}) => ({
+      getCheckboxProps: ({ status }: { status: number }) => ({
         disabled: isAllDelete ? false : status === 3 || status === 4,
       }),
     },
@@ -263,5 +269,18 @@ function Index(props:Props) {
   );
 }
 
-const mapStateToProps = ({ namelist = {} }) => ({ namelist });
+const mapStateToProps = ({
+  namelist,
+  loading: {
+    effects: { 'namelist/getBatch': loading },
+  },
+}: {
+  namelist: any;
+  loading: any;
+}) => {
+  return {
+    namelist,
+    loading,
+  };
+};
 export default connect(mapStateToProps)(Index);

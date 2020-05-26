@@ -8,6 +8,7 @@ import { statusOptions } from '../contant';
 interface Value {
   intent: string;
   status: number | string;
+  createdTime: any;
 }
 const renderColumns = (dispatch: Function, ivrIntents: any) => {
   const columns = [
@@ -63,10 +64,10 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
       dataIndex: 'id',
       width: 150,
       render: (id:number|string, value:Value) => {
-        const { intent, status } = value || {};
+        const { intent, status, createdTime } = value || {};
         const { pathname } = window.location;
         const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
-        const search = isDelete ? { dataStatus: 2, intent, id } : { intent, id };
+        const search = isDelete ? { dataStatus: 2, intent, id, createdTime } : { intent, id, createdTime };
         return (
           <Fragment>
             {status > -1 ? (
