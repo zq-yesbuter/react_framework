@@ -38,7 +38,7 @@ const renderTable = (props: Props): any => {
     pageSize,
     showSizeChanger: true,
     showQuickJumper: true,
-    pageSizeOptions: ['10', '20', '50', '100'],
+    pageSizeOptions: ['10', '20', '50', '100', '200'],
     // onShowSizeChange: (current, pageSize) => {
     //   onChange((current - 1) * pageSize, pageSize, sortedInfo);
     // },
