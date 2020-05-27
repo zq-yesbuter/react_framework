@@ -1,4 +1,3 @@
-/* eslint-disable guard-for-in */
 import React, { useState, useEffect, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, message, Button, Modal } from 'antd';
@@ -8,6 +7,7 @@ import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { addBatch, batchDelete } from '@/services/nameList';
+import { Setting } from '@/utils/tscontant';
 
 interface Props {
   dispatch: Function;
@@ -99,6 +99,7 @@ function Index(props: Props) {
       cancelText: '取消',
     });
   }
+  
   const setting = {
     data: batchList,
     total: batchTotal,

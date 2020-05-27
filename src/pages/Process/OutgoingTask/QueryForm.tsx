@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import moment from 'moment';
 import TrimInput from '../../../components/TrimInput';
 import { statusOptions } from '../contant';
-import DateTimeRangePicker from '@/components/DateTimeRangePicker';
+import DateTimeRangePicker from '@/components/DateRangePicker';
 
 const { Option } = Select;
 const FormItem = Form.Item;

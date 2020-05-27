@@ -12,7 +12,7 @@ import {
 
 const now = moment().subtract(14,'days');
 const deadLine = moment();
-const format = 'YYYY-MM-DD HH:mm:ss';
+const format = 'YYYY-MM-DD';
 const batchRequest = {
   orderBy: { createdDate: 'DESC' },
   pageSize: 50,
