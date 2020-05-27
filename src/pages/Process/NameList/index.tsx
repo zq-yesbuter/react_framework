@@ -475,7 +475,7 @@ function Index(props: Props) {
               e.preventDefault();
               dispatch({
                 type: 'namelist/save',
-                payload: { nameRequest: { pageSize: 50, pageNum: 1 } },
+                payload: { nameRequest: { pageSize: 200, pageNum: 1 } },
               });
               dispatch(routerRedux.goBack());
             }}
