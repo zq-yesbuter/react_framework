@@ -10,7 +10,7 @@ const { Option } = Select;
 const FormItem = Form.Item;
 const now = moment().subtract(14,'days');
 const deadLine = moment();
-const format = 'YYYY-MM-DD HH:mm:ss';
+const format = 'YYYY-MM-DD';
 
 interface Props {
   form: any;

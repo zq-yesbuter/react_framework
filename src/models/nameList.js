@@ -17,8 +17,8 @@ const batchRequest = {
   orderBy: { createdDate: 'DESC' },
   pageSize: 50,
   pageNum: 1,
-  dateStart: now.format(format),
-  dateEnd: deadLine.format(format),
+  dateStart: now.format(format) + ' 00:00:00',
+  dateEnd: deadLine.format(format) + ' 23:59:59',
 };
 
 export default {

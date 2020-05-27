@@ -218,10 +218,12 @@ function Index(props: Props) {
       <CategoryQueryForm
         value={query}
         onSubmit={(data:any) => {
-          const payload = isDelete ? { dataStatus: 2, ...data } : data;
+          const { dateStart, dateEnd, ...rest } = data;
+          const taskQueryValue = { dateStart:dateStart+' 00:00:00',dateEnd:dateEnd + ' 23:59:59',...rest}
+          const payload = isDelete ? { dataStatus: 2, ...taskQueryValue } : taskQueryValue;
           dispatch({
             type: 'namelist/save',
-            payload: { taskQueryValue: data },
+            payload: { taskQueryValue },
           });
           dispatch({
             type: 'namelist/save',
