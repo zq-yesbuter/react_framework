@@ -291,7 +291,7 @@ function Index(props: Props) {
         invitationIds,
         pageNum: 1,
         pageSize: 1000,
-        orderBy: { createdDate: 'DESC' },
+        orderBy: { createdDate: 'ASC' },
       }),
       headers: {
         Accept: 'application/vnd.ms-excel',
