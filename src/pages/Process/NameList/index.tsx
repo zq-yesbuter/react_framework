@@ -290,8 +290,8 @@ function Index(props: Props) {
       body: JSON.stringify({
         invitationIds,
         pageNum: 1,
-        pageSize: 500,
-        orderBy: { applyDate: 'DESC' },
+        pageSize: 1000,
+        orderBy: { createdDate: 'DESC' },
       }),
       headers: {
         Accept: 'application/vnd.ms-excel',
