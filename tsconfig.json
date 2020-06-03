@@ -2,8 +2,8 @@
   "compilerOptions": {
     "outDir": "build/dist",
     "module": "esnext",
-    "target": "esnext",
-    "lib": ["esnext", "dom"],
+    "target": "es6",
+    "lib": ["es5", "es6", "dom"],
     "sourceMap": true,
     "baseUrl": ".",
     "jsx": "react",
@@ -18,7 +18,9 @@
     "strict": true,
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "noImplicitAny": false,
+    "removeComments": true
   },
   "exclude": [
     "node_modules",

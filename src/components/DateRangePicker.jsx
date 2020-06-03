@@ -8,29 +8,26 @@ class DateRangePicker extends PureComponent {
   static defaultProps = {
     names: ['begin_date', 'end_date'],
     options: [],
-    format: 'YYYY-MM-DD',
+    format: 'x',
   };
-
+  handleDateChange(value1, value2) {
+    const { setFieldsValue } = this.props.form;
+    const { names: [name1, name2], format } = this.props;
+    setFieldsValue({
+      [name1]: value1 ? value1.startOf('day').format(format) : value1,
+      [name2]: value2 ? value2.endOf('day').format(format) : value2,
+    });
+  }
   render() {
-    // eslint-disable-next-line react/destructuring-assignment
     const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
-    const {
-      names: [name1, name2],
-      format,
-      options,
-      ...restProps
-    } = this.props;
+    const { names: [name1, name2], format, options } = this.props;
     getFieldDecorator(name1, options[0] || {});
     getFieldDecorator(name2, options[1] || {});
     const startDate = getFieldValue(name1);
     const endDate = getFieldValue(name2);
     return (
       <RangePicker
-        {...restProps}
-        value={[
-          startDate ? moment(startDate, format) : null,
-          endDate ? moment(endDate, format) : null,
-        ]}
+        {...this.props}
         ranges={{
           昨天: [
             moment()
@@ -47,12 +44,6 @@ class DateRangePicker extends PureComponent {
               .startOf('day'),
             moment(),
           ],
-          最近两周: [
-            moment()
-              .subtract(14, 'days')
-              .startOf('day'),
-            moment(),
-          ],
           最近30日: [
             moment()
               .subtract(30, 'days')
@@ -60,14 +51,13 @@ class DateRangePicker extends PureComponent {
             moment(),
           ],
         }}
-        showTime
+        value={[
+          startDate ? moment(startDate, format) : null,
+          endDate ? moment(endDate, format) : null,
+        ]}
         format="YYYY-MM-DD"
         onChange={([value1, value2]) => {
-          // let newStart = moment().format('x') * 1 + 10 * 60 * 1000;
-          setFieldsValue({
-            [name1]: value1 && value1.format(format),
-            [name2]: value2 && value2.format(format),
-          });
+          this.handleDateChange(value1, value2);
         }}
       />
     );

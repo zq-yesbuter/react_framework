@@ -1,56 +1,78 @@
-import { DefaultFooter, getMenuData, getPageTitle } from '@ant-design/pro-layout';
+import React, { Fragment } from 'react';
+import { Link, Redirect, Switch, Route } from 'dva/router';
 import DocumentTitle from 'react-document-title';
-import Link from 'umi/link';
-import React from 'react';
-import { connect } from 'dva';
-import { formatMessage } from 'umi-plugin-react/locale';
-import SelectLang from '@/components/SelectLang';
+import { Icon } from 'antd';
+import GlobalFooter from '../components/GlobalFooter';
+import './UserLayout.less';
 import logo from '../assets/logo.svg';
-import styles from './UserLayout.less';
+import { getRoutes } from '../utils/utils';
 
-const UserLayout = props => {
-  const {
-    route = {
-      routes: [],
-    },
-  } = props;
-  const { routes = [] } = route;
-  const {
-    children,
-    location = {
-      pathname: '',
-    },
-  } = props;
-  const { breadcrumb } = getMenuData(routes);
-  return (
-    <DocumentTitle
-      title={getPageTitle({
-        pathname: location.pathname,
-        breadcrumb,
-        formatMessage,
-        ...props,
-      })}
-    >
-      <div className={styles.container}>
-        <div className={styles.lang}>
-          <SelectLang />
-        </div>
-        <div className={styles.content}>
-          <div className={styles.top}>
-            <div className={styles.header}>
-              <Link to="/">
-                <img alt="logo" className={styles.logo} src={logo} />
-                <span className={styles.title}>Ant Design</span>
-              </Link>
+const links = [
+  {
+    key: 'help',
+    title: '帮助',
+    href: '',
+  },
+  {
+    key: 'privacy',
+    title: '隐私',
+    href: '',
+  },
+  {
+    key: 'terms',
+    title: '条款',
+    href: '',
+  },
+];
+
+const copyright = (
+  <Fragment>
+    Copyright <Icon type="copyright" /> 2018 蚂蚁金服体验技术部出品
+  </Fragment>
+);
+
+class UserLayout extends React.PureComponent {
+  getPageTitle() {
+    const { routerData, location } = this.props;
+    const { pathname } = location;
+    let title = 'Ant Design Pro';
+    if (routerData[pathname] && routerData[pathname].name) {
+      title = `${routerData[pathname].name} - Ant Design Pro`;
+    }
+    return title;
+  }
+  render() {
+    const { routerData, match } = this.props;
+    return (
+      <DocumentTitle title={this.getPageTitle()}>
+        <div className="container user-layout">
+          <div className="content">
+            <div className="top">
+              <div className="header">
+                <Link to="/">
+                  <img alt="logo" className="logo" src={logo} />
+                  <span className="title">Ant Design</span>
+                </Link>
+              </div>
+              <div className="desc">Ant Design 是西湖区最具影响力的 Web 设计规范</div>
             </div>
-            <div className={styles.desc}>Ant Design 是西湖区最具影响力的 Web 设计规范</div>
+            <Switch>
+              {getRoutes(match.path, routerData).map(item => (
+                <Route
+                  key={item.key}
+                  path={item.path}
+                  component={item.component}
+                  exact={item.exact}
+                />
+              ))}
+              <Redirect exact from="/user" to="/user/login" />
+            </Switch>
           </div>
-          {children}
+          <GlobalFooter links={links} copyright={copyright} />
         </div>
-        <DefaultFooter />
-      </div>
-    </DocumentTitle>
-  );
-};
+      </DocumentTitle>
+    );
+  }
+}
 
-export default connect(({ settings }) => ({ ...settings }))(UserLayout);
+export default UserLayout;

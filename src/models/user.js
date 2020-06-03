@@ -1,47 +1,131 @@
-import { queryCurrent, query as queryUsers } from '@/services/user';
+import { loginOut, queryCurrent, queryMenu, queryRobotList, selectRobot } from '../services/user';
+import { setAuthorityMenu } from '../common/menu';
+import { nonLoginAuthorized } from '../utils/Authorized';
+import { routerRedux } from 'dva/router';
+import { baseUrl, authApi } from '../config';
+import queryString from 'query-string';
 
-const UserModel = {
+export default {
   namespace: 'user',
-  state: {
-    currentUser: {},
-  },
-  effects: {
-    *fetch(_, { call, put }) {
-      const response = yield call(queryUsers);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-    },
 
+  state: {
+    list: [],
+    currentUser: {},
+    menuList: [],
+    menuLoading: true,
+    robotList: [],
+  },
+
+  effects: {
+    *logout(_, { call }) {
+      try {
+        yield call(loginOut);
+      } catch (error) {
+        return;
+      }
+    },
     *fetchCurrent(_, { call, put }) {
-      const response = yield call(queryCurrent);
+      let response = {};
+      try {
+        response = yield call(queryCurrent);
+      } catch (error) {
+        response = {};
+      }
+
       yield put({
         type: 'saveCurrentUser',
         payload: response,
       });
+      return Promise.resolve(response);
+    },
+    *fetchRobotList(_, { call, put }) {
+      const data = yield call(queryRobotList);
+      yield put({
+        type: 'saveRobotList',
+        payload: data,
+      });
+      return Promise.resolve(data);
+    },
+    *fetchMenuList({ payload }, { call, put }) {
+      // 请求菜单级别的权限
+      let data = yield call(queryMenu, payload);
+      // data = menuFormat(data, payload.roleType);
+      // setAuthorityMenu(data);
+      yield put({
+        type: 'saveMenuList',
+        payload: data,
+      });
+    },
+    *selectRobot({ payload }, { call, put, select }) {
+      yield call(selectRobot, payload);
+      let robotList = yield select(({ user: { robotList } }) => robotList);
+
+      robotList = robotList.map(item => ({ ...item, selected: payload.id === item.id }));
+      yield put({
+        type: 'saveRobotList',
+        payload: robotList,
+      });
+      yield put(routerRedux.replace('/'));
+    },
+    *initSubsQueue({ payload }, { call, put, all }) {
+      let response = {};
+      try {
+        [response] = yield all([call(queryCurrent)]);
+      } catch (error) {
+        console.warn(error);
+        response = {};
+        return;
+      }
+      if (response) {
+        yield put({
+          type: 'save',
+          payload: { currentUser: response },
+        });
+      }
     },
   },
   reducers: {
-    saveCurrentUser(state, action) {
-      return { ...state, currentUser: action.payload || {} };
+    save(state, { payload }) {
+      console.log(payload);
+      return { ...state, ...payload };
     },
-
-    changeNotifyCount(
-      state = {
-        currentUser: {},
-      },
-      action
-    ) {
+    saveCurrentUser(state, action) {
+      return {
+        ...state,
+        currentUser: action.payload,
+      };
+    },
+    changeNotifyCount(state, action) {
       return {
         ...state,
         currentUser: {
           ...state.currentUser,
-          notifyCount: action.payload.totalCount,
-          unreadCount: action.payload.unreadCount,
+          notifyCount: action.payload,
         },
       };
     },
+    saveMenuList(state, { payload }) {
+      return {
+        ...state,
+        menuList: payload,
+      };
+    },
+    saveRobotList(state, { payload }) {
+      return {
+        ...state,
+        robotList: payload,
+      };
+    },
+  },
+  subscriptions: {
+    init({ dispatch, history }) {
+      const { location: { pathname } } = history;
+      const nonLogin = nonLoginAuthorized(pathname);
+      if (!nonLogin) {
+        dispatch({
+          type: 'initSubsQueue',
+        });
+      }
+    },
   },
 };
-export default UserModel;

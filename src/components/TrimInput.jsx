@@ -1,4 +1,3 @@
-
 import React, { PureComponent } from 'react';
 import { Input } from 'antd';
 
@@ -11,13 +10,11 @@ class TrimTextArea extends PureComponent {
   render() {
     return (
       <Input.TextArea
-        maxLength={100}
+        maxLength="100"
         {...this.props}
         onBlur={e => {
           e.target.value = (e.target.value || '').trim();
-          // eslint-disable-next-line react/destructuring-assignment
           this.props.onChange(e);
-          // eslint-disable-next-line react/destructuring-assignment
           this.props.onBlur(e);
         }}
       />
@@ -34,13 +31,11 @@ class TrimInput extends PureComponent {
   render() {
     return (
       <Input
-        maxLength={30}
+        maxLength="30"
         {...this.props}
         onBlur={e => {
           e.target.value = (e.target.value || '').trim();
-          // eslint-disable-next-line react/destructuring-assignment
           this.props.onChange(e);
-          // eslint-disable-next-line react/destructuring-assignment
           this.props.onBlur(e);
         }}
       />

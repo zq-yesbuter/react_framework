@@ -1,0 +1,11 @@
+**/*.md
+**/*.svg
+**/*.jpg
+**/*.png
+**/*.eot
+**/*.ttf
+**/*.woff
+package.json
+public/
+index.ejs
+config/

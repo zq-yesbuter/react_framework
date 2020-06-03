@@ -1,152 +1,320 @@
-/**
- * Ant Design Pro v4 use `@ant-design/pro-layout` to handle Layout.
- * You can view component api by:
- * https://github.com/ant-design/ant-design-pro-layout
- */
-import ProLayout, { DefaultFooter } from '@ant-design/pro-layout';
-import React, { useEffect } from 'react';
-import Link from 'umi/link';
+import React from 'react';
+import PropTypes from 'prop-types';
+import { Layout, Spin } from 'antd';
+import DocumentTitle from 'react-document-title';
 import { connect } from 'dva';
-import { Icon } from 'antd';
 import { Route, Redirect, Switch, routerRedux } from 'dva/router';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import Authorized from '@/utils/Authorized';
-import RightContent from '@/components/GlobalHeader/RightContent';
-import { isAntDesignPro } from '@/utils/utils';
+import { ContainerQuery } from 'react-container-query';
+import classNames from 'classnames';
+import { enquireScreen, unenquireScreen } from 'enquire-js';
+import GlobalHeader from '../components/GlobalHeader';
+import SiderMenu from '../components/SiderMenu';
+import NotFound from '../routes/Exception/404';
+import { getRoutes } from '../utils/utils';
+import Authorized, { nonLoginAuthorized } from '../utils/Authorized';
+import { getMenuData } from '../common/menu';
 import logo from '../assets/logo.svg';
 
+const { Content, Header } = Layout;
+const { AuthorizedRoute, check } = Authorized;
+
+// full page list
+const fullPageList = ['/home', '/interface/api/fesco'];
+
 /**
- * use Authorized check all menu item
+ * 根据菜单取得重定向地址.
  */
-const menuDataRender = menuList =>
-  menuList.map(item => {
-    const localItem = {
-      ...item,
-      children: item.children ? menuDataRender(item.children) : [],
-    };
-    return Authorized.check(item.authority, localItem, null);
-  });
-
-const defaultFooterDom = (
-  <DefaultFooter
-    copyright="2020 京东数科智能技术部出品"
-    links={[
-      {
-        key: 'AI招聘系统',
-        title: 'AI招聘系统',
-        // href: 'https://pro.ant.design',
-        blankTarget: true,
-      },
-      // {
-      //   key: 'github',
-      //   title: <Icon type="github" />,
-      //   href: 'https://github.com/ant-design/ant-design-pro',
-      //   blankTarget: true,
-      // },
-      {
-        key: 'Ant Design',
-        title: 'Ant Design',
-        href: 'https://ant.design',
-        blankTarget: true,
-      },
-    ]}
-  />
-);
-
-const footerRender = () => {
-  if (!isAntDesignPro()) {
-    return defaultFooterDom;
-  }
-
-  return (
-    <>
-      {defaultFooterDom}
-      <div
-        style={{
-          padding: '0px 24px 24px',
-          textAlign: 'center',
-        }}
-      >
-        <a href="https://www.netlify.com" target="_blank" rel="noopener noreferrer">
-          <img
-            src="https://www.netlify.com/img/global/badges/netlify-color-bg.svg"
-            width="82px"
-            alt="netlify logo"
-          />
-        </a>
-      </div>
-    </>
-  );
-};
-
-const BasicLayout = props => {
-  const { dispatch, children, settings } = props;
-  /**
-   * constructor
-   */
-
-  useEffect(() => {
-    // if (dispatch) {
-    //   dispatch({
-    //     type: 'user/fetchCurrent',
-    //   });
-    //   // dispatch({
-    //   //   type: 'settings/getSetting',
-    //   // });
-    // }
-  }, []);
-  /**
-   * init variables
-   */
-
-  const handleMenuCollapse = payload => {
-    if (dispatch) {
-      dispatch({
-        type: 'global/changeLayoutCollapsed',
-        payload,
+const redirectData = [];
+const getRedirect = item => {
+  if (item && item.children) {
+    if (item.children[0] && item.children[0].path) {
+      redirectData.push({
+        from: `${item.path}`,
+        to: `${item.children[0].path}`,
+      });
+      item.children.forEach(children => {
+        getRedirect(children);
       });
     }
-  };
-  return (
-    <ProLayout
-      logo={logo}
-      onCollapse={handleMenuCollapse}
-      menuItemRender={(menuItemProps, defaultDom) => {
-        if (menuItemProps.isUrl) {
-          return defaultDom;
-        }
+  }
+};
+getMenuData().forEach(getRedirect);
 
-        return <Link to={menuItemProps.path}>{defaultDom}</Link>;
-      }}
-      breadcrumbRender={(routers = []) => [
-        {
-          path: '/',
-          breadcrumbName: '招聘外呼',
-        },
-        ...routers,
-      ]}
-      itemRender={(route, params, routes, paths) => {
-        const first = routes.indexOf(route) === 0;
-        return first ? (
-          <Link to={paths.join('/')}>{route.breadcrumbName}</Link>
-        ) : (
-          <span>{route.breadcrumbName}</span>
-        );
-      }}
-      footerRender={() => null}
-      menuDataRender={menuDataRender}
-      rightContentRender={rightProps => <RightContent {...rightProps} />}
-      {...props}
-      {...settings}
-    >
-      <PageHeaderWrapper>
-        {children}
-      </PageHeaderWrapper>
-    </ProLayout>
-  );
+/**
+ * 获取面包屑映射
+ * @param {Object} menuData 菜单配置
+ * @param {Object} routerData 路由配置
+ */
+const getBreadcrumbNameMap = (menuData, routerData) => {
+  const result = {};
+  const childResult = {};
+  for (const i of menuData) {
+    if (!routerData[i.path]) {
+      result[i.path] = i;
+    }
+    if (i.children) {
+      Object.assign(childResult, getBreadcrumbNameMap(i.children, routerData));
+    }
+  }
+  return Object.assign({}, routerData, result, childResult);
 };
 
-export default connect(({ global, settings }) => ({
+const query = {
+  'screen-xs': {
+    maxWidth: 575,
+  },
+  'screen-sm': {
+    minWidth: 576,
+    maxWidth: 767,
+  },
+  'screen-md': {
+    minWidth: 768,
+    maxWidth: 991,
+  },
+  'screen-lg': {
+    minWidth: 992,
+    maxWidth: 1199,
+  },
+  'screen-xl': {
+    minWidth: 1200,
+  },
+};
+
+let isMobile;
+enquireScreen(b => {
+  isMobile = b;
+});
+
+class BasicLayout extends React.PureComponent {
+  static childContextTypes = {
+    location: PropTypes.object,
+    breadcrumbNameMap: PropTypes.object,
+  };
+  state = {
+    isMobile,
+  };
+  getChildContext() {
+    const { location, routerData } = this.props;
+    return {
+      location,
+      breadcrumbNameMap: getBreadcrumbNameMap(getMenuData(), routerData),
+    };
+  }
+  componentDidMount() {
+    const { location: { pathname }, dispatch, currentUser } = this.props;
+    const nonLogin = nonLoginAuthorized(pathname);
+    this.enquireHandler = enquireScreen(mobile => {
+      this.setState({
+        isMobile: mobile,
+      });
+    });
+
+    if (!nonLogin) {
+      // dispatch({
+      //   type: 'user/fetchCurrent',
+      // });
+      //
+    }
+  }
+  componentWillUnmount() {
+    unenquireScreen(this.enquireHandler);
+  }
+  getPageTitle() {
+    const { routerData, location } = this.props;
+    const { pathname } = location;
+    let title = 'AI招聘系统';
+    if (routerData[pathname] && routerData[pathname].name) {
+      title = `${routerData[pathname].name} - AI招聘系统`;
+    }
+    return title;
+  }
+  getBashRedirect = () => {
+    // According to the url parameter to redirect
+    // 这里是重定向的,重定向到 url 的 redirect 参数所示地址
+    const urlParams = new URL(window.location.href);
+
+    const redirect = urlParams.searchParams.get('redirect');
+    // Remove the parameters in the url
+    if (redirect) {
+      urlParams.searchParams.delete('redirect');
+      window.history.replaceState(null, 'redirect', urlParams.href);
+    } else {
+      const { routerData } = this.props;
+      // get the first authorized route path in routerData
+      const authorizedPath = Object.keys(routerData).find(
+        item => check(routerData[item].authority, item) && item !== '/'
+      );
+      return authorizedPath;
+    }
+    return redirect;
+  };
+  handleMenuCollapse = collapsed => {
+    this.props.dispatch({
+      type: 'global/changeLayoutCollapsed',
+      payload: collapsed,
+    });
+  };
+  handleMenuClick = ({ key }) => {
+    const { dispatch, location: { pathname } } = this.props;
+    if (key === 'logout') {
+      // window.location.href = `http://jmis.jd.com/remote/loginOut.htm?callback=${encodeURIComponent(
+      //   `${location.origin}/`
+      // )}&AC=OMS`;
+      const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}/AI`)}`;
+      window.location.href = returnUrl;
+    } else {
+      dispatch(
+        routerRedux.push({
+          pathname: routerConfig[key].path,
+        })
+      );
+    }
+  };
+  handleRobotClick = payload => {
+    const { dispatch, location: { pathname }, currentUser } = this.props;
+    dispatch({
+      type: 'user/selectRobot',
+      payload,
+    }).then(() => {
+      dispatch({
+        type: 'user/fetchMenuList',
+        payload: {
+          roleId: currentUser.roleId,
+          roleType: currentUser.roleType,
+          robotCode: payload.code,
+        },
+      });
+    });
+  };
+  handleShowFullPage = () => {
+    const { location: { pathname } } = this.props;
+
+    return ~fullPageList.indexOf(pathname);
+  };
+  // 是否显示用户头像菜单栏的流量控制
+  handleShowSentinel = list => {
+    return list.indexOf('/userMenu/sentinel') > -1;
+  };
+  render() {
+    const {
+      currentUser,
+      collapsed,
+      routerData,
+      match,
+      location,
+      menuLoading,
+      initLoading,
+      menuList,
+      robotList,
+      robotLoading,
+    } = this.props;
+    if (initLoading) {
+      return (
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
+            margin: 'auto',
+            paddingTop: 50,
+            textAlign: 'center',
+          }}
+        >
+          <Spin size="large" />
+        </div>
+      );
+    }
+
+    const bashRedirect = this.getBashRedirect();
+    const showFull = this.handleShowFullPage();
+    const layout = showFull ? (
+      <Layout>
+        <Content>
+          <Switch>
+            {redirectData.map(item => (
+              <Redirect key={item.from} exact from={item.from} to={item.to} />
+            ))}
+            {getRoutes(match.path, routerData).map(item => (
+              <AuthorizedRoute
+                key={item.key}
+                path={item.path}
+                component={item.component}
+                exact={item.exact}
+                authority={item.authority}
+                redirectPath="/exception/403"
+              />
+            ))}
+            <Redirect exact from="/" to={bashRedirect} />
+            <Route render={NotFound} />
+          </Switch>
+        </Content>
+      </Layout>
+    ) : (
+      <Layout>
+        <SiderMenu
+          logo={logo}
+          // 不带Authorized参数的情况下如果没有权限,会强制跳到403界面
+          // If you do not have the Authorized parameter
+          // you will be forced to jump to the 403 interface without permission
+          Authorized={Authorized}
+          menuData={getMenuData()}
+          collapsed={collapsed}
+          location={location}
+          isMobile={this.state.isMobile}
+          onCollapse={this.handleMenuCollapse}
+        />
+        <Layout>
+          <Header style={{ padding: 0 }}>
+            <GlobalHeader
+              logo={logo}
+              currentUser={currentUser}
+              collapsed={collapsed}
+              location={location}
+              showSentinel={this.handleShowSentinel(menuList)}
+              isMobile={this.state.isMobile}
+              onCollapse={this.handleMenuCollapse}
+              onMenuClick={this.handleMenuClick}
+              onRobotClick={this.handleRobotClick}
+            />
+          </Header>
+          <Content style={{ margin: '24px 24px 0' }}>
+            <Switch>
+              {redirectData.map(item => (
+                <Redirect key={item.from} exact from={item.from} to={item.to} />
+              ))}
+              {getRoutes(match.path, routerData).map(item => (
+                <AuthorizedRoute
+                  key={item.key}
+                  path={item.path}
+                  component={item.component}
+                  exact={item.exact}
+                  authority={item.authority}
+                  redirectPath="/exception/403"
+                />
+              ))}
+              <Redirect exact from="/" to={bashRedirect} />
+              <Route render={NotFound} />
+            </Switch>
+          </Content>
+        </Layout>
+      </Layout>
+    );
+
+    return (
+      <DocumentTitle title={this.getPageTitle()}>
+        <ContainerQuery query={query}>
+          {params => <div className={classNames(params)}>{layout}</div>}
+        </ContainerQuery>
+      </DocumentTitle>
+    );
+  }
+}
+
+export default connect(({ user, global, loading }) => ({
+  currentUser: user.currentUser,
   collapsed: global.collapsed,
-  settings,
+  // menuLoading: loading.effects['user/fetchMenuList'],
+  menuList: user.menuList,
+  // robotList: user.robotList,
+  // robotLoading: loading.effects['user/fetchRobotList'],
+  // initLoading: loading.effects['user/initSubsQueue'],
 }))(BasicLayout);
