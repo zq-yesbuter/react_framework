@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { connect } from 'dva';
 import { Card, message, Button, Modal, Menu, Row, Col, Spin } from 'antd';
+import moment from 'moment';
 import Pie from '@/components/Pie';
 import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
@@ -18,34 +19,32 @@ function Index(props: Props) {
   const { nameRequest, batchDetail } = namelist;
   const { status, name } = batchDetail;
   const { search } = window.location;
+  const [ days, setDays ] = useState(31);
+  const [ xAxisData, setXAxisData ] = useState([]);
   const { id, intent, dataStatus } = queryString.parse(search);
+  
+  
+  // 筛选条件
+  function onSubmit(values: any) {
+    console.log('values===>',values);
+    const { time } = values;
+    const days = moment(time).daysInMonth();
+    const month:number = moment(time).month()+1;
+    console.log('days====>',days,moment(time).month()+1);
+    let axis = Array.from(new Array(days).keys());
+    console.log('axis===>',axis);
+    const ss = axis.reduce((acc, cur:number) => {
+      return acc.concat(`${month}/${cur+1}`)
+    }, [])
+    setXAxisData(ss);
+    console.log('axis===>',axis,ss);
+  }
 
   useEffect(() => {
-    return () => {
-      dispatch({
-        type: 'picture/init',
-      });
-    };
+    onSubmit(moment('2020-05'));
   }, []);
 
   const query = {}; //  queryString.parse(location.search)
-
-  // 筛选条件
-  function onSubmit(values: any) {
-    const payload = dataStatus
-      ? { dataStatus: 2, id, intent, ...values }
-      : { id, intent, ...values };
-    dispatch({
-      type: 'namelist/fetchBatchDetail',
-      payload,
-    });
-    dispatch({
-      type: 'namelist/save',
-      payload: dataStatus
-        ? { nameRequest: { ...nameRequest, dataStatus: 2, ...values } }
-        : { nameRequest: { ...nameRequest, ...values } },
-    });
-  }
 
   return (
     <Card bordered={false} title="外呼报表">
@@ -55,7 +54,7 @@ function Index(props: Props) {
           onSubmit(data);
         }}
       />
-      <LineChart />
+      <LineChart xAxisData={xAxisData}/>
       <Row gutter={50} style={{marginBottom:100,marginTop:100}}>
         <Col span={11}>
           {/* <Spin spinning={loading0}> */}

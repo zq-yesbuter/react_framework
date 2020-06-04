@@ -1,8 +1,7 @@
 import React from 'react';
 import { Form, Button, Select,DatePicker  } from 'antd';
 import { connect } from 'dva';
-import TrimInput from '@/components/TrimInput';
-import DateTimeRangePicker from '@/components/DateTimeRangePicker';
+import moment from 'moment';
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -41,7 +40,9 @@ function QueryForm(props: Props) {
   return (
     // eslint-disable-next-line react/jsx-filename-extension
     <Form layout="inline" onSubmit={handleSubmit}>
-      <FormItem label="时间">{getFieldDecorator('time')(
+      <FormItem label="时间">{getFieldDecorator('time',{
+        initialValue:moment('2020-05')
+      })(
         <MonthPicker />)}</FormItem>
       <FormItem>
         <Button htmlType="submit" type="primary" className="test-input-search">
