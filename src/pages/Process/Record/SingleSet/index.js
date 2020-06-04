@@ -57,7 +57,7 @@ function SingleSet({
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const { applyId, status } = listValue || {};
   const { search } = window.location;
-  const { group: invitationId, intent } = queryString.parse(search);
+  const { id: invitationId, intent } = queryString.parse(search);
   const [showCancel, setShowCancel] = useState(true);
   // const disabled = status === '3' || status === 3 || status === 4 || status === '4';
   const sureDisabled = !(status === 1 || status === 2 || status === 0);
@@ -219,7 +219,7 @@ function SingleSet({
             //   }
             // }
           }
-          payload = { ...payload, updateId: invitationId };
+          payload = { ...payload, updateId: applyId };
           editSignel(payload)
             .then(data => {
               message.success('修改邀约成功');
@@ -244,7 +244,7 @@ function SingleSet({
       }
     }
 
-    cancelSignel({ intent, updateId: invitationId })
+    cancelSignel({ intent, updateId: applyId })
       .then(data => {
         message.success('取消邀约成功!');
         setFieldsValue({ triggerTime: null });
