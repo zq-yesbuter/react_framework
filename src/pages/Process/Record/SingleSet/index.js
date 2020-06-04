@@ -60,7 +60,7 @@ function SingleSet({
   const { intent } = queryString.parse(search);
   const [showCancel, setShowCancel] = useState(true);
   // const disabled = status === '3' || status === 3 || status === 4 || status === '4';
-  const sureDisabled = !(status === 1 || status === 2 || status === 0);
+  const sureDisabled = !(status === 1 || status === 2);
   const showallTime = status === 3 || status === 4 || status === 1;
   const cancelShow = status === 1;
   function disabledDate(current) {
