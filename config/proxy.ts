@@ -106,5 +106,10 @@ export default  {
       changeOrigin: true,
       pathRewrite,
     },
+    '/operator': {
+      target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+      changeOrigin: true,
+      pathRewrite,
+    },
   };
   

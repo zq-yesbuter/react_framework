@@ -21,7 +21,6 @@ function RecordList(props:Props) {
         type: 'namelist/save',
         payload: { messageList: [] },
       });
-      console.log('chatRef===>',chatRef);
       if(chatRef && chatRef.current){
         chatRef.current.scrollTop = 0;
       }

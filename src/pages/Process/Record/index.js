@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useRef } from 'react';
 import { connect } from 'dva';
 import { Row, Col, Drawer, Button, message } from 'antd';
 import queryString from 'query-string';
@@ -12,6 +12,7 @@ function Index({ onClose, visible, namelist: { nameList, listValue }, dispatch }
   const { search } = window.location;
   const { dataStatus } = queryString.parse(search);
   const index = nameList.findIndex(item => item.invitationId === invitationId);
+  const setRef = useRef();
   return (
     // <PageHeaderWrapper
     //   title={
@@ -61,6 +62,8 @@ function Index({ onClose, visible, namelist: { nameList, listValue }, dispatch }
               }
               const group = nameList[index - 1] && nameList[index - 1].invitationId;
               if (group) {
+                // 表单置空，避免bug
+                setRef.current.setValue();
                 // 重置消息列表避免bug
                 dispatch({
                   type: 'namelist/save',
@@ -93,6 +96,8 @@ function Index({ onClose, visible, namelist: { nameList, listValue }, dispatch }
               }
               const group = nameList[index + 1] && nameList[index + 1].invitationId;
               if (group) {
+                // 表单置空，避免bug
+                setRef.current.setValue();
                 // 重置消息列表避免bug
                 dispatch({
                   type: 'namelist/save',
@@ -120,10 +125,11 @@ function Index({ onClose, visible, namelist: { nameList, listValue }, dispatch }
       visible={visible}
       bodyStyle={{ background: '#f7f7f7' }}
       className={styles.record}
+      destroyOnClose={true}
     >
       <Row gutter={12}>
         <Col span={18}>
-          <SingleSet />
+          <SingleSet setRef={setRef} />
           <ChatRecord />
         </Col>
         <Col span={6}>

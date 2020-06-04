@@ -40,12 +40,12 @@ export default [
             name: '招聘外呼',
             icon: 'appstore',
             routes: [
-              // {
-              //   name: '外呼报表',
-              //   path: '/AI/report',
-              //   component: '../pages/Report',
-              //   icon: "pie-chart",
-              // },
+            //   {
+            //     name: '外呼报表',
+            //     path: '/AI/report',
+            //     component: '../pages/Report',
+            //     icon: "pie-chart",
+            //   },
               // {
               //   name: '场景配置',
               //   path: '/AI/scene',

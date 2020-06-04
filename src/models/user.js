@@ -1,4 +1,4 @@
-import { queryCurrent, query as queryUsers } from '@/services/user';
+import { queryCurrent } from '@/services/user';
 
 const UserModel = {
   namespace: 'user',
@@ -21,8 +21,29 @@ const UserModel = {
         payload: response,
       });
     },
+
+    *initSubsQueue({ payload }, { call, put, all }) {
+      let response = {};
+      try {
+        [response] = yield all([call(queryCurrent)]);
+      } catch (error) {
+        console.warn(error);
+        response = {};
+        return;
+      }
+      if (response) {
+        yield put({
+          type: 'save',
+          payload: { currentUser: response },
+        });
+      }
+    },
   },
   reducers: {
+    save(state, { payload }) {
+      console.log(payload);
+      return { ...state, ...payload };
+    },
     saveCurrentUser(state, action) {
       return { ...state, currentUser: action.payload || {} };
     },
@@ -41,6 +62,17 @@ const UserModel = {
           unreadCount: action.payload.unreadCount,
         },
       };
+    },
+  },
+  subscriptions: {
+    init({ dispatch, history }) {
+      const { location: { pathname } } = history;
+      // const nonLogin = nonLoginAuthorized(pathname);
+      // if (!nonLogin) {
+        dispatch({
+          type: 'initSubsQueue',
+        });
+      // }
     },
   },
 };

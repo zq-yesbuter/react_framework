@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-import React, { useState, useEffect, useRef, Fragment } from 'react';
+import React, { useState, useEffect, useRef, Fragment, useImperativeHandle, forwardRef } from 'react';
 import {
   Col,
   Row,
@@ -53,6 +53,7 @@ function SingleSet({
   dispatch,
   namelist: { jobList = [], selectJobId, listValue },
   location,
+  setRef,
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
   const { applyId, status, invitationId } = listValue || {};
@@ -63,6 +64,13 @@ function SingleSet({
   const sureDisabled = !(status === 1 || status === 2);
   const showallTime = status === 3 || status === 4 || status === 1;
   const cancelShow = status === 1;
+  // 此处注意useImperativeHandle方法的的第一个参数是目标元素的ref引用
+  useImperativeHandle(setRef, () => ({
+    // changeVal 就是暴露给父组件的方法
+    setValue: () => {
+      resetFields();
+    },
+  }));
   function disabledDate(current) {
     // Can not select days before today and today
     return current && current < moment().subtract(1, 'days');
@@ -281,4 +289,4 @@ function SingleSet({
 }
 
 const mapStateToProps = ({ namelist = {} }) => ({ namelist });
-export default connect(mapStateToProps)(Form.create({})(SingleSet));
+export default connect(mapStateToProps)(Form.create({})(forwardRef(SingleSet)));
