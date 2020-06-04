@@ -55,14 +55,14 @@ function SingleSet({
   location,
 }) {
   const { getFieldDecorator, validateFields, resetFields, setFieldsValue } = form;
-  const { applyId } = listValue || {};
+  const { applyId, status } = listValue || {};
   const { search } = window.location;
-  const { group: invitationId, intent, status } = queryString.parse(search);
+  const { group: invitationId, intent } = queryString.parse(search);
   const [showCancel, setShowCancel] = useState(true);
   // const disabled = status === '3' || status === 3 || status === 4 || status === '4';
-  const sureDisabled = !(status === '1' || status === '2');
-  const showallTime = status === '3' || status === '4' || status === '1';
-  const cancelShow = status === '1';
+  const sureDisabled = !(status === 1 || status === 2 || status === 0);
+  const showallTime = status === 3 || status === 4 || status === 1;
+  const cancelShow = status === 1;
   function disabledDate(current) {
     // Can not select days before today and today
     return current && current < moment().subtract(1, 'days');
@@ -206,7 +206,7 @@ function SingleSet({
         if (intent === 'interview_invitation') {
           payload.params = { startTime: params.startTime ? params.startTime.format(format) : null };
         }
-        if (status === '1' || status === '2') {
+        if (status === 1 || status === 2) {
           if (listValue && listValue.triggerTime) {
             if (moment(listValue.triggerTime) < moment().add(10, 'minutes')) {
               message.error('当前时间和外呼时间差小于10分钟，无法更新！');
