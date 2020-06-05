@@ -9,7 +9,7 @@ import styles from './Detail.less';
 
 function Detail({resume}:{resume:any}) {
   return (
-    <div className={styles['upload-div']}>
+    <div className={styles['detail-div']}>
       <div className={styles.resume}>
         <div style={{ textAlign: 'center' }}>
           <img src={user} alt="avatar" style={{ width: '20', borderRadius: 10 }} />
