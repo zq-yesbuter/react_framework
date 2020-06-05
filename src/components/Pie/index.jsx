@@ -303,7 +303,7 @@ export default class Pie extends Component {
                 </span>
                 <span
                  className="value"
-                 style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)' }}
+                 style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)',marginLeft:0 }}
                 >
                   {item.z}
                 </span>

@@ -177,7 +177,7 @@ function Index(props: Props) {
       />
       <LineChart xAxisData={xAxisData} monthData={monthData}/>
       <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
-        <Col span={11}>
+        <Col span={12}>
           {/* <Spin spinning={loading0}> */}
           <Pie
             hasLegend
@@ -188,15 +188,15 @@ function Index(props: Props) {
           />
           {/* </Spin> */}
         </Col>
-        <Col span={11}>
+        <Col span={12}>
           {/* <Spin spinning={loading1}> */}
           <Pie hasLegend subTitle="外呼结果分布" data={data2} height={254} />
           {/* </Spin> */}
         </Col>
-        <Col span={2}></Col>
+        {/* <Col span={2}></Col> */}
       </Row>
       <Row gutter={50}>
-        <Col span={11}>
+        <Col span={12}>
           {/* <Spin spinning={loading2}> */}
           <Pie
             hasLegend
@@ -207,12 +207,12 @@ function Index(props: Props) {
           />
           {/* </Spin> */}
         </Col>
-        <Col span={11}>
+        <Col span={12}>
           {/* <Spin spinning={loading3}> */}
           <Pie hasLegend subTitle="外呼类型分布" data={data4} height={254} />
           {/* </Spin> */}
         </Col>
-        <Col span={2}></Col>
+        {/* <Col span={2}></Col> */}
       </Row>
     </Card>
   );
