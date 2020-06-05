@@ -3,10 +3,12 @@ import { connect } from 'dva';
 import { Card, message, Button, Modal, Menu, Row, Col, Spin } from 'antd';
 import moment from 'moment';
 import Pie from '@/components/Pie';
+import Pie2 from '@/components/Pie2';
 import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
+import { stringify } from 'qs';
 
 interface Props {
   dispatch: Function;
@@ -14,37 +16,156 @@ interface Props {
   loading: boolean;
 }
 
+const lineData={
+  '4':[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,14,324,0,0,0,0,30,0,0,0,334],
+  '5':[0,0,0,0,0,0,0,108,0,0,10,251,104,106,14,0,0,98,71,61,0,132,20,30,61,0,205,193,13,0,44]
+}
+const data1Obj={
+  '4':[ 
+    { x: '面试调研', y: 651, z:'78120s' },
+    { x: '面试邀约', y: 0, z:'0s'},
+    { x: '面试提醒', y: 0, z:'0s'},
+    { x: '背调提醒', y: 0, z:'0s'},
+    { x: '入职提醒', y: 51, z:'3060s' },
+  ],
+  '5':[
+      { x: '面试调研', y: 1225, z:'147000s' },
+      { x: '面试邀约', y: 44 , z:'2640s'},
+      { x: '面试提醒', y: 107 , z:'6420s'},
+      { x: '背调提醒', y: 50 , z:'3000s'},
+      { x: '入职提醒', y: 95 , z:'5700s'},
+    ],
+};
+const data2Obj={
+  '4':[
+    { x: '完成调研', y: 261,z:'57620s' },
+    { x: '拒绝调研', y: 200,z:'10000s' },
+    { x: '中途挂机', y: 130,z:'9600s' },
+    { x: '无人接听',y: 60,z:'900s' },
+  ],
+  '5':[
+    { x: '完成调研', y: 562,z:'127910s' },
+    { x: '拒绝调研', y: 323,z:'17650s' },
+    { x: '中途挂机', y: 154,z:'980s'},
+    { x: '无人接听',y: 156,z:'460s' },
+  ]
+};
+const data3Obj = {
+  '4':[
+    { x: '胡沙', y: 702,z:'42120s' },
+    { x: '高成月', y: 30,z:'1800s' },
+    { x: '崔雯靖', y: 0,z:'0s'},
+  ],
+  '5':[
+    { x: '胡沙', y: 151,z:'9060s' },
+    { x: '高成月', y: 1133,z:'135960s' },
+    { x: '崔雯靖', y: 99,z:'5940s' },
+  ],
+};
+const data4Obj = {
+  '4':{
+    '胡沙': [
+      { x: '面试调研', y: 651,z:'18120s' },
+    { x: '面试邀约', y: 0,z:'0s' },
+    { x: '面试提醒', y: 0,z:'0s' },
+    { x: '背调提醒', y: 0,z:'0s' },
+    { x: '入职提醒', y: 51,z:'3060s' },],
+    '高成月':[
+      { x: '面试调研', y: 0,z:'0s' },
+      { x: '面试邀约', y: 0,z:'0s' },
+      { x: '面试提醒', y: 30,z:'1800s' },
+      { x: '背调提醒', y: 0,z:'0s' },
+      { x: '入职提醒', y: 0,z:'0s' },],
+    '崔雯靖':[
+      { x: '面试调研', y: 0,z:'0s' },
+    { x: '面试邀约', y: 0,z:'0s' },
+    { x: '面试提醒', y: 0,z:'0s' },
+    { x: '背调提醒', y: 0,z:'0s' },
+    { x: '入职提醒', y: 0,z:'0s' },],
+  },
+  '5':{
+    '胡沙': [
+      { x: '面试调研', y: 0,z:'0s' },
+    { x: '面试邀约', y: 44,z:'2640s' },
+    { x: '面试提醒', y: 107,z:'6420s' },
+    { x: '背调提醒', y: 0,z:'0s' },
+    { x: '入职提醒', y: 0,z:'0s' },],
+    '高成月':[
+      { x: '面试调研', y: 1133,z:'135960s' },
+      { x: '面试邀约', y: 0,z:'0s' },
+      { x: '面试提醒', y: 0,z:'0s' },
+      { x: '背调提醒', y: 0,z:'0s' },
+      { x: '入职提醒', y: 0,z:'0s' },],
+    '崔雯靖':[
+      { x: '面试调研', y: 0,z:'0s' },
+      { x: '面试邀约', y: 0,z:'0s' },
+      { x: '面试提醒', y: 0,z:'0s' },
+      { x: '背调提醒', y: 20,z:'1200s' },
+      { x: '入职提醒', y: 79,z:'47400s' },],
+  },
+};
 function Index(props: Props) {
   const { dispatch, namelist, loading } = props;
   const { nameRequest, batchDetail } = namelist;
   const { status, name } = batchDetail;
   const { search } = window.location;
-  const [ days, setDays ] = useState(31);
-  const [ xAxisData, setXAxisData ] = useState([]);
+  const [monthData,setMonthData] = useState(lineData['5'])
+  const [month, setMonth] = useState(5);
+  const [xAxisData, setXAxisData] = useState([]);
+  const [data1, setData1] = useState(data1Obj['5']);
+  const [data2, setData2] = useState(data2Obj['5']);
+  const [data3, setData3] = useState(data3Obj['5']);
+  const [data4, setData4] = useState(data4Obj['5']['胡沙']);
   const { id, intent, dataStatus } = queryString.parse(search);
-  
-  
+
   // 筛选条件
   function onSubmit(values: any) {
-    console.log('values===>',values);
     const { time } = values;
     const days = moment(time).daysInMonth();
-    const month:number = moment(time).month()+1;
-    console.log('days====>',days,moment(time).month()+1);
+    const month: number = moment(time).month() + 1;
     let axis = Array.from(new Array(days).keys());
-    console.log('axis===>',axis);
-    const ss = axis.reduce((acc, cur:number) => {
-      return acc.concat(`${month}/${cur+1}`)
-    }, [])
+    const ss = axis.reduce((acc, cur: number) => {
+      return acc.concat(`${month}/${cur + 1}`);
+    }, []);
     setXAxisData(ss);
-    console.log('axis===>',axis,ss);
+    setMonth(month)
+    if(month===4){
+      setMonthData(lineData['4']);
+      setData1(data1Obj['4']);
+      setData2(data2Obj['4']);
+      setData3(data3Obj['4']);
+      setData4(data4Obj['4']['胡沙']);
+      return;
+    }
+    setMonthData(lineData['5']);
+    setData1(data1Obj['5']);
+    setData2(data2Obj['5']);
+    setData3(data3Obj['5']);
+    setData4(data4Obj['5']['胡沙']);
   }
 
   useEffect(() => {
-    onSubmit(moment('2020-05'));
+    onSubmit({ time: moment().set('month', 4) });
   }, []);
 
   const query = {}; //  queryString.parse(location.search)
+
+  function lengendClick(item:any,i:number) {
+    const {x,y} = item;
+    if(x==='面试调研'){
+      setData2(data2Obj[String(month)]);
+      return;
+    }
+    setData2( 
+      [{ x: '完成调研', y: y,z:`${y*60}s`  },
+      { x: '拒绝调研', y: 0,z:'0s'  },
+      { x: '中途挂机', y: 0,z:'0s'  },
+      { x: '无人接听',y: 0,z:'0s'  }]);
+  }
+  function lengendClick2(item:any,i:numebr) {
+    const {x,y} = item;
+    setData4(data4Obj[String(month)][x]);
+  }
 
   return (
     <Card bordered={false} title="外呼报表">
@@ -54,46 +175,22 @@ function Index(props: Props) {
           onSubmit(data);
         }}
       />
-      <LineChart xAxisData={xAxisData}/>
-      <Row gutter={50} style={{marginBottom:100,marginTop:100}}>
+      <LineChart xAxisData={xAxisData} monthData={monthData}/>
+      <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
         <Col span={11}>
           {/* <Spin spinning={loading0}> */}
-          <div style={{ position: 'absolute', right: 0, top: 0, textAlign: 'right' }}>
-            <p> 新增启用流程:{1}个</p>
-            <p> 新增下线:{1}个</p>
-          </div>
           <Pie
             hasLegend
             subTitle="外呼类型分布"
-            data={[
-              { x: '启用', y: 47 },
-              { x: '未启用', y: 69 },
-            ]}
-            height={294}
+            data={data1}
+            height={254}
+            lengendClick={lengendClick}
           />
           {/* </Spin> */}
         </Col>
         <Col span={11}>
           {/* <Spin spinning={loading1}> */}
-          <Pie
-            hasLegend
-            subTitle="外呼结果分布"
-            data={[
-              { x: '理财', y: 8 },
-              { x: '钱包+生活应用', y: 3 },
-              { x: '一级目录ZY', y: 2 },
-              { x: '售后咨询', y: 3 },
-              { x: '联系人工', y: 4 },
-              { x: '保险', y: 12 },
-              { x: '众筹', y: 3 },
-              { x: '客服管理', y: 1 },
-              { x: '服务引导目录Auto', y: 13 },
-              { x: '白条', y: 9 },
-              { x: '产品咨询', y: 1 },
-              { x: '农村金融', y: 1 },
-            ]}
-            height={294}
-          />
+          <Pie hasLegend subTitle="外呼结果分布" data={data2} height={254} />
           {/* </Spin> */}
         </Col>
         <Col span={2}></Col>
@@ -101,33 +198,18 @@ function Index(props: Props) {
       <Row gutter={50}>
         <Col span={11}>
           {/* <Spin spinning={loading2}> */}
-          <p style={{ position: 'absolute', right: 0, top: 0 }}>新增反馈:{2}个</p>
           <Pie
             hasLegend
             subTitle="使用人使用量分布"
-            data={[
-              { x: '处理完成', y: 34 },
-              { x: '待处理', y: 215 },
-              { x: '处理中', y: 17 },
-            ]}
-            height={294}
+            data={data3}
+            height={254}
+            lengendClick={lengendClick2}
           />
           {/* </Spin> */}
         </Col>
         <Col span={11}>
           {/* <Spin spinning={loading3}> */}
-          <Pie
-            hasLegend
-            subTitle="外呼类型分布"
-            data={[
-              { x: '知识更新', y: 108 },
-              { x: '操作繁琐', y: 50 },
-              { x: '补充流程', y: 52 },
-              { x: '流程错误', y: 32 },
-              { x: '展示不清晰', y: 26 },
-            ]}
-            height={294}
-          />
+          <Pie hasLegend subTitle="外呼类型分布" data={data4} height={254} />
           {/* </Spin> */}
         </Col>
         <Col span={2}></Col>

@@ -56,12 +56,12 @@ export default class OnlineEcharts extends Component {
     // } = this.props;
     // const data = format(initData);
     // let series = _.cloneDeep(initSeries);
-    const { xAxisData } = this.props;
+    const { xAxisData, monthData } = this.props;
 
     const yAxis = [
       {
         type: 'value',
-        name: '外呼量',
+        name: '外呼人数',
         splitLine: {
           show: false,
         },
@@ -69,55 +69,67 @@ export default class OnlineEcharts extends Component {
           show: true,
         },
       },
-      {
-        type: 'value',
-        name: '增量',
-        position: 'right',
-        splitLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-        axisLabel: {
-          show: true,
-          formatter: '{value} %', //右侧Y轴文字显示
-        },
-      },
+      // {
+      //   type: 'value',
+      //   name: '增量(%)',
+      //   position: 'right',
+      //   splitLine: {
+      //     show: false,
+      //   },
+      //   axisTick: {
+      //     show: false,
+      //   },
+      //   axisLabel: {
+      //     show: true,
+      //     formatter: '{value} %', //右侧Y轴文字显示
+      //   },
+      // },
     ];
     const series = [
+      // {
+      //   name: '增量',
+      //   type: 'line',
+      //   yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
+      //   smooth: true, //平滑曲线显示
+      //   showAllSymbol: true, //显示所有图形。
+      //   symbol: 'emptyCircle', //标记的图形为实心圆
+      //   symbolSize: 6, //标记的大小
+      //   itemStyle: {
+      //     //折线拐点标志的样式
+      //     color: '#2fc25b',
+      //   },
+      //   lineStyle: {
+      //     color: '#2fc25b',
+      //   },
+      //   areaStyle: {
+      //     color: 'rgba(5,140,255, 0.2)',
+      //   },
+      //   data: [4.2, 3.8, 4.8, 3.5, 2.9, 2.8, 3, 5],
+      // },
       {
-        name: '增量',
-        type: 'line',
-        yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
-        smooth: true, //平滑曲线显示
-        showAllSymbol: true, //显示所有图形。
-        symbol: 'emptyCircle', //标记的图形为实心圆
-        symbolSize: 6, //标记的大小
-        itemStyle: {
-          //折线拐点标志的样式
-          color: '#2fc25b',
-        },
-        lineStyle: {
-          color: '#2fc25b',
-        },
-        areaStyle: {
-          color: 'rgba(5,140,255, 0.2)',
-        },
-        data: [4.2, 3.8, 4.8, 3.5, 2.9, 2.8, 3, 5],
-      },
-      {
-        name: '外呼量',
+        name: '外呼人数',
         type: 'bar',
         barWidth: 15,
-        data: [4.2, 3.8, 4.8, 3.5, 2.9, 2.8, 3, 5],
+        data: monthData,
         color:'#1890ff',
+        itemStyle: {
+          normal: {
+            label: {
+              show: true, //开启显示
+              position: 'top', //在上方显示
+              // textStyle: { //数值样式
+              //   color: 'black',
+              //   fontSize: 16
+              // }
+            }
+          }
+        },
       },
     ];
 
     return {
       legend: {
-        data: [ '外呼量', '增量' ],
+        data: [ '外呼人数'],
         top: '15%',
         // textStyle: {
         //     color: "#ffffff"
@@ -129,12 +141,16 @@ export default class OnlineEcharts extends Component {
         formatter: params => {
           let res = `<div><p>外呼时间：${params[0].axisValue}</p></div>`;
           for (let i = 0; i < params.length; i++) {
-            res += `<p>${params[i].seriesName}:${params[i].value}</p>`;
+            if(params[i].seriesName === '增量') {
+              res += `<p>外呼${params[i].seriesName}:${params[i].value}%</p>`;
+            }else{
+              res += `<p>${params[i].seriesName}:${params[i].value}</p>`;
+            }
           }
           return res;
         },
       },
-      color: [
+      color: [ 
         '#1890ff',
         '#2fc25b',
         '#13c2c2',
@@ -158,7 +174,7 @@ export default class OnlineEcharts extends Component {
   };
   render() {
     return (
-      <div>
+      <div style={{marginTop:30}}>
         <ReactEcharts option={this.getOption()} />
       </div>
     );

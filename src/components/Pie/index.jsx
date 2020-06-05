@@ -15,6 +15,7 @@ export default class Pie extends Component {
   state = {
     legendData: [],
     legendBlock: false,
+    selIndex: 0,
   };
 
   componentDidMount() {
@@ -51,18 +52,24 @@ export default class Pie extends Component {
 
   // for custom lengend view
   getLegendData = () => {
+    const { selIndex } = this.state;
     if (!this.chart) return;
     const geom = this.chart.getAllGeoms()[0]; // 获取所有的图形
     const items = geom.get('dataArray') || []; // 获取图形对应的
 
-    const legendData = items.map(item => {
+    let legendData = items.map(item => {
       /* eslint no-underscore-dangle:0 */
       const origin = item[0]._origin;
       origin.color = item[0].color;
       origin.checked = true;
       return origin;
     });
-
+    const { lengendClick } = this.props;
+    if (lengendClick) {
+      legendData = legendData.map((item, i) =>
+        selIndex === i ? { ...item, checked: false } : { ...item }
+      );
+    }
     this.setState({
       legendData,
     });
@@ -73,6 +80,23 @@ export default class Pie extends Component {
   };
 
   handleLegendClick = (item, i) => {
+    const { lengendClick } = this.props;
+    if (lengendClick) {
+      const newItem = item;
+      newItem.checked = !newItem.checked;
+      let { legendData } = this.state;
+      legendData = legendData.map(item => ({ ...item, checked: true }));
+      legendData[i] = newItem;
+      // this.setState({ selIndex: i });
+      // if (this.chart) {
+      //   this.chart.filter('x', val => filteredLegendData.indexOf(val) > -1);
+      // }
+      this.setState({
+        legendData,
+      });
+      lengendClick(item,i);
+      return;
+    }
     const newItem = item;
     newItem.checked = !newItem.checked;
 
@@ -129,6 +153,7 @@ export default class Pie extends Component {
       animate = true,
       colors,
       lineWidth = 1,
+      lengendClick,
     } = this.props;
 
     const { legendData, legendBlock } = this.state;
@@ -244,19 +269,44 @@ export default class Pie extends Component {
         {hasLegend && (
           <ul className="legend">
             {legendData.map((item, i) => (
-              <li key={item.x} onClick={() => this.handleLegendClick(item, i)}>
+              <li
+                key={item.x}
+                onClick={() => this.handleLegendClick(item, i)}
+                style={{
+                  backgroundColor: lengendClick && !item.checked ? 'rgba(24,144,255,0.6)' : '#fff',
+                }}
+              >
                 <span
                   className="dot"
                   style={{
-                    backgroundColor: !item.checked ? '#aaa' : item.color,
+                    backgroundColor: !lengendClick && !item.checked ? '#aaa' : item.color,
                   }}
                 />
-                <span className="legendTitle">{item.x}</span>
+                <span
+                  className="legendTitle"
+                  style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)' }}
+                >
+                  {item.x}
+                </span>
                 <Divider type="vertical" />
-                <span className="percent">
+                <span
+                  className="percent"
+                  style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.45)' }}
+                >
                   {`${(isNaN(item.percent) ? 0 : item.percent * 100).toFixed(2)}%`}
                 </span>
-                <span className="value">{valueFormat ? valueFormat(item.y) : item.y}</span>
+                <span
+                  className="value"
+                  style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)' }}
+                >
+                  {valueFormat ? valueFormat(item.y) : item.y}
+                </span>
+                <span
+                 className="value"
+                 style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)' }}
+                >
+                  {item.z}
+                </span>
               </li>
             ))}
           </ul>

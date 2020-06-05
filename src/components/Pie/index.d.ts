@@ -16,6 +16,7 @@ export interface IPieProps {
   tooltip?: boolean;
   valueFormat?: (value: string) => string | React.ReactNode;
   subTitle?: React.ReactNode;
+  lengendClick?:() => void;
 }
 
 export default class Pie extends React.Component<IPieProps, any> {}

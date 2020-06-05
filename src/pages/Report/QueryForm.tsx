@@ -41,7 +41,7 @@ function QueryForm(props: Props) {
     // eslint-disable-next-line react/jsx-filename-extension
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="时间">{getFieldDecorator('time',{
-        initialValue:moment('2020-05')
+        initialValue:moment().set('month', 4) 
       })(
         <MonthPicker />)}</FormItem>
       <FormItem>
