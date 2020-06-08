@@ -53,7 +53,7 @@ function ResumeIndex(props: Props) {
         bordered={false}
         title={
           <Fragment>
-            简历预览
+            简历智能解析
             {detail && (
               <a
                 href="javascript:;"

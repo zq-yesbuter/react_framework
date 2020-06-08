@@ -101,8 +101,7 @@ export default [
                 // icon: 'smile',
               },
               {
-                name: '简历预览',
-                hideInMenu: true,
+                name: '简历解析',
                 path: '/AI/resume',
                 component: '../pages/Resume/Index',
                 icon: "solution",
