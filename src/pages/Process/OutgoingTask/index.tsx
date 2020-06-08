@@ -7,6 +7,7 @@ import CategoryQueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { addBatch, batchDelete } from '@/services/nameList';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Setting } from '@/utils/tscontant';
 
 interface Props {
@@ -19,7 +20,6 @@ interface ErrorProps {
   errorCount?: number | undefined;
   errorMessages?: string[];
 }
-
 function Index(props: Props) {
   const { dispatch, namelist, loading } = props;
   const { batchList, ivrIntents, batchCur, batchPageSize, batchRequest, batchTotal } = namelist;
@@ -182,84 +182,87 @@ function Index(props: Props) {
   };
 
   return (
-    <Card
-      bordered={false}
-      title="外呼任务"
-      extra={
-        <Fragment>
-          {isDelete ? null : (
-            <Button
-              icon="plus"
-              type="primary"
-              onClick={() => {
-                setValue({});
-              }}
-            >
-              新建任务
-            </Button>
-          )}
-          {isAllDelete ? (
-            <Button
-              onClick={() => {
-                dispatch(
-                  routerRedux.push({
-                    pathname: '/AI/outging/delete',
-                  })
-                );
-              }}
-              style={{ marginLeft: 10 }}
-            >
-              已删除任务
-            </Button>
-          ) : null}
-        </Fragment>
-      }
+    <PageHeaderWrapper
     >
-      <CategoryQueryForm
-        value={query}
-        onSubmit={(data:any) => {
-          const { dateStart, dateEnd, ...rest } = data;
-          const taskQueryValue = { dateStart:dateStart+' 00:00:00',dateEnd:dateEnd + ' 23:59:59',...rest}
-          const payload = isDelete ? { dataStatus: 2, ...taskQueryValue } : taskQueryValue;
-          dispatch({
-            type: 'namelist/save',
-            payload: { taskQueryValue },
-          });
-          dispatch({
-            type: 'namelist/save',
-            payload: { batchRequest: isDelete ? { ...batchRequest, dataStatus: 2 } : batchRequest },
-          });
-          dispatch({
-            type: 'namelist/getBatch',
-            payload,
-          });
-        }}
-      />
-      {renderTable(setting)}
-      <CategoryAddFormModal
-        value={value}
-        onCancel={() => {
-          setValue(null);
-        }}
-        submitLoading={submitLoading}
-        onSubmit={(data: any) => {
-          setSubmitLoading(true);
-          addBatch(data)
-            .then(() => {
-              message.success('新增任务成功');
-              dispatch({
-                type: 'namelist/getBatch',
-                payload: {},
-              });
-              setSubmitLoading(false);
-            })
-            .catch(() => {
-              setSubmitLoading(false);
+      <Card
+        bordered={false}
+        title="招聘任务"
+        extra={
+          <Fragment>
+            {isDelete ? null : (
+              <Button
+                icon="plus"
+                type="primary"
+                onClick={() => {
+                  setValue({});
+                }}
+              >
+                新建任务
+              </Button>
+            )}
+            {isAllDelete ? (
+              <Button
+                onClick={() => {
+                  dispatch(
+                    routerRedux.push({
+                      pathname: '/AI/outging/delete',
+                    })
+                  );
+                }}
+                style={{ marginLeft: 10 }}
+              >
+                已删除任务
+              </Button>
+            ) : null}
+          </Fragment>
+        }
+      >
+        <CategoryQueryForm
+          value={query}
+          onSubmit={(data:any) => {
+            const { dateStart, dateEnd, ...rest } = data;
+            const taskQueryValue = { dateStart:dateStart+' 00:00:00',dateEnd:dateEnd + ' 23:59:59',...rest}
+            const payload = isDelete ? { dataStatus: 2, ...taskQueryValue } : taskQueryValue;
+            dispatch({
+              type: 'namelist/save',
+              payload: { taskQueryValue },
             });
-          setValue(null);
-        }}
-      />
-    </Card>
+            dispatch({
+              type: 'namelist/save',
+              payload: { batchRequest: isDelete ? { ...batchRequest, dataStatus: 2 } : batchRequest },
+            });
+            dispatch({
+              type: 'namelist/getBatch',
+              payload,
+            });
+          }}
+        />
+        {renderTable(setting)}
+        <CategoryAddFormModal
+          value={value}
+          onCancel={() => {
+            setValue(null);
+          }}
+          submitLoading={submitLoading}
+          onSubmit={(data: any) => {
+            setSubmitLoading(true);
+            addBatch(data)
+              .then(() => {
+                message.success('新增任务成功');
+                dispatch({
+                  type: 'namelist/getBatch',
+                  payload: {},
+                });
+                setSubmitLoading(false);
+              })
+              .catch(() => {
+                setSubmitLoading(false);
+              });
+            setValue(null);
+          }}
+        />
+      </Card>
+    </PageHeaderWrapper>
   );
 }
 

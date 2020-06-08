@@ -3,12 +3,19 @@ import { connect } from 'dva';
 import { Card, message, Button, Modal, Menu, Row, Col, Spin } from 'antd';
 import moment from 'moment';
 import Pie from '@/components/Pie';
-import Pie2 from '@/components/Pie2';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import queryString from 'query-string';
 import { routerRedux } from 'dva/router';
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
+ 
 import { stringify } from 'qs';
+const tabList = [
+  {
+    tab: '外呼报表',
+    key: '/AI/report',
+  },
+];
 
 interface Props {
   dispatch: Function;
@@ -166,55 +173,62 @@ function Index(props: Props) {
     const {x,y} = item;
     setData4(data4Obj[String(month)][x]);
   }
-
   return (
-    <Card bordered={false} title="外呼报表">
-      <QueryForm
-        value={query}
-        onSubmit={(data: any) => {
-          onSubmit(data);
-        }}
-      />
-      <LineChart xAxisData={xAxisData} monthData={monthData}/>
-      <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
-        <Col span={12}>
-          {/* <Spin spinning={loading0}> */}
-          <Pie
-            hasLegend
-            subTitle="外呼类型分布"
-            data={data1}
-            height={254}
-            lengendClick={lengendClick}
-          />
-          {/* </Spin> */}
-        </Col>
-        <Col span={12}>
-          {/* <Spin spinning={loading1}> */}
-          <Pie hasLegend subTitle="外呼结果分布" data={data2} height={254} />
-          {/* </Spin> */}
-        </Col>
-        {/* <Col span={2}></Col> */}
-      </Row>
-      <Row gutter={50}>
-        <Col span={12}>
-          {/* <Spin spinning={loading2}> */}
-          <Pie
-            hasLegend
-            subTitle="使用人使用量分布"
-            data={data3}
-            height={254}
-            lengendClick={lengendClick2}
-          />
-          {/* </Spin> */}
-        </Col>
-        <Col span={12}>
-          {/* <Spin spinning={loading3}> */}
-          <Pie hasLegend subTitle="外呼类型分布" data={data4} height={254} />
-          {/* </Spin> */}
-        </Col>
-        {/* <Col span={2}></Col> */}
-      </Row>
-    </Card>
+    <PageHeaderWrapper
+      tabList={tabList}
+      tabActiveKey={window.location.pathname}
+      onTabChange={active => {
+        dispatch(routerRedux.push(active));
+      }}
+    >
+      <Card bordered={false} title="外呼报表">
+        <QueryForm
+          value={query}
+          onSubmit={(data: any) => {
+            onSubmit(data);
+          }}
+        />
+        <LineChart xAxisData={xAxisData} monthData={monthData}/>
+        <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
+          <Col span={12}>
+            {/* <Spin spinning={loading0}> */}
+            <Pie
+              hasLegend
+              subTitle="外呼类型分布"
+              data={data1}
+              height={254}
+              lengendClick={lengendClick}
+            />
+            {/* </Spin> */}
+          </Col>
+          <Col span={12}>
+            {/* <Spin spinning={loading1}> */}
+            <Pie hasLegend subTitle="外呼结果分布" data={data2} height={254} />
+            {/* </Spin> */}
+          </Col>
+          {/* <Col span={2}></Col> */}
+        </Row>
+        <Row gutter={50}>
+          <Col span={12}>
+            {/* <Spin spinning={loading2}> */}
+            <Pie
+              hasLegend
+              subTitle="使用人使用量分布"
+              data={data3}
+              height={254}
+              lengendClick={lengendClick2}
+            />
+            {/* </Spin> */}
+          </Col>
+          <Col span={12}>
+            {/* <Spin spinning={loading3}> */}
+            <Pie hasLegend subTitle="外呼类型分布" data={data4} height={254} />
+            {/* </Spin> */}
+          </Col>
+          {/* <Col span={2}></Col> */}
+        </Row>
+      </Card>
+    </PageHeaderWrapper>
   );
 }
 

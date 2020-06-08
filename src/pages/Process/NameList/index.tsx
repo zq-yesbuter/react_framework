@@ -8,6 +8,7 @@ import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { nameBatchDelete } from '@/services/nameList';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import Record from '../Record';
 
 const codeMessage = {
@@ -460,72 +461,74 @@ function Index(props: Props) {
   }
 
   return (
-    <Card
-      bordered={false}
-      title={
-        <Fragment>
-          {`任务${name} - 外呼名单`}
-          <a
-            href="javascript:;"
-            style={{
-              padding: '5px 15px',
-              fontSize: 14,
+    <PageHeaderWrapper>
+      <Card
+        bordered={false}
+        title={
+          <Fragment>
+            {`任务${name} - 外呼名单`}
+            <a
+              href="javascript:;"
+              style={{
+                padding: '5px 15px',
+                fontSize: 14,
+              }}
+              onClick={e => {
+                e.preventDefault();
+                dispatch({
+                  type: 'namelist/save',
+                  payload: { nameRequest: { pageSize: 200, pageNum: 1 } },
+                });
+                dispatch(routerRedux.goBack());
+              }}
+            >
+              返回上一级
+            </a>
+          </Fragment>
+        }
+        extra={
+          <Button
+            icon="upload"
+            type="primary"
+            onClick={() => {
+              setValue(true);
             }}
-            onClick={e => {
-              e.preventDefault();
-              dispatch({
-                type: 'namelist/save',
-                payload: { nameRequest: { pageSize: 200, pageNum: 1 } },
-              });
-              dispatch(routerRedux.goBack());
-            }}
+            disabled={status === 3 || status === 4}
           >
-            返回上一级
-          </a>
-        </Fragment>
-      }
-      extra={
-        <Button
-          icon="upload"
-          type="primary"
-          onClick={() => {
-            setValue(true);
+            导入
+          </Button>
+        }
+      >
+        <QueryForm
+          value={query}
+          onSubmit={(data: any) => {
+            onSubmit(data);
           }}
-          disabled={status === 3 || status === 4}
-        >
-          导入
-        </Button>
-      }
-    >
-      <QueryForm
-        value={query}
-        onSubmit={(data: any) => {
-          onSubmit(data);
-        }}
-      />
-      {renderTable(setting)}
-      <UploadModal
-        value={value}
-        onCancel={() => {
-          setValue(false);
-        }}
-        intent={intent}
-        scene={scene}
-      />
-      <Record
-        visible={showVisible}
-        onClose={() => {
-          setShowVisible(false);
-          dispatch({
-            type: 'namelist/save',
-            payload: { messageList: [] },
-          });
-          if (document.getElementById('chatRecordRef')) {
-            document.getElementById('chatRecordRef').scrollTop = 0;
-          }
-        }}
-      />
-    </Card>
+        />
+        {renderTable(setting)}
+        <UploadModal
+          value={value}
+          onCancel={() => {
+            setValue(false);
+          }}
+          intent={intent}
+          scene={scene}
+        />
+        <Record
+          visible={showVisible}
+          onClose={() => {
+            setShowVisible(false);
+            dispatch({
+              type: 'namelist/save',
+              payload: { messageList: [] },
+            });
+            if (document.getElementById('chatRecordRef')) {
+              document.getElementById('chatRecordRef').scrollTop = 0;
+            }
+          }}
+        />
+      </Card>
+    </PageHeaderWrapper>
   );
 }
 

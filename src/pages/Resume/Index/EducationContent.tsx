@@ -17,8 +17,8 @@ function Education({ educations }: { educations: any }): any {
               <div className={styles.carousel} key={`education-${index}`}>
                 <Paragraph style={{ marginBottom: 5,fontWeight:600,fontSize:16,marginTop:40  }}>{`学校名称：  ${item.school}`}</Paragraph>
                 <Paragraph style={{ marginBottom: 5 }}>
-                  {`起止时间： ${moment(item.startDate).format(format)} ~ ${
-                    item.endDate ? moment(item.endDate).format(format) : '至今'
+                  {`起止时间： ${item.startDate ? moment(item.startDate).format(format) : ''} ~ ${
+                    item.endDate ? moment(item.endDate).format(format) : ''
                     }`}
                 </Paragraph>
                 <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>

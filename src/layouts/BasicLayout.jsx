@@ -139,9 +139,7 @@ const BasicLayout = props => {
       {...props}
       {...settings}
     >
-      <PageHeaderWrapper>
-        {children}
-      </PageHeaderWrapper>
+      {children}
     </ProLayout>
   );
 };

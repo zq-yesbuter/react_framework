@@ -41,7 +41,7 @@ export default [
             icon: 'appstore',
             routes: [
               {
-                name: '外呼报表',
+                name: '服务报表',
                 path: '/AI/report',
                 component: '../pages/Report',
                 icon: "pie-chart",
@@ -60,20 +60,20 @@ export default [
               //   icon: "align-left",
               // },
               {
-                name: '外呼任务',
+                name: '招聘任务',
                 path: '/AI/outging',
                 component: '../pages/Process/OutgoingTask',
                 icon: "align-left",
               },
               {
-                name: '外呼任务-均可删除列表', 
+                name: '招聘任务-均可删除列表', 
                 hideInMenu: true,
                 path: '/AI/outging/deleteAll',
                 component: '../pages/Process/OutgoingTask',
                 icon: "align-left",
               },
               {
-                name: '外呼任务-已删除列表', 
+                name: '招聘任务-已删除列表', 
                 hideInMenu: true,
                 path: '/AI/outging/delete',
                 component: '../pages/Process/OutgoingTask',

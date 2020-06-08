@@ -20,8 +20,8 @@ function Resume({ companies }: { companies: any }) {
                 <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Paragraph style={{ flex: 1 }}>{`职位：  ${item.position || ''}`}</Paragraph>
                   <Paragraph>
-                  {`起止时间：${moment(item.startDate).format(format)} ~ ${
-                    item.endDate ? moment(item.endDate).format(format) : '至今'
+                  {`起止时间：${item.startDate ? moment(item.startDate).format(format) : ''} ~ ${
+                    item.endDate ? moment(item.endDate).format(format) : ''
                   }`}
                 </Paragraph>
                 </Paragraph>
