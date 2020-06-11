@@ -3,12 +3,11 @@ import { connect } from 'dva';
 import { Card, message, Button, Modal } from 'antd';
 import { routerRedux } from 'dva/router';
 import CategoryAddFormModal from './AddFormModal';
-// import QueryForm from './QueryForm';
+import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { addBatch, batchDelete } from '@/services/nameList';
 import { Setting } from '@/utils/tscontant';
-import './index.less';
 
 interface Props {
   dispatch: Function;
@@ -170,7 +169,7 @@ function Index(props: Props):any {
               icon="plus"
               type="primary"
               onClick={() => {
-                // setValue(true);
+                setValue(true);
               }}
             >
               新建任务
@@ -193,8 +192,8 @@ function Index(props: Props):any {
         </Fragment>
       }
     >
-      {/* <QueryForm
-        onSubmit={(data:any) => {
+      <QueryForm
+        onSubmit={(data:any):void => {
           const { dateStart, dateEnd, ...rest } = data;
           const taskQueryValue = { dateStart:dateStart+' 00:00:00',dateEnd:dateEnd + ' 23:59:59',...rest}
           const payload = isDelete ? { dataStatus: 2, ...taskQueryValue } : taskQueryValue;
@@ -211,7 +210,7 @@ function Index(props: Props):any {
             payload,
           });
         }}
-      /> */}
+      />
       {renderTable(setting)}
       <CategoryAddFormModal
         value={value}

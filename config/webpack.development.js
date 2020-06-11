@@ -7,7 +7,6 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 // const mockUrlObj = require('./devServer.mock');
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-
 const merge = require('webpack-merge');
 
 const bodyParser = require('body-parser');
@@ -40,13 +39,10 @@ const devConf = {
       {
         test: /\.(js|jsx)$/,
         use: {
-          loader:'babel-loader',
-          options:{
-            presets:[
-              '@babel/env',
-              '@babel/react'
-            ]
-          }
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/env', '@babel/react'],
+          },
         },
         include: [path.resolve(__dirname, '../src')],
         exclude: [path.resolve(__dirname, '../node_modules')],

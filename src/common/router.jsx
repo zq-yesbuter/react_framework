@@ -79,10 +79,19 @@ export const getRouterData = app => {
     '/': {
       component: dynamicWrapper(app, ['user'], () => import('../layouts/BasicLayout')),
     },
+    // 外呼报表
+    '/report': {
+      component: dynamicWrapper(app, [], () => import('../routes/Report')),
+    },
     // 实时数据
     '/outgoing': {
       component: dynamicWrapper(app, ['nameList'], () => import('../routes/Process/OutgoingTask')),
     },
+    // 简历解析
+    '/resume': {
+      component: dynamicWrapper(app, [], () => import('../routes/Resume/Index')),
+    },
+    component: '../pages/Resume/Index',
     // 用于强制重新挂载页面组件
     '/reload': {
       component: () => null,
