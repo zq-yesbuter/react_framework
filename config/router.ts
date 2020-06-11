@@ -110,7 +110,7 @@ export default [
               {
                 name: '没有权限',
                 hideInMenu: true,
-                path: '/403',
+                path: '/AI/403',
                 component: '../pages/403.jsx',
                 icon: "solution",
               },
