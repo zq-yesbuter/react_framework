@@ -1,44 +1,29 @@
 import React from 'react';
-import { Form, Button, Select,DatePicker  } from 'antd';
-import { connect } from 'dva';
+import { Form, Button, DatePicker  } from 'antd';
 import moment from 'moment';
 
 const FormItem = Form.Item;
-const { Option } = Select;
-const { MonthPicker, RangePicker, WeekPicker } = DatePicker;
+const { MonthPicker } = DatePicker;
 
 interface Props {
   form: any;
-  formatResult: any;
   onSubmit: any;
-  namelist: any;
 }
 function QueryForm(props: Props) {
   const {
     form,
-    formatResult,
     onSubmit,
-    namelist: { resultList },
   } = props;
   const handleSubmit = (e: any) => {
     e.preventDefault();
     form.validateFields((err: any, values: any) => {
       if (!err) {
-        onSubmit(typeof formatResult === 'function' ? formatResult(values) : values);
+        onSubmit(values);
       }
     });
   };
-  // // 此处注意useImperativeHandle方法的的第一个参数是目标元素的ref引用
-  // useImperativeHandle(ref, () => ({
-  //   // reset 就是暴露给父组件的方法
-  //   reset: () => {
-  //     const { getFieldDecorator, resetFields } = form;
-
-  //   }
-  // }));
   const { getFieldDecorator, resetFields } = form;
   return (
-    // eslint-disable-next-line react/jsx-filename-extension
     <Form layout="inline" onSubmit={handleSubmit}>
       <FormItem label="时间">{getFieldDecorator('time',{
         initialValue:moment().set('month', 4) 
@@ -63,5 +48,4 @@ function QueryForm(props: Props) {
   );
 }
 
-const mapStateToProps = ({ namelist = {} }) => ({ namelist });
-export default connect(mapStateToProps)(Form.create({})(QueryForm));
+export default Form.create({})(QueryForm);

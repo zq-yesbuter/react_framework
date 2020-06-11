@@ -213,8 +213,8 @@ export default {
       return { ...state, configNameList: flatNameList };
     },
     getFlowList(state, { payload }) {
-      const { flowList } = payload;
-      const { flow = [] } = flowList;
+      const { flowList } = payload || {};
+      const { flow = [] } = flowList || {};
       // let { timeList, selectJobId } = state;
       // if (payload && payload.selectJobId) {
       //   selectJobId = payload.selectJobId;

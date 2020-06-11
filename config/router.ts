@@ -102,8 +102,16 @@ export default [
               },
               {
                 name: '简历解析',
+                hideInMenu: true,
                 path: '/AI/resume',
                 component: '../pages/Resume/Index',
+                icon: "solution",
+              },
+              {
+                name: '没有权限',
+                hideInMenu: true,
+                path: '/403',
+                component: '../pages/403.jsx',
                 icon: "solution",
               },
               {

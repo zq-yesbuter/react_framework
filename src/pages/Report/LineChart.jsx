@@ -20,42 +20,9 @@ const format = arr => {
     return {};
   }
 };
-// 处理series中的数据
-// series.forEach(item => {
-//   const mapItem = data[item.data];
-//   if (item.type === 'line' && mapItem) {
-//     item.data = mapItem.map(val => {
-//       return {
-//         name: item.key,
-//         value: val && (String(val).includes('.') ? val.toFixed(2) : val),
-//       };
-//     });
-//     item.yAxisIndex = 1;
-//   } else if (data && mapItem) {
-//     item.data = mapItem.map(val => {
-//       return {
-//         name: item.key,
-//         value: val && (String(val).includes('.') ? val.toFixed(2) : val),
-//       };
-//     });
-//     item.label = {
-//       show: true,
-//       position: 'top',
-//     };
-//     item.barMaxWidth = 20;
-//     // item.barGap=0;
-//   } else if (Object.prototype.toString.call(item.data) !== '[object Array]') {
-//     item.data = [];
-//   }
-// });
+
 export default class OnlineEcharts extends Component {
   getOption = () => {
-    // const {
-    //   data: initData,
-    //   options: { legend, series: initSeries, yAxis },
-    // } = this.props;
-    // const data = format(initData);
-    // let series = _.cloneDeep(initSeries);
     const { xAxisData, monthData } = this.props;
 
     const yAxis = [
@@ -69,43 +36,8 @@ export default class OnlineEcharts extends Component {
           show: true,
         },
       },
-      // {
-      //   type: 'value',
-      //   name: '增量(%)',
-      //   position: 'right',
-      //   splitLine: {
-      //     show: false,
-      //   },
-      //   axisTick: {
-      //     show: false,
-      //   },
-      //   axisLabel: {
-      //     show: true,
-      //     formatter: '{value} %', //右侧Y轴文字显示
-      //   },
-      // },
     ];
     const series = [
-      // {
-      //   name: '增量',
-      //   type: 'line',
-      //   yAxisIndex: 1, //使用的 y 轴的 index，在单个图表实例中存在多个 y轴的时候有用
-      //   smooth: true, //平滑曲线显示
-      //   showAllSymbol: true, //显示所有图形。
-      //   symbol: 'emptyCircle', //标记的图形为实心圆
-      //   symbolSize: 6, //标记的大小
-      //   itemStyle: {
-      //     //折线拐点标志的样式
-      //     color: '#2fc25b',
-      //   },
-      //   lineStyle: {
-      //     color: '#2fc25b',
-      //   },
-      //   areaStyle: {
-      //     color: 'rgba(5,140,255, 0.2)',
-      //   },
-      //   data: [4.2, 3.8, 4.8, 3.5, 2.9, 2.8, 3, 5],
-      // },
       {
         name: '外呼人数',
         type: 'bar',
@@ -117,10 +49,6 @@ export default class OnlineEcharts extends Component {
             label: {
               show: true, //开启显示
               position: 'top', //在上方显示
-              // textStyle: { //数值样式
-              //   color: 'black',
-              //   fontSize: 16
-              // }
             }
           }
         },
@@ -131,9 +59,6 @@ export default class OnlineEcharts extends Component {
       legend: {
         data: [ '外呼人数'],
         top: '15%',
-        // textStyle: {
-        //     color: "#ffffff"
-        // }
       },
       // hover上的数据
       tooltip: {
