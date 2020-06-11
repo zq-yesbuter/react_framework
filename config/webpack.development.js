@@ -35,19 +35,18 @@ const devConf = {
           {
             loader: 'ts-loader',
           },
-          {
-            loader: 'awesome-typescript-loader',
-          },
         ],
-        exclude: [path.resolve(__dirname, '../node_modules')],
       },
       {
         test: /\.(js|jsx)$/,
         use: {
-          loader: 'babel-loader?cacheDirectory',
-          options: {
-            cacheDirectory: true,
-          },
+          loader:'babel-loader',
+          options:{
+            presets:[
+              '@babel/env',
+              '@babel/react'
+            ]
+          }
         },
         include: [path.resolve(__dirname, '../src')],
         exclude: [path.resolve(__dirname, '../node_modules')],
@@ -184,6 +183,7 @@ const devConf = {
     // new BundleAnalyzerPlugin(),
     // new HardSourceWebpackPlugin(),
     new CheckerPlugin(),
+    // extraBabelPlugins: [['import', { libraryName: 'antd', libraryDirectory: 'es', style: true }]],
   ],
 };
 

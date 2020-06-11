@@ -19,7 +19,7 @@ class DateRangePicker extends PureComponent {
     });
   }
   render() {
-    const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
+    const { getFieldDecorator, getFieldValue} = this.props.form;
     const { names: [name1, name2], format, options } = this.props;
     getFieldDecorator(name1, options[0] || {});
     getFieldDecorator(name2, options[1] || {});

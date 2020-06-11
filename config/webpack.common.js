@@ -10,6 +10,7 @@ const commonConf = {
       models: path.resolve(__dirname, '../src/models/'),
       layouts: path.resolve(__dirname, '../src/layouts/'),
       '@babel/runtime': '@babel/runtime-corejs2',
+      '@': path.resolve(__dirname, '../src'),
     },
     extensions: ['.ts', '.tsx', '.js', '.jsx', '.json', '.css', '.less'],
   },

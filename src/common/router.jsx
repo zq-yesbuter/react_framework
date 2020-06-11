@@ -81,7 +81,7 @@ export const getRouterData = app => {
     },
     // 实时数据
     '/outgoing': {
-      component: dynamicWrapper(app, ['user'], () => import('../routes/Outgoing')),
+      component: dynamicWrapper(app, ['nameList'], () => import('../routes/Process/OutgoingTask')),
     },
     // 用于强制重新挂载页面组件
     '/reload': {

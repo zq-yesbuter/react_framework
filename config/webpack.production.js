@@ -34,7 +34,14 @@ const prodConf = {
   },
   module: {
     rules: [
-      { test: /\.(ts|tsx)$/, loader: 'awesome-typescript-loader' },
+      {
+        test: /\.(ts|tsx)?$/,
+        use: [
+          {
+            loader: 'ts-loader',
+          },
+        ],
+      },
       {
         test: /\.(js|jsx)$/,
         include: [path.resolve(__dirname, '../src')],
