@@ -1,7 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 import { Avatar, Spin } from 'antd';
 import { connect } from 'dva';
-import moment from 'moment';
 import _ from 'lodash';
 import styles from './index.less';
 
@@ -31,7 +30,6 @@ function RecordList(props:Props) {
     const newMessage = JSON.parse(message);
     // eslint-disable-next-line compat/compat
     const [[type, value]] = Object.entries(newMessage);
-
     switch (type) {
       // case '3':
       //   return (
@@ -84,6 +82,7 @@ function RecordList(props:Props) {
           <li
             key={`${item.bizId}`}
             className={reg.test(item.from) ? styles.chatItemMine : styles.chatItemJoysec}
+            id={String(item.timestamp)}
           >
             {reg.test(item.from) ? (
               <div>
@@ -103,14 +102,14 @@ function RecordList(props:Props) {
                   <div className={styles.chatName}>
                     {/* <span className={styles.chatTime}>{item.snickName}</span> */}
                     {/* <span > */}
-                    {moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss')}
+                    {item.timestamp}
                     {/* </span> */}
                   </div>
                   {typeComponent(item.message)}
                 </div>
               </div>
             ) : (
-              <div style={{ display: 'flex' }}>
+              <div style={{ display: 'flex' }}> 
                 {item.sheadUrl ? (
                   <Avatar size="large" shape="square" src={item.sheadUrl} />
                 ) : (
@@ -122,7 +121,7 @@ function RecordList(props:Props) {
                   <div style={{ marginLeft: 15 }} className={styles.chatName}>
                     {/* <span className={styles.chatTime}>{item.snickName}</span> */}
                     {/* <span > */}
-                    {moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss')}
+                    {item.timestamp}
                     {/* </span> */}
                   </div>
                   {typeComponent(item.message)}
@@ -141,7 +140,7 @@ function RecordList(props:Props) {
         </div>
       );
     } 
-
+    
     return (
       <div className={styles.noContent}>
         <span>暂时没有沟通记录</span>
@@ -166,5 +165,8 @@ export default connect(
     loading: {
       effects: { 'namelist/getMessage': loading },
     },
+  }:{
+    namelist: any;
+    loading: any;
   }) => ({ namelist, loading })
 )(RecordList);

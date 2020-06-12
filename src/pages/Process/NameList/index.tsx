@@ -286,7 +286,7 @@ function Index(props: Props) {
     const fileName = '导出邀约信息.xlsx';
     // eslint-disable-next-line no-unused-vars
     let size = 0;
-    fetch(`/data/${intent}/list/all`, {
+    fetch(`/data/scene/${intent}/list/all`, {
       method: 'POST',
       body: JSON.stringify({
         invitationIds,
@@ -376,28 +376,6 @@ function Index(props: Props) {
       dispatch({
         type: 'namelist/save',
         payload: { nameRequest: { ...nameRequest, pageNum, pageSize } },
-      });
-      setSelectedRowKeys([]);
-    },
-    prev: () => {
-      dispatch({
-        type: 'namelist/fetchBatchDetail',
-        payload: { pageNum: nameCur - 1, id, intent, createdTime },
-      });
-      dispatch({
-        type: 'namelist/save',
-        payload: { nameRequest: { ...nameRequest, pageNum: nameCur - 1 } },
-      });
-      setSelectedRowKeys([]);
-    },
-    next: () => {
-      dispatch({
-        type: 'namelist/fetchBatchDetail',
-        payload: { pageNum: nameCur + 1, id, intent, createdTime},
-      });
-      dispatch({
-        type: 'namelist/save',
-        payload: { nameRequestt: { ...nameRequest, pageNum: nameCur + 1 } },
       });
       setSelectedRowKeys([]);
     },

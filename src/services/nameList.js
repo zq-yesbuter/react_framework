@@ -53,7 +53,7 @@ export async function getBatch(body) {
 // 上传
 export async function upload({ formData, params }) {
   const { intent, scene } = params;
-  return request(`/${intent}/excel?${stringify({ intent, scene })}`, {
+  return request(`/scene/${intent}/excel?${stringify({ intent, scene })}`, {
     method: 'POST',
     body: formData,
   });
@@ -71,7 +71,7 @@ export async function getBatchDetail(body) {
 // 沟通信息查询
 export async function getFlowlist(body) {
   const { intent } = body;
-  return request(`/${intent}/all`, {
+  return request(`/scene/${intent}/all`, {
     method: 'POST',
     body,
   });
@@ -80,7 +80,7 @@ export async function getFlowlist(body) {
 // 单个沟通信息查询
 export async function getSigleFlowlist(body) {
   const { intent, id, dataStatus } = body;
-  return request(`/${intent}/${id}?${stringify({dataStatus})}`, {
+  return request(`/scene/${intent}/${id}?${stringify({dataStatus})}`, {
     method: 'get',
   });
 }
@@ -88,7 +88,7 @@ export async function getSigleFlowlist(body) {
 // 单个修改
 export async function editSignel(body) {
   const { updateId, intent } = body;
-  return request(`/${intent}/${updateId}`, {
+  return request(`/scene/${intent}/${updateId}`, {
     method: 'POST',
     body,
   });
@@ -97,7 +97,7 @@ export async function editSignel(body) {
 // 单个申请
 export async function addSignel(body) {
   const { intent } = body;
-  return request(`/${intent}`, {
+  return request(`/scene/${intent}`, {
     method: 'POST',
     body,
   });
@@ -106,7 +106,7 @@ export async function addSignel(body) {
 // 单个取消
 export async function cancelSignel(body) {
   const { intent, updateId } = body;
-  return request(`/${intent}/cancel/${updateId}`, {
+  return request(`/scene/${intent}/cancel/${updateId}`, {
     method: 'POST',
     body,
   });
@@ -115,7 +115,7 @@ export async function cancelSignel(body) {
 // 批量沟通申请
 export async function batchAdd(body) {
   const { intent } = body;
-  return request(`/${intent}/batch`, {
+  return request(`/scene/${intent}/batch`, {
     method: 'POST',
     body,
   });
@@ -133,7 +133,7 @@ export async function batchDelete(body) {
 // 名单批量删除
 export async function nameBatchDelete(body) {
   const { intent } = body;
-  return request(`/${intent}/batch`, {
+  return request(`/scene/${intent}/batch`, {
     method: 'DELETE',
     body,
   });

@@ -74,7 +74,8 @@ export default {
 
     // 获取微信聊天记录
     *getMessage({ payload }, { call, put }) {
-      const messageList = yield call(fetchMessage, payload);
+      const messages = yield call(fetchMessage, payload) || [];
+      const messageList = messages.map(item => ({...item,timestamp: moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss')}))
       yield put({
         type: 'save',
         payload: {

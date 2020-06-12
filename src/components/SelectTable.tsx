@@ -7,10 +7,10 @@ interface Props {
   total: number | string;
   loading: boolean;
   onChange: Function;
-  pageSize: number = 50;
+  pageSize: number;
   rowSelection: any;
   current: number | string;
-  defaultCurrent: number | string = 1;
+  defaultCurrent: number | string;
   selectedRowKeys: any;
   rowKey: any;
   formatOperation: Function;

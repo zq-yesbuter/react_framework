@@ -288,7 +288,7 @@ function Index(props: Props) {
     const fileName = '导出邀约信息.xlsx';
     // eslint-disable-next-line no-unused-vars
     let size = 0;
-    fetch(`/data/${intent}/list/all`, {
+    fetch(`/data/scene/${intent}/list/all`, {
       method: 'POST',
       body: JSON.stringify({
         invitationIds,
