@@ -23,6 +23,6 @@ ReactDOM.render(
   <div>
     <TestSecuredString />
   </div>,
-  mountNode,
+  mountNode
 );
 ```

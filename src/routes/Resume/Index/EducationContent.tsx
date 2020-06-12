@@ -9,17 +9,19 @@ const format = 'YYYY-MM-DD';
 
 function Education({ educations }: { educations: any }): any {
   return (
-    <li className='chanceItem'>
+    <li className="chanceItem">
       {educations && educations.length ? (
         <Fragment>
           {educations.map((item: any, index: number) => (
             <Fragment key={`main-education-${index}`}>
-              <div className='carousel' key={`education-${index}`}>
-                <Paragraph style={{ marginBottom: 5,fontWeight:600,fontSize:16,marginTop:40  }}>{`学校名称：  ${item.school}`}</Paragraph>
+              <div className="carousel" key={`education-${index}`}>
+                <Paragraph
+                  style={{ marginBottom: 5, fontWeight: 600, fontSize: 16, marginTop: 40 }}
+                >{`学校名称：  ${item.school}`}</Paragraph>
                 <Paragraph style={{ marginBottom: 5 }}>
                   {`起止时间： ${item.startDate ? moment(item.startDate).format(format) : ''} ~ ${
                     item.endDate ? moment(item.endDate).format(format) : ''
-                    }`}
+                  }`}
                 </Paragraph>
                 <Paragraph style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <Paragraph style={{ flex: 1 }}>{`学历：  ${item.diploma || ''}`}</Paragraph>
@@ -32,8 +34,8 @@ function Education({ educations }: { educations: any }): any {
           ))}
         </Fragment>
       ) : (
-          <div className='noContent'>暂无</div>
-        )}
+        <div className="noContent">暂无</div>
+      )}
     </li>
   );
 }

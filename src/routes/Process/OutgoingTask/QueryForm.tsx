@@ -40,7 +40,7 @@ class QueryForm extends React.Component<IFormComponentProps> {
         <FormItem label="任务状态">
           {getFieldDecorator('status')(
             <Select allowClear placeholder="请选择任务状态" style={{ width: 200 }}>
-              {statusOptions.map((item) => (
+              {statusOptions.map(item => (
                 <Option value={item.value} key={item.value}>
                   {item.name}
                 </Option>
@@ -68,7 +68,7 @@ class QueryForm extends React.Component<IFormComponentProps> {
           </Button>
           <Button
             style={{ margin: '0 10px' }}
-            onClick={(e) => {
+            onClick={e => {
               resetFields();
               this.handleSubmit();
             }}
@@ -81,11 +81,7 @@ class QueryForm extends React.Component<IFormComponentProps> {
   }
 }
 
-export default connect(({
-  namelist,
-}: {
-  namelist: any;
-}) => {
+export default connect(({ namelist }: { namelist: any }) => {
   return {
     namelist,
   };

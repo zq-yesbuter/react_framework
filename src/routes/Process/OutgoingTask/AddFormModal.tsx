@@ -23,7 +23,7 @@ function AddFormModal(props: Props) {
   const { form, onCancel, onSubmit, value, namelist, submitLoading } = props;
   const { ivrIntents } = namelist;
   useEffect(() => {
-    return () => { };
+    return () => {};
   }, []);
 
   const handleSubmit = (e: { preventDefault: () => void }) => {
@@ -49,11 +49,11 @@ function AddFormModal(props: Props) {
     setFieldsValue({ scene: null });
   }
 
-  function unique(array:any) {
+  function unique(array: any) {
     var obj = {};
-    return array.filter(function(item:any){
-        return obj.hasOwnProperty(item.intent) ? false : (obj[item.intent] = true)
-    })
+    return array.filter(function(item: any) {
+      return obj.hasOwnProperty(item.intent) ? false : (obj[item.intent] = true);
+    });
   }
 
   const intent = getFieldValue('intent');
@@ -116,7 +116,7 @@ function AddFormModal(props: Props) {
                 ivrIntents.length &&
                 ivrIntents
                   .filter((item: { intent: any }) => item.intent === intent)
-                  .map((item:Item) => {
+                  .map((item: Item) => {
                     const { scene, sceneDesc } = item;
                     return (
                       <Option value={scene} key={scene}>

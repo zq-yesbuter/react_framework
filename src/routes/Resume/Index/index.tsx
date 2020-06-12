@@ -3,7 +3,6 @@ import { Card, message, Button, Upload, Icon } from 'antd';
 import Detail from './Detail';
 import { upload } from '@/services/resume';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import styles from './index';
 
 const { Dragger } = Upload;
 
@@ -15,11 +14,10 @@ function ResumeIndex(props: Props) {
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState('');
   const [fileList, setFileList] = useState([]);
-
   const uploadProps: any = {
     name: 'file',
     multiple: false,
-    accept: 
+    accept:
       '.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,.pdf',
     // action:'/resume/attachments/analyse',
     action: (file: any) => {
@@ -45,7 +43,7 @@ function ResumeIndex(props: Props) {
       return;
     },
     fileList,
-    customRequest:() => {}, // 阻止上传的默认行为
+    customRequest: () => {}, // 阻止上传的默认行为
   };
   return (
     <PageHeaderWrapper>
@@ -77,8 +75,8 @@ function ResumeIndex(props: Props) {
       >
         <div style={{ height: '100%' }}>
           {!detail ? (
-            <div className={styles['upload-div']}>
-              <h1 className='upload-div-header'>简历智能解析</h1>
+            <div className='upload-div'>
+              <h1 className="upload-div-header">简历智能解析</h1>
               <Dragger {...uploadProps}>
                 {loading ? (
                   <span style={{ color: '#32325d', fontSize: 18 }}>简历上传解析中······</span>

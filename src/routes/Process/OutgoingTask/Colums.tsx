@@ -63,11 +63,13 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
       key: 'id',
       dataIndex: 'id',
       width: 150,
-      render: (id:number|string, value:Value) => {
+      render: (id: number | string, value: Value) => {
         const { intent, status, createdTime } = value || {};
         const { pathname } = window.location;
         const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
-        const search = isDelete ? { dataStatus: 2, intent, id, createdTime } : { intent, id, createdTime };
+        const search = isDelete
+          ? { dataStatus: 2, intent, id, createdTime }
+          : { intent, id, createdTime };
         return (
           <Fragment>
             {status > -1 ? (

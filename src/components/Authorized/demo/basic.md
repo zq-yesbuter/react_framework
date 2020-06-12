@@ -20,6 +20,6 @@ ReactDOM.render(
       <Alert message="user Passed!" type="success" showIcon />
     </Authorized>
   </div>,
-  mountNode,
+  mountNode
 );
 ```

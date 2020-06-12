@@ -30,7 +30,7 @@ function BasicContent(props: Props) {
 
   return (
     <li className="chanceItem">
-      <h4 className="resumeTitle"></h4>
+      <h4 className="resumeTitle" />
       <Row type="flex">
         <Col span={2} />
         <Col span={22}>

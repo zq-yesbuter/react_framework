@@ -20,17 +20,17 @@ interface ErrorProps {
   errorMessages?: string[];
 }
 
-function Index(props: Props):any {
+function Index(props: Props): any {
   const { dispatch, namelist, loading } = props;
   const { batchList, ivrIntents, batchCur, batchPageSize, batchRequest, batchTotal } = namelist;
   const [value, setValue] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [submitLoading, setSubmitLoading] = useState(false);
-  const { pathname }:{pathname:String} = window.location;
+  const { pathname }: { pathname: String } = window.location;
   const isAllDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'deleteAll';
   const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
   const query = {};
-  function handleDelete(ids:any) {
+  function handleDelete(ids: any) {
     Modal.confirm({
       title: '删除',
       content: (
@@ -52,7 +52,7 @@ function Index(props: Props):any {
             selectObj[item.intent] = [item.id];
           }
         });
-        const questAll:any[] = [];
+        const questAll: any[] = [];
         // eslint-disable-next-line no-restricted-syntax
         for (const item in selectObj) {
           questAll.push(batchDelete({ intent: item, ids: selectObj[item] }));
@@ -98,8 +98,8 @@ function Index(props: Props):any {
       cancelText: '取消',
     });
   }
-  
-  const setting:Setting = {
+
+  const setting: Setting = {
     data: batchList,
     total: batchTotal,
     current: batchCur,
@@ -193,9 +193,13 @@ function Index(props: Props):any {
       }
     >
       <QueryForm
-        onSubmit={(data:any):void => {
+        onSubmit={(data: any): void => {
           const { dateStart, dateEnd, ...rest } = data;
-          const taskQueryValue = { dateStart:dateStart+' 00:00:00',dateEnd:dateEnd + ' 23:59:59',...rest}
+          const taskQueryValue = {
+            dateStart: dateStart + ' 00:00:00',
+            dateEnd: dateEnd + ' 23:59:59',
+            ...rest,
+          };
           const payload = isDelete ? { dataStatus: 2, ...taskQueryValue } : taskQueryValue;
           dispatch({
             type: 'namelist/save',
@@ -241,9 +245,7 @@ function Index(props: Props):any {
 
 const mapStateToProps = ({
   namelist,
-  loading: {
-    effects: { 'namelist/getBatch': loading },
-  },
+  loading: { effects: { 'namelist/getBatch': loading } },
 }: {
   namelist: any;
   loading: any;
