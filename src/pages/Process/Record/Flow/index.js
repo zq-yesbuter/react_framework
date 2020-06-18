@@ -74,7 +74,7 @@ function RecordBottom({ namelist: { flowList, listValue }, loading }) {
                   status,
                   roundStartTime,
                   remark,
-                  interviewConfirmTime,
+                  confirmTime,
                   roundEndTime,
                   channel,
                   messages,
@@ -97,9 +97,9 @@ function RecordBottom({ namelist: { flowList, listValue }, loading }) {
                             )
                           : null}
                         {roundEndTime ? <p>{`外呼结束时间： ${roundEndTime}`}</p> : null}
-                        {interviewConfirmTime ? (
+                        {confirmTime ? (
                           <p style={{ color: 'red', fontWeight: 400 }}>
-                            {`用户期望面试时间： ${interviewConfirmTime}`}
+                            {`用户期望面试时间： ${confirmTime}`}
                           </p>
                         ) : null}
                         <p>{formatRemark(channel, remark)}</p>
