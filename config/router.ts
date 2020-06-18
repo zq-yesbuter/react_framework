@@ -108,6 +108,13 @@ export default [
                 icon: "solution",
               },
               {
+                name: '权限设置',
+                hideInMenu: true,
+                path: '/AI/authority',
+                component: '../pages/Authority/Index',
+                icon: "solution",
+              },
+              {
                 name: '没有权限',
                 hideInMenu: true,
                 path: '/AI/403',
