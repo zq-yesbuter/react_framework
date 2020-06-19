@@ -74,7 +74,8 @@ export default {
 
     // 获取微信聊天记录
     *getMessage({ payload }, { call, put }) {
-      const messageList = yield call(fetchMessage, payload);
+      const messages = yield call(fetchMessage, payload) || [];
+      const messageList = messages.map(item => ({...item,timestamp: moment(item.timestamp).format('YYYY-MM-DD HH:mm:ss')}))
       yield put({
         type: 'save',
         payload: {
@@ -213,8 +214,8 @@ export default {
       return { ...state, configNameList: flatNameList };
     },
     getFlowList(state, { payload }) {
-      const { flowList } = payload;
-      const { flow = [] } = flowList;
+      const { flowList } = payload || {};
+      const { flow = [] } = flowList || {};
       // let { timeList, selectJobId } = state;
       // if (payload && payload.selectJobId) {
       //   selectJobId = payload.selectJobId;
@@ -254,13 +255,13 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname, search }) => {
-        const match = /^\/AI\/outging\/namelist/.exec(pathname);
-        const matchRecord = /^\/AI\/outging\/record/.exec(pathname);
-        const matchConfig = /^\/AI\/outging\/config/.exec(pathname);
-        const mainMatch = /^\/AI\/outging$/.exec(pathname);
-        const deleteMatch = /^\/AI\/outging\/delete/.exec(pathname);
-        const deleteAll = /^\/AI\/outging\/deleteAll/.exec(pathname);
-
+        const match = /^\/AI\/outgoing\/namelist/.exec(pathname);
+        const matchRecord = /^\/AI\/outgoing\/record/.exec(pathname);
+        const matchConfig = /^\/AI\/outgoing\/config/.exec(pathname);
+        const mainMatch = /^\/AI\/outgoing\/list/.exec(pathname);
+        const deleteMatch = /^\/AI\/outgoing\/delete/.exec(pathname);
+        const deleteAll = /^\/AI\/outgoing\/deleteAll/.exec(pathname);
+        
         if (!match) {
           // 重置消息列表避免bug
           dispatch({

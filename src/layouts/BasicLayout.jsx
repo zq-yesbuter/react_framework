@@ -18,9 +18,6 @@ import logo from '../assets/logo.svg';
 const { Content, Header } = Layout;
 const { AuthorizedRoute, check } = Authorized;
 
-// full page list
-const fullPageList = ['/home', '/interface/api/fesco'];
-
 /**
  * 根据菜单取得重定向地址.
  */
@@ -129,7 +126,6 @@ class BasicLayout extends React.PureComponent {
     return title;
   }
   getBashRedirect = () => {
-    // According to the url parameter to redirect
     // 这里是重定向的,重定向到 url 的 redirect 参数所示地址
     const urlParams = new URL(window.location.href);
 
@@ -148,6 +144,7 @@ class BasicLayout extends React.PureComponent {
     }
     return redirect;
   };
+
   handleMenuCollapse = collapsed => {
     this.props.dispatch({
       type: 'global/changeLayoutCollapsed',
@@ -157,9 +154,6 @@ class BasicLayout extends React.PureComponent {
   handleMenuClick = ({ key }) => {
     const { dispatch, location: { pathname } } = this.props;
     if (key === 'logout') {
-      // window.location.href = `http://jmis.jd.com/remote/loginOut.htm?callback=${encodeURIComponent(
-      //   `${location.origin}/`
-      // )}&AC=OMS`;
       const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}/AI`)}`;
       window.location.href = returnUrl;
     } else {
@@ -170,27 +164,7 @@ class BasicLayout extends React.PureComponent {
       );
     }
   };
-  handleRobotClick = payload => {
-    const { dispatch, location: { pathname }, currentUser } = this.props;
-    dispatch({
-      type: 'user/selectRobot',
-      payload,
-    }).then(() => {
-      dispatch({
-        type: 'user/fetchMenuList',
-        payload: {
-          roleId: currentUser.roleId,
-          roleType: currentUser.roleType,
-          robotCode: payload.code,
-        },
-      });
-    });
-  };
-  handleShowFullPage = () => {
-    const { location: { pathname } } = this.props;
 
-    return ~fullPageList.indexOf(pathname);
-  };
   // 是否显示用户头像菜单栏的流量控制
   handleShowSentinel = list => {
     return list.indexOf('/userMenu/sentinel') > -1;
@@ -205,8 +179,6 @@ class BasicLayout extends React.PureComponent {
       menuLoading,
       initLoading,
       menuList,
-      robotList,
-      robotLoading,
     } = this.props;
     if (initLoading) {
       return (
@@ -225,36 +197,11 @@ class BasicLayout extends React.PureComponent {
     }
 
     const bashRedirect = this.getBashRedirect();
-    const showFull = this.handleShowFullPage();
-    const layout = showFull ? (
-      <Layout>
-        <Content>
-          <Switch>
-            {redirectData.map(item => (
-              <Redirect key={item.from} exact from={item.from} to={item.to} />
-            ))}
-            {getRoutes(match.path, routerData).map(item => (
-              <AuthorizedRoute
-                key={item.key}
-                path={item.path}
-                component={item.component}
-                exact={item.exact}
-                authority={item.authority}
-                redirectPath="/exception/403"
-              />
-            ))}
-            <Redirect exact from="/" to={bashRedirect} />
-            <Route render={NotFound} />
-          </Switch>
-        </Content>
-      </Layout>
-    ) : (
+    const layout =
       <Layout>
         <SiderMenu
           logo={logo}
           // 不带Authorized参数的情况下如果没有权限,会强制跳到403界面
-          // If you do not have the Authorized parameter
-          // you will be forced to jump to the 403 interface without permission
           Authorized={Authorized}
           menuData={getMenuData()}
           collapsed={collapsed}
@@ -273,10 +220,9 @@ class BasicLayout extends React.PureComponent {
               isMobile={this.state.isMobile}
               onCollapse={this.handleMenuCollapse}
               onMenuClick={this.handleMenuClick}
-              onRobotClick={this.handleRobotClick}
             />
           </Header>
-          <Content style={{ margin: '24px 24px 0' }}>
+          <Content>
             <Switch>
               {redirectData.map(item => (
                 <Redirect key={item.from} exact from={item.from} to={item.to} />
@@ -297,7 +243,6 @@ class BasicLayout extends React.PureComponent {
           </Content>
         </Layout>
       </Layout>
-    );
 
     return (
       <DocumentTitle title={this.getPageTitle()}>
@@ -314,7 +259,4 @@ export default connect(({ user, global, loading }) => ({
   collapsed: global.collapsed,
   // menuLoading: loading.effects['user/fetchMenuList'],
   menuList: user.menuList,
-  // robotList: user.robotList,
-  // robotLoading: loading.effects['user/fetchRobotList'],
-  // initLoading: loading.effects['user/initSubsQueue'],
 }))(BasicLayout);

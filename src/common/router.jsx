@@ -14,7 +14,6 @@ const modelNotExisted = (app, model) =>
 
 // wrapper of dynamic
 const dynamicWrapper = (app, models, component) => {
-  // console.log(component().default)
   // () => require('module')
   // transformed by babel-plugin-dynamic-import-node-sync
   if (component.toString().indexOf('.then(') < 0) {
@@ -71,6 +70,7 @@ function getFlatMenuData(menus) {
       keys[item.path] = { ...item };
     }
   });
+  console.log('keys===>',keys);
   return keys;
 }
 
@@ -80,18 +80,37 @@ export const getRouterData = app => {
       component: dynamicWrapper(app, ['user'], () => import('../layouts/BasicLayout')),
     },
     // 外呼报表
-    '/report': {
+    '/AI/report': {
       component: dynamicWrapper(app, [], () => import('../routes/Report')),
     },
     // 实时数据
-    '/outgoing': {
-      component: dynamicWrapper(app, ['nameList'], () => import('../routes/Process/OutgoingTask')),
+    '/AI/outgoing/list': {
+      component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/OutgoingTask')),
+    },
+     // 招聘任务-均可删除列表
+     '/AI/outgoing/deleteAll': {
+      component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/OutgoingTask')),
+    },
+    // 招聘任务-已删除列表
+    '/AI/outgoing/delete': {
+      component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/OutgoingTask')),
+    },
+    // 外呼配置
+    '/AI/outgoing/config': {
+      component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/Config')),
+    },
+    // 外呼名单
+    '/AI/outgoing/namelist': {
+      component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/NameList')),
     },
     // 简历解析
-    '/resume': {
+    '/AI/resume': {
       component: dynamicWrapper(app, [], () => import('../routes/Resume/Index')),
     },
-    component: '../pages/Resume/Index',
+    '/AI/authority': {
+      component: dynamicWrapper(app, ['auth'], () => import('../routes/Authority/Index')),
+    },
+    // component: '../pages/403.jsx',
     // 用于强制重新挂载页面组件
     '/reload': {
       component: () => null,

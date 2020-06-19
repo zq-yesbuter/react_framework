@@ -15,7 +15,7 @@ const app = dva({
     message.error(e.message);
   },
   history: createHistory({
-    basename: '/AI',
+    basename: '/',
   }),
 });
 

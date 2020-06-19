@@ -33,12 +33,10 @@ export default ({ className, linkElement = 'a', type, title, desc, img, actions,
                 type="primary"
                 style={{ marginLeft: 10 }}
                 onClick={() => {
-                  // window.location.href = `http://jmis.jd.com/remote/loginOut.htm?callback=${encodeURIComponent(
-                  //   `${location.origin}/`
-                  // )}&AC=OMS`;
-                  window.location.href = `https://ssa.jd.com/sso/logout?ReturnUrl=${encodeURIComponent(
-                    location.origin
+                  const logoutUrl = `/authenticate/erp/logout?callback=${encodeURIComponent(
+                    `${location.origin}/AI`
                   )}`;
+                  window.location.href = logoutUrl;
                 }}
               >
                 返回登录页

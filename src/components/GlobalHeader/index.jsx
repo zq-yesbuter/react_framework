@@ -47,7 +47,8 @@ export default class GlobalHeader extends PureComponent {
     const menu = (
       <Menu className="menu" selectedKeys={[]} onClick={onMenuClick}>
         <Menu.Item key="logout">
-          <Icon type="logout" />退出登录
+          <Icon type="logout" />
+          退出登录
         </Menu.Item>
       </Menu>
     );
@@ -69,9 +70,8 @@ export default class GlobalHeader extends PureComponent {
           {currentUser.name ? (
             <Dropdown overlay={menu}>
               <span className="action account">
-                {/*<Avatar icon="user" style={{color:'#1890FF'}}/>*/}
-                <Icon type="user" style={{ color: '#1890FF', fontSize: 24 }} />
-                <span className="name">{currentUser.name}</span>
+                <Icon type="user" style={{ color: '#1890FF', fontSize: 20, marginRight: 5 }} />
+                <span className="name">{currentUser.name || '当前用户'}</span>
               </span>
             </Dropdown>
           ) : (

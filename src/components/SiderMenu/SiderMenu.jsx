@@ -211,6 +211,7 @@ export default class SiderMenu extends PureComponent {
         onCollapse={onCollapse}
         width={256}
         className="sider sider-menu"
+        theme="dark"
       >
         <div className="logo" key="logo">
           <Link to="/">
@@ -225,7 +226,7 @@ export default class SiderMenu extends PureComponent {
           {...menuProps}
           onOpenChange={this.handleOpenChange}
           selectedKeys={selectedKeys}
-          style={{ padding: '16px 0', width: '100%' }}
+          style={{ padding: '16px 0', width: '100%',background: '#000c17' }}
         >
           {this.getNavMenuItems(this.menus)}
         </Menu>

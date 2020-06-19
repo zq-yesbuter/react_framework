@@ -3,7 +3,7 @@ import { Card, Row, Col } from 'antd';
 import moment from 'moment';
 import Pie from '@/components/Pie';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { routerRedux } from 'dva/router';
+import { routerRedux, Link } from 'dva/router';
 import { lineData, data1Obj, data2Obj, data3Obj, data4Obj } from './contant';
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
@@ -77,6 +77,16 @@ function Index(props: Props) {
   }
   return (
     <PageHeaderWrapper
+      title='服务报表'
+      breadcrumb={{
+      routes: [
+        { path: '/AI/outging', breadcrumbName: '招聘外呼' },
+        { path: '/AI/record', breadcrumbName: '服务报表' },
+      ],
+      itemRender: (route, params, routes, paths) => {
+        return <Link to={route.path}>{route.breadcrumbName}</Link>;
+      },
+    }}
       tabList={tabList}
       tabActiveKey={window.location.pathname}
       onTabChange={active => {
