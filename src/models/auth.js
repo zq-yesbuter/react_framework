@@ -20,6 +20,7 @@ export default {
     departList: [],
     baseDepartList: [],
     userList: [],
+    baseUserList: [],
     treeDepartList: [],
   },
   effects: {
@@ -43,6 +44,7 @@ export default {
           type: 'save',
           payload: {
             userList,
+            baseUserList: userList,
           },
         });
       } catch (e) {
