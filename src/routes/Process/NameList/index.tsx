@@ -92,7 +92,7 @@ interface ErrorMsg extends Error {
 
 function Index(props: Props) {
   const { dispatch, namelist, loading } = props;
-  const { nameList, nameCur, namePageSize, nameRequest, batchDetail, nameTotal } = namelist;
+  const { nameList, nameCur, namePageSize, nameRequest, batchDetail = {}, nameTotal } = namelist;
   const { status, name, scene } = batchDetail;
   const { search } = window.location;
   const { id, intent, dataStatus, createdTime } = queryString.parse(search);
@@ -443,8 +443,8 @@ function Index(props: Props) {
       title='外呼名单'
       breadcrumb={{
         routes: [
-          { path: '/AI/outgoing', breadcrumbName: '招聘外呼' },
-          { path: '/AI/outgoing', breadcrumbName: '外呼名单' },
+          { path: '/AI/outgoing/list', breadcrumbName: '招聘外呼' },
+          { path: '/AI/outgoing/namelist', breadcrumbName: '外呼名单' },
         ],
         itemRender: (route, params, routes, paths) => {
           return <Link to={route.path}>{route.breadcrumbName}</Link>;

@@ -2,7 +2,7 @@ import React, { useRef, useEffect, ReactNode } from 'react';
 import { Avatar, Spin } from 'antd';
 import { connect } from 'dva';
 import _ from 'lodash';
-import styles from './index.less';
+import './index.less';
 
 interface Props {
   namelist:any;
@@ -49,7 +49,7 @@ function RecordList(props:Props) {
       //     </video>
       //   );
       case 'text':
-        return <div className={styles.chatText}>{value as ReactNode}</div>;
+        return <div className="chatText">{value as ReactNode}</div>;
       // case '34':
       //   return (
       //     <Fragment>
@@ -71,7 +71,7 @@ function RecordList(props:Props) {
       //     // </audio>
       //   );
       default:
-        return <div className={styles.chatText}>{value as ReactNode}</div>;
+        return <div className="chatText">{value as ReactNode}</div>;
     }
   }
 
@@ -82,7 +82,7 @@ function RecordList(props:Props) {
         return (
           <li
             key={`${item.bizId}`}
-            className={reg.test(item.from) ? styles.chatItemMine : styles.chatItemJoysec}
+            className={reg.test(item.from) ? "chatItemMine" : "chatItemJoysec"}
             id={String(item.timestamp)}
           >
             {reg.test(item.from) ? (
@@ -91,16 +91,16 @@ function RecordList(props:Props) {
                   <Avatar
                     size="large"
                     shape="square"
-                    className={styles.avatar}
+                    className="avatar"
                     src={item.sheadUrl}
                   />
                 ) : (
-                  <Avatar size="large" className={styles.avatar} shape="square">
+                  <Avatar size="large" className="avatar" shape="square">
                     {item.from}
                   </Avatar>
                 )}
                 <div>
-                  <div className={styles.chatName}>
+                  <div className="chatName">
                     {/* <span className={styles.chatTime}>{item.snickName}</span> */}
                     {/* <span > */}
                     {item.timestamp}
@@ -119,7 +119,7 @@ function RecordList(props:Props) {
                   </Avatar>
                 )}
                 <div>
-                  <div style={{ marginLeft: 15 }} className={styles.chatName}>
+                  <div style={{ marginLeft: 15 }} className="chatName">
                     {/* <span className={styles.chatTime}>{item.snickName}</span> */}
                     {/* <span > */}
                     {item.timestamp}
@@ -136,24 +136,24 @@ function RecordList(props:Props) {
     }
     if (loading) {
       return (
-        <div className={styles.bottomLoading}>
+        <div className="bottomLoading">
           <Spin />
         </div>
       );
     } 
     
     return (
-      <div className={styles.noContent}>
+      <div className="noContent">
         <span>暂时没有沟通记录</span>
       </div>
     );
   }
 
   return (
-    <div className={styles.chatContent}>
-      <div className={styles.chatPanel}>
-        <div className={styles.chatPanelContainer} ref={chatRef} id='chatRecordRef'>
-          <ul className={styles.chatList}>{chatList()}</ul>
+    <div className="chatContent">
+      <div className="chatPanel">
+        <div className="chatPanelContainer" ref={chatRef} id='chatRecordRef'>
+          <ul className="chatList">{chatList()}</ul>
         </div>
       </div>
     </div>

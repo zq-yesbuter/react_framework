@@ -258,7 +258,7 @@ export default {
         const match = /^\/AI\/outgoing\/namelist/.exec(pathname);
         const matchRecord = /^\/AI\/outgoing\/record/.exec(pathname);
         const matchConfig = /^\/AI\/outgoing\/config/.exec(pathname);
-        const mainMatch = /^\/AI\/outgoing\/list/.exec(pathname);
+        const mainMatch = /^\/AI\/outgoing/.exec(pathname);
         const deleteMatch = /^\/AI\/outgoing\/delete/.exec(pathname);
         const deleteAll = /^\/AI\/outgoing\/deleteAll/.exec(pathname);
         

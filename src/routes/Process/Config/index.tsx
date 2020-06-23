@@ -1,9 +1,10 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { Input, Button, Card, Select, Form, DatePicker, message } from 'antd';
 import { connect } from 'dva';
-import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
 import _ from 'lodash';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import { routerRedux, Link } from 'dva/router';
 import moment from 'moment';
 import { batchRelated, batchCancel } from '@/services/nameList';
 
@@ -32,7 +33,7 @@ interface Props {
 }
 function Index(props: Props) {
   const { dispatch, form, namelist, loading } = props;
-  const { configValue, ivrIntents, configNameList } = namelist;
+  const { configValue = {}, ivrIntents, configNameList } = namelist;
   const { search } = window.location;
   const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = form;
   const [cancelLoading, setCancelLoading] = useState(false);
@@ -52,7 +53,7 @@ function Index(props: Props) {
       if (!err) {
         const { intent, triggerTime } = values;
         let { retry, sure } = values;
-        if (sure === false) {
+        if (sure === 0) {
           retry = false;
         }
         if (triggerTime < moment().add(10, 'minutes')) {
@@ -64,7 +65,7 @@ function Index(props: Props) {
           message.warn('没有名单无法设置，请先导入名单！');
           dispatch(
             routerRedux.push({
-              pathname: `/AI/outging/namelist`,
+              pathname: `/AI/outgoing/namelist`,
               search: queryString.stringify({
                 id,
                 intent,
@@ -90,7 +91,7 @@ function Index(props: Props) {
               payload: queryString.parse(search),
             });
           })
-          .catch(e => {
+          .catch((e) => {
             message.error(e.message);
             setSureLoading(false);
           });
@@ -105,7 +106,7 @@ function Index(props: Props) {
       message.warn('没有名单无法取消，请先导入名单！');
       dispatch(
         routerRedux.push({
-          pathname: `/AI/outging/namelist`,
+          pathname: `/AI/outgoing/namelist`,
           search: queryString.stringify({
             id,
             intent,
@@ -116,7 +117,7 @@ function Index(props: Props) {
     }
     setCancelLoading(true);
     batchCancel({ intent, id })
-      .then(body => {
+      .then((body) => {
         message.success('取消任务成功');
         setFieldsValue({ triggerTime: null });
         setCancelLoading(false);
@@ -125,7 +126,7 @@ function Index(props: Props) {
           payload: queryString.parse(search),
         });
       })
-      .catch(e => {
+      .catch((e) => {
         message.error('取消任务失败');
         setCancelLoading(false);
       });
@@ -162,14 +163,14 @@ function Index(props: Props) {
       }
     }
     const showSure =
-      getFieldValue('sure') === undefined || getFieldValue('sure') === false
+      getFieldValue('sure') === undefined || getFieldValue('sure') === 0
         ? retry && Object.keys(retry).length
         : getFieldValue('sure');
     // console.log('=====>',getFieldValue('sure'),getFieldValue('sure') === undefined,(retry && Object.keys(retry).length),getFieldValue('sure'));
     return (
       <div>
         {getFieldDecorator('sure', {
-          initialValue: retry && Object.keys(retry).length ? true : false,
+          initialValue: retry && Object.keys(retry).length ? 1 : 0,
           rules: [
             {
               required: true,
@@ -248,111 +249,124 @@ function Index(props: Props) {
   const { status } = configValue;
   const triggerDisabled = status === 3 || status === 4;
   return (
-    <Card
-      bordered={false}
-      loading={loading}
-      title={
-        <Fragment>
-          任务配置
-          <a
-            href="javascript:;"
-            style={{
-              padding: '5px 15px',
-              fontSize: 14,
-            }}
-            onClick={e => {
-              e.preventDefault();
-              dispatch(routerRedux.goBack());
-            }}
-          >
-            返回上一级
-          </a>
-        </Fragment>
-      }
+    <PageHeaderWrapper
+      title="外呼配置"
+      breadcrumb={{
+        routes: [
+          { path: '/AI/outgoing/list', breadcrumbName: '招聘外呼' },
+          { path: '/AI/outgoing/config', breadcrumbName: '外呼配置' },
+        ],
+        itemRender: (route, params, routes, paths) => {
+          return <Link to={route.path}>{route.breadcrumbName}</Link>;
+        },
+      }}
     >
-      <Form {...formItemLayout}>
-        <Item {...formItemLayout} label="任务名">
-          {getFieldDecorator('name', {
-            rules: [
-              {
-                required: true,
-                message: '任务名必填！',
-              },
-            ],
-            initialValue: configValue && configValue.id ? configValue.name : null,
-          })(<Input style={{ width: '300px' }} placeholder="请输入任务名" />)}
-        </Item>
-        <Item label="外呼名单" required>
-          <div style={{ marginLeft: 10 }}>
-            {configNameList ? `共${configNameList.length}人` : null}
-          </div>
-        </Item>
-        <Item label="外呼类型">
-          {getFieldDecorator('intent', {
-            rules: [{ required: true, message: '请选择外呼类型!' }],
-            initialValue: configValue && configValue.id ? configValue.intent : null,
-          })(
-            <Select
-              style={{ width: '300px' }}
-              placeholder="请选择外呼类型"
-              onChange={() => {
-                intentChange();
+      <Card
+        bordered={false}
+        loading={loading}
+        title={
+          <Fragment>
+            任务配置
+            <a
+              href="javascript:;"
+              style={{
+                padding: '5px 15px',
+                fontSize: 14,
               }}
-              disabled
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(routerRedux.goBack());
+              }}
             >
-              {ivrIntents &&
-                ivrIntents.length &&
-                ivrIntents.map((item: { intent: string; intentDesc: string }) => (
-                  <Option value={item.intent} key={item.intent}>
-                    {item.intentDesc}
-                  </Option>
-                ))}
-            </Select>
-          )}
-        </Item>
-        <Item label="外呼场景">
-          {getFieldDecorator('scene', {
-            rules: [{ required: true, message: '请选择外呼场景!' }],
-            initialValue: configValue && configValue.id ? configValue.scene : null,
-          })(
-            <Select style={{ width: '300px' }} placeholder="请选择外呼场景" disabled>
-              {ivrIntents &&
-                ivrIntents.length &&
-                ivrIntents
-                  .filter(
-                    (item: { intent: string; intentDesc?: string }) => item.intent === selectIntent
-                  )
-                  .map((val: { scene: string; sceneDesc: string }) => {
-                    const { scene, sceneDesc } = val;
-                    return (
-                      <Option value={scene} key={scene}>
-                        {sceneDesc}
-                      </Option>
-                    );
-                  })}
-            </Select>
-          )}
-        </Item>
-        <Item label="外呼时间" required>
-          {getFieldDecorator('triggerTime', {
-            rules: [{ required: true, message: '请选择外呼时间!' }],
-            initialValue:
-              configValue && configValue.id
-                ? configValue.triggerStartTime
-                  ? moment(configValue.triggerStartTime)
-                  : null
-                : null,
-          })(
-            <DatePicker
-              showTime={{ format: 'HH:mm', minuteStep: 5 }}
-              disabledDate={disabledDate}
-              format="YYYY-MM-DD HH:mm"
-              placeholder="请选择外呼时间"
-              style={{ width: 300 }}
-            />
-          )}
-        </Item>
-        {/* <Item label="重复外呼" required>
+              返回上一级
+            </a>
+          </Fragment>
+        }
+      >
+        <Form {...formItemLayout}>
+          <Item {...formItemLayout} label="任务名">
+            {getFieldDecorator('name', {
+              rules: [
+                {
+                  required: true,
+                  message: '任务名必填！',
+                },
+              ],
+              initialValue: configValue && configValue.id ? configValue.name : null,
+            })(<Input style={{ width: '300px' }} placeholder="请输入任务名" />)}
+          </Item>
+          <Item label="外呼名单" required>
+            <div style={{ marginLeft: 10 }}>
+              {configNameList ? `共${configNameList.length}人` : null}
+            </div>
+          </Item>
+          <Item label="外呼类型">
+            {getFieldDecorator('intent', {
+              rules: [{ required: true, message: '请选择外呼类型!' }],
+              initialValue: configValue && configValue.id ? configValue.intent : null,
+            })(
+              <Select
+                style={{ width: '300px' }}
+                placeholder="请选择外呼类型"
+                onChange={() => {
+                  intentChange();
+                }}
+                disabled
+              >
+                {ivrIntents &&
+                  ivrIntents.length &&
+                  ivrIntents.map((item: { intent: string; intentDesc: string }) => (
+                    <Option value={item.intent} key={item.intent}>
+                      {item.intentDesc}
+                    </Option>
+                  ))}
+              </Select>
+            )}
+          </Item>
+          <Item label="外呼场景">
+            {getFieldDecorator('scene', {
+              rules: [{ required: true, message: '请选择外呼场景!' }],
+              initialValue: configValue && configValue.id ? configValue.scene : null,
+            })(
+              <Select style={{ width: '300px' }} placeholder="请选择外呼场景" disabled>
+                {ivrIntents &&
+                  ivrIntents.length &&
+                  ivrIntents
+                    .filter(
+                      (item: { intent: string; intentDesc?: string }) =>
+                        item.intent === selectIntent
+                    )
+                    .map((val: { scene: string; sceneDesc: string }) => {
+                      const { scene, sceneDesc } = val;
+                      return (
+                        <Option value={scene} key={scene}>
+                          {sceneDesc}
+                        </Option>
+                      );
+                    })}
+              </Select>
+            )}
+          </Item>
+          <Item label="外呼时间" required>
+            {getFieldDecorator('triggerTime', {
+              rules: [{ required: true, message: '请选择外呼时间!' }],
+              initialValue:
+                configValue && configValue.id
+                  ? configValue.triggerStartTime
+                    ? moment(configValue.triggerStartTime)
+                    : null
+                  : null,
+            })(
+              <DatePicker
+                showTime={{ format: 'HH:mm', minuteStep: 5 }}
+                disabledDate={disabledDate}
+                format="YYYY-MM-DD HH:mm"
+                placeholder="请选择外呼时间"
+                style={{ width: 300 }}
+              />
+            )}
+          </Item>
+          {/* <Item label="重复外呼" required>
           {getFieldDecorator('retry', {
              rules: [{ required: true, message: '请选择是否重复外呼!' }],
              initialValue:true,
@@ -363,45 +377,46 @@ function Index(props: Props) {
             </Select>
           )}
         </Item> */}
-        <Item label="重复外呼" required>
-          {formatRepeat()}
-        </Item>
-        <Item {...tailLayout}>
-          {status < 3 && (
+          <Item label="重复外呼" required>
+            {formatRepeat()}
+          </Item>
+          <Item {...tailLayout}>
+            {status < 3 && (
+              <Button
+                htmlType="submit"
+                type="primary"
+                // className="test-input-search"
+                onClick={() => handleOk()}
+                disabled={triggerDisabled}
+                loading={sureLoading}
+                style={{ marginRight: '10px' }}
+              >
+                {status > 0 ? '更新任务' : '提交任务'}
+              </Button>
+            )}
+            {status === 1 && (
+              <Button
+                style={{ marginRight: '10px' }}
+                className="test-input-search"
+                loading={cancelLoading}
+                onClick={(e) => cancel()}
+              >
+                取消任务
+              </Button>
+            )}
             <Button
               htmlType="submit"
-              type="primary"
               // className="test-input-search"
-              onClick={() => handleOk()}
-              disabled={triggerDisabled}
-              loading={sureLoading}
-              style={{ marginRight: '10px' }}
+              onClick={() => {
+                dispatch(routerRedux.goBack());
+              }}
             >
-              {status > 0 ? '更新任务' : '提交任务'}
+              返回
             </Button>
-          )}
-          {status === 1 && (
-            <Button
-              style={{ marginRight: '10px' }}
-              className="test-input-search"
-              loading={cancelLoading}
-              onClick={e => cancel()}
-            >
-              取消任务
-            </Button>
-          )}
-          <Button
-            htmlType="submit"
-            // className="test-input-search"
-            onClick={() => {
-              dispatch(routerRedux.goBack());
-            }}
-          >
-            返回
-          </Button>
-        </Item>
-      </Form>
-    </Card>
+          </Item>
+        </Form>
+      </Card>
+    </PageHeaderWrapper>
   );
 }
 

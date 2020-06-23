@@ -7,16 +7,15 @@ const FormItem = Form.Item;
 
 interface Props {
   form: any;
-  formatResult: any;
   onSubmit: any;
 }
 function QueryForm(props:Props) {
-  const { form, formatResult, onSubmit } = props;
-  const handleSubmit = (e: React.MouseEvent<HTMLElement, MouseEvent>) => {
+  const { form, onSubmit } = props;
+  const handleSubmit = (e: React.MouseEvent<HTMLElement, MouseEvent> | React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     form.validateFields((err: any, values: any) => {
       if (!err) {
-        onSubmit(typeof formatResult === 'function' ? formatResult(values) : values);
+        onSubmit(values);
       }
     });
   };

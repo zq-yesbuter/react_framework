@@ -80,7 +80,7 @@ function Index(props: Props) {
       title='服务报表'
       breadcrumb={{
       routes: [
-        { path: '/AI/outging', breadcrumbName: '招聘外呼' },
+        { path: '/AI/outgoing/list', breadcrumbName: '招聘外呼' },
         { path: '/AI/record', breadcrumbName: '服务报表' },
       ],
       itemRender: (route, params, routes, paths) => {

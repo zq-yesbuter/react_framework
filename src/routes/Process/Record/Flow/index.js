@@ -2,7 +2,7 @@ import React from 'react';
 import { Form, Steps, Spin } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
-import styles from './index.less';
+import './index.less';
 
 const { Step } = Steps;
 
@@ -56,9 +56,9 @@ function clickEl(time) {
 }
 function RecordBottom({ namelist: { flowList, listValue }, loading }) {
   return (
-    <div className={styles['gutter-box']}>
+    <div className='gutter-box'>
       <h3>外呼记录/结果</h3>
-      <div className={styles.scroll}>
+      <div className="scroll">
         <div style={{ display: 'flex', justifyContent: 'space-between',marginTop:20,marginBottom:10 }}>
           <span><span style={{fontWeight:'bold'}}>姓名：</span>{listValue && listValue.name}</span>
           <div><span style={{fontWeight:'bold'}}>电话：</span>{listValue && listValue.tel}</div>

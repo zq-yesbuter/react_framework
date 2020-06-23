@@ -78,7 +78,7 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
                   onClick={() => {
                     dispatch(
                       routerRedux.push({
-                        pathname: '/AI/outging/config',
+                        pathname: '/AI/outgoing/config',
                         search: queryString.stringify(search),
                       })
                     );
@@ -94,7 +94,7 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
                 if (id) {
                   dispatch(
                     routerRedux.push({
-                      pathname: '/AI/outging/namelist',
+                      pathname: '/AI/outgoing/namelist',
                       search: queryString.stringify(search),
                     })
                   );

@@ -1,5 +1,6 @@
 import { Button, Result } from 'antd';
 import React from 'react';
+// 但是还没发布，先来个简单的。
 
 const NoFoundPage = () => (
   <Result

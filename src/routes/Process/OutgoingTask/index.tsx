@@ -164,8 +164,8 @@ function Index(props: Props): any {
       title='招聘任务'
       breadcrumb={{
       routes: [
-        { path: '/AI/outgoing', breadcrumbName: '招聘外呼' },
-        { path: '/AI/outgoing', breadcrumbName: '招聘任务' },
+        { path: '/AI/outgoing/list', breadcrumbName: '招聘外呼' },
+        { path: '/AI/outgoing/list', breadcrumbName: '招聘任务' },
       ],
       itemRender: (route, params, routes, paths) => {
         return <Link to={route.path}>{route.breadcrumbName}</Link>;
@@ -193,7 +193,7 @@ function Index(props: Props): any {
                 onClick={() => {
                   dispatch(
                     routerRedux.push({
-                      pathname: '/AI/outging/delete',
+                      pathname: '/AI/outgoing/delete',
                     })
                   );
                 }}

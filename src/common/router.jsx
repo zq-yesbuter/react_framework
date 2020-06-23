@@ -4,6 +4,7 @@ import pathToRegexp from 'path-to-regexp';
 import { getMenuData } from './menu';
 // import * as dynamicModels from '../models';
 
+const ReadSubRoutes = () => import('../layouts/ReadSubRoutes.js');
 let routerDataCache;
 
 const modelNotExisted = (app, model) =>
@@ -70,7 +71,6 @@ function getFlatMenuData(menus) {
       keys[item.path] = { ...item };
     }
   });
-  console.log('keys===>',keys);
   return keys;
 }
 
@@ -82,6 +82,10 @@ export const getRouterData = app => {
     // 外呼报表
     '/AI/report': {
       component: dynamicWrapper(app, [], () => import('../routes/Report')),
+    },
+    // 实时数据
+    '/AI/outgoing': {
+      component: dynamicWrapper(app, ['namelist'], ReadSubRoutes),
     },
     // 实时数据
     '/AI/outgoing/list': {
@@ -110,7 +114,9 @@ export const getRouterData = app => {
     '/AI/authority': {
       component: dynamicWrapper(app, ['auth'], () => import('../routes/Authority/Index')),
     },
-    // component: '../pages/403.jsx',
+    '/AI/403': {
+      component: dynamicWrapper(app, [], () => import('../routes/Exception/403')),
+    },
     // 用于强制重新挂载页面组件
     '/reload': {
       component: () => null,
@@ -141,7 +147,7 @@ export const getRouterData = app => {
       ...router,
       name: router.name || menuItem.name,
       authority: router.authority || menuItem.authority,
-      hideInBreadcrumb: router.hideInBreadcrumb || menuItem.hideInBreadcrumb,
+      // hideInBreadcrumb: router.hideInBreadcrumb || menuItem.hideInBreadcrumb,
     };
     routerData[path] = router;
   });

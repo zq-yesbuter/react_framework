@@ -129,7 +129,7 @@
     "typescript": "^3.8.3",
     "typings-for-css-modules-loader": "^1.7.0",
     "url-loader": "^2.1.0",
-    "webpack": "^4.39.2",
+    "webpack": "^5.0.0-beta.18",
     "webpack-cli": "^3.3.7",
     "webpack-dev-server": "^3.8.0",
     "webpack-merge": "^4.2.1"

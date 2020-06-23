@@ -19,7 +19,7 @@ import _ from 'lodash';
 import queryString from 'query-string';
 import { editSignel, addSignel, cancelSignel } from '@/services/nameList';
 import { flatten } from '@/utils/utils';
-import styles from './index.less';
+import './index.less';
 
 const { Item } = Form;
 const { Step } = Steps;
@@ -265,7 +265,7 @@ function SingleSet({
       .catch(e => message.error(e.message));
   }
   return (
-    <div className={styles['gutter-box']}>
+    <div className='gutter-box'>
       <h3>设置外呼时间</h3>
       <div>
         {formatFieldItem(intent)}

@@ -5,7 +5,7 @@ import queryString from 'query-string';
 import SingleSet from './SingleSet';
 import ChatRecord from './ChatRecord';
 import Flow from './Flow';
-import styles from './index.less';
+import './index.less';
 
 function Index({ onClose, visible, namelist: { nameList, listValue }, dispatch }) {
   const { invitationId, intent } = listValue || {};
@@ -35,7 +35,7 @@ function Index({ onClose, visible, namelist: { nameList, listValue }, dispatch }
     //   }
     // breadcrumb={{
     //   routes: [
-    //     { path: '/AI/outging', breadcrumbName: '外呼任务' },
+    //     { path: '/AI/outgoing', breadcrumbName: '外呼任务' },
     //     { path: '/AI/namelist', breadcrumbName: '外呼名单' },
     //     { path: '/AI/record', breadcrumbName: '外呼记录' },
     //   ],
@@ -124,7 +124,7 @@ function Index({ onClose, visible, namelist: { nameList, listValue }, dispatch }
       onClose={onClose}
       visible={visible}
       bodyStyle={{ background: '#f7f7f7' }}
-      className={styles.record}
+      className="record"
       destroyOnClose={true}
     >
       <Row gutter={12}>

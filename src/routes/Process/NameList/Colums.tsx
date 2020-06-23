@@ -92,7 +92,7 @@ const renderColumns = (dispatch:Function, showIntent:string, setShowVisible:Func
                 const { dataStatus } = queryString.parse(search);
                 // dispatch(
                 //   routerRedux.push({
-                //     pathname: '/AI/outging/namelist',
+                //     pathname: '/AI/outgoing/namelist',
                 //     search: queryString.stringify({...queryString.parse(search),invitationId:
                 //     }),
                 //   })

@@ -1,5 +1,6 @@
 import React, { Fragment, useState } from 'react';
 import { Card, message, Button, Upload, Icon } from 'antd';
+import { Link } from 'dva/router';
 import Detail from './Detail';
 import { upload } from '@/services/resume';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
@@ -46,7 +47,17 @@ function ResumeIndex(props: Props) {
     customRequest: () => {}, // 阻止上传的默认行为
   };
   return (
-    <PageHeaderWrapper>
+    <PageHeaderWrapper
+      title='智能解析'
+        breadcrumb={{
+          routes: [
+            { path: '/AI/outgoing/list', breadcrumbName: '招聘外呼' },
+            { path: '/AI/resume', breadcrumbName: '智能解析' },
+          ],
+          itemRender: (route, params, routes, paths) => {
+            return <Link to={route.path}>{route.breadcrumbName}</Link>;
+          },
+        }}>
       <Card
         bordered={false}
         title={
