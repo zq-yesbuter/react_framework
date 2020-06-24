@@ -99,7 +99,7 @@ function RecordBottom({ namelist: { flowList, listValue }, loading }) {
                         {roundEndTime ? <p>{`外呼结束时间： ${roundEndTime}`}</p> : null}
                         {confirmTime ? (
                           <p style={{ color: 'red', fontWeight: 400 }}>
-                            {`用户期望面试时间： ${confirmTime}`}
+                            {`用户期望时间： ${confirmTime}`}
                           </p>
                         ) : null}
                         <p>{formatRemark(channel, remark)}</p>
