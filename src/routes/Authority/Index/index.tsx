@@ -13,18 +13,19 @@ interface Props {
   auth: any;
   dispatch: Function;
 }
-
-function Index(props: Props) {
+function Index(props:Props) {
   const {
-    auth: { treeDepartList = [], userList = [], baseDepartList = [] },
+    auth: { treeDepartList = [], userList = [],baseUserList = [], baseDepartList = [] },
     dispatch,
   } = props;
   const [visible, setVisible] = useState(false as any);
   const [addDepart, setAddDepart] = useState(false);
   const [companyVisible, setCompanyVisible] = useState(false);
   const [addId, setAddId] = useState();
+  const [selectedKeys,setSelectedKeys] = useState([]);
+  const [spin,setSpin] = useState(false);
 
-  const renderTreeActions = (item: any) => {
+  const renderTreeActions = (item:any) => {
     const commonContent = (
       <Fragment>
         <Tooltip title="添加子部门">
@@ -44,7 +45,7 @@ function Index(props: Props) {
   };
 
   const loop = (data: any[]) => {
-    return data.map((item) => {
+    return data.map(item => {
       const title = (
         <Fragment>
           <span className="title">{item.name}</span>
@@ -53,12 +54,12 @@ function Index(props: Props) {
       );
       if (item.children && item.children.length) {
         return (
-          <TreeNode key={item.id} title={title} item={item}>
+          <TreeNode key={item.tenantId} title={title} item={item}>
             {loop(item.children)}
           </TreeNode>
         );
       } else {
-        return <TreeNode key={item.id} title={title} item={item} />;
+        return <TreeNode key={item.tenantId} title={title} item={item} />;
       }
     });
   };
@@ -77,14 +78,25 @@ function Index(props: Props) {
   }
 
   function format(tenantId: string, baseDepartList: any[]) {
-    const ivrValue = (baseDepartList && baseDepartList.find((e) => e.tenantId === tenantId)) || {};
+    const ivrValue = (baseDepartList && baseDepartList.find(e => e.tenantId === tenantId)) || {};
     return ivrValue && Object.keys(ivrValue).length ? ivrValue.name : null;
   }
 
   function formatId(id: any, baseDepartList: any[]) {
-    const ivrValue = (baseDepartList && baseDepartList.find((e) => e.id === id)) || {};
+    const ivrValue = (baseDepartList && baseDepartList.find(e => e.id === id)) || {};
     return ivrValue && Object.keys(ivrValue).length ? ivrValue.tenantId : null;
   }
+
+  const onSelect = (selectedKeys:any) => {
+    setSelectedKeys(selectedKeys);
+    if(selectedKeys.length) { 
+      const filterList = baseUserList.filter((item:any) => item.tenantId === selectedKeys[0]);
+      dispatch({
+        type: 'auth/save',
+        payload: { userList: filterList },
+      });
+    }
+  };
 
   const renderColumns = (dispatch: Function, baseDepartList: any[]) => {
     const columns = [
@@ -123,7 +135,7 @@ function Index(props: Props) {
     return columns;
   };
   const pagination = {
-    pageSize: 1000,
+    pageSize:1000,
   };
   return (
     <PageHeaderWrapper>
@@ -134,7 +146,7 @@ function Index(props: Props) {
             <a
               href="javascript:;"
               style={{ margin: '8px 0' }}
-              onClick={(e) => {
+              onClick={e => {
                 e.preventDefault();
                 setAddDepart(true);
               }}
@@ -144,14 +156,26 @@ function Index(props: Props) {
             </a>
             <Tree
               className="knowledge-detail__tree"
-              // expandedKeys={expandedKeys}
-              // autoExpandParent={autoExpandParent}
+              selectedKeys={selectedKeys}
+              onSelect={onSelect}
             >
               {loop(treeDepartList)}
             </Tree>
           </Col>
           <Col span={'18'}>
             <div style={{ display: 'flex' }}>
+              <a onClick={
+                () => {
+                  setSelectedKeys([]);
+                  setSpin(true);
+                  dispatch({
+                    type: 'auth/query',
+                    payload: { pageSize: 1000, pageNum: 1 },
+                  }).then(() => {
+                    setSpin(false);
+                    message.success('已查看所有用户！');
+                  });
+              }}><Icon type="redo" style={{fontSize:24}} spin={spin}/></a>
               <Button
                 type="primary"
                 style={{ marginLeft: 'auto' }}
@@ -181,22 +205,28 @@ function Index(props: Props) {
               tenantId: formatId(organizationId, baseDepartList),
               updateId: operatorId,
             })
-              .then((data) => {
+              .then(data => {
                 message.success('修改成功！');
                 setVisible(false);
                 dispatch({
                   type: 'auth/query',
                   payload: { pageSize: 1000, pageNum: 1 },
+                }).then(() => {
+                  setSpin(false);
+                  setSelectedKeys([]);
                 });
               })
-              .catch((e) => message.error(e.message));
+              .catch(e => message.error(e.message));
           } else {
-            addUser(data).then((data) => {
+            addUser(data).then(data => {
               message.success('添加用户成功了！');
               setVisible(false);
               dispatch({
                 type: 'auth/query',
                 payload: { pageSize: 1000, pageNum: 1 },
+              }).then(() => {
+                setSpin(false);
+                setSelectedKeys([]);
               });
             });
           }

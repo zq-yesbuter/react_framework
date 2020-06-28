@@ -1,13 +1,13 @@
 import React, { useState, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, message, Button, Modal } from 'antd';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { routerRedux, Link } from 'dva/router';
 import CategoryAddFormModal from './AddFormModal';
 import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
 import renderColumns from './Colums';
 import { addBatch, batchDelete } from '@/services/nameList';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { Setting } from '@/utils/tscontant';
 
 interface Props {

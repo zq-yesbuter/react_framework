@@ -90,6 +90,31 @@
         background: transparent;
       }
     }
+  }
+}
+
+@media only screen and (max-width: @screen-md) {
+  :global(.ant-divider-vertical) {
+    vertical-align: unset;
+  }
+  .name {
+    display: none;
+    height: 20px;
+    line-height: 20px;
+    margin-left: 15px;
+  }
+  i.trigger {
+    padding: 22px 12px;
+  }
+  .logo {
+    position: relative;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+  .right {
+    position: absolute;
+    top: 0;
+    right: 12px;
     .account {
       .avatar {
         margin: 20px 8px 20px 0;

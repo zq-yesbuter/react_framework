@@ -101,7 +101,8 @@ function Detail(props: Props) {
             </Select>
           )}
         </Item>
-        <Item label="账号" {...formItemLayout}>
+        {!(!!value && Object.keys(value).length) && 
+          <Item label="账号" {...formItemLayout}>
           {getFieldDecorator('loginName', {
             rules: [{ required: true, message: '请输入账号!' }],
             initialValue:!!value && Object.keys(value).length ? value.loginName : null,
@@ -109,6 +110,8 @@ function Detail(props: Props) {
             <TrimInput placeholder="请输入账号" disabled={!!value && Object.keys(value).length && value.loginName} />
           )}
         </Item>
+        }
+        
         <Item {...formItemLayout} label="所属部门">
           {getFieldDecorator('organizationId', {
             initialValue:!!value && Object.keys(value).length ? value.tenantId && format(value.tenantId,baseDepartList) : null,

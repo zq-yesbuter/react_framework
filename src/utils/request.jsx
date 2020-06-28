@@ -130,7 +130,7 @@ export default function request(url, options) {
         const reg = /^\?error/;
         if (reg.test(location.search)) {
           // eslint-disable-next-line no-underscore-dangle
-          window.g_app._store.dispatch(routerRedux.push('/403'));
+          window.g_app._store.dispatch(routerRedux.push('/AI/403'));
           return;
         }
         loginRedirect();

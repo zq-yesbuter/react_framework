@@ -2,6 +2,25 @@ import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
 
+const format = arr => {
+  const newArr = _.cloneDeep(arr);
+  if (newArr && newArr.length) {
+    const keys = Object.keys(newArr[0]);
+    let obj = {};
+    keys.forEach(item => {
+      obj[item] = [];
+    });
+    newArr.forEach(item => {
+      for (let i in item) {
+        obj[i].push(item[i]);
+      }
+    });
+    return obj;
+  } else {
+    return {};
+  }
+};
+
 export default class OnlineEcharts extends Component {
   getOption = () => {
     const { xAxisData, monthData } = this.props;
@@ -24,21 +43,21 @@ export default class OnlineEcharts extends Component {
         type: 'bar',
         barWidth: 15,
         data: monthData,
-        color: '#1890ff',
+        color:'#1890ff',
         itemStyle: {
           normal: {
             label: {
               show: true, //开启显示
               position: 'top', //在上方显示
-            },
-          },
+            }
+          }
         },
       },
     ];
 
     return {
       legend: {
-        data: ['外呼人数'],
+        data: [ '外呼人数'],
         top: '15%',
       },
       // hover上的数据
@@ -47,16 +66,16 @@ export default class OnlineEcharts extends Component {
         formatter: params => {
           let res = `<div><p>外呼时间：${params[0].axisValue}</p></div>`;
           for (let i = 0; i < params.length; i++) {
-            if (params[i].seriesName === '增量') {
+            if(params[i].seriesName === '增量') {
               res += `<p>外呼${params[i].seriesName}:${params[i].value}%</p>`;
-            } else {
+            }else{
               res += `<p>${params[i].seriesName}:${params[i].value}</p>`;
             }
           }
           return res;
         },
       },
-      color: [
+      color: [ 
         '#1890ff',
         '#2fc25b',
         '#13c2c2',
@@ -80,7 +99,7 @@ export default class OnlineEcharts extends Component {
   };
   render() {
     return (
-      <div style={{ marginTop: 30 }}>
+      <div style={{marginTop:30}}>
         <ReactEcharts option={this.getOption()} />
       </div>
     );

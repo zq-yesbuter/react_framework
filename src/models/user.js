@@ -1,9 +1,4 @@
-import { loginOut, queryCurrent, queryMenu, queryRobotList, selectRobot } from '../services/user';
-import { setAuthorityMenu } from '../common/menu';
-import { nonLoginAuthorized } from '../utils/Authorized';
-import { routerRedux } from 'dva/router';
-import { baseUrl, authApi } from '../config';
-import queryString from 'query-string';
+import { queryCurrent } from '@/services/user';
 
 export default {
   namespace: 'user',
@@ -83,6 +78,23 @@ export default {
         });
       }
     },
+
+    *initSubsQueue({ payload }, { call, put, all }) {
+      let response = {};
+      try {
+        [response] = yield all([call(queryCurrent)]);
+      } catch (error) {
+        console.warn(error);
+        response = {};
+        return;
+      }
+      if (response) {
+        yield put({
+          type: 'save',
+          payload: { currentUser: response },
+        });
+      }
+    },
   },
   reducers: {
     save(state, { payload }) {
@@ -126,6 +138,17 @@ export default {
           type: 'initSubsQueue',
         });
       }
+    },
+  },
+  subscriptions: {
+    init({ dispatch, history }) {
+      const { location: { pathname } } = history;
+      // const nonLogin = nonLoginAuthorized(pathname);
+      // if (!nonLogin) {
+        dispatch({
+          type: 'initSubsQueue',
+        });
+      // }
     },
   },
 };
