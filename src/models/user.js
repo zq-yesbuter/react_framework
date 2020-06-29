@@ -132,12 +132,12 @@ export default {
   subscriptions: {
     init({ dispatch, history }) {
       const { location: { pathname } } = history;
-      const nonLogin = nonLoginAuthorized(pathname);
-      if (!nonLogin) {
+      // const nonLogin = nonLoginAuthorized(pathname);
+      // if (!nonLogin) {
         dispatch({
           type: 'initSubsQueue',
         });
-      }
+      // }
     },
   },
 };
