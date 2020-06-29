@@ -155,7 +155,7 @@ class BasicLayout extends React.PureComponent {
     const { dispatch, location: { pathname } } = this.props;
     if (key === 'logout') {
       const logoutUrl = `/authenticate/erp/logout?callback=${encodeURIComponent(
-        `${location.origin}/AI`
+        `${location.origin}`
       )}`;
       window.location.href = logoutUrl;
       return;

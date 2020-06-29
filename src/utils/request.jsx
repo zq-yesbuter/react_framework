@@ -105,7 +105,7 @@ export default function request(url, options) {
   }
   
  function loginRedirect() {
-    const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}/AI`)}`;
+    const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}`)}`;
     window.location.href = returnUrl;
   }
   
