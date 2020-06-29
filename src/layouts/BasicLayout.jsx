@@ -154,8 +154,13 @@ class BasicLayout extends React.PureComponent {
   handleMenuClick = ({ key }) => {
     const { dispatch, location: { pathname } } = this.props;
     if (key === 'logout') {
-      const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}/AI`)}`;
-      window.location.href = returnUrl;
+      const logoutUrl = `/authenticate/erp/logout?callback=${encodeURIComponent(
+        `${location.origin}/AI`
+      )}`;
+      window.location.href = logoutUrl;
+      return;
+      // const returnUrl = `/authenticate/erp?callback=${encodeURIComponent(`${location.origin}/AI`)}`;
+      // window.location.href = returnUrl;
     } else {
       dispatch(
         routerRedux.push({
