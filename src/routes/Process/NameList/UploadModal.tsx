@@ -26,6 +26,11 @@ const sceneObj = {
   '12064': '入职提醒',
   '12065': '面试调研',
   '12072': '面试调研（新）',
+  '12095': 'CHO校招offer确认',
+  '12096': '京东健康面试邀约(医生助理)',
+  '12097': '面试提醒(物流)',
+  '12098': '背调提醒(物流)',
+  '12099': '入职提醒(物流)',
 };
 
 interface Props {
@@ -43,8 +48,8 @@ interface Response {
   errorCount?: string | number;
   errorMessages?: string[];
 }
-interface UserObj{
-  [key:string]: string | any[]
+interface UserObj {
+  [key: string]: string | any[];
 }
 
 function ImportModal(props: Props) {
@@ -73,7 +78,7 @@ function ImportModal(props: Props) {
           },
         });
         const formData = new FormData();
-        fileList.forEach(file => {
+        fileList.forEach((file) => {
           formData.append('file', file);
         });
         // const { scene } =
@@ -117,7 +122,7 @@ function ImportModal(props: Props) {
                   setFileList([]);
                   setConfirmLoading(false);
                 })
-                .catch(e => {
+                .catch((e) => {
                   setConfirmLoading(false);
                 });
             } else {
@@ -128,7 +133,7 @@ function ImportModal(props: Props) {
             setFileList([]);
             onCancel && onCancel();
           })
-          .catch(e => {
+          .catch((e) => {
             message.error(e.message);
             setConfirmLoading(false);
           });
@@ -171,9 +176,11 @@ function ImportModal(props: Props) {
 
   function formatHeader() {
     switch (scene) {
-      case '14019': //'实习生面试邀约',
+      case '14019':
+      case '12096': //京东健康面试邀约（医生助理）'实习生面试邀约',
         return ['候选人姓名', '电话', '邮箱', '面试时间', 'HR姓名', 'HR联系人电话', '岗位'];
-      case '12073': //'面试提醒',
+      case '12073':
+      case '12097': //'面试提醒',面试提醒（物流）
         return [
           '姓名',
           '电话',
@@ -186,7 +193,8 @@ function ImportModal(props: Props) {
           '应聘部门',
           '招聘负责人',
         ];
-      case '12063': //'背调提醒',
+      case '12063':
+      case '12098': //'背调提醒',背调提醒（物流）
         return [
           '一级部门',
           '招聘负责人erp',
@@ -201,7 +209,8 @@ function ImportModal(props: Props) {
           'HR姓名',
           'HR电话',
         ];
-      case '12064': //'入职提醒',
+      case '12064':
+      case '12099': //'入职提醒',入职提醒（物流）
         return [
           '一级部门',
           '招聘负责人erp',
@@ -220,6 +229,8 @@ function ImportModal(props: Props) {
         return ['候选人姓名', '电话', 'HR姓名', 'HR联系人电话'];
       case '12072': //'面试调研（新）',
         return ['候选人姓名', '电话', 'HR姓名', 'HR联系人电话'];
+      case '12095': //CHO校招offer确认
+        return ['候选人姓名', '电话', '邮箱', 'offer发放时间', 'HR姓名', 'HR联系人电话'];
       default:
         return ['候选人姓名', '电话', '邮箱', '面试时间', 'HR姓名', 'HR联系人电话', '岗位'];
     }
@@ -227,7 +238,8 @@ function ImportModal(props: Props) {
 
   function formatData() {
     switch (scene) {
-      case '14019': //'实习生面试邀约',
+      case '14019':
+      case '12096': //京东健康面试邀约（医生助理）'实习生面试邀约',
         return [
           {
             one: '梁主任',
@@ -239,7 +251,8 @@ function ImportModal(props: Props) {
             seven: '软件开发工程师岗',
           },
         ];
-      case '12073': //'面试提醒',
+      case '12073':
+      case '12097': //'面试提醒',面试提醒（物流）
         return [
           {
             one: '梁主任',
@@ -254,7 +267,8 @@ function ImportModal(props: Props) {
             ten: 'jd007',
           },
         ];
-      case '12063': //'背调提醒',
+      case '12063':
+      case '12098': //'背调提醒',背调提醒（物流）
         return [
           {
             one: '智能城市事业部',
@@ -271,7 +285,8 @@ function ImportModal(props: Props) {
             twelve: '18608001700',
           },
         ];
-      case '12064': //'入职提醒',
+      case '12064':
+      case '12099': //'入职提醒',入职提醒（物流）
         return [
           {
             one: '智能城市事业部',
@@ -298,14 +313,25 @@ function ImportModal(props: Props) {
           },
         ];
       case '12072': //'面试调研（新）',
-      return [
-        {
-          one: '梁主任',
-          two: '18608001700',
-          three: '胡女士',
-          four: '18608001700',
-        },
-      ];
+        return [
+          {
+            one: '梁主任',
+            two: '18608001700',
+            three: '胡女士',
+            four: '18608001700',
+          },
+        ];
+      case '12095': //CHO校招offer确认
+        return [
+          {
+            one: '梁主任',
+            two: '18608001700',
+            three: 'test@jd.com',
+            four: '2020-04-20 09:00:00',
+            five: '胡女士',
+            six: '18608001700',
+          },
+        ];
       default:
         return [
           {
@@ -325,7 +351,7 @@ function ImportModal(props: Props) {
     const { search } = window.location;
     // eslint-disable-next-line no-shadow
     const { intent } = queryString.parse(search);
-    let option:UserObj = {};
+    let option: UserObj = {};
     option.fileName = `${sceneObj[scene]}导入模版`;
     option.datas = [
       {
@@ -333,7 +359,7 @@ function ImportModal(props: Props) {
         sheetName: '导入模版',
         // sheetFilter:['two','one'],
         sheetHeader: formatHeader(),
-        columnWidths: [10, 10, 10, 10, 10, 10, 10,10,10,10,10,10,10],
+        columnWidths: [10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10],
       },
     ];
 

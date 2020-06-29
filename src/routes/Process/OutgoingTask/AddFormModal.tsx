@@ -60,7 +60,7 @@ function AddFormModal(props: Props) {
   const newIvrIntents = unique(_.cloneDeep(ivrIntents));
   return (
     <Modal
-      visible={value}
+      visible={!!value}
       title={getFieldValue('id') ? '修改任务' : '添加任务'}
       destroyOnClose
       width={550}

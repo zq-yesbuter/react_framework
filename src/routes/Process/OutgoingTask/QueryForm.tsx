@@ -10,6 +10,7 @@ const { Option } = Select;
 const FormItem = Form.Item;
 const now = moment().subtract(14, 'days');
 const deadLine = moment();
+const format = 'YYYY-MM-DD';
 
 interface IFormComponentProps extends FormComponentProps {
   onSubmit: Function;
@@ -40,7 +41,7 @@ class QueryForm extends React.Component<IFormComponentProps> {
         <FormItem label="任务状态">
           {getFieldDecorator('status')(
             <Select allowClear placeholder="请选择任务状态" style={{ width: 200 }}>
-              {statusOptions.map(item => (
+              {statusOptions.map((item) => (
                 <Option value={item.value} key={item.value}>
                   {item.name}
                 </Option>
@@ -54,10 +55,10 @@ class QueryForm extends React.Component<IFormComponentProps> {
             form={form}
             options={[
               {
-                initialValue: now,
+                initialValue: now.format(format),
               },
               {
-                initialValue: deadLine,
+                initialValue: deadLine.format(format),
               },
             ]}
           />
@@ -68,7 +69,7 @@ class QueryForm extends React.Component<IFormComponentProps> {
           </Button>
           <Button
             style={{ margin: '0 10px' }}
-            onClick={e => {
+            onClick={(e) => {
               resetFields();
               this.handleSubmit();
             }}

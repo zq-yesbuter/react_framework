@@ -60,7 +60,7 @@ function Index(props: Props): any {
         }
         // eslint-disable-next-line compat/compat
         Promise.all(questAll)
-          .then(result => {
+          .then((result) => {
             let successCount = 0;
             let errorCount = 0;
             let errorMessages: any[] = [];
@@ -91,7 +91,7 @@ function Index(props: Props): any {
             });
             setSelectedRowKeys([]);
           })
-          .catch(e => {
+          .catch((e) => {
             message.error(`删除失败！${e.message}`);
           });
       },
@@ -161,16 +161,16 @@ function Index(props: Props): any {
 
   return (
     <PageHeaderWrapper
-      title='招聘任务'
+      title="招聘任务"
       breadcrumb={{
-      routes: [
-        { path: '/AI/outgoing/list', breadcrumbName: '招聘外呼' },
-        { path: '/AI/outgoing/list', breadcrumbName: '招聘任务' },
-      ],
-      itemRender: (route, params, routes, paths) => {
-        return <Link to={route.path}>{route.breadcrumbName}</Link>;
-      },
-    }}
+        routes: [
+          { path: '/AI/outgoing/list', breadcrumbName: '招聘外呼' },
+          { path: '/AI/outgoing/list', breadcrumbName: '招聘任务' },
+        ],
+        itemRender: (route, params, routes, paths) => {
+          return <Link to={route.path}>{route.breadcrumbName}</Link>;
+        },
+      }}
     >
       <Card
         bordered={false}
@@ -220,7 +220,9 @@ function Index(props: Props): any {
             });
             dispatch({
               type: 'namelist/save',
-              payload: { batchRequest: isDelete ? { ...batchRequest, dataStatus: 2 } : batchRequest },
+              payload: {
+                batchRequest: isDelete ? { ...batchRequest, dataStatus: 2 } : batchRequest,
+              },
             });
             dispatch({
               type: 'namelist/getBatch',
@@ -259,7 +261,9 @@ function Index(props: Props): any {
 
 const mapStateToProps = ({
   namelist,
-  loading: { effects: { 'namelist/getBatch': loading } },
+  loading: {
+    effects: { 'namelist/getBatch': loading },
+  },
 }: {
   namelist: any;
   loading: any;
