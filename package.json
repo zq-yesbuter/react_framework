@@ -46,6 +46,7 @@
     "echarts": "^4.1.0",
     "echarts-for-react": "^2.0.14",
     "enquire-js": "^0.2.1",
+    "gg-editor": "^2.0.2",
     "js-export-excel": "^1.1.2",
     "less": "^3.10.3",
     "less-loader": "^5.0.0",
@@ -64,6 +65,7 @@
     "react-document-title": "^2.0.3",
     "react-dom": "^16.13.1",
     "react-fittext": "^1.0.0",
+    "react.eval": "^1.4.17",
     "ts-loader": "^7.0.5",
     "url-polyfill": "^1.0.10"
   },

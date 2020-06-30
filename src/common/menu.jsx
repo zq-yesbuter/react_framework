@@ -46,6 +46,16 @@ const menuData = [
       //   icon: 'align-left',
       // },
       {
+        name: '场景配置',
+        path: 'scene',
+        icon: "control",
+      },
+      {
+        name: '意图配置',
+        path: 'intention',
+        icon: "profile",
+      },
+      {
         name: '简历解析',
         hideInMenu: true,
         path: 'resume',

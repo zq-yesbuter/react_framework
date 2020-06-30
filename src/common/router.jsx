@@ -18,13 +18,14 @@ const dynamicWrapper = (app, models, component) => {
   // () => require('module')
   // transformed by babel-plugin-dynamic-import-node-sync
   if (component.toString().indexOf('.then(') < 0) {
-    models.forEach(model => {
+    models.forEach((model) => {
       if (modelNotExisted(app, model)) {
+        console.log('model====>', model);
         // eslint-disable-next-line
         app.model(require(`../models/${model}`).default);
       }
     });
-    return props => {
+    return (props) => {
       if (!routerDataCache) {
         routerDataCache = getRouterData(app);
       }
@@ -39,18 +40,20 @@ const dynamicWrapper = (app, models, component) => {
   return dynamic({
     app,
     models: () =>
-      models.filter(model => modelNotExisted(app, model)).map(m => {
-        // return dynamicModels[m]();
-        return import(`../models/${m}.js`);
-      }),
+      models
+        .filter((model) => modelNotExisted(app, model))
+        .map((m) => {
+          // return dynamicModels[m]();
+          return import(`../models/${m}.js`);
+        }),
     // add routerData prop
     component: () => {
       if (!routerDataCache) {
         routerDataCache = getRouterData(app);
       }
-      return component().then(raw => {
+      return component().then((raw) => {
         const Component = raw.default || raw;
-        return props =>
+        return (props) =>
           createElement(Component, {
             ...props,
             routerData: routerDataCache,
@@ -63,7 +66,7 @@ const dynamicWrapper = (app, models, component) => {
 function getFlatMenuData(menus) {
   // console.warn(menus)
   let keys = {};
-  menus.forEach(item => {
+  menus.forEach((item) => {
     if (item.children) {
       keys[item.path] = { ...item };
       keys = { ...keys, ...getFlatMenuData(item.children) };
@@ -74,7 +77,7 @@ function getFlatMenuData(menus) {
   return keys;
 }
 
-export const getRouterData = app => {
+export const getRouterData = (app) => {
   const routerConfig = {
     '/': {
       component: dynamicWrapper(app, ['user'], () => import('../layouts/BasicLayout')),
@@ -91,8 +94,8 @@ export const getRouterData = app => {
     '/AI/outgoing/list': {
       component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/OutgoingTask')),
     },
-     // 招聘任务-均可删除列表
-     '/AI/outgoing/deleteAll': {
+    // 招聘任务-均可删除列表
+    '/AI/outgoing/deleteAll': {
       component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/OutgoingTask')),
     },
     // 招聘任务-已删除列表
@@ -106,6 +109,48 @@ export const getRouterData = app => {
     // 外呼名单
     '/AI/outgoing/namelist': {
       component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/NameList')),
+    },
+    // 场景配置
+    '/AI/scene': {
+      component: dynamicWrapper(app, ['scene'], ReadSubRoutes),
+    },
+    // 场景配置列表
+    '/AI/scene/list': {
+      component: dynamicWrapper(app, ['scene'], () => import('../routes/Scene/Index')),
+    },
+    // 场景配置添加
+    '/AI/scene/add': {
+      component: dynamicWrapper(app, ['scene', 'namelist'], () => import('../routes/Scene/Add')),
+    },
+    // 话术配置
+    '/AI/scene/words': {
+      component: dynamicWrapper(app, ['scene', 'namelist'], () => import('../routes/Scene/Words')),
+    },
+    // 话术配置
+    '/AI/scene/config': {
+      component: dynamicWrapper(app, ['scene', 'namelist'], () =>
+        import('../routes/Scene/Words/Config')
+      ),
+    },
+    // 全局配置
+    '/AI/scene/process': {
+      component: dynamicWrapper(app, ['scene', 'namelist'], () =>
+        import('../routes/Scene/Process')
+      ),
+    },
+    // 意图配置
+    '/AI/intention': {
+      component: dynamicWrapper(app, ['intent', 'namelist'], ReadSubRoutes),
+    },
+    '/AI/intention/list': {
+      component: dynamicWrapper(app, ['intent', 'namelist'], () =>
+        import('../routes/Intention/Index')
+      ),
+    },
+    '/AI/intention/config': {
+      component: dynamicWrapper(app, ['intent', 'namelist'], () =>
+        import('../routes/Intention/Config')
+      ),
     },
     // 简历解析
     '/AI/resume': {
@@ -129,11 +174,11 @@ export const getRouterData = app => {
   // eg. {name,authority ...routerConfig }
   const routerData = {};
   // The route matches the menu
-  Object.keys(routerConfig).forEach(path => {
+  Object.keys(routerConfig).forEach((path) => {
     // Regular match item name
     // eg.  router /user/:id === /user/chen
     const pathRegexp = pathToRegexp(path);
-    const menuKey = Object.keys(menuData).find(key => pathRegexp.test(`${key}`));
+    const menuKey = Object.keys(menuData).find((key) => pathRegexp.test(`${key}`));
     let menuItem = {};
     // If menuKey is not empty
     if (menuKey) {

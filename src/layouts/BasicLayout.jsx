@@ -7,6 +7,7 @@ import { Route, Redirect, Switch, routerRedux } from 'dva/router';
 import { ContainerQuery } from 'react-container-query';
 import classNames from 'classnames';
 import { enquireScreen, unenquireScreen } from 'enquire-js';
+import { RouteContext } from '@ant-design/pro-layout';
 import GlobalHeader from '../components/GlobalHeader';
 import SiderMenu from '../components/SiderMenu';
 import NotFound from '../routes/Exception/404';
@@ -239,7 +240,7 @@ class BasicLayout extends React.PureComponent {
                   component={item.component}
                   exact={item.exact}
                   authority={item.authority}
-                  redirectPath="/exception/403"
+                  redirectPath="/AI/403"
                 />
               ))}
               <Redirect exact from="/" to={bashRedirect} />
