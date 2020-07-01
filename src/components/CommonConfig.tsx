@@ -1,11 +1,11 @@
 import React, { useState, useEffect, Fragment } from 'react';
 import { Input, Button, Card, Select, Form, message } from 'antd';
 import { connect } from 'dva';
+import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
 import _ from 'lodash';
 import moment from 'moment';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { routerRedux, Link } from 'dva/router';
+import TrimInput from './TrimInput';
 import { batchRelated, batchCancel } from '@/services/nameList';
 
 const { Option } = Select;
@@ -30,12 +30,23 @@ interface Props {
   form: any;
   namelist: any;
   loading: boolean;
+  title: string;
+  value: any;
 }
+
+interface Item {
+    type: string;
+    label: string;
+    key: string;
+    placeholder: string;
+    optionValue?: any;
+  }
+
 function Index(props: Props) {
-  const { dispatch, form, namelist, loading } = props;
-  const { configValue, configNameList } = namelist;
+  const { dispatch, form, namelist, loading, title,value } = props;
+  const { configValue, ivrIntents, configNameList } = namelist;
   const { search } = window.location;
-  const { getFieldDecorator, validateFields, setFieldsValue } = form;
+  const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = form;
   const [cancelLoading, setCancelLoading] = useState(false);
   const [sureLoading, setSureLoading] = useState(false);
 
@@ -51,6 +62,7 @@ function Index(props: Props) {
   function handleOk() {
     validateFields((err: any, values: any) => {
       if (!err) {
+
         const { intent, triggerTime } = values;
         let { retry, sure } = values;
         if (sure === false) {
@@ -131,41 +143,53 @@ function Index(props: Props) {
         setCancelLoading(false);
       });
   }
-
-  function formRepeatChange(e: any) {
-    // setRepeat(e);
-    if (!e) {
-      const newConfigNameList = _.cloneDeep(configNameList);
-      if (newConfigNameList && newConfigNameList.length) {
-        newConfigNameList[0].retries = {};
-      }
-      dispatch({
-        type: 'namelist/save',
-        payload: { configNameList: newConfigNameList },
-      });
-    }
-  }
   const { status } = configValue;
   const triggerDisabled = status === 3 || status === 4;
+
+  function formatItem(item: Item) {
+    const { type, label, key, placeholder, optionValue } = item;
+    switch (type) {
+      case 'input':
+        return (
+          <Item label={label}>
+            {getFieldDecorator(key)(<TrimInput placeholder={placeholder} />)}
+          </Item>
+        );
+      case 'select':
+        return (
+          <Item label={label}>
+            {getFieldDecorator(key)(
+              <Select placeholder={placeholder} style={{ width: 300 }}>
+                {optionValue.map(() => (
+                  <Option value={1} key={1}>
+                    1
+                  </Option>
+                ))}
+              </Select>
+            )}
+          </Item>
+        );
+        case 'div': 
+        return (
+          <Item label={label} required>
+            <div style={{ marginLeft: 10 }}>{configNameList ? `${configNameList.length}` : null}</div>
+          </Item>
+        );
+      default:
+        return (
+          <Item label={label}>
+            {getFieldDecorator(key)(<TrimInput placeholder={placeholder} />)}
+          </Item>
+        );
+    }
+  }
   return (
-    <PageHeaderWrapper
-      title="意图配置"
-      breadcrumb={{
-        routes: [
-          { path: '/AI/intention/list', breadcrumbName: '意图列表' },
-          { path: '/AI/intetion/config', breadcrumbName: '意图配置' },
-        ],
-        itemRender: (route, params, routes, paths) => {
-          return <Link to={route.path}>{route.breadcrumbName}</Link>;
-        },
-      }}
-    >
     <Card
       bordered={false}
       loading={loading}
       title={
         <Fragment>
-          意图配置
+          {title}
           <a
             href="javascript:;"
             style={{
@@ -183,8 +207,9 @@ function Index(props: Props) {
       }
     >
       <Form {...formItemLayout}>
-        <Item label="意图ID" required>
-          <div style={{ marginLeft: 10 }}>{configNameList ? `${configNameList.length}` : null}</div>
+        {value.map((item: Item) => formatItem(item))}
+        {/* <Item label="意图ID" required>
+       
         </Item>
         <Item {...formItemLayout} label="意图名称">
           {getFieldDecorator('name', {
@@ -219,7 +244,7 @@ function Index(props: Props) {
               </Option>
             </Select>
           )}
-        </Item>
+        </Item> */}
         <Item {...tailLayout}>
           <Button
             htmlType="submit"
@@ -252,7 +277,6 @@ function Index(props: Props) {
         </Item>
       </Form>
     </Card>
-    </PageHeaderWrapper>
   );
 }
 
@@ -261,8 +285,5 @@ const mapStateToProps = ({
   loading: {
     effects: { 'namelist/getConfigValue': loading },
   },
-}:{
-  namelist:any;
-  loading:any;
 }) => ({ namelist, loading });
 export default connect(mapStateToProps)(Form.create({})(Index));

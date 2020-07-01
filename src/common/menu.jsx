@@ -56,6 +56,16 @@ const menuData = [
         icon: "profile",
       },
       {
+        name: '规则配置',
+        path: 'rule',
+        icon: "barcode",
+      },
+      {
+        name: '词槽配置',
+        path: 'slot',
+        icon: "build",
+      },
+      {
         name: '简历解析',
         hideInMenu: true,
         path: 'resume',

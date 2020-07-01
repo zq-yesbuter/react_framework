@@ -152,6 +152,61 @@ export const getRouterData = (app) => {
         import('../routes/Intention/Config')
       ),
     },
+    // 意图中的语料配置
+    '/AI/intention/corpus': {
+      component: dynamicWrapper(app, ['intent', 'namelist'], () =>
+        import('../routes/Intention/Corpus/Index')
+      ),
+    },
+    // 规则配置
+    '/AI/rule': {
+      component: dynamicWrapper(app, ['rule', 'namelist'], ReadSubRoutes),
+    },
+    // 规则配置列表
+    '/AI/rule/list': {
+      component: dynamicWrapper(app, ['rule', 'namelist'], () =>
+        import('../routes/Rule/Index')
+      ),
+    },
+    // 规则配置
+    '/AI/rule/config': {
+      component: dynamicWrapper(app, ['rule', 'namelist'], () =>
+        import('../routes/Rule/Config')
+      ),
+    },
+    // 规则详情配置
+    '/AI/rule/detail': {
+      component: dynamicWrapper(app, ['rule', 'namelist'], () =>
+        import('../routes/Rule/Detail')
+      ),
+    },
+    // 规则编辑
+    '/AI/rule/detail/config': {
+      component: dynamicWrapper(app, ['rule', 'namelist'], () =>
+        import('../routes/Rule/Detail/Config')
+      ),
+    },
+    // 词槽配置
+    '/AI/slot': {
+      component: dynamicWrapper(app, ['slot', 'namelist'], ReadSubRoutes),
+    },
+    '/AI/slot/list': {
+      component: dynamicWrapper(app, ['slot', 'namelist'], () =>
+        import('../routes/Slot/Index')
+      ),
+    },
+    // 词槽配置
+    '/AI/slot/config': {
+      component: dynamicWrapper(app, ['slot', 'namelist'], () =>
+        import('../routes/Slot/Config')
+      ),
+    },
+    // 词汇配置
+    '/AI/slot/vocalbulary': {
+      component: dynamicWrapper(app, ['slot', 'namelist'], () =>
+        import('../routes/Slot/Vocalbulary')
+      ),
+    },
     // 简历解析
     '/AI/resume': {
       component: dynamicWrapper(app, [], () => import('../routes/Resume/Index')),

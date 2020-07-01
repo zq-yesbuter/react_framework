@@ -4,35 +4,54 @@ import { Card, message, Button, Modal, Menu, Upload, Icon } from 'antd';
 import queryString from 'query-string';
 import QueryForm from '@/components/QueryForm';
 import renderTable from '@/components/SelectTable';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import { routerRedux, Link } from 'dva/router';
+import { Setting } from '@/utils/tscontant';
 import renderColumns from './Colums';
 import AddModal from './AddModal';
-import UploadModal from './UploadModal';
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import { routerRedux, Link } from 'dva/router';
 
 interface Props {
   dispatch: Function;
-  intent: any;
+  slot: any;
   loading: boolean;
 }
 
 function Index(props: Props) {
-  const { dispatch, intent, loading } = props;
-  const { nameList, nameCur, namePageSize, nameRequest, batchDetail, nameTotal } = intent;
+  const { dispatch, slot, loading } = props;
+  const { nameList, nameCur, namePageSize, nameRequest, batchDetail, nameTotal } = slot;
+  const { search } = window.location;
+  const { id, intent, dataStatus } = queryString.parse(search);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [showVisible, setShowVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
   const [fileList, setFileList] = useState([] as any[]);
 
-  const query = [{type:'input',label:'搜索', key:'name', placeholder:'请输入'},
-  {type:'select',label:'状态筛选',key:'status',placeholder:'请选择状态',optionValue:[]}];
+  useEffect(() => {
+    return () => {
+      dispatch({
+        type: 'picture/init',
+      });
+    };
+  }, []);
+
+  const query = [
+    { type: 'input', label: '搜索', key: 'name', placeholder: '请输入' },
+    {
+      type: 'select',
+      label: '状态筛选',
+      key: 'status',
+      placeholder: '请选择状态',
+      optionValue: [],
+    },
+  ];
+
   const importMenu = (
     <Menu>
       <Menu.Item key={2}>批量导出沟通汇总信息</Menu.Item>
     </Menu>
   );
 
-  const setting: any = {
+  const setting: Setting = {
     current: nameCur,
     columns: renderColumns(dispatch, intent, setShowVisible),
     pageSize: namePageSize,
@@ -43,22 +62,22 @@ function Index(props: Props) {
     total: nameTotal,
     onChange: (pageNum: number, pageSize: number) => {
       dispatch({
-        type: 'intent/fetchBatchDetail',
-        payload: { pageNum, pageSize, intent },
+        type: 'slot/fetchBatchDetail',
+        payload: { pageNum, pageSize, id, intent },
       });
       dispatch({
-        type: 'intent/save',
+        type: 'slot/save',
         payload: { nameRequest: { ...nameRequest, pageNum, pageSize } },
       });
       setSelectedRowKeys([]);
     },
     onSizeChange: (pageSize: number) => {
       dispatch({
-        type: 'intent/fetchBatchDetail',
-        payload: { pageSize, intent },
+        type: 'slot/fetchBatchDetail',
+        payload: { pageSize, id, intent },
       });
       dispatch({
-        type: 'intent/save',
+        type: 'slot/save',
         payload: { nameRequest: { ...nameRequest, pageSize } },
       });
       setSelectedRowKeys([]);
@@ -72,35 +91,26 @@ function Index(props: Props) {
     },
     importMenu,
     hasImport: true,
-    // eslint-disable-next-line no-shadow
-    formatOperation: (selectedRowKeys: string[] | number[], hasSelected: string[] | number[]) => {
-      return (
-        <div style={{ marginTop: 10 }}>
-          <Button disabled={!hasSelected}>
-            删除
-          </Button>
-          <span style={{ marginLeft: 8 }}>
-            {hasSelected ? `已选择 ${selectedRowKeys.length} 项` : ''}
-          </span>
-        </div>
-      );
-    },
+    hideSelect: true,
   };
 
   // 筛选条件
   function onSubmit(values: any) {
-    const payload = { intent, ...values };
+    const payload = dataStatus
+      ? { dataStatus: 2, id, intent, ...values }
+      : { id, intent, ...values };
     dispatch({
-      type: 'intent/fetchBatchDetail',
+      type: 'slot/fetchBatchDetail',
       payload,
     });
     dispatch({
-      type: 'intent/save',
-      payload: { nameRequest: { ...nameRequest, ...values } },
+      type: 'slot/save',
+      payload: dataStatus
+        ? { nameRequest: { ...nameRequest, dataStatus: 2, ...values } }
+        : { nameRequest: { ...nameRequest, ...values } },
     });
   }
-
-  function beforeUpload(file:any) {
+  function beforeUpload(file: any) {
     const fileType = [
       '.xls',
       '.xlsx',
@@ -131,14 +141,13 @@ function Index(props: Props) {
     beforeUpload,
     fileList,
   };
-
   return (
     <PageHeaderWrapper
-      title="语料配置"
+      title="场景配置"
       breadcrumb={{
         routes: [
-          { path: '/AI/intention/list', breadcrumbName: '意图配置' },
-          { path: '/AI/intention/corpus', breadcrumbName: '语料配置' },
+          { path: '/AI/scene/list', breadcrumbName: '场景配置' },
+          { path: '/AI/scene/list', breadcrumbName: '场景列表' },
         ],
         itemRender: (route, params, routes, paths) => {
           return <Link to={route.path}>{route.breadcrumbName}</Link>;
@@ -149,46 +158,38 @@ function Index(props: Props) {
         bordered={false}
         title={
           <Fragment>
-            语料配置
-          <a
-            href="javascript:;"
-            style={{
-              padding: '5px 15px',
-              fontSize: 14,
-            }}
-            onClick={e => {
-              e.preventDefault();
-              dispatch({
-                type: 'intent/save',
-                payload: { nameRequest: { pageSize: 50, pageNum: 1 } },
-              });
-              dispatch(routerRedux.goBack());
-            }}
-          >
-            返回上一级
-          </a>
-        </Fragment>
+            词汇配置
+            <a
+              href="javascript:;"
+              style={{
+                padding: '5px 15px',
+                fontSize: 14,
+              }}
+              onClick={(e) => {
+                e.preventDefault();
+                dispatch(routerRedux.goBack());
+              }}
+            >
+              返回上一级
+            </a>
+          </Fragment>
         }
         extra={
-          <div style={{display:'flex'}}>
+          <div style={{ display: 'flex' }}>
             <Upload {...uploadProps}>
-              <Button type="primary" style={{marginRight:10}}>
+              <Button type="primary" style={{ marginRight: 10 }}>
                 <Icon type="upload" />
                 批量导入
               </Button>
             </Upload>
-            {/* <Button icon="upload" type="primary" onClick={() => {setUploadVisible(true);}} style={{marginRight:10}}>
-              批量导入 */}
-            {/* </Button> */}
             <Button
               icon="plus"
               type="primary"
               onClick={() => {
                 setAddVisible(true);
-                // dispatch(routerRedux.push({ pathname: '/AI/scene/add' }));
               }}
             >
-              单条新增
+              新增场景
             </Button>
           </div>
         }
@@ -200,9 +201,11 @@ function Index(props: Props) {
           }}
         />
         {renderTable(setting)}
-        <AddModal 
+        <AddModal
           visible={addVisible}
-          cancel={() => {setAddVisible(false);}}
+          cancel={() => {
+            setAddVisible(false);
+          }}
         />
       </Card>
     </PageHeaderWrapper>
@@ -211,16 +214,13 @@ function Index(props: Props) {
 
 export default connect(
   ({
-    intent,
+    slot,
     loading: {
-      effects: { 'intent/fetchBatchDetail': loading },
+      effects: { 'slot/fetchBatchDetail': loading },
     },
-  }:{
-    intent:any;
-    loading:any;
   }) => {
     return {
-      intent,
+      slot,
       loading,
     };
   }

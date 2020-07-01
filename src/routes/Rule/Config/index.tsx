@@ -4,9 +4,9 @@ import { connect } from 'dva';
 import queryString from 'query-string';
 import _ from 'lodash';
 import moment from 'moment';
+import { batchRelated, batchCancel } from '@/services/nameList';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { routerRedux, Link } from 'dva/router';
-import { batchRelated, batchCancel } from '@/services/nameList';
 
 const { Option } = Select;
 const { Item } = Form;
@@ -33,9 +33,9 @@ interface Props {
 }
 function Index(props: Props) {
   const { dispatch, form, namelist, loading } = props;
-  const { configValue, configNameList } = namelist;
+  const { configValue, ivrIntents, configNameList } = namelist;
   const { search } = window.location;
-  const { getFieldDecorator, validateFields, setFieldsValue } = form;
+  const { getFieldDecorator, validateFields, getFieldValue, setFieldsValue } = form;
   const [cancelLoading, setCancelLoading] = useState(false);
   const [sureLoading, setSureLoading] = useState(false);
 
@@ -145,15 +145,16 @@ function Index(props: Props) {
       });
     }
   }
+
   const { status } = configValue;
   const triggerDisabled = status === 3 || status === 4;
   return (
     <PageHeaderWrapper
-      title="意图配置"
+      title="规则配置"
       breadcrumb={{
         routes: [
-          { path: '/AI/intention/list', breadcrumbName: '意图列表' },
-          { path: '/AI/intetion/config', breadcrumbName: '意图配置' },
+          { path: '/AI/scene/list', breadcrumbName: '场景配置' },
+          { path: '/AI/scene/list', breadcrumbName: '场景列表' },
         ],
         itemRender: (route, params, routes, paths) => {
           return <Link to={route.path}>{route.breadcrumbName}</Link>;
@@ -165,7 +166,7 @@ function Index(props: Props) {
       loading={loading}
       title={
         <Fragment>
-          意图配置
+          规则配置
           <a
             href="javascript:;"
             style={{
@@ -183,19 +184,19 @@ function Index(props: Props) {
       }
     >
       <Form {...formItemLayout}>
-        <Item label="意图ID" required>
+        <Item label="规则ID" required>
           <div style={{ marginLeft: 10 }}>{configNameList ? `${configNameList.length}` : null}</div>
         </Item>
-        <Item {...formItemLayout} label="意图名称">
+        <Item {...formItemLayout} label="规则名称">
           {getFieldDecorator('name', {
             rules: [
               {
                 required: true,
-                message: '意图名称必填！',
+                message: '规则名称必填！',
               },
             ],
             initialValue: configValue && configValue.id ? configValue.name : null,
-          })(<Input style={{ width: '300px' }} placeholder="请输入意图名称" />)}
+          })(<Input style={{ width: '300px' }} placeholder="请输入规则名称" />)}
         </Item>
         <Item {...formItemLayout} label="启用状态">
           {getFieldDecorator('sure', {
@@ -261,8 +262,5 @@ const mapStateToProps = ({
   loading: {
     effects: { 'namelist/getConfigValue': loading },
   },
-}:{
-  namelist:any;
-  loading:any;
 }) => ({ namelist, loading });
 export default connect(mapStateToProps)(Form.create({})(Index));
