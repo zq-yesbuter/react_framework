@@ -37,7 +37,7 @@ class QueryForm extends React.Component<IFormComponentProps> {
     return (
       <Form layout="inline" onSubmit={this.handleSubmit}>
         <FormItem label="时间">{getFieldDecorator('time',{
-          initialValue:moment().set('month', 4) 
+          initialValue:moment(),
         })(
           <MonthPicker />)}</FormItem>
         <FormItem>

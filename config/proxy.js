@@ -125,6 +125,11 @@ const proxy = {
     changeOrigin: true,
     pathRewrite,
   },
+  '/rpt': {
+    target: `http://${proxyUrl}:${proxyPort}${proxyPath}`,
+    changeOrigin: true,
+    pathRewrite,
+  },
 };
 
 module.exports = proxy;

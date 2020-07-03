@@ -45,26 +45,27 @@ const menuData = [
       //   path: 'outgoing/namelist',
       //   icon: 'align-left',
       // },
-      {
-        name: '场景配置',
-        path: 'scene',
-        icon: "control",
-      },
-      {
-        name: '意图配置',
-        path: 'intention',
-        icon: "profile",
-      },
-      {
-        name: '规则配置',
-        path: 'rule',
-        icon: "barcode",
-      },
-      {
-        name: '词槽配置',
-        path: 'slot',
-        icon: "build",
-      },
+
+      // {
+      //   name: '场景配置',
+      //   path: 'scene',
+      //   icon: "control",
+      // },
+      // {
+      //   name: '意图配置',
+      //   path: 'intention',
+      //   icon: "profile",
+      // },
+      // {
+      //   name: '规则配置',
+      //   path: 'rule',
+      //   icon: "barcode",
+      // },
+      // {
+      //   name: '词槽配置',
+      //   path: 'slot',
+      //   icon: "build",
+      // },
       {
         name: '简历解析',
         hideInMenu: true,

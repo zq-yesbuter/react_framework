@@ -268,3 +268,11 @@ export function formatNameType(ivrIntents, key, keyValue, value, record) {
   const ivrValue = ivrIntents && ivrIntents.find(e => e[key] === keyValue) || {};
   return ivrValue && Object.keys(ivrValue).length ? (operator === appCode && keyValue !== '0' && appCode ? `${ivrValue[value]}(重复外呼)` : ivrValue[value]) : null
 }
+
+export function objToArrObj(obj) {
+  let arr = [];
+  for(let i in obj){
+    arr.push({[i]:obj[i]})
+  }
+  return arr;
+}

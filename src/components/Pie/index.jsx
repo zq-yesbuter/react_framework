@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Chart, Tooltip, Geom, Coord } from 'bizcharts';
 import { DataView } from '@antv/data-set';
-import { Divider } from 'antd';
+import { Divider, Icon } from 'antd';
 import classNames from 'classnames';
 import ReactFitText from 'react-fittext';
 import Debounce from 'lodash-decorators/debounce';
@@ -14,9 +14,13 @@ import './index.less';
 export default class Pie extends Component {
   state = {
     legendData: [],
+    staticLegendData: [],
     legendBlock: false,
     selIndex: 0,
+    start: 0,
+    length: 3,
   };
+
 
   componentDidMount() {
     this.getLegendData();
@@ -29,7 +33,8 @@ export default class Pie extends Component {
     if (data !== nextProps.data) {
       // because of charts data create when rendered
       // so there is a trick for get rendered time
-      const { legendData } = this.state;
+      const { legendData, staticLegendData } = this.state;
+      this.setState({staticLegendData:[...staticLegendData]});
       this.setState(
         {
           legendData: [...legendData],
@@ -46,18 +51,34 @@ export default class Pie extends Component {
     this.resize.cancel();
   }
 
-  getG2Instance = chart => {
+  handleListChange = e => {
+    e && e.preventDefault();
+    const { start, length, staticLegendData } = this.state;
+    const s = (start + length) >= staticLegendData.length ? 0 : start + length;
+    const newLegendData = staticLegendData.slice(s,s+length);
+    this.setState({
+      legendData: newLegendData.map((item,i) => (i===0 ? {...item,checked:true} : {...item})),
+    });
+    this.setState(state => {
+      return ({
+        ...state,
+        start: s,
+      })
+    });
+  }
+
+  getG2Instance = (chart) => {
     this.chart = chart;
   };
 
   // for custom lengend view
   getLegendData = () => {
-    const { selIndex } = this.state;
+    const { selIndex, start, length } = this.state;
     if (!this.chart) return;
     const geom = this.chart.getAllGeoms()[0]; // 获取所有的图形
     const items = geom.get('dataArray') || []; // 获取图形对应的
 
-    let legendData = items.map(item => {
+    let legendData = items.map((item) => {
       /* eslint no-underscore-dangle:0 */
       const origin = item[0]._origin;
       origin.color = item[0].color;
@@ -66,16 +87,17 @@ export default class Pie extends Component {
     });
     const { lengendClick } = this.props;
     if (lengendClick) {
-      legendData = legendData.map(
-        (item, i) => (selIndex === i ? { ...item, checked: false } : { ...item })
+      legendData = legendData.map((item, i) =>
+        selIndex === i ? { ...item, checked: false } : { ...item }
       );
     }
     this.setState({
-      legendData,
+      legendData:legendData.slice(start,start+length),
+      staticLegendData:legendData,
     });
   };
 
-  handleRoot = n => {
+  handleRoot = (n) => {
     this.root = n;
   };
 
@@ -85,7 +107,7 @@ export default class Pie extends Component {
       const newItem = item;
       newItem.checked = !newItem.checked;
       let { legendData } = this.state;
-      legendData = legendData.map(item => ({ ...item, checked: true }));
+      legendData = legendData.map((item) => ({ ...item, checked: true }));
       legendData[i] = newItem;
       // this.setState({ selIndex: i });
       // if (this.chart) {
@@ -103,10 +125,10 @@ export default class Pie extends Component {
     const { legendData } = this.state;
     legendData[i] = newItem;
 
-    const filteredLegendData = legendData.filter(l => l.checked).map(l => l.x);
+    const filteredLegendData = legendData.filter((l) => l.checked).map((l) => l.x);
 
     if (this.chart) {
-      this.chart.filter('x', val => filteredLegendData.indexOf(val) > -1);
+      this.chart.filter('x', (val) => filteredLegendData.indexOf(val) > -1);
     }
 
     this.setState({
@@ -156,7 +178,8 @@ export default class Pie extends Component {
       lengendClick,
     } = this.props;
 
-    const { legendData, legendBlock } = this.state;
+    const { legendData, legendBlock, staticLegendData } = this.state;
+    console.log('legendData==>',legendData,'staticLegendData===>',staticLegendData)
     const pieClassName = classNames('pie', className, {
       hasLegend: !!hasLegend,
       legendBlock: legendBlock,
@@ -191,7 +214,7 @@ export default class Pie extends Component {
     if (percent) {
       selected = false;
       tooltip = false;
-      formatColor = value => {
+      formatColor = (value) => {
         if (value === '占比') {
           return color || 'rgba(24, 144, 255, 0.85)';
         } else {
@@ -312,6 +335,11 @@ export default class Pie extends Component {
                 </span>
               </li>
             ))}
+            {staticLegendData.length > 3 && 
+              <li style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
+                <a onClick={this.handleListChange}>换一换</a>
+              </li>
+            }
           </ul>
         )}
       </div>
