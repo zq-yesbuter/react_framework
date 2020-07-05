@@ -78,23 +78,6 @@ export default {
         });
       }
     },
-
-    *initSubsQueue({ payload }, { call, put, all }) {
-      let response = {};
-      try {
-        [response] = yield all([call(queryCurrent)]);
-      } catch (error) {
-        console.warn(error);
-        response = {};
-        return;
-      }
-      if (response) {
-        yield put({
-          type: 'save',
-          payload: { currentUser: response },
-        });
-      }
-    },
   },
   reducers: {
     save(state, { payload }) {

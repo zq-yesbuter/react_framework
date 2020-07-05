@@ -1,19 +1,20 @@
 import React from 'react';
-import { Form, Button, DatePicker  } from 'antd';
+import { Form, Button, DatePicker ,TreeSelect } from 'antd';
 import moment from 'moment';
 import {connect} from 'dva'; 
 import { FormComponentProps } from 'antd/lib/form/Form';
 
+const { TreeNode } = TreeSelect;
 const FormItem = Form.Item;
 const { MonthPicker } = DatePicker;
 interface IFormComponentProps extends FormComponentProps {
   onSubmit: Function;
+  report: any;
 }
 class QueryForm extends React.Component<IFormComponentProps> {
   constructor(props: IFormComponentProps) {
     super(props);
   }
-
 
   handleSubmit = (e: any) => {
     e.preventDefault();
@@ -27,15 +28,53 @@ class QueryForm extends React.Component<IFormComponentProps> {
       }
     });
   };
+  loop = (data) => {
+    return data && data.map(item => {
+      const title = (
+        <span className="title">{item.name}</span>
+      );
+      if (item.children && item.children.length) {
+        return (
+          <TreeNode value={item.id} title={title} item={item}>
+            {this.loop(item.children)}
+          </TreeNode>
+        );
+      } else {
+        return <TreeNode value={item.id} title={title} item={item} />;
+      }
+    });
+  };
   render(){
     const {
       form,
       onSubmit,
+      report: {treeDepartList},
     } = this.props;
     const { getFieldDecorator, resetFields } = form;
-
     return (
       <Form layout="inline" onSubmit={this.handleSubmit}>
+        <FormItem label="所属部门">
+          {getFieldDecorator('tanentId', {
+            // initialValue:!!value && Object.keys(value).length ? value.tenantId && format(value.tenantId,baseDepartList) : null,
+            // rules: [
+            //   {
+            //     required: true,
+            //     message: '所属部门必填！',
+            //   },
+            // ],
+          })(<TreeSelect
+            showSearch
+            style={{ width: 200 }}
+            // value={this.state.value}
+            dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
+            placeholder="请选择部门"
+            allowClear
+            treeDefaultExpandAll
+            // onChange={this.onChange}
+          >
+            {this.loop(treeDepartList)}
+          </TreeSelect>)}
+        </FormItem>
         <FormItem label="时间">{getFieldDecorator('time',{
           initialValue:moment(),
         })(
@@ -62,11 +101,11 @@ class QueryForm extends React.Component<IFormComponentProps> {
 }
 
 export default connect(({
-  namelist,
+  report,
 }: {
-  namelist: any;
+  report: any;
 }) => {
   return {
-    namelist,
+    report,
   };
 })(Form.create({})(QueryForm));

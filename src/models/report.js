@@ -4,6 +4,7 @@ import { getReport, getScene, getOperation } from '../services/report';
 import {
   getIvrIntents,
 } from '../services/nameList';
+import { fetchDepartment } from '../services/auth';
 const now = moment().subtract(14, 'days');
 const deadLine = moment();
 const format = 'YYYY-MM-DD HH:mm:ss';
@@ -57,10 +58,50 @@ export default {
         },
       });
     },
+    // 获取组织信息
+    *fetchDepartment({ payload }, { call, put, select }) {
+      try {
+        const departList = yield call(fetchDepartment,payload);
+        yield put({
+          type: 'formatDepartList',
+          payload: {
+            departList,
+          },
+        });
+      } catch (e) {
+        // return Promise.reject(e);
+      }
+    },
   },
   reducers: {
     save(state, { payload }) {
       return { ...state, ...payload };
+    },
+    formatDepartList(state, { payload }) {
+      const { departList = [] } = payload;
+      const cloneList = _.cloneDeep(departList);
+      const idMapping = cloneList.reduce((acc, el, i) => {
+        acc[el.id] = i;
+        return acc;
+      }, {});
+      let root = {};
+      cloneList.forEach(el => {
+        // 判断根节点
+        if (!el.parentId) {
+          root = el;
+          return;
+        }
+        // 用映射表找到父元素
+        const parentEl = cloneList[idMapping[el.parentId]];
+        // 把当前元素添加到父元素的`children`数组中
+        parentEl.children = [...(parentEl.children || []), el];
+      });
+      return {
+        ...state,
+        // departList: [root],
+        // baseDepartList: departList,
+        treeDepartList: [root],
+      };
     },
   },
   subscriptions: {
@@ -71,15 +112,10 @@ export default {
           dispatch({
             type: 'fetchIvrIntents',
           });
-        //     dispatch({
-        //       type: 'getReport',
-        //     });
-        //     dispatch({
-        //       type:'getScene',
-        //     })
-        //     dispatch({
-        //       type:'getOperation',
-        //     })
+          dispatch({
+            type: 'fetchDepartment',
+            payload: { pageSize: 1000, pageNum: 1 },
+          });
         }
       });
     },

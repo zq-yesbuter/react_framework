@@ -17,6 +17,11 @@ const tabList = [
   },
 ];
 const format = 'YYYY-MM-DD HH:mm:ss';
+const noData = [{
+  x: '暂无数据',
+  y: 1,
+  z: '0s'
+}];
 interface Props {
   dispatch: Function;
   report: any;
@@ -82,16 +87,19 @@ function Index(props: Props) {
       type: 'report/getScene',
       payload,
     }).then((list: Array<List>) => {
-      const strData1 = list.map(({ count, total_time_elapsed_sec, scene, remark }) => ({
-        x: formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
-        y: count,
-        z: `${total_time_elapsed_sec}s`,
-        remark,
-      }));
-      setData1(strData1);
+      console.log('list====>', list);
       if (list && list.length) {
+        // 第一行左侧
+        const strData1 = list.map(({ count, total_time_elapsed_sec, scene, remark }) => ({
+          x: formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
+          y: count,
+          z: `${total_time_elapsed_sec}s`,
+          remark,
+        }));
+        setData1(strData1);
+        // 第一行右侧
         const remark = objToArrObj(list[0].remark);
-        if (remark.length) {
+        if (remark  && remark.length) {
           let remarkList = [] as any[];
           remark.map((item) => {
             Object.keys(item).forEach((i) => {
@@ -105,8 +113,11 @@ function Index(props: Props) {
           }));
           setData2(remarkList);
         } else {
-          setData2([]);
+          setData2(noData);
         }
+      } else {
+        setData1(noData);
+        setData2(noData);
       }
     });
 
@@ -115,16 +126,17 @@ function Index(props: Props) {
       type: 'report/getOperation',
       payload,
     }).then((list) => {
-      const strData3 = list.map(({ count, total_time_elapsed_sec, operator }) => ({
-        x: operator,
-        y: count,
-        z: `${total_time_elapsed_sec}s`,
-      }));
-      setData3(strData3);
-      console.log('strData3===>', strData3);
       if (list && list.length) {
+        // 第二行左侧
+        const strData3 = list.map(({ count, total_time_elapsed_sec, operator }) => ({
+          x: operator,
+          y: count,
+          z: `${total_time_elapsed_sec}s`,
+        }));
+        setData3(strData3);
+        // 第二行右侧
         const scene = objToArrObj(list[0].scene);
-        if (scene.length) {
+        if (scene && scene.length) {
           let sceneList = [] as any[];
           scene.map((item) => {
             Object.keys(item).forEach((i) => {
@@ -140,9 +152,12 @@ function Index(props: Props) {
             z: `${total_time_elapsed_sec}s`,
           }));
           setData4(sceneList);
+        }else {
+          setData4(noData);
         }
       } else {
-        setData4([]);
+        setData3(noData);
+        setData4(noData);
       }
     });
 

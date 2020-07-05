@@ -251,7 +251,7 @@ export default class Pie extends Component {
       dimension: 'x',
       as: 'percent',
     });
-
+    
     return (
       <div ref={this.handleRoot} className={pieClassName} style={style}>
         <ReactFitText maxFontSize={25}>
@@ -291,7 +291,7 @@ export default class Pie extends Component {
 
         {hasLegend && (
           <ul className="legend">
-            {legendData.map((item, i) => (
+            {legendData && legendData.filter(x => x.x !== '暂无数据').map((item, i) => (
               <li
                 key={item.x}
                 onClick={() => this.handleLegendClick(item, i)}
