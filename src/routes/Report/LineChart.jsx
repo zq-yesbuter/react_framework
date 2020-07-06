@@ -11,7 +11,7 @@ var data = {
 
 export default class OnlineEcharts extends Component {
   getOption = () => {
-    const { xAxisData, monthData } = this.props;
+    const { xAxisData, monthData, legend } = this.props;
 
     const yAxis = [
       {
@@ -25,81 +25,10 @@ export default class OnlineEcharts extends Component {
         },
       },
     ];
-    const series = [
-      // {
-      //   name: '立案侦查',
-      //   stack: 'aa',
-      //   type: 'bar',
-      //   label: {
-      //     show: true,
-      //     textStyle: {
-      //       color: '#fff',
-      //     },
-      //     position: 'inside',
-      //     formatter: function (p) {
-      //       return p.value > 0 ? p.value : '';
-      //     },
-      //   },
-      //   yAxisIndex: 0,
-      //   data: data.attainment_rate,
-      // },
-      // {
-      //   name: '失联跑路',
-      //   type: 'bar',
-      //   stack: 'aa',
-      //   label: {
-      //     show: true,
-      //     textStyle: {
-      //       color: '#fff',
-      //     },
-      //     position: 'inside',
-      //     formatter: function (p) {
-      //       return p.value > 0 ? p.value : '';
-      //     },
-      //   },
-      //   yAxisIndex: 0,
-      //   data: data.productivity_1,
-      // },
-      {
-        name: '外呼人数',
-        type: 'bar',
-        stack: 'aa',
-        label: {
-          show: true,
-          textStyle: {
-            color: '#fff',
-          },
-          position: 'inside',
-          formatter: function (p) {
-            return p.value > 0 ? p.value : '';
-          },
-        },
-        yAxisIndex: 0,
-        data: monthData,
-      },
-    ];
-
-    // [
-    //   {
-    //     name: '外呼人数',
-    //     type: 'bar',
-    //     barWidth: 15,
-    //     data: monthData,
-    //     color:'#1890ff',
-    //     itemStyle: {
-    //       normal: {
-    //         label: {
-    //           show: true, //开启显示
-    //           position: 'top', //在上方显示
-    //         }
-    //       }
-    //     },
-    //   },
-    // ];
 
     return {
       legend: {
-        data: ['外呼人数'],
+        data: legend,
         top: '15%',
       },
       // hover上的数据
@@ -136,7 +65,7 @@ export default class OnlineEcharts extends Component {
         data: xAxisData,
       },
       yAxis,
-      series,
+      series:monthData,
     };
   };
   render() {

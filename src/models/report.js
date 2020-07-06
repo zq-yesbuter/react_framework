@@ -9,6 +9,7 @@ const now = moment().subtract(14, 'days');
 const deadLine = moment();
 const format = 'YYYY-MM-DD HH:mm:ss';
 const basicQuery = {
+  timeMerged: true,
   startTime: moment().startOf('month').format(format),
   endTime: moment().endOf('month').format(format),
 };
@@ -24,6 +25,7 @@ export default {
     reportList: [],
     sceneList: [],
     operList: [],
+    baseDepartList: [],
     ivrIntents: [],
   },
   effects: {
@@ -72,6 +74,9 @@ export default {
         // return Promise.reject(e);
       }
     },
+    *getDepartment({ payload }, { call }) {
+      return yield call(fetchDepartment,payload);
+    },
   },
   reducers: {
     save(state, { payload }) {
@@ -99,7 +104,7 @@ export default {
       return {
         ...state,
         // departList: [root],
-        // baseDepartList: departList,
+        baseDepartList: departList,
         treeDepartList: [root],
       };
     },
@@ -112,10 +117,10 @@ export default {
           dispatch({
             type: 'fetchIvrIntents',
           });
-          dispatch({
-            type: 'fetchDepartment',
-            payload: { pageSize: 1000, pageNum: 1 },
-          });
+          // dispatch({
+          //   type: 'fetchDepartment',
+          //   payload: { pageSize: 1000, pageNum: 1 },
+          // });
         }
       });
     },

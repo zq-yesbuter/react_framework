@@ -10,6 +10,7 @@ const { MonthPicker } = DatePicker;
 interface IFormComponentProps extends FormComponentProps {
   onSubmit: Function;
   report: any;
+  user: any;
 }
 class QueryForm extends React.Component<IFormComponentProps> {
   constructor(props: IFormComponentProps) {
@@ -35,12 +36,12 @@ class QueryForm extends React.Component<IFormComponentProps> {
       );
       if (item.children && item.children.length) {
         return (
-          <TreeNode value={item.id} title={title} item={item}>
+          <TreeNode value={item.tenantId} title={title} item={item}>
             {this.loop(item.children)}
           </TreeNode>
         );
       } else {
-        return <TreeNode value={item.id} title={title} item={item} />;
+        return <TreeNode value={item.tenantId} title={title} item={item} />;
       }
     });
   };
@@ -49,19 +50,14 @@ class QueryForm extends React.Component<IFormComponentProps> {
       form,
       onSubmit,
       report: {treeDepartList},
+      user: {currentUser = {}},
     } = this.props;
     const { getFieldDecorator, resetFields } = form;
     return (
       <Form layout="inline" onSubmit={this.handleSubmit}>
         <FormItem label="所属部门">
-          {getFieldDecorator('tanentId', {
-            // initialValue:!!value && Object.keys(value).length ? value.tenantId && format(value.tenantId,baseDepartList) : null,
-            // rules: [
-            //   {
-            //     required: true,
-            //     message: '所属部门必填！',
-            //   },
-            // ],
+          {getFieldDecorator('tenantId', {
+            initialValue:currentUser.tenantId,
           })(<TreeSelect
             showSearch
             style={{ width: 200 }}
@@ -102,10 +98,13 @@ class QueryForm extends React.Component<IFormComponentProps> {
 
 export default connect(({
   report,
+  user,
 }: {
   report: any;
+  user: any;
 }) => {
   return {
     report,
+    user,
   };
 })(Form.create({})(QueryForm));

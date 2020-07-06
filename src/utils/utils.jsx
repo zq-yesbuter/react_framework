@@ -276,3 +276,24 @@ export function objToArrObj(obj) {
   }
   return arr;
 }
+
+export function formatTree(departList = []) {
+  const cloneList = _.cloneDeep(departList);
+  const idMapping = cloneList.reduce((acc, el, i) => {
+    acc[el.id] = i;
+    return acc;
+  }, {});
+  let root = {};
+  cloneList.forEach(el => {
+    // 判断根节点
+    if (!el.parentId) {
+      root = el;
+      return;
+    }
+    // 用映射表找到父元素
+    const parentEl = cloneList[idMapping[el.parentId]] || {};
+    // 把当前元素添加到父元素的`children`数组中
+    parentEl.children = [...(parentEl.children || []), el];
+  });
+  return root;
+}

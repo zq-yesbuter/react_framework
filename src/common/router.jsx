@@ -84,7 +84,7 @@ export const getRouterData = (app) => {
     },
     // 外呼报表
     '/AI/report': {
-      component: dynamicWrapper(app, ['report'], () => import('../routes/Report')),
+      component: dynamicWrapper(app, ['user','report'], () => import('../routes/Report')),
     },
     // 实时数据
     '/AI/outgoing': {

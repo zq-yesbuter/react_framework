@@ -21,7 +21,6 @@ export default class Pie extends Component {
     length: 3,
   };
 
-
   componentDidMount() {
     this.getLegendData();
     this.resize();
@@ -34,10 +33,10 @@ export default class Pie extends Component {
       // because of charts data create when rendered
       // so there is a trick for get rendered time
       const { legendData, staticLegendData } = this.state;
-      this.setState({staticLegendData:[...staticLegendData]});
       this.setState(
         {
           legendData: [...legendData],
+          staticLegendData: [...staticLegendData],
         },
         () => {
           this.getLegendData();
@@ -54,17 +53,27 @@ export default class Pie extends Component {
   handleListChange = e => {
     e && e.preventDefault();
     const { start, length, staticLegendData } = this.state;
+    const { lengendClick } = this.props;
     const s = (start + length) >= staticLegendData.length ? 0 : start + length;
-    const newLegendData = staticLegendData.slice(s,s+length);
-    this.setState({
-      legendData: newLegendData.map((item,i) => (i===0 ? {...item,checked:true} : {...item})),
-    });
+    const newLegendData = staticLegendData.slice(s,s+length) || [];
+    if(newLegendData.length) {
+      newLegendData[0].checked = false;
+      lengendClick(newLegendData[0])
+    }
     this.setState(state => {
       return ({
         ...state,
+        legendData: newLegendData,
         start: s,
       })
     });
+    // this.setState(state => {
+    //   return ({
+    //     ...state,
+    //     legendData: newLegendData.map((item,i) => (i===0 ? {...item,checked:true} : {...item})),
+    //     start: s,
+    //   })
+    // });
   }
 
   getG2Instance = (chart) => {
@@ -105,7 +114,7 @@ export default class Pie extends Component {
     const { lengendClick } = this.props;
     if (lengendClick) {
       const newItem = item;
-      newItem.checked = !newItem.checked;
+      newItem.checked = false;
       let { legendData } = this.state;
       legendData = legendData.map((item) => ({ ...item, checked: true }));
       legendData[i] = newItem;
@@ -179,7 +188,6 @@ export default class Pie extends Component {
     } = this.props;
 
     const { legendData, legendBlock, staticLegendData } = this.state;
-    console.log('legendData==>',legendData,'staticLegendData===>',staticLegendData)
     const pieClassName = classNames('pie', className, {
       hasLegend: !!hasLegend,
       legendBlock: legendBlock,
@@ -251,7 +259,6 @@ export default class Pie extends Component {
       dimension: 'x',
       as: 'percent',
     });
-    
     return (
       <div ref={this.handleRoot} className={pieClassName} style={style}>
         <ReactFitText maxFontSize={25}>

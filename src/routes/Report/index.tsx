@@ -5,10 +5,10 @@ import { connect } from 'dva';
 import Pie from '@/components/Pie';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { routerRedux, Link } from 'dva/router';
-import { lineData, data1Obj, data2Obj, data3Obj, data4Obj } from './contant';
+import { lineData, data1Obj, data2Obj, data3Obj, data4Obj, mock } from './contant';
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
-import { formatTaskType, objToArrObj } from '@/utils/utils';
+import { formatTaskType, objToArrObj, formatTree } from '@/utils/utils';
 
 const tabList = [
   {
@@ -30,27 +30,81 @@ interface List {
   count: any;
   total_time_elapsed_sec: any;
   scene: string;
-  remark: any;
+  remark?: any;
+  operator?: any;
+}
+interface PieData {
+  x: string;
+  y: number;
+  z: string;
+  remark? : any;
+  scene?: any;
+}
+interface QueryData {
+  startTime: string;
+  endTime: string;
+  tenantId?: string | number;
+}
+
+function formatRemark(remark:any) {
+  let remarkList = [] as any[];
+  remark.map((item) => {
+    Object.keys(item).forEach((i) => {
+      remarkList.push({ x: i, ...item[i] });
+    });
+  });
+  return remarkList.map(({ count, total_time_elapsed_sec, x }) => ({
+    x,
+    y: count,
+    z: `${total_time_elapsed_sec}s`,
+  }));
+}
+
+function formatScene(ivrIntents:any,scene:any) {
+  let sceneList = [] as any[];
+  scene.map((item) => {
+    Object.keys(item).forEach((i) => {
+      sceneList.push({
+        x: formatTaskType(ivrIntents, 'scene', i, 'sceneDesc'),
+        ...item[i],
+      });
+    });
+  });
+  return sceneList.map(({ count, total_time_elapsed_sec, x }) => ({
+    x,
+    y: count,
+    z: `${total_time_elapsed_sec}s`,
+  }));
+}
+
+const fn = (source,res=[] as any[])=>{
+  source.forEach(el=>{
+    res.push(el);
+    el.children && el.children.length>0 ? fn(el.children,res) : ""
+  });
+  return res;
 }
 function Index(props: Props) {
   const { dispatch, report } = props;
-  const { ivrIntents } = report;
+  const { ivrIntents, baseDepartList } = report;
   const [monthData, setMonthData] = useState([] as any[]);
   const [month, setMonth] = useState(5);
   const [xAxisData, setXAxisData] = useState(['']);
-  const [data1, setData1] = useState([] as any[]);
-  const [data2, setData2] = useState([] as any[]);
-  const [data3, setData3] = useState([] as any[]);
-  const [data4, setData4] = useState([] as any[]);
+  const [data1, setData1] = useState(noData as Array<PieData>);
+  const [data2, setData2] = useState(noData as Array<PieData>);
+  const [data3, setData3] = useState(noData as Array<PieData>);
+  const [data4, setData4] = useState(noData as Array<PieData>);
+  const [legend, setLegend] = useState([] as any[]);
 
   // 筛选条件
   function onSubmit(values: any) {
-    const { time } = values;
+    const { time, tenantId } = values;
     // console.log('tim===>',time,moment(time).startOf('month').format(format),moment(time).endOf('month').format(format));
-    const payload = {
+    let payload:QueryData = {
       startTime: moment(time).startOf('month').format(format),
       endTime: moment(time).endOf('month').format(format),
     };
+    payload = tenantId ? {...payload, tenantId } : payload;
     const days = moment(time).daysInMonth();
     const month: number = moment(time).month() + 1;
     const axis: number[] = Array.from(new Array(days).keys());
@@ -59,35 +113,122 @@ function Index(props: Props) {
     }, []);
     setXAxisData(ss);
     setMonth(month);
-    // 查基本数据
     dispatch({
-      type: 'report/getReport',
-      payload,
-    }).then((list) => {
-      const newList = list.map((item) => ({
-        ...item,
-        time:
-          item.time.slice(-5)[0] === '0'
-            ? item.time.slice(-4).replace('-', '/')
-            : item.time.slice(-5).replace('-', '/'),
-      }));
-      const strucData = [] as any[];
-      ss.forEach((x) => {
-        if (newList.find((item) => item.time === x)) {
-          strucData.push(newList.find((item: { time: string }) => item.time === x).count);
-        } else {
-          strucData.push(0);
+      type: 'report/getDepartment',
+      payload: { pageSize: 1000, pageNum: 1 },
+    }).then((baseDepartList) => {
+      dispatch({
+        type: 'report/save',
+        payload: {treeDepartList: [formatTree(baseDepartList)]},
+      })
+      // 查基本数据
+      dispatch({
+        type: 'report/getReport',
+        payload,
+      }).then((list) => {
+        if(!list && !list.length){
+          setLegend([]);
+          setMonthData([]);
+          return;
         }
+        const newList = list.map((item) => ({
+          ...item,
+          time:
+            item.time.slice(-5)[0] === '0'
+              ? item.time.slice(-4).replace('-', '/')
+              : item.time.slice(-5).replace('-', '/'),
+        }));
+        let parentList = [] as any[];
+        newList.forEach(item => {
+          if(baseDepartList.find((val:{tenantId: string}) => item.tenantId === val.tenantId)){
+            const checkObj = baseDepartList.find(val => item.tenantId === val.tenantId);
+            const parentId = checkObj.parentId;
+            const name = checkObj.name;
+            const id = checkObj.id;
+            parentList.push({...item, parentId,name,id})
+          }
+        });
+        if(newList.every(item => item.tenantId === newList[0].tenantId)) {
+          let monthData = [] as any[];
+          ss.forEach((x) => {
+            if (newList.find((item) => item.time === x)) {
+              monthData.push(newList.find((item: { time: string }) => item.time === x).count);
+            } else {
+              monthData.push(0);
+            }
+          });
+          const series = [{
+            name: parentList[0] && parentList[0].name,
+            type: 'bar',
+            barWidth: 15,
+            stack: 'aa',
+            label: {
+              show: true,
+              textStyle: {
+                color: '#fff',
+              },
+              position: 'inside',
+              formatter: function (p) {
+                return p.value > 0 ? p.value : '';
+              },
+            },
+            yAxisIndex: 0,
+            data: monthData,
+          }];
+          const newLegend = [parentList[0] && parentList[0].name];
+          setLegend(newLegend);
+          setMonthData(series);
+          return;
+        }
+        // 有多个树状结构时
+        const root = formatTree(parentList) || {};
+        if(Object.keys(root).length && root.children){
+          const data = root.children;
+          const strucData = data.map(item => fn([item]));
+          let monthData = [] as any[];
+          strucData.map((val,index) => {
+            monthData[index] = {name:val[0].name,value:[]};
+            ss.forEach((x) => {
+              if (val.find((item) => item.time === x)) {
+                monthData[index].value.push(val.find((item: { time: string }) => item.time === x).count);
+              } else {
+                monthData[index].value.push(0);
+              }
+            });
+          })
+        }
+          const series = monthData.map(item => ({
+            name: item.name,
+            type: 'bar',
+            barWidth: 15,
+            stack: 'aa',
+            label: {
+              show: true,
+              textStyle: {
+                color: '#fff',
+              },
+              position: 'inside',
+              formatter: function (p) {
+                return p.value > 0 ? p.value : '';
+              },
+            },
+            yAxisIndex: 0,
+            data: item.value,
+          }));
+          const newLegend = monthData.map(item => item.name);
+          setLegend(newLegend);
+          setMonthData(series);
+     
+        
       });
-      setMonthData(strucData);
-    });
+    })
+   
 
     // 查场景数据
     dispatch({
       type: 'report/getScene',
       payload,
     }).then((list: Array<List>) => {
-      console.log('list====>', list);
       if (list && list.length) {
         // 第一行左侧
         const strData1 = list.map(({ count, total_time_elapsed_sec, scene, remark }) => ({
@@ -100,24 +241,9 @@ function Index(props: Props) {
         // 第一行右侧
         const remark = objToArrObj(list[0].remark);
         if (remark  && remark.length) {
-          let remarkList = [] as any[];
-          remark.map((item) => {
-            Object.keys(item).forEach((i) => {
-              remarkList.push({ x: i, ...item[i] });
-            });
-          });
-          remarkList = remarkList.map(({ count, total_time_elapsed_sec, x }) => ({
-            x,
-            y: count,
-            z: `${total_time_elapsed_sec}s`,
-          }));
-          setData2(remarkList);
-        } else {
-          setData2(noData);
+          const datalist = formatRemark(remark);
+          setData2(datalist);
         }
-      } else {
-        setData1(noData);
-        setData2(noData);
       }
     });
 
@@ -125,54 +251,24 @@ function Index(props: Props) {
     dispatch({
       type: 'report/getOperation',
       payload,
-    }).then((list) => {
+    }).then((list: Array<List>) => {
       if (list && list.length) {
         // 第二行左侧
-        const strData3 = list.map(({ count, total_time_elapsed_sec, operator }) => ({
+        const strData3 = list.map(({ count, total_time_elapsed_sec, operator, scene }) => ({
           x: operator,
           y: count,
           z: `${total_time_elapsed_sec}s`,
+          scene,
         }));
         setData3(strData3);
         // 第二行右侧
         const scene = objToArrObj(list[0].scene);
         if (scene && scene.length) {
-          let sceneList = [] as any[];
-          scene.map((item) => {
-            Object.keys(item).forEach((i) => {
-              sceneList.push({
-                x: formatTaskType(ivrIntents, 'scene', i, 'sceneDesc'),
-                ...item[i],
-              });
-            });
-          });
-          sceneList = sceneList.map(({ count, total_time_elapsed_sec, x }) => ({
-            x,
-            y: count,
-            z: `${total_time_elapsed_sec}s`,
-          }));
-          setData4(sceneList);
-        }else {
-          setData4(noData);
+          const datalist = formatScene(ivrIntents,scene);
+          setData4(datalist);
         }
-      } else {
-        setData3(noData);
-        setData4(noData);
       }
     });
-
-    // if (month === 4) {
-    //   setData1(data1Obj['4']);
-    //   setData2(data2Obj['4']);
-    //   setData3(data3Obj['4']);
-    //   setData4(data4Obj['4']['胡沙']);
-    //   return;
-    // }
-    // setMonthData(lineData['5']);
-    // setData1(data1Obj['5']);
-    // setData2(data2Obj['5']);
-    // setData3(data3Obj['5']);
-    // setData4(data4Obj['5']['胡沙']);
   }
 
   useEffect(() => {
@@ -181,21 +277,28 @@ function Index(props: Props) {
 
   function lengendClick(item: any): void {
     const { x, y } = item;
-    if (x === '面试调研') {
-      setData2(data2Obj[String(month)]);
+    const list = data1.filter(item => item.x === x) || [{}];
+    const remark = objToArrObj(list[0].remark);
+    if (remark  && remark.length) {
+      const list = formatRemark(remark);
+      setData2(list);
       return;
     }
-    setData2([
-      { x: '完成调研', y: y, z: `${y * 60}s` },
-      { x: '拒绝调研', y: 0, z: '0s' },
-      { x: '中途挂机', y: 0, z: '0s' },
-      { x: '无人接听', y: 0, z: '0s' },
-    ]);
+    setData2(noData);
   }
+
   function lengendClick2(item: any): void {
     const { x } = item;
-    setData4(data4Obj[String(month)][x]);
+    const list = data3.filter(item => item.x === x) || [{}];
+    const scene = objToArrObj(list[0].scene);
+    if (scene  && scene.length) {
+      const list = formatScene(ivrIntents,scene);
+      setData2(list);
+      return;
+    }
+    setData2(noData);
   }
+
   return (
     <PageHeaderWrapper
       title="服务报表"
@@ -220,7 +323,7 @@ function Index(props: Props) {
             onSubmit(data);
           }}
         />
-        <LineChart xAxisData={xAxisData} monthData={monthData} />
+        <LineChart xAxisData={xAxisData} monthData={monthData} legend={legend}/>
         <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
           <Col span={12}>
             <Pie
@@ -254,4 +357,4 @@ function Index(props: Props) {
   );
 }
 
-export default connect(({ report = {} }) => ({ report }))(Index);
+export default connect(({ report = {}, user }) => ({ report, user }))(Index);
