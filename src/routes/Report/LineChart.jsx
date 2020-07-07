@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import ReactEcharts from 'echarts-for-react';
 import _ from 'lodash';
+import { equals } from '@/utils/utils';
 
 var data = {
   title: ['总计', '北京', '上海', '浙江', '深圳', '广东', '宁波', '云南', '江苏', '湖南', '其他'],
@@ -10,11 +11,23 @@ var data = {
 };
 
 export default class OnlineEcharts extends Component {
+  componentDidUpdate(props){
+    if(!equals(props.monthData,this.props.monthData)){
+      // console.log('=====>两个类型====》',props.monthData,this.props.monthData,equals(props.monthData,this.props.monthData));
+      let echarts_instance = this._echarts_react.getEchartsInstance();
+      // then you can use any API of echarts.
+      echarts_instance.clear();
+      //使用刚指定的配置项和数据显示图表。
+      echarts_instance.setOption(this.getOption(),true);
+    }
+  }
   getOption = () => {
     const { xAxisData, monthData, legend } = this.props;
-    const commonObj = {
+    const series = monthData.map(item => ({
+      name: item.name,
       type: 'bar',
       barWidth: 18,
+      stack: 'aa',
       label: {
         show: true,
         textStyle: {
@@ -26,32 +39,8 @@ export default class OnlineEcharts extends Component {
         },
       },
       yAxisIndex: 0,
-    }
-    const series = monthData.map((item) =>
-      monthData.length > 1
-        ? { ...commonObj, name: item.name, data: item.value, stack: 'aa' }
-        : {
-            ...commonObj,
-            name: item.name,
-            data: item.value,
-            //   name: item.name,
-            //   type: 'bar',
-            //   barWidth: 18,
-            // //  stack: 'aa',
-            //   label: {
-            //     show: true,
-            //     textStyle: {
-            //       color: '#fff',
-            //     },
-            //     position: 'inside',
-            //     formatter: function (p) {
-            //       return p.value > 0 ? p.value : '';
-            //     },
-            //   },
-            //   yAxisIndex: 0,
-            //   data: item.value,
-          }
-    );
+      data: item.value,
+    }));
     const newLegend = monthData.map(item => item.name);
     const yAxis = [
       {
@@ -111,7 +100,7 @@ export default class OnlineEcharts extends Component {
   render() {
     return (
       <div style={{ marginTop: 30 }}>
-        <ReactEcharts option={this.getOption()} />
+        <ReactEcharts option={this.getOption()} ref={(c) => this._echarts_react = c}/>
       </div>
     );
   }
