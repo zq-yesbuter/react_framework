@@ -12,7 +12,25 @@ var data = {
 export default class OnlineEcharts extends Component {
   getOption = () => {
     const { xAxisData, monthData, legend } = this.props;
-
+    const series = monthData.map(item => ({
+      name: item.name,
+      type: 'bar',
+      barWidth: 18,
+      stack: 'aa',
+      label: {
+        show: true,
+        textStyle: {
+          color: '#fff',
+        },
+        position: 'inside',
+        formatter: function (p) {
+          return p.value > 0 ? p.value : '';
+        },
+      },
+      yAxisIndex: 0,
+      data: item.value,
+    }));
+    const newLegend = monthData.map(item => item.name);
     const yAxis = [
       {
         type: 'value',
@@ -28,7 +46,7 @@ export default class OnlineEcharts extends Component {
 
     return {
       legend: {
-        data: legend,
+        data: newLegend,
         top: '15%',
       },
       // hover上的数据
@@ -65,7 +83,7 @@ export default class OnlineEcharts extends Component {
         data: xAxisData,
       },
       yAxis,
-      series:monthData,
+      series,
     };
   };
   render() {

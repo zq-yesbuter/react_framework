@@ -5,7 +5,7 @@ import { connect } from 'dva';
 import Pie from '@/components/Pie';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { routerRedux, Link } from 'dva/router';
-import { lineData, data1Obj, data2Obj, data3Obj, data4Obj, mock } from './contant';
+import { lineData, data1Obj, data2Obj, data3Obj, data4Obj, mock, mock1, mock2} from './contant';
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
 import { formatTaskType, objToArrObj, formatTree } from '@/utils/utils';
@@ -77,6 +77,7 @@ function formatScene(ivrIntents:any,scene:any) {
   }));
 }
 
+// 扁平化数组
 const fn = (source,res=[] as any[])=>{
   source.forEach(el=>{
     res.push(el);
@@ -140,90 +141,53 @@ function Index(props: Props) {
         }));
         let parentList = [] as any[];
         newList.forEach(item => {
-          if(baseDepartList.find((val:{tenantId: string}) => item.tenantId === val.tenantId)){
-            const checkObj = baseDepartList.find(val => item.tenantId === val.tenantId);
+          const checkObj = baseDepartList.find((val:{tenantId: string}) => item.tenantId === val.tenantId);
+          if(checkObj){
             const parentId = checkObj.parentId;
             const name = checkObj.name;
             const id = checkObj.id;
             parentList.push({...item, parentId,name,id})
           }
         });
+        console.log('构造parentId数据=>',parentList);
         if(newList.every(item => item.tenantId === newList[0].tenantId)) {
-          let monthData = [] as any[];
+          let baseData = [] as any[];
           ss.forEach((x) => {
-            if (newList.find((item) => item.time === x)) {
-              monthData.push(newList.find((item: { time: string }) => item.time === x).count);
-            } else {
-              monthData.push(0);
-            }
+            const filterArr = newList.filter((item) => item.time === x);
+            baseData.push(filterArr.reduce((acc, cur) => acc + cur.count,0));
           });
-          const series = [{
-            name: parentList[0] && parentList[0].name,
-            type: 'bar',
-            barWidth: 15,
-            stack: 'aa',
-            label: {
-              show: true,
-              textStyle: {
-                color: '#fff',
-              },
-              position: 'inside',
-              formatter: function (p) {
-                return p.value > 0 ? p.value : '';
-              },
-            },
-            yAxisIndex: 0,
-            data: monthData,
-          }];
-          const newLegend = [parentList[0] && parentList[0].name];
-          setLegend(newLegend);
-          setMonthData(series);
+          const monthData = [{name:parentList[0] && parentList[0].name,value:baseData}]
+          setMonthData(monthData);
           return;
+        }
+        
+        if(!parentList.find(val => !val.parentId)){
+          const noParent = baseDepartList.find((val:{parentId: string}) => !val.parentId);
+          parentList.push(noParent);
         }
         // 有多个树状结构时
         const root = formatTree(parentList) || {};
+        console.log('root=====>',root);
         if(Object.keys(root).length && root.children){
           const data = root.children;
           const strucData = data.map(item => fn([item]));
+          console.log('扁平化的=>',strucData);
           let monthData = [] as any[];
           strucData.map((val,index) => {
             monthData[index] = {name:val[0].name,value:[]};
             ss.forEach((x) => {
-              if (val.find((item) => item.time === x)) {
-                monthData[index].value.push(val.find((item: { time: string }) => item.time === x).count);
-              } else {
-                monthData[index].value.push(0);
-              }
+              const filterArr = val.filter((item) => item.time === x);
+              monthData[index].value.push(filterArr.reduce((acc, cur) => acc + cur.count,0));
             });
           })
+          console.log('最终数据=>',monthData);
+          setMonthData(monthData);
+        }else{
+          setMonthData([]);
         }
-          const series = monthData.map(item => ({
-            name: item.name,
-            type: 'bar',
-            barWidth: 15,
-            stack: 'aa',
-            label: {
-              show: true,
-              textStyle: {
-                color: '#fff',
-              },
-              position: 'inside',
-              formatter: function (p) {
-                return p.value > 0 ? p.value : '';
-              },
-            },
-            yAxisIndex: 0,
-            data: item.value,
-          }));
-          const newLegend = monthData.map(item => item.name);
-          setLegend(newLegend);
-          setMonthData(series);
-     
-        
-      });
-    })
+      }).catch((e) => message.error(e.message));
+    }).catch((e) => message.error(e.message));
    
-
     // 查场景数据
     dispatch({
       type: 'report/getScene',
@@ -245,7 +209,7 @@ function Index(props: Props) {
           setData2(datalist);
         }
       }
-    });
+    }).catch((e) => message.error(e.message));
 
     // 查操作人数据
     dispatch({
@@ -268,7 +232,7 @@ function Index(props: Props) {
           setData4(datalist);
         }
       }
-    });
+    }).catch((e) => message.error(e.message));
   }
 
   useEffect(() => {
