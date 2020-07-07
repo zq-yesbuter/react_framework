@@ -12,11 +12,9 @@ var data = {
 export default class OnlineEcharts extends Component {
   getOption = () => {
     const { xAxisData, monthData, legend } = this.props;
-    const series = monthData.map(item => ({
-      name: item.name,
+    const commonObj = {
       type: 'bar',
       barWidth: 18,
-      stack: 'aa',
       label: {
         show: true,
         textStyle: {
@@ -28,8 +26,32 @@ export default class OnlineEcharts extends Component {
         },
       },
       yAxisIndex: 0,
-      data: item.value,
-    }));
+    }
+    const series = monthData.map((item) =>
+      monthData.length > 1
+        ? { ...commonObj, name: item.name, data: item.value, stack: 'aa' }
+        : {
+            ...commonObj,
+            name: item.name,
+            data: item.value,
+            //   name: item.name,
+            //   type: 'bar',
+            //   barWidth: 18,
+            // //  stack: 'aa',
+            //   label: {
+            //     show: true,
+            //     textStyle: {
+            //       color: '#fff',
+            //     },
+            //     position: 'inside',
+            //     formatter: function (p) {
+            //       return p.value > 0 ? p.value : '';
+            //     },
+            //   },
+            //   yAxisIndex: 0,
+            //   data: item.value,
+          }
+    );
     const newLegend = monthData.map(item => item.name);
     const yAxis = [
       {
