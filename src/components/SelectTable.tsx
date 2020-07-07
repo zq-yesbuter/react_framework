@@ -26,7 +26,8 @@ const renderTable = (props: Setting): any => {
     showQuickJumper: true,
     pageSizeOptions: ['10', '20', '50', '100', '200'],
     // onShowSizeChange: (current, pageSize) => {
-    //   onChange((current - 1) * pageSize, pageSize, sortedInfo);
+    //   console.log('current===>',current,'pageSize===>',pageSize);
+    //   onChange((current - 1) * pageSize, pageSize);
     // },
     // onChange: (current, pageSize) => {
     //   console.log('current===>',current,'pageSize===>',pageSize);
@@ -52,7 +53,7 @@ const renderTable = (props: Setting): any => {
         loading={loading || false}
         rowSelection={hideSelect ? false : { ...rowSelection }}
         onChange={(page, filter, sorter) => {
-          onChange(page.current = 0, page.pageSize = 0);
+          onChange(page.current as number, page.pageSize as number);
         }}
       />
       {/* {total ? 

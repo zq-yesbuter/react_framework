@@ -18,7 +18,7 @@ export default class Pie extends Component {
     legendBlock: false,
     selIndex: 0,
     start: 0,
-    length: 3,
+    length: 5,
   };
 
   componentDidMount() {
@@ -342,7 +342,7 @@ export default class Pie extends Component {
                 </span>
               </li>
             ))}
-            {staticLegendData.length > 3 && 
+            {staticLegendData.length > 5 && 
               <li style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
                 <a onClick={this.handleListChange}>换一换</a>
               </li>

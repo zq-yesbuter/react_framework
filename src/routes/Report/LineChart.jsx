@@ -55,11 +55,11 @@ export default class OnlineEcharts extends Component {
         formatter: (params) => {
           let res = `<div><p>外呼时间：${params[0].axisValue}</p></div>`;
           for (let i = 0; i < params.length; i++) {
-            if (params[i].seriesName === '增量') {
-              res += `<p>外呼${params[i].seriesName}:${params[i].value}%</p>`;
-            } else {
+            // if (params[i].seriesName === '增量') {
+            //   res += `<p>外呼${params[i].seriesName}:${params[i].value}%</p>`;
+            // } else {
               res += `<p>${params[i].seriesName}:${params[i].value}</p>`;
-            }
+            // }
           }
           return res;
         },

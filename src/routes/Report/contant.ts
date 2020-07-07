@@ -456,3 +456,86 @@ export const data1111 = [
     tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
   },
 ];
+
+export const scene12 = [
+  {
+    count: 2,
+    total_time_elapsed_sec: 0,
+    remark: { 非法请求: { count: 2, total_time_elapsed_sec: 0 } },
+    scene: '12064',
+  },
+  {
+    count: 5,
+    total_time_elapsed_sec: 0,
+    remark: {
+      非法请求: { count: 4, total_time_elapsed_sec: 0 },
+      '[JSF-22010]No alive provider! The key is jsf://com.jd.jr.kf.job.biz.export.CommonObTaskJSFService:JR_JOB_BIZ_TEST, current providers is [jsf://10.13.144.121:22000/?safVersion=210&jsfVersion=1651&interface=com.jd.jr.kf.job.biz.export.CommonObTaskJSFService&alias=JR_JOB_BIZ_TEST]': {
+        count: 1,
+        total_time_elapsed_sec: 0,
+      },
+    },
+    scene: '12073',
+  },
+  {
+    count: 3,
+    total_time_elapsed_sec: 0,
+    remark: {
+      '[JSF-22010]No alive provider! The key is jsf://com.jd.jr.kf.job.biz.export.CommonObTaskJSFService:JR_JOB_BIZ_TEST, current providers is []': {
+        count: 1,
+        total_time_elapsed_sec: 0,
+      },
+      外呼日期过期: { count: 2, total_time_elapsed_sec: 0 },
+    },
+    scene: '14019',
+  },
+];
+export const singelData = [
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-06',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-10',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 2,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-13',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-14',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-18',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 2,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-19',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-26',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-28',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+];

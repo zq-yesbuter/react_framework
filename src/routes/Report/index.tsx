@@ -5,7 +5,19 @@ import { connect } from 'dva';
 import Pie from '@/components/Pie';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { routerRedux, Link } from 'dva/router';
-import { lineData, data1Obj, data2Obj, data3Obj, data4Obj, mock, mock1, mock2, data1111, orgz} from './contant';
+import {
+  lineData,
+  data1Obj,
+  data2Obj,
+  data3Obj,
+  data4Obj,
+  mock,
+  mock1,
+  mock2,
+  data1111,
+  orgz,
+  singelData,
+} from './contant';
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
 import { formatTaskType, objToArrObj, formatTree } from '@/utils/utils';
@@ -17,11 +29,13 @@ const tabList = [
   },
 ];
 const format = 'YYYY-MM-DD HH:mm:ss';
-const noData = [{
-  x: '暂无数据',
-  y: 1,
-  z: '0s'
-}];
+const noData = [
+  {
+    x: '暂无数据',
+    y: 1,
+    z: '0s',
+  },
+];
 interface Props {
   dispatch: Function;
   report: any;
@@ -37,7 +51,7 @@ interface PieData {
   x: string;
   y: number;
   z: string;
-  remark? : any;
+  remark?: any;
   scene?: any;
 }
 interface QueryData {
@@ -46,7 +60,7 @@ interface QueryData {
   tenantId?: string | number;
 }
 
-function formatRemark(remark:any) {
+function formatRemark(remark: any) {
   let remarkList = [] as any[];
   remark.map((item) => {
     Object.keys(item).forEach((i) => {
@@ -60,7 +74,7 @@ function formatRemark(remark:any) {
   }));
 }
 
-function formatScene(ivrIntents:any,scene:any) {
+function formatScene(ivrIntents: any, scene: any) {
   let sceneList = [] as any[];
   scene.map((item) => {
     Object.keys(item).forEach((i) => {
@@ -78,13 +92,36 @@ function formatScene(ivrIntents:any,scene:any) {
 }
 
 // 扁平化数组
-const fn = (source,res=[] as any[])=>{
-  source.forEach(el=>{
+const fn = (source, res = [] as any[]) => {
+  source.forEach((el) => {
     res.push(el);
-    el.children && el.children.length>0 ? fn(el.children,res) : ""
+    el.children && el.children.length > 0 ? fn(el.children, res) : '';
   });
   return res;
-}
+};
+
+// // 对断层数据的处理
+// function formatTree(departList = []) {
+//   const cloneList = _.cloneDeep(departList);
+//   const idMapping = cloneList.reduce((acc, el, i) => {
+//     acc[el.id] = i;
+//     return acc;
+//   }, {});
+//   let root = {};
+//   cloneList.forEach(el => {
+//     // 判断根节点
+//     if (!el.parentId) {
+//       root = el;
+//       return;
+//     }
+//     // 用映射表找到父元素
+//     const parentEl = cloneList[idMapping[el.parentId]] || {};
+//     // 把当前元素添加到父元素的`children`数组中
+//     parentEl.children = [...(parentEl.children || []), el];
+//   });
+//   return root;
+// }
+
 function Index(props: Props) {
   const { dispatch, report } = props;
   const { ivrIntents, baseDepartList } = report;
@@ -101,11 +138,11 @@ function Index(props: Props) {
   function onSubmit(values: any) {
     const { time, tenantId } = values;
     // console.log('tim===>',time,moment(time).startOf('month').format(format),moment(time).endOf('month').format(format));
-    let payload:QueryData = {
+    let payload: QueryData = {
       startTime: moment(time).startOf('month').format(format),
       endTime: moment(time).endOf('month').format(format),
     };
-    payload = tenantId ? {...payload, tenantId } : payload;
+    payload = tenantId ? { ...payload, tenantId } : payload;
     const days = moment(time).daysInMonth();
     const month: number = moment(time).month() + 1;
     const axis: number[] = Array.from(new Array(days).keys());
@@ -117,133 +154,149 @@ function Index(props: Props) {
     dispatch({
       type: 'report/getDepartment',
       payload: { pageSize: 1000, pageNum: 1 },
-    }).then((baseDepartList) => {
-      dispatch({
-        type: 'report/save',
-        payload: {treeDepartList: [formatTree(baseDepartList)]},
-      })
-      // 查基本数据
-      dispatch({
-        type: 'report/getReport',
-        payload,
-      }).then((list) => {
-        // const list = data1111;
-        if(!list && !list.length){
-          setLegend([]);
-          setMonthData([]);
-          return;
-        }
-        const newList = list.map((item) => ({
-          ...item,
-          time:
-            item.time.slice(-5)[0] === '0'
-              ? item.time.slice(-4).replace('-', '/')
-              : item.time.slice(-5).replace('-', '/'),
-        }));
-        let parentList = [] as any[];
-        newList.forEach(item => {
-          // const checkObj = orgz.find((val:{tenantId: string}) => item.tenantId === val.tenantId);
-          const checkObj = baseDepartList.find((val:{tenantId: string}) => item.tenantId === val.tenantId);
-          if(checkObj){
-            const parentId = checkObj.parentId;
-            const name = checkObj.name;
-            const id = checkObj.id;
-            parentList.push({...item, parentId,name,id});
-          }
+    })
+      .then((baseDepartList) => {
+        dispatch({
+          type: 'report/save',
+          payload: { treeDepartList: [formatTree(baseDepartList)] },
         });
-        console.log('构造parentId数据=>',parentList);
-        if(newList.every(item => item.tenantId === newList[0].tenantId)) {
-          let baseData = [] as any[];
-          ss.forEach((x) => {
-            const filterArr = newList.filter((item) => item.time === x);
-            baseData.push(filterArr.reduce((acc, cur) => acc + cur.count,0));
-          });
-          const monthData = [{name:parentList[0] && parentList[0].name,value:baseData}]
-          setMonthData(monthData);
-          return;
-        }
-        
-        if(!parentList.find(val => !val.parentId)){
-          // const noParent = orgz.find((val) => !val.parentId);
-          const noParent = baseDepartList.find((val) => !val.parentId);
-          parentList.push(noParent);
-        }
-        // 有多个树状结构时
-        const root = formatTree(parentList) || {};
-        console.log('root=====>',root);
-        if(Object.keys(root).length && root.children){
-          const data = root.children;
-          const s = new Set() //实例化对象
-          data.forEach(item => s.add(item.tenantId)) //添加值（Set可以去掉重复数据）
-          let newData = Array.from({ length: s.size }, () => []) as any[]; //创建指定长度数组并添值
-          data.forEach((item:any) => {
-              let index = [...s].indexOf(item.tenantId) //找到指定下标
-              newData[index].push(item) //添加数据
-          })
-          console.log('相同的数据合并--->',newData);
-          const strucData = newData.map(item => fn(item));
-          console.log('扁平化的=>',strucData);
-          let monthData = [] as any[];
-          strucData.map((val,index) => {
-            monthData[index] = {name:val[0].name,value:[]};
-            ss.forEach((x) => {
-              const filterArr = val.filter((item) => item.time === x);
-              monthData[index].value.push(filterArr.reduce((acc, cur) => acc + cur.count,0));
+        // 查基本数据
+        dispatch({
+          type: 'report/getReport',
+          payload,
+        })
+          .then((list) => {
+            // const list = singelData;
+            if (!list && !list.length) {
+              setMonthData([{ name: '', value: [] }]);
+              return;
+            }
+            const newList = list.map((item) => ({
+              ...item,
+              time:
+                item.time.slice(-5)[0] === '0'
+                  ? item.time.slice(-4).replace('-', '/')
+                  : item.time.slice(-5).replace('-', '/'),
+            }));
+            let parentList = [] as any[];
+            newList.forEach((item) => {
+              // const checkObj = orgz.find((val:{tenantId: string}) => item.tenantId === val.tenantId);
+              const checkObj = baseDepartList.find(
+                (val: { tenantId: string }) => item.tenantId === val.tenantId
+              );
+              if (checkObj) {
+                const parentId = checkObj.parentId;
+                const name = checkObj.name;
+                const id = checkObj.id;
+                parentList.push({ ...item, parentId, name, id });
+              }
             });
+            console.log('构造parentId数据=>', parentList,'newList=>',newList,newList.every((item) => item.tenantId === newList[0].tenantId));
+            if (newList.every((item) => item.tenantId === newList[0].tenantId)) {
+              let baseData = [] as any[];
+              ss.forEach((x) => {
+                const filterArr = newList.filter((item) => item.time === x);
+                baseData.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
+              });
+              const monthData = [{ name: parentList[0] && parentList[0].name, value: baseData }];
+              setMonthData(monthData);
+              console.log('扁平化的monthData===>',monthData);
+              return;
+            }
+
+            if (!parentList.find((val) => !val.parentId)) {
+              // const noParent = orgz.find((val) => !val.parentId);
+              const noParent = baseDepartList.find((val) => !val.parentId);
+              parentList.push(noParent);
+            }
+            // 有多个树状结构时
+            const root = formatTree(parentList) || {};
+            console.log('root=====>', root);
+            if (Object.keys(root).length && root.children) {
+              const data = root.children;
+              const s = new Set(); //实例化对象
+              data.forEach((item) => s.add(item.tenantId)); //添加值（Set可以去掉重复数据）
+              let newData = Array.from({ length: s.size }, () => []) as any[]; //创建指定长度数组并添值
+              data.forEach((item: any) => {
+                let index = [...s].indexOf(item.tenantId); //找到指定下标
+                newData[index].push(item); //添加数据
+              });
+              console.log('相同的数据合并--->', newData);
+              const strucData = newData.map((item) => fn(item));
+              console.log('扁平化的=>', strucData);
+              let monthData = [] as any[];
+              strucData.map((val, index) => {
+                monthData[index] = { name: val[0].name, value: [] };
+                ss.forEach((x) => {
+                  const filterArr = val.filter((item) => item.time === x);
+                  monthData[index].value.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
+                });
+              });
+              console.log('最终数据=>', monthData);
+              setMonthData(monthData);
+            } else {
+              setMonthData([]);
+            }
           })
-          console.log('最终数据=>',monthData);
-          setMonthData(monthData);
-        }else{
-          setMonthData([]);
-        }
-      }).catch((e) => message.error(e.message));
-    }).catch((e) => message.error(e.message));
-   
+          .catch((e) => message.error(e.message));
+      })
+      .catch((e) => message.error(e.message));
+
     // 查场景数据
     dispatch({
       type: 'report/getScene',
       payload,
-    }).then((list: Array<List>) => {
-      if (list && list.length) {
-        // 第一行左侧
-        const strData1 = list.map(({ count, total_time_elapsed_sec, scene, remark }) => ({
-          x: formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
-          y: count,
-          z: `${total_time_elapsed_sec}s`,
-          remark,
-        }));
-        setData1(strData1);
-        // 第一行右侧
-        const remark = objToArrObj(list[0].remark);
-        if (remark  && remark.length) {
-          const datalist = formatRemark(remark);
-          setData2(datalist);
+    })
+      .then((list: Array<List>) => {
+        if (list && list.length) {
+          // 第一行左侧
+          const strData1 = list.map(({ count, total_time_elapsed_sec, scene, remark }) => ({
+            x: formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
+            y: count,
+            z: `${total_time_elapsed_sec}s`,
+            remark,
+          }));
+          setData1(strData1);
+          // 第一行右侧
+          const remark = objToArrObj(list[0].remark);
+          if (remark && remark.length) {
+            const datalist = formatRemark(remark);
+            setData2(datalist);
+          }
+        } else {
+          setData1(noData);
+          setData2(noData);
         }
-      }
-    }).catch((e) => message.error(e.message));
+      })
+      .catch((e) => message.error(e.message));
 
     // 查操作人数据
     dispatch({
       type: 'report/getOperation',
       payload,
-    }).then((list: Array<List>) => {
-      if (list && list.length) {
-        // 第二行左侧
-        const strData3 = list.map(({ count, total_time_elapsed_sec, operator, scene }) => ({
-          x: operator,
-          y: count,
-          z: `${total_time_elapsed_sec}s`,
-          scene,
-        }));
-        setData3(strData3);
-        // 第二行右侧
-        const scene = objToArrObj(list[0].scene);
-        if (scene && scene.length) {
-          const datalist = formatScene(ivrIntents,scene);
-          setData4(datalist);
+    })
+      .then((list: Array<List>) => {
+        if (list && list.length) {
+          // 第二行左侧
+          const strData3 = list.map(({ count, total_time_elapsed_sec, operator, scene }) => ({
+            x: operator,
+            y: count,
+            z: `${total_time_elapsed_sec}s`,
+            scene,
+          }));
+          setData3(strData3);
+          // 第二行右侧
+          const scene = objToArrObj(list[0].scene);
+          if (scene && scene.length) {
+            const datalist = formatScene(ivrIntents, scene);
+            setData4(datalist);
+          }
+        } else {
+          setData3(noData);
+          setData4(noData);
         }
-      }
-    }).catch((e) => message.error(e.message));
+      })
+      .catch((e) => message.error(e.message));
   }
 
   useEffect(() => {
@@ -252,9 +305,9 @@ function Index(props: Props) {
 
   function lengendClick(item: any): void {
     const { x, y } = item;
-    const list = data1.filter(item => item.x === x) || [{}];
+    const list = data1.filter((item) => item.x === x) || [{}];
     const remark = objToArrObj(list[0].remark);
-    if (remark  && remark.length) {
+    if (remark && remark.length) {
       const list = formatRemark(remark);
       setData2(list);
       return;
@@ -264,10 +317,10 @@ function Index(props: Props) {
 
   function lengendClick2(item: any): void {
     const { x } = item;
-    const list = data3.filter(item => item.x === x) || [{}];
+    const list = data3.filter((item) => item.x === x) || [{}];
     const scene = objToArrObj(list[0].scene);
-    if (scene  && scene.length) {
-      const list = formatScene(ivrIntents,scene);
+    if (scene && scene.length) {
+      const list = formatScene(ivrIntents, scene);
       setData4(list);
       return;
     }
@@ -298,7 +351,7 @@ function Index(props: Props) {
             onSubmit(data);
           }}
         />
-        <LineChart xAxisData={xAxisData} monthData={monthData} legend={legend}/>
+        <LineChart xAxisData={xAxisData} monthData={monthData} legend={legend} />
         <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
           <Col span={12}>
             <Pie
