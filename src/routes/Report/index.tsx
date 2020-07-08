@@ -5,6 +5,7 @@ import { connect } from 'dva';
 import Pie from '@/components/Pie';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { routerRedux, Link } from 'dva/router';
+import _ from 'lodash';
 import {
   lineData,
   data1Obj,
@@ -17,6 +18,8 @@ import {
   data1111,
   orgz,
   singelData,
+  data66,
+  data33,
 } from './contant';
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
@@ -100,27 +103,20 @@ const fn = (source, res = [] as any[]) => {
   return res;
 };
 
-// // 对断层数据的处理
-// function formatTree(departList = []) {
-//   const cloneList = _.cloneDeep(departList);
-//   const idMapping = cloneList.reduce((acc, el, i) => {
-//     acc[el.id] = i;
-//     return acc;
-//   }, {});
-//   let root = {};
-//   cloneList.forEach(el => {
-//     // 判断根节点
-//     if (!el.parentId) {
-//       root = el;
-//       return;
-//     }
-//     // 用映射表找到父元素
-//     const parentEl = cloneList[idMapping[el.parentId]] || {};
-//     // 把当前元素添加到父元素的`children`数组中
-//     parentEl.children = [...(parentEl.children || []), el];
-//   });
-//   return root;
-// }
+// 对断层数据的处理
+function formatNotTree(list = [] as any[],source) {
+  // const cloneList = _.cloneDeep(list);
+  const recursion = (source) => {
+    if(!source){
+      return;
+    }
+    return source.map((el) => {
+      const checkArray = list.filter((val) => el.tenantId === val.tenantId);
+      return checkArray.length ? ({...el,children:recursion(el.children),data:checkArray }) : ({...el,children:recursion(el.children)})
+    })
+  }
+  return recursion([formatTree(source)]);
+}
 
 function Index(props: Props) {
   const { dispatch, report } = props;
@@ -147,7 +143,7 @@ function Index(props: Props) {
     const month: number = moment(time).month() + 1;
     const axis: number[] = Array.from(new Array(days).keys());
     const ss: string[] = axis.reduce((acc: string[], cur: number) => {
-      return acc.concat(`${month}/${cur + 1}`);
+      return acc.concat(`${month}/${cur > 8 ? cur + 1 : `0${cur+1}`}`);
     }, []);
     setXAxisData(ss);
     setMonth(month);
@@ -166,7 +162,7 @@ function Index(props: Props) {
           payload,
         })
           .then((list) => {
-            // const list = singelData;
+            // const list = data1111;
             if (!list && !list.length) {
               setMonthData([{ name: '', value: [] }]);
               return;
@@ -196,6 +192,7 @@ function Index(props: Props) {
               let baseData = [] as any[];
               ss.forEach((x) => {
                 const filterArr = newList.filter((item) => item.time === x);
+                console.log('filterArr====>',filterArr,x);
                 baseData.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
               });
               const monthData = [{ name: parentList[0] && parentList[0].name, value: baseData }];
@@ -204,16 +201,17 @@ function Index(props: Props) {
               return;
             }
 
-            if (!parentList.find((val) => !val.parentId)) {
-              // const noParent = orgz.find((val) => !val.parentId);
-              const noParent = baseDepartList.find((val) => !val.parentId);
-              parentList.push(noParent);
-            }
+            // if (!parentList.find((val) => !val.parentId)) {
+            //   // const noParent = orgz.find((val) => !val.parentId);
+            //   const noParent = baseDepartList.find((val) => !val.parentId);
+            //   parentList.push(noParent);
+            // }
             // 有多个树状结构时
-            const root = formatTree(parentList) || {};
-            console.log('root=====>', root);
-            if (Object.keys(root).length && root.children) {
-              const data = root.children;
+            const root = formatNotTree(parentList,baseDepartList) || [];
+            console.log('root=====>dauncheg', root);
+            if (root.length && root[0].children) {
+              const data = root[0].children;
+
               const s = new Set(); //实例化对象
               data.forEach((item) => s.add(item.tenantId)); //添加值（Set可以去掉重复数据）
               let newData = Array.from({ length: s.size }, () => []) as any[]; //创建指定长度数组并添值
@@ -221,6 +219,7 @@ function Index(props: Props) {
                 let index = [...s].indexOf(item.tenantId); //找到指定下标
                 newData[index].push(item); //添加数据
               });
+
               console.log('相同的数据合并--->', newData);
               const strucData = newData.map((item) => fn(item));
               console.log('扁平化的=>', strucData);
@@ -228,11 +227,18 @@ function Index(props: Props) {
               strucData.map((val, index) => {
                 monthData[index] = { name: val[0].name, value: [] };
                 ss.forEach((x) => {
-                  const filterArr = val.filter((item) => item.time === x);
+                  let filterArr = [] as any[];
+                  val.forEach((item) => {
+                    if(item.data) {
+                      filterArr = item.data.filter(val => val.time === x)
+                    }
+                  });
+                  console.log('val====>',val,x,'filterArr',filterArr);
                   monthData[index].value.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
                 });
               });
-              console.log('最终数据=>', monthData);
+              monthData = monthData.filter(item =>  !(item.value.every(val => val === 0)));
+              console.log('最终数据=>', monthData,);
               setMonthData(monthData);
             } else {
               setMonthData([]);

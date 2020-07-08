@@ -539,3 +539,79 @@ export const singelData = [
     tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
   },
 ];
+export const data66 = [
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-06',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-10',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 2,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-13',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-14',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-18',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 2,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-19',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-26',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-06-28',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+];
+export const data33 = [
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-04-15',
+    tenantId: '2673841b-d230-43dd-b58d-b272697ec4ed',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-04-17',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 5,
+    total_time_elapsed_sec: 0,
+    time: '2020-04-17',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 0,
+    time: '2020-04-22',
+    tenantId: '7a9c0d18-65ea-4822-a862-5d3d5f09035e',
+  },
+];
