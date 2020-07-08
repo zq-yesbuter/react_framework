@@ -185,7 +185,7 @@ function Index(props: Props) {
           payload,
         })
           .then((list) => {
-            // const list = online2;
+            // const list =  data1111;
             if (!list && !list.length) {
               setMonthData([{ name: '', value: [] }]);
               return;
@@ -199,7 +199,7 @@ function Index(props: Props) {
             }));
             let parentList = [] as any[];
             newList.forEach((item) => {
-              // const checkObj = onlineOrgz.find((val:{tenantId: string}) => item.tenantId === val.tenantId);
+              // const checkObj = orgz.find((val:{tenantId: string}) => item.tenantId === val.tenantId);
               const checkObj = baseDepartList.find(
                 (val: { tenantId: string }) => item.tenantId === val.tenantId
               );
@@ -218,7 +218,7 @@ function Index(props: Props) {
               });
               const monthData = [{ name: parentList[0] && parentList[0].name, value: baseData }];
               setMonthData(monthData);
-              setLineValue(monthData);
+              setLineValue( [{ name: parentList[0] && `${parentList[0].name}总量`, value: baseData }]);
               console.log('扁平化的monthData===>',monthData);
               return;
             }
@@ -233,13 +233,20 @@ function Index(props: Props) {
               const strucData = newData.map((item) => flatFn(item));
               console.log('扁平化的=>', strucData);
               const lineData = flatten(strucData);
+              const flatValue = lineData.reduce((acc,cur) => acc.concat(cur.data && cur.data.length ? cur.data : []),[]);
+              console.log('flatValue====>',flatValue);
               let lineValue = [] as any[];
               ss.forEach((x) => {
-                const filterArr = lineData.filter((item) => item.time === x);
+                let filterArr = [] as any[];
+                // lineData.forEach((item) => {
+                //   if (item.data) {
+                    filterArr = flatValue.filter((val) => val.time === x);
+                  // }
+                // });
                 lineValue.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
               });
               console.log('lineData===>',lineData,'lineValue==>',lineValue);
-              setLineValue([{name:data[0] && data[0].name,value:lineValue}]);
+              setLineValue([{name:data[0] && `${data[0].name}总量`,value:lineValue}]);
               let monthData = [] as any[];
               strucData.map((val, index) => {
                 monthData[index] = { name: val[0] && val[0].name, value: [] };
