@@ -928,3 +928,182 @@ export const online2 = [
     tenantId: 'c65a48a0-efa9-4dd2-b721-290d2cb855c4',
   },
 ];
+
+export const oneO = [
+  {
+    id: '4f287fbc-3630-451a-8acf-508c7804aa1e',
+    name: 'AI产品部',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: '361efac0-979d-4542-92ee-8b8baa1a50fb',
+  },
+  {
+    id: 'ecb73b6d-01f9-4cb9-8ee1-4d30c70c10f5',
+    name: '招聘三组',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: '786dc308-0eb5-4941-9740-8e36b82e95ef',
+  },
+  {
+    id: '31cddf39-1fb1-4739-9d19-8c1ea9736909',
+    name: '智能产品研发组',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: 'e39d6f02-5e48-444e-97ec-97720185021a',
+  },
+  {
+    id: '8439a6af-dc52-498d-b257-9b1d902f7218',
+    name: '京东零售',
+    parentId: '7a994e2d-976b-469b-8d78-7d553c3bb09a',
+    tenantId: 'c6331348-29a9-4afe-b37b-3692d2485ab2',
+  },
+  {
+    id: 'bdcc6260-6cd3-42a1-aca7-4e32e8cc8b3a',
+    name: '招聘七组',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: '6db66a71-9b8b-4aee-a4d0-0a7e9f10aded',
+  },
+  {
+    id: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    name: '京东数科',
+    parentId: '7a994e2d-976b-469b-8d78-7d553c3bb09a',
+    tenantId: 'c65a48a0-efa9-4dd2-b721-290d2cb855c4',
+  },
+  {
+    id: 'b270fed9-6f71-418d-809d-a1a3e51a67c0',
+    name: '在线服务机器人研发组',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: '46f2dfe0-a459-4ce9-af1d-9010e0e4656f',
+  },
+  {
+    id: 'bad64910-7fb4-4ee9-b4f6-f713f2830eea',
+    name: 'CHO',
+    parentId: '7a994e2d-976b-469b-8d78-7d553c3bb09a',
+    tenantId: '4c8c9062-696c-4d6e-b3b3-80a338454091',
+  },
+  {
+    id: '7a994e2d-976b-469b-8d78-7d553c3bb09a',
+    name: '京东',
+    tenantId: 'd10b75e1-81d7-4fa1-828b-cd1e2a5e8618',
+  },
+  {
+    id: 'd3959cec-b3c4-43bd-a4e4-099f262520ee',
+    name: '硅谷计算机视觉组',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: '2e7d09a5-a1f4-4505-a5ee-df55a8d4fb19',
+  },
+  {
+    id: '3c33e23f-3505-459a-a234-6d3ac1b0796e',
+    name: '智能产品研发组',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: '8a6c76ea-edd7-498e-89d8-2d6b43719014',
+  },
+  {
+    id: '78ce2934-aa27-4867-bead-a053c95c12af',
+    name: '京东零售',
+    parentId: '7a994e2d-976b-469b-8d78-7d553c3bb09a',
+    tenantId: 'f668fafb-f3f3-4a75-a98d-e03dcc28e9fe',
+  },
+  {
+    id: '6a98bd30-f37d-4a82-8de3-ad913932b0ce',
+    name: '招聘二组',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: 'a22885e9-0155-4b5d-a95a-8dc0a536f933',
+  },
+  {
+    id: 'ba08d05a-2490-4995-80ea-55a89c277f4e',
+    name: '京东物流',
+    parentId: '7a994e2d-976b-469b-8d78-7d553c3bb09a',
+    tenantId: 'd7f54297-a83c-44cf-a615-34e35f4db6d6',
+  },
+  {
+    id: 'd1dd4896-0bf8-420c-bb9b-2c0e6be9e17f',
+    name: '招聘部',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: '9fe0e8c0-9b2f-4073-b2e1-35601df47abb',
+  },
+  {
+    id: '56a49778-531b-4e67-82f6-df87f114f07b',
+    name: '算法平台组',
+    parentId: '86adf55d-f9fd-4afb-9c1f-84870694c9af',
+    tenantId: '3fc5c0e4-f0d7-4055-9f0a-6dafd49a44f9',
+  },
+];
+
+export const one = [
+  {
+    count: 2,
+    total_time_elapsed_sec: 116,
+    time: '2020-07-01',
+    tenantId: '6db66a71-9b8b-4aee-a4d0-0a7e9f10aded',
+  },
+  {
+    count: 104,
+    total_time_elapsed_sec: 6972,
+    time: '2020-07-01',
+    tenantId: 'c65a48a0-efa9-4dd2-b721-290d2cb855c4',
+  },
+  {
+    count: 6,
+    total_time_elapsed_sec: 368,
+    time: '2020-07-02',
+    tenantId: '6db66a71-9b8b-4aee-a4d0-0a7e9f10aded',
+  },
+  {
+    count: 116,
+    total_time_elapsed_sec: 7241,
+    time: '2020-07-02',
+    tenantId: 'c65a48a0-efa9-4dd2-b721-290d2cb855c4',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 100,
+    time: '2020-07-03',
+    tenantId: '6db66a71-9b8b-4aee-a4d0-0a7e9f10aded',
+  },
+  {
+    count: 181,
+    total_time_elapsed_sec: 9556,
+    time: '2020-07-03',
+    tenantId: 'c65a48a0-efa9-4dd2-b721-290d2cb855c4',
+  },
+  {
+    count: 5,
+    total_time_elapsed_sec: 164,
+    time: '2020-07-03',
+    tenantId: 'd10b75e1-81d7-4fa1-828b-cd1e2a5e8618',
+  },
+  {
+    count: 12,
+    total_time_elapsed_sec: 1289,
+    time: '2020-07-06',
+    tenantId: '6db66a71-9b8b-4aee-a4d0-0a7e9f10aded',
+  },
+  {
+    count: 157,
+    total_time_elapsed_sec: 8154,
+    time: '2020-07-06',
+    tenantId: 'c65a48a0-efa9-4dd2-b721-290d2cb855c4',
+  },
+  {
+    count: 5,
+    total_time_elapsed_sec: 189,
+    time: '2020-07-06',
+    tenantId: 'd10b75e1-81d7-4fa1-828b-cd1e2a5e8618',
+  },
+  {
+    count: 1,
+    total_time_elapsed_sec: 101,
+    time: '2020-07-07',
+    tenantId: '6db66a71-9b8b-4aee-a4d0-0a7e9f10aded',
+  },
+  {
+    count: 139,
+    total_time_elapsed_sec: 8593,
+    time: '2020-07-07',
+    tenantId: 'c65a48a0-efa9-4dd2-b721-290d2cb855c4',
+  },
+  {
+    count: 86,
+    total_time_elapsed_sec: 3082,
+    time: '2020-07-08',
+    tenantId: 'c65a48a0-efa9-4dd2-b721-290d2cb855c4',
+  },
+];

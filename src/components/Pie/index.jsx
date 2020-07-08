@@ -58,7 +58,7 @@ export default class Pie extends Component {
     const newLegendData = staticLegendData.slice(s, s + length) || [];
     if (newLegendData.length) {
       newLegendData[0].checked = false;
-      lengendClick(newLegendData[0]);
+      lengendClick && lengendClick(newLegendData[0]);
     }
     this.setState((state) => {
       return {

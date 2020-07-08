@@ -44,44 +44,38 @@ export default class OnlineEcharts extends Component {
     series.push({
       name: lineValue[0] && lineValue[0].name,
       type: 'line',
-      yAxisIndex: 1,
-      // smooth: true, //是否平滑
+      yAxisIndex: 0,
+      smooth: true, //是否平滑
       showAllSymbol: true,
-      symbol: 'circle',
+      // symbol: 'circle',
       symbolSize: 5,
-      // lineStyle: {
-      //   normal: {
-      //     color: '#6c50f3',
-      //     shadowColor: 'rgba(0, 0, 0, .3)',
-      //     shadowBlur: 0,
-      //     shadowOffsetY: 5,
-      //     shadowOffsetX: 5,
-      //   },
-      // },
       label: {
         show: true,
         position: 'top',
         textStyle: {
-          color: '#1890ff',
+          color: '#6c50f3', //'#6c50f3',
+        },
+        formatter: function (p) {
+          return p.value > 0 ? p.value : '';
         },
       },
       itemStyle: {
         normal: {
-          color: '#3A84FF',
+          color: '#6c50f3',
           lineStyle: {
-            color: '#3A84FF',
+            color: '#6c50f3',
             width: 1,
           },
         },
       },
       tooltip: {
-        show: false,
+        trigger: 'axis',
       },
       data: lineValue[0] && lineValue[0].value,
     });
-    console.log('lineValue====>',lineValue)
+    // console.log('lineValue====>', lineValue);
     let newLegend = monthData.map((item) => item.name);
-    if(lineValue[0] && lineValue[0].name) {
+    if (lineValue[0] && lineValue[0].name) {
       newLegend.push(lineValue[0].name);
     }
     const yAxis = [
@@ -95,22 +89,22 @@ export default class OnlineEcharts extends Component {
           show: true,
         },
       },
-      {
-        type: 'value',
-        name: '外呼总量',
-        splitLine: {
-          show: false,
-        },
-        axisTick: {
-          show: true,
-        },
-      },
+      // {
+      //   type: 'value',
+      //   name: '外呼总量',
+      //   splitLine: {
+      //     show: false,
+      //   },
+      //   axisTick: {
+      //     show: true,
+      //   },
+      // },
     ];
 
     return {
       legend: {
         data: newLegend,
-        top: '15%',
+        top: '1%',
       },
       // hover上的数据
       tooltip: {
