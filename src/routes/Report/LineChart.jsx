@@ -11,19 +11,19 @@ var data = {
 };
 
 export default class OnlineEcharts extends Component {
-  componentDidUpdate(props){
-    if(!equals(props.monthData,this.props.monthData)){
+  componentDidUpdate(props) {
+    if (!equals(props.monthData, this.props.monthData)) {
       // console.log('=====>两个类型====》',props.monthData,this.props.monthData,equals(props.monthData,this.props.monthData));
       let echarts_instance = this._echarts_react.getEchartsInstance();
       // then you can use any API of echarts.
       echarts_instance.clear();
       //使用刚指定的配置项和数据显示图表。
-      echarts_instance.setOption(this.getOption(),true);
+      echarts_instance.setOption(this.getOption(), true);
     }
   }
   getOption = () => {
-    const { xAxisData, monthData, legend } = this.props;
-    const series = monthData.map(item => ({
+    const { xAxisData, monthData, legend, lineValue } = this.props;
+    let series = monthData.map((item) => ({
       name: item.name,
       type: 'bar',
       barWidth: 18,
@@ -41,11 +41,63 @@ export default class OnlineEcharts extends Component {
       yAxisIndex: 0,
       data: item.value,
     }));
-    const newLegend = monthData.map(item => item.name);
+    series.push({
+      name: lineValue[0] && lineValue[0].name,
+      type: 'line',
+      yAxisIndex: 1,
+      // smooth: true, //是否平滑
+      showAllSymbol: true,
+      symbol: 'circle',
+      symbolSize: 5,
+      // lineStyle: {
+      //   normal: {
+      //     color: '#6c50f3',
+      //     shadowColor: 'rgba(0, 0, 0, .3)',
+      //     shadowBlur: 0,
+      //     shadowOffsetY: 5,
+      //     shadowOffsetX: 5,
+      //   },
+      // },
+      label: {
+        show: true,
+        position: 'top',
+        textStyle: {
+          color: '#1890ff',
+        },
+      },
+      itemStyle: {
+        normal: {
+          color: '#3A84FF',
+          lineStyle: {
+            color: '#3A84FF',
+            width: 1,
+          },
+        },
+      },
+      tooltip: {
+        show: false,
+      },
+      data: lineValue[0] && lineValue[0].value,
+    });
+    console.log('lineValue====>',lineValue)
+    let newLegend = monthData.map((item) => item.name);
+    if(lineValue[0] && lineValue[0].name) {
+      newLegend.push(lineValue[0].name);
+    }
     const yAxis = [
       {
         type: 'value',
         name: '外呼人数',
+        splitLine: {
+          show: false,
+        },
+        axisTick: {
+          show: true,
+        },
+      },
+      {
+        type: 'value',
+        name: '外呼总量',
         splitLine: {
           show: false,
         },
@@ -69,7 +121,7 @@ export default class OnlineEcharts extends Component {
             // if (params[i].seriesName === '增量') {
             //   res += `<p>外呼${params[i].seriesName}:${params[i].value}%</p>`;
             // } else {
-              res += `<p>${params[i].seriesName}:${params[i].value}</p>`;
+            res += `<p>${params[i].seriesName}:${params[i].value}</p>`;
             // }
           }
           return res;
@@ -100,7 +152,7 @@ export default class OnlineEcharts extends Component {
   render() {
     return (
       <div style={{ marginTop: 30 }}>
-        <ReactEcharts option={this.getOption()} ref={(c) => this._echarts_react = c}/>
+        <ReactEcharts option={this.getOption()} ref={(c) => (this._echarts_react = c)} />
       </div>
     );
   }

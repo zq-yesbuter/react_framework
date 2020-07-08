@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Chart, Tooltip, Geom, Coord } from 'bizcharts';
 import { DataView } from '@antv/data-set';
-import { Divider, Icon } from 'antd';
+import { Divider, Icon, Tooltip as AntTooltip } from 'antd';
 import classNames from 'classnames';
 import ReactFitText from 'react-fittext';
 import Debounce from 'lodash-decorators/debounce';
@@ -50,22 +50,22 @@ export default class Pie extends Component {
     this.resize.cancel();
   }
 
-  handleListChange = e => {
+  handleListChange = (e) => {
     e && e.preventDefault();
     const { start, length, staticLegendData } = this.state;
     const { lengendClick } = this.props;
-    const s = (start + length) >= staticLegendData.length ? 0 : start + length;
-    const newLegendData = staticLegendData.slice(s,s+length) || [];
-    if(newLegendData.length) {
+    const s = start + length >= staticLegendData.length ? 0 : start + length;
+    const newLegendData = staticLegendData.slice(s, s + length) || [];
+    if (newLegendData.length) {
       newLegendData[0].checked = false;
-      lengendClick(newLegendData[0])
+      lengendClick(newLegendData[0]);
     }
-    this.setState(state => {
-      return ({
+    this.setState((state) => {
+      return {
         ...state,
         legendData: newLegendData,
         start: s,
-      })
+      };
     });
     // this.setState(state => {
     //   return ({
@@ -74,7 +74,7 @@ export default class Pie extends Component {
     //     start: s,
     //   })
     // });
-  }
+  };
 
   getG2Instance = (chart) => {
     this.chart = chart;
@@ -101,8 +101,8 @@ export default class Pie extends Component {
       );
     }
     this.setState({
-      legendData:legendData.slice(start,start+length),
-      staticLegendData:legendData,
+      legendData: legendData.slice(start, start + length),
+      staticLegendData: legendData,
     });
   };
 
@@ -128,21 +128,21 @@ export default class Pie extends Component {
       lengendClick(item, i);
       return;
     }
-    const newItem = item;
-    newItem.checked = !newItem.checked;
+    // const newItem = item;
+    // newItem.checked = !newItem.checked;
 
-    const { legendData } = this.state;
-    legendData[i] = newItem;
+    // const { legendData } = this.state;
+    // legendData[i] = newItem;
 
-    const filteredLegendData = legendData.filter((l) => l.checked).map((l) => l.x);
+    // const filteredLegendData = legendData.filter((l) => l.checked).map((l) => l.x);
 
-    if (this.chart) {
-      this.chart.filter('x', (val) => filteredLegendData.indexOf(val) > -1);
-    }
+    // if (this.chart) {
+    //   this.chart.filter('x', (val) => filteredLegendData.indexOf(val) > -1);
+    // }
 
-    this.setState({
-      legendData,
-    });
+    // this.setState({
+    //   legendData,
+    // });
   };
 
   // for window resize auto responsive legend
@@ -298,55 +298,78 @@ export default class Pie extends Component {
 
         {hasLegend && (
           <ul className="legend">
-            {legendData && legendData.filter(x => x.x !== '暂无数据').map((item, i) => (
-              <li
-                key={item.x}
-                onClick={() => this.handleLegendClick(item, i)}
-                style={{
-                  backgroundColor: lengendClick && !item.checked ? 'rgba(24,144,255,0.6)' : '#fff',
-                }}
-              >
-                <span
-                  className="dot"
-                  style={{
-                    backgroundColor: !lengendClick && !item.checked ? '#aaa' : item.color,
-                  }}
-                />
-                <span
-                  className="legendTitle"
-                  style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)' }}
-                >
-                  {item.x}
-                </span>
-                <Divider type="vertical" />
-                <span
-                  className="percent"
-                  style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.45)' }}
-                >
-                  {`${(isNaN(item.percent) ? 0 : item.percent * 100).toFixed(2)}%`}
-                </span>
-                <span
-                  className="value"
-                  style={{ color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)' }}
-                >
-                  {valueFormat ? valueFormat(item.y) : item.y}
-                </span>
-                <span
-                  className="value"
-                  style={{
-                    color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)',
-                    marginLeft: 0,
-                  }}
-                >
-                  {item.z}
-                </span>
-              </li>
-            ))}
-            {staticLegendData.length > 5 && 
+            {legendData &&
+              legendData
+                .filter((x) => x.x !== '暂无数据')
+                .map((item, i) => (
+                  <li
+                    key={item.x}
+                    onClick={() => this.handleLegendClick(item, i)}
+                    style={{
+                      backgroundColor:
+                        lengendClick && !item.checked ? 'rgba(24,144,255,0.6)' : '#fff',
+                    }}
+                  >
+                    <span
+                      className="dot"
+                      style={{
+                        backgroundColor: !lengendClick && !item.checked ? '#aaa' : item.color,
+                      }}
+                    />
+                    {item.x && item.x.length > 4 ? (
+                      <AntTooltip title={item.x}>
+                        <span
+                          className="legendTitle"
+                          style={{
+                            color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)',
+                          }}
+                        >
+                          {item.x}
+                        </span>
+                      </AntTooltip>
+                    ) : (
+                      <span
+                        className="legendTitle"
+                        style={{
+                          color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)',
+                        }}
+                      >
+                        {item.x}
+                      </span>
+                    )}
+                    <Divider type="vertical" />
+                    <span
+                      className="percent"
+                      style={{
+                        color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.45)',
+                      }}
+                    >
+                      {`${(isNaN(item.percent) ? 0 : item.percent * 100).toFixed(2)}%`}
+                    </span>
+                    <span
+                      className="value"
+                      style={{
+                        color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)',
+                      }}
+                    >
+                      {valueFormat ? valueFormat(item.y) : item.y}
+                    </span>
+                    <span
+                      className="value"
+                      style={{
+                        color: lengendClick && !item.checked ? '#fff' : 'rgba(0, 0, 0, 0.65)',
+                        marginLeft: 0,
+                      }}
+                    >
+                      {item.z}
+                    </span>
+                  </li>
+                ))}
+            {staticLegendData.length > 5 && (
               <li style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
                 <a onClick={this.handleListChange}>换一换</a>
               </li>
-            }
+            )}
           </ul>
         )}
       </div>

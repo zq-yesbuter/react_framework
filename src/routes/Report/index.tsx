@@ -132,6 +132,12 @@ function formatTwoDimension(data){
     newData[index].push(item); //添加数据
   });
   return newData;
+} 
+// 扁平化数组
+function flatten(arr) {  
+  return arr.reduce((result, item)=> {
+      return result.concat(Array.isArray(item) ? flatten(item) : item);
+  }, []);
 }
 
 function Index(props: Props) {
@@ -145,6 +151,7 @@ function Index(props: Props) {
   const [data3, setData3] = useState(noData as Array<PieData>);
   const [data4, setData4] = useState(noData as Array<PieData>);
   const [legend, setLegend] = useState([] as any[]);
+  const [lineValue, setLineValue] = useState([] as any[]);
 
   // 筛选条件
   function onSubmit(values: any) {
@@ -211,6 +218,7 @@ function Index(props: Props) {
               });
               const monthData = [{ name: parentList[0] && parentList[0].name, value: baseData }];
               setMonthData(monthData);
+              setLineValue(monthData);
               console.log('扁平化的monthData===>',monthData);
               return;
             }
@@ -224,6 +232,14 @@ function Index(props: Props) {
               console.log('相同的数据合并--->', newData);
               const strucData = newData.map((item) => flatFn(item));
               console.log('扁平化的=>', strucData);
+              const lineData = flatten(strucData);
+              let lineValue = [] as any[];
+              ss.forEach((x) => {
+                const filterArr = lineData.filter((item) => item.time === x);
+                lineValue.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
+              });
+              console.log('lineData===>',lineData,'lineValue==>',lineValue);
+              setLineValue([{name:data[0] && data[0].name,value:lineValue}]);
               let monthData = [] as any[];
               strucData.map((val, index) => {
                 monthData[index] = { name: val[0] && val[0].name, value: [] };
@@ -358,7 +374,7 @@ function Index(props: Props) {
             onSubmit(data);
           }}
         />
-        <LineChart xAxisData={xAxisData} monthData={monthData} legend={legend} />
+        <LineChart xAxisData={xAxisData} monthData={monthData} legend={legend} lineValue={lineValue}/>
         <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
           <Col span={12}>
             <Pie
