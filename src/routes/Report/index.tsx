@@ -1,4 +1,4 @@
-import React, { useState, useEffect, SetStateAction } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, Row, Col, message } from 'antd';
 import moment from 'moment';
 import { connect } from 'dva';
@@ -20,6 +20,9 @@ import {
   singelData,
   data66,
   data33,
+  onlineData,
+  onlineOrgz,
+  online2,
 } from './contant';
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
@@ -95,27 +98,40 @@ function formatScene(ivrIntents: any, scene: any) {
 }
 
 // 扁平化数组
-const fn = (source, res = [] as any[]) => {
+const flatFn = (source, res = [] as any[]) => {
   source.forEach((el) => {
     res.push(el);
-    el.children && el.children.length > 0 ? fn(el.children, res) : '';
+    el.children && el.children.length > 0 ? flatFn(el.children, res) : '';
   });
   return res;
 };
 
 // 对断层数据的处理
-function formatNotTree(list = [] as any[],source) {
-  // const cloneList = _.cloneDeep(list);
+function formatNotTree(list = [] as any[], source) {
   const recursion = (source) => {
-    if(!source){
+    if (!source) {
       return;
     }
     return source.map((el) => {
       const checkArray = list.filter((val) => el.tenantId === val.tenantId);
-      return checkArray.length ? ({...el,children:recursion(el.children),data:checkArray }) : ({...el,children:recursion(el.children)})
-    })
-  }
+      return checkArray.length
+        ? { ...el, children: recursion(el.children), data: checkArray }
+        : { ...el, children: recursion(el.children) };
+    });
+  };
   return recursion([formatTree(source)]);
+}
+
+// 构造一个二维数组，将tenantId相同的放在同一个数组里
+function formatTwoDimension(data){
+  const s = new Set(); //实例化对象
+  data.forEach((item) => s.add(item.tenantId)); //添加值（Set可以去掉重复数据）
+  let newData = Array.from({ length: s.size }, () => []) as any[]; //创建指定长度数组并添值
+  data.forEach((item: any) => {
+    let index = [...s].indexOf(item.tenantId); //找到指定下标
+    newData[index].push(item); //添加数据
+  });
+  return newData;
 }
 
 function Index(props: Props) {
@@ -143,7 +159,7 @@ function Index(props: Props) {
     const month: number = moment(time).month() + 1;
     const axis: number[] = Array.from(new Array(days).keys());
     const ss: string[] = axis.reduce((acc: string[], cur: number) => {
-      return acc.concat(`${month}/${cur > 8 ? cur + 1 : `0${cur+1}`}`);
+      return acc.concat(`${month}/${cur > 8 ? cur + 1 : `0${cur + 1}`}`);
     }, []);
     setXAxisData(ss);
     setMonth(month);
@@ -162,7 +178,7 @@ function Index(props: Props) {
           payload,
         })
           .then((list) => {
-            // const list = data1111;
+            // const list = online2;
             if (!list && !list.length) {
               setMonthData([{ name: '', value: [] }]);
               return;
@@ -176,7 +192,7 @@ function Index(props: Props) {
             }));
             let parentList = [] as any[];
             newList.forEach((item) => {
-              // const checkObj = orgz.find((val:{tenantId: string}) => item.tenantId === val.tenantId);
+              // const checkObj = onlineOrgz.find((val:{tenantId: string}) => item.tenantId === val.tenantId);
               const checkObj = baseDepartList.find(
                 (val: { tenantId: string }) => item.tenantId === val.tenantId
               );
@@ -187,12 +203,10 @@ function Index(props: Props) {
                 parentList.push({ ...item, parentId, name, id });
               }
             });
-            console.log('构造parentId数据=>', parentList,'newList=>',newList,newList.every((item) => item.tenantId === newList[0].tenantId));
             if (newList.every((item) => item.tenantId === newList[0].tenantId)) {
               let baseData = [] as any[];
               ss.forEach((x) => {
                 const filterArr = newList.filter((item) => item.time === x);
-                console.log('filterArr====>',filterArr,x);
                 baseData.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
               });
               const monthData = [{ name: parentList[0] && parentList[0].name, value: baseData }];
@@ -200,45 +214,32 @@ function Index(props: Props) {
               console.log('扁平化的monthData===>',monthData);
               return;
             }
-
-            // if (!parentList.find((val) => !val.parentId)) {
-            //   // const noParent = orgz.find((val) => !val.parentId);
-            //   const noParent = baseDepartList.find((val) => !val.parentId);
-            //   parentList.push(noParent);
-            // }
             // 有多个树状结构时
-            const root = formatNotTree(parentList,baseDepartList) || [];
+            const root = formatNotTree(parentList, baseDepartList) || [];
             console.log('root=====>dauncheg', root);
-            if (root.length && root[0].children) {
-              const data = root[0].children;
-
-              const s = new Set(); //实例化对象
-              data.forEach((item) => s.add(item.tenantId)); //添加值（Set可以去掉重复数据）
-              let newData = Array.from({ length: s.size }, () => []) as any[]; //创建指定长度数组并添值
-              data.forEach((item: any) => {
-                let index = [...s].indexOf(item.tenantId); //找到指定下标
-                newData[index].push(item); //添加数据
-              });
-
+            if (root.length) {
+              const data = [{...root[0],children:undefined}, ...root[0].children] || [root[0]];
+              console.log('data===>',data);
+              const newData = formatTwoDimension(data);
               console.log('相同的数据合并--->', newData);
-              const strucData = newData.map((item) => fn(item));
+              const strucData = newData.map((item) => flatFn(item));
               console.log('扁平化的=>', strucData);
               let monthData = [] as any[];
               strucData.map((val, index) => {
-                monthData[index] = { name: val[0].name, value: [] };
+                monthData[index] = { name: val[0] && val[0].name, value: [] };
                 ss.forEach((x) => {
                   let filterArr = [] as any[];
                   val.forEach((item) => {
-                    if(item.data) {
-                      filterArr = item.data.filter(val => val.time === x)
+                    if (item.data) {
+                      filterArr = item.data.filter((val) => val.time === x);
                     }
                   });
                   console.log('val====>',val,x,'filterArr',filterArr);
                   monthData[index].value.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
                 });
               });
-              monthData = monthData.filter(item =>  !(item.value.every(val => val === 0)));
-              console.log('最终数据=>', monthData,);
+              monthData = monthData.filter((item) => !item.value.every((val) => val === 0));
+              console.log('最终数据=>', monthData);
               setMonthData(monthData);
             } else {
               setMonthData([]);

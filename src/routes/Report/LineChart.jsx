@@ -31,7 +31,7 @@ export default class OnlineEcharts extends Component {
       label: {
         show: true,
         textStyle: {
-          color: '#fff',
+          color: '#000',
         },
         position: 'inside',
         formatter: function (p) {
