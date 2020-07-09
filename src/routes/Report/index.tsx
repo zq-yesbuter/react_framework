@@ -121,17 +121,17 @@ function formatNotTree(list = [] as any[], source, id?) {
         : { ...el, children: recursion(el.children) };
     });
   };
-  return recursion([formatBaseTree(source,id)]);
+  return recursion([formatBaseTree(source, id)]);
 }
 
-function formatBaseTree(departList = [],id) {
+function formatBaseTree(departList = [], id) {
   const cloneList = _.cloneDeep(departList);
   const idMapping = cloneList.reduce((acc, el, i) => {
     acc[el.id] = i;
     return acc;
   }, {});
   let root = {};
-  cloneList.forEach(el => {
+  cloneList.forEach((el) => {
     // 判断根节点
     if (id ? el.tenantId === id : !el.parentId) {
       root = el;
@@ -228,7 +228,7 @@ function Index(props: Props) {
                 (val: { tenantId: string }) => item.tenantId === val.tenantId
               );
               if (checkObj) {
-                const { parentId, name,id } = checkObj;
+                const { parentId, name, id } = checkObj;
                 parentList.push({ ...item, parentId, name, id });
               }
             });
@@ -361,7 +361,7 @@ function Index(props: Props) {
   function lengendClick(item: any): void {
     const { x, y } = item;
     const list = data1.filter((item) => item.x === x) || [{}];
-    const remark = objToArrObj(list[0].remark);
+    const remark = list[0] && objToArrObj(list[0].remark) || [];
     if (remark && remark.length) {
       const list = formatRemark(remark);
       setData2(list);
@@ -373,7 +373,7 @@ function Index(props: Props) {
   function lengendClick2(item: any): void {
     const { x } = item;
     const list = data3.filter((item) => item.x === x) || [{}];
-    const scene = objToArrObj(list[0].scene);
+    const scene = list[0] && objToArrObj(list[0].scene) || [];
     if (scene && scene.length) {
       const list = formatScene(ivrIntents, scene);
       setData4(list);

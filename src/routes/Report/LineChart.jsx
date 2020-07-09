@@ -27,12 +27,12 @@ export default class OnlineEcharts extends Component {
       name: item.name,
       type: 'bar',
       // barWidth: 18,
-      barMaxWidth: 32,
+      barMaxWidth: 25,
       stack: 'aa',
       label: {
         show: true,
         textStyle: {
-          color: '#fff',
+          color: '#000',
         },
         position: 'inside',
         formatter: function (p) {

@@ -37,6 +37,7 @@ export default class Pie extends Component {
         {
           legendData: [...legendData],
           staticLegendData: [...staticLegendData],
+          start: 0,
         },
         () => {
           this.getLegendData();
@@ -48,6 +49,7 @@ export default class Pie extends Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.resize);
     this.resize.cancel();
+    this.setState({start: 0});
   }
 
   handleListChange = (e) => {
