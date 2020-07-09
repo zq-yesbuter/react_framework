@@ -26,12 +26,13 @@ export default class OnlineEcharts extends Component {
     let series = monthData.map((item) => ({
       name: item.name,
       type: 'bar',
-      barWidth: 18,
+      // barWidth: 18,
+      barMaxWidth: 32,
       stack: 'aa',
       label: {
         show: true,
         textStyle: {
-          color: '#000',
+          color: '#fff',
         },
         position: 'inside',
         formatter: function (p) {

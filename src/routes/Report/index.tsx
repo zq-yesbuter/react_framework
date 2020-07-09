@@ -243,19 +243,19 @@ function Index(props: Props) {
               // setLineValue([
               //   { name: parentList[0] && `${parentList[0].name}总量`, value: baseData },
               // ]);
-              console.log('扁平化的monthData===>', monthData);
+              // console.log('扁平化的monthData===>', monthData);
               return;
             }
             // 有多个树状结构时
             const root = formatNotTree(parentList, baseDepartList, tenantId) || [];
-            console.log('root=====>dauncheg', root);
+            // console.log('root=====>dauncheg', root);
             if (root.length) {
               const data = [{ ...root[0], children: undefined }, ...root[0].children] || [root[0]];
-              console.log('包含根节点的所有的数据的总和==>', data);
+              // console.log('包含根节点的所有的数据的总和==>', data);
               const newData = formatTwoDimension(data);
-              console.log('相同的数据合并--->', newData);
+              // console.log('相同的数据合并--->', newData);
               const strucData = newData.map((item) => flatFn(item));
-              console.log('扁平化的=>', strucData);
+              // console.log('扁平化的=>', strucData);
               // const lineData = flatten(strucData);
               // const flatValue = lineData.reduce(
               //   (acc, cur) => acc.concat(cur.data && cur.data.length ? cur.data : []),
@@ -280,14 +280,14 @@ function Index(props: Props) {
                     (acc, cur) => acc.concat(cur.data && cur.data.length ? cur.data : []),
                     []
                   );
-                  console.log('filterList===>', filterList);
+                  // console.log('filterList===>', filterList);
                   filterArr = filterList.filter((val) => val.time === x);
-                  console.log('val====>', val, x, 'filterArr', filterArr);
+                  // console.log('val====>', val, x, 'filterArr', filterArr);
                   monthData[index].value.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
                 });
               });
               monthData = monthData.filter((item) => !item.value.every((val) => val === 0));
-              console.log('最终数据=>', monthData);
+              // console.log('最终数据=>', monthData);
               setMonthData(monthData);
             } else {
               setMonthData([]);
