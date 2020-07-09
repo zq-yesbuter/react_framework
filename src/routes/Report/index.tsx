@@ -109,7 +109,7 @@ const flatFn = (source, res = [] as any[]) => {
 };
 
 // 对断层数据的处理
-function formatNotTree(list = [] as any[], source) {
+function formatNotTree(list = [] as any[], source, id?) {
   const recursion = (source) => {
     if (!source) {
       return;
@@ -121,7 +121,28 @@ function formatNotTree(list = [] as any[], source) {
         : { ...el, children: recursion(el.children) };
     });
   };
-  return recursion([formatTree(source)]);
+  return recursion([formatBaseTree(source,id)]);
+}
+
+function formatBaseTree(departList = [],id) {
+  const cloneList = _.cloneDeep(departList);
+  const idMapping = cloneList.reduce((acc, el, i) => {
+    acc[el.id] = i;
+    return acc;
+  }, {});
+  let root = {};
+  cloneList.forEach(el => {
+    // 判断根节点
+    if (id ? el.tenantId === id : !el.parentId) {
+      root = el;
+      return;
+    }
+    // 用映射表找到父元素
+    const parentEl = cloneList[idMapping[el.parentId]] || {};
+    // 把当前元素添加到父元素的`children`数组中
+    parentEl.children = [...(parentEl.children || []), el];
+  });
+  return root;
 }
 
 // 构造一个二维数组，将tenantId相同的放在同一个数组里
@@ -226,7 +247,7 @@ function Index(props: Props) {
               return;
             }
             // 有多个树状结构时
-            const root = formatNotTree(parentList, baseDepartList) || [];
+            const root = formatNotTree(parentList, baseDepartList, tenantId) || [];
             console.log('root=====>dauncheg', root);
             if (root.length) {
               const data = [{ ...root[0], children: undefined }, ...root[0].children] || [root[0]];
@@ -250,8 +271,8 @@ function Index(props: Props) {
               console.log('lineData===>', lineData, 'lineValue==>', lineValue);
               setLineValue([{ name: data[0] && `${data[0].name}总量`, value: lineValue }]);
               let monthData = [] as any[];
-              const splitFirstList = strucData.slice(1);
-              splitFirstList.map((val, index) => {
+              // const splitFirstList = strucData.slice(1);
+              strucData.map((val, index) => {
                 monthData[index] = { name: val[0] && val[0].name, value: [] };
                 ss.forEach((x) => {
                   let filterArr = [] as any[];
