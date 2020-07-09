@@ -3,6 +3,7 @@ import { connect } from 'dva';
 import { Form, Modal, Select } from 'antd';
 import _ from 'lodash';
 import TrimInput from '@/components/TrimInput';
+import { unique } from './utils';
 
 const { Option } = Select;
 const { Item } = Form;
@@ -47,13 +48,6 @@ function AddFormModal(props: Props) {
   getFieldDecorator('id');
   function intentChange() {
     setFieldsValue({ scene: null });
-  }
-
-  function unique(array: any) {
-    var obj = {};
-    return array.filter(function(item: any) {
-      return obj.hasOwnProperty(item.intent) ? false : (obj[item.intent] = true);
-    });
   }
 
   const intent = getFieldValue('intent');

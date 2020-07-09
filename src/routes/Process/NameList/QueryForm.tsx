@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Button, Select } from 'antd';
 import { connect } from 'dva';
+import queryString from 'query-string';
 import TrimInput from '../../../components/TrimInput';
 import { nameStatus } from '../contant';
 
@@ -12,6 +13,7 @@ interface Props {
   formatResult: any;
   onSubmit: any;
   namelist: any;
+  dispatch: Function;
 }
 function QueryForm(props: Props) {
   const {
@@ -19,6 +21,7 @@ function QueryForm(props: Props) {
     formatResult,
     onSubmit,
     namelist: { resultList },
+    dispatch,
   } = props;
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -74,7 +77,17 @@ function QueryForm(props: Props) {
           className="test-input-search"
           onClick={e => {
             resetFields();
-            handleSubmit(e);
+            const { search } = window.location;
+            const { dataStatus } = queryString.parse(search);
+            dispatch({
+              type: 'namelist/save',
+              payload: { nameRequest: { dataStatus: dataStatus ? 2 : 1, pageSize: 200, pageNum: 1} },
+            });
+            form.validateFields((err: any, values: any) => {
+              if (!err) {
+                onSubmit({ ...values, pageSize: 200, pageNum: 1 });
+              }
+            });
           }}
         >
           重置

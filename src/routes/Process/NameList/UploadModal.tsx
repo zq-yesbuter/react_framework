@@ -117,7 +117,7 @@ function ImportModal(props: Props) {
                   // message.success('外呼文件导入成功并且设置成功');
                   dispatch({
                     type: 'namelist/fetchBatchDetail',
-                    payload: { id, intent },
+                    payload: { id, intent, pageSize: 200, pageNum: 1 },
                   });
                   setFileList([]);
                   setConfirmLoading(false);

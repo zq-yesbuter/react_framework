@@ -14,6 +14,7 @@ const format = 'YYYY-MM-DD';
 
 interface IFormComponentProps extends FormComponentProps {
   onSubmit: Function;
+  dispatch: Function;
 }
 class QueryForm extends React.Component<IFormComponentProps> {
   constructor(props: IFormComponentProps) {
@@ -70,8 +71,37 @@ class QueryForm extends React.Component<IFormComponentProps> {
           <Button
             style={{ margin: '0 10px' }}
             onClick={(e) => {
+              const { dispatch } = this.props;
               resetFields();
-              this.handleSubmit();
+              const now = moment().subtract(14,'days');
+              const deadLine = moment();
+              const format = 'YYYY-MM-DD';
+              const basicBatchRequest = {
+                orderBy: { createdDate: 'DESC' },
+                pageSize: 20,
+                pageNum: 1,
+                dateStart: now.format(format) + ' 00:00:00',
+                dateEnd: deadLine.format(format) + ' 23:59:59',
+              };
+              dispatch({
+                type: 'namelist/save',
+                payload: { taskQueryValue: basicBatchRequest},
+              });
+              const { pathname }: { pathname: String } = window.location;
+              const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
+              dispatch({
+                type: 'namelist/save',
+                payload: {
+                  batchRequest: isDelete ? {  pageSize: 20,
+                    pageNum: 1, dataStatus: 2 } : { pageSize: 20, pageNum: 1,}
+                },
+              });
+              const { form, onSubmit } = this.props;
+              form.validateFields((err: any, values: any) => {
+                if (!err) {
+                  onSubmit({ ...values, pageSize: 20, pageNum: 1 });
+                }
+              });
             }}
           >
             重置

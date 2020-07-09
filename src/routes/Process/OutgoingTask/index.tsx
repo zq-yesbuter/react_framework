@@ -2,6 +2,7 @@ import React, { useState, Fragment } from 'react';
 import { connect } from 'dva';
 import { Card, message, Button, Modal } from 'antd';
 import { routerRedux, Link } from 'dva/router';
+import moment from 'moment';
 import CategoryAddFormModal from './AddFormModal';
 import QueryForm from './QueryForm';
 import renderTable from '@/components/SelectTable';
@@ -212,6 +213,7 @@ function Index(props: Props): any {
               dateStart: dateStart + ' 00:00:00',
               dateEnd: dateEnd + ' 23:59:59',
               ...rest,
+              pageSize: 20, pageNum: 1
             };
             const payload = isDelete ? { dataStatus: 2, ...taskQueryValue } : taskQueryValue;
             dispatch({
@@ -244,7 +246,7 @@ function Index(props: Props): any {
                 message.success('新增任务成功');
                 dispatch({
                   type: 'namelist/getBatch',
-                  payload: {},
+                  payload: {pageSize: 20, pageNum: 1},
                 });
                 setSubmitLoading(false);
               })

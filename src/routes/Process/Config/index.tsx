@@ -87,6 +87,10 @@ function Index(props: Props) {
             message.success('任务配置成功！');
             setSureLoading(false);
             dispatch({
+              type: 'namelist/configNameList',
+              payload: queryString.parse(search),
+            });
+            dispatch({
               type: 'namelist/getConfigValue',
               payload: queryString.parse(search),
             });

@@ -423,18 +423,14 @@ function Index(props: Props) {
 
   // 筛选条件
   function onSubmit(values: any) {
-    const payload = dataStatus
-      ? { dataStatus: 2, id, intent, createdTime, ...values }
-      : { id, intent,createdTime, ...values };
+    const payload = { dataStatus: dataStatus ? 2 : 1, id, intent, createdTime, ...values, pageSize: 200, pageNum: 1 };
     dispatch({
       type: 'namelist/fetchBatchDetail',
       payload,
     });
     dispatch({
       type: 'namelist/save',
-      payload: dataStatus
-        ? { nameRequest: { ...nameRequest, dataStatus: 2, ...values } }
-        : { nameRequest: { ...nameRequest, ...values } },
+      payload: { nameRequest: { ...nameRequest, dataStatus: dataStatus ? 2 : 1, ...values, pageSize: 200, pageNum: 1} },
     });
   }
 
