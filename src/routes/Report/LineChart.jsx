@@ -41,43 +41,43 @@ export default class OnlineEcharts extends Component {
       yAxisIndex: 0,
       data: item.value,
     }));
-    series.push({
-      name: lineValue[0] && lineValue[0].name,
-      type: 'line',
-      yAxisIndex: 0,
-      smooth: true, //是否平滑
-      showAllSymbol: true,
-      // symbol: 'circle',
-      symbolSize: 5,
-      label: {
-        show: true,
-        position: 'top',
-        textStyle: {
-          color: '#6c50f3', //'#6c50f3',
-        },
-        formatter: function (p) {
-          return p.value > 0 ? p.value : '';
-        },
-      },
-      itemStyle: {
-        normal: {
-          color: '#6c50f3',
-          lineStyle: {
-            color: '#6c50f3',
-            width: 1,
-          },
-        },
-      },
-      tooltip: {
-        trigger: 'axis',
-      },
-      data: lineValue[0] && lineValue[0].value,
-    });
+    // series.push({
+    //   name: lineValue[0] && lineValue[0].name,
+    //   type: 'line',
+    //   yAxisIndex: 0,
+    //   smooth: true, //是否平滑
+    //   showAllSymbol: true,
+    //   // symbol: 'circle',
+    //   symbolSize: 5,
+    //   label: {
+    //     show: true,
+    //     position: 'top',
+    //     textStyle: {
+    //       color: '#6c50f3', //'#6c50f3',
+    //     },
+    //     formatter: function (p) {
+    //       return p.value > 0 ? p.value : '';
+    //     },
+    //   },
+    //   itemStyle: {
+    //     normal: {
+    //       color: '#6c50f3',
+    //       lineStyle: {
+    //         color: '#6c50f3',
+    //         width: 1,
+    //       },
+    //     },
+    //   },
+    //   tooltip: {
+    //     trigger: 'axis',
+    //   },
+    //   data: lineValue[0] && lineValue[0].value,
+    // });
     // console.log('lineValue====>', lineValue);
     let newLegend = monthData.map((item) => item.name);
-    if (lineValue[0] && lineValue[0].name) {
-      newLegend.push(lineValue[0].name);
-    }
+    // if (lineValue[0] && lineValue[0].name) {
+    //   newLegend.push(lineValue[0].name);
+    // }
     const yAxis = [
       {
         type: 'value',

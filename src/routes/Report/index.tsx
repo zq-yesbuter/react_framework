@@ -240,9 +240,9 @@ function Index(props: Props) {
               });
               const monthData = [{ name: parentList[0] && parentList[0].name, value: baseData }];
               setMonthData(monthData);
-              setLineValue([
-                { name: parentList[0] && `${parentList[0].name}总量`, value: baseData },
-              ]);
+              // setLineValue([
+              //   { name: parentList[0] && `${parentList[0].name}总量`, value: baseData },
+              // ]);
               console.log('扁平化的monthData===>', monthData);
               return;
             }
@@ -256,20 +256,20 @@ function Index(props: Props) {
               console.log('相同的数据合并--->', newData);
               const strucData = newData.map((item) => flatFn(item));
               console.log('扁平化的=>', strucData);
-              const lineData = flatten(strucData);
-              const flatValue = lineData.reduce(
-                (acc, cur) => acc.concat(cur.data && cur.data.length ? cur.data : []),
-                []
-              );
-              console.log('flatValue====>', flatValue);
-              let lineValue = [] as any[];
-              ss.forEach((x) => {
-                let filterArr = [] as any[];
-                filterArr = flatValue.filter((val) => val.time === x);
-                lineValue.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
-              });
-              console.log('lineData===>', lineData, 'lineValue==>', lineValue);
-              setLineValue([{ name: data[0] && `${data[0].name}总量`, value: lineValue }]);
+              // const lineData = flatten(strucData);
+              // const flatValue = lineData.reduce(
+              //   (acc, cur) => acc.concat(cur.data && cur.data.length ? cur.data : []),
+              //   []
+              // );
+              // console.log('flatValue====>', flatValue);
+              // let lineValue = [] as any[];
+              // ss.forEach((x) => {
+              //   let filterArr = [] as any[];
+              //   filterArr = flatValue.filter((val) => val.time === x);
+              //   lineValue.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
+              // });
+              // console.log('lineData===>', lineData, 'lineValue==>', lineValue);
+              // setLineValue([{ name: data[0] && `${data[0].name}总量`, value: lineValue }]);
               let monthData = [] as any[];
               // const splitFirstList = strucData.slice(1);
               strucData.map((val, index) => {
@@ -409,7 +409,7 @@ function Index(props: Props) {
         <LineChart
           xAxisData={xAxisData}
           monthData={monthData}
-          lineValue={lineValue}
+          // lineValue={lineValue}
         />
         <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
           <Col span={12}>
