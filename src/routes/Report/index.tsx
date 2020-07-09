@@ -29,6 +29,7 @@ import {
 import QueryForm from './QueryForm';
 import LineChart from './LineChart';
 import { formatTaskType, objToArrObj, formatTree } from '@/utils/utils';
+import { getIvrIntents } from '@/services/nameList';
 
 const tabList = [
   {
@@ -304,19 +305,14 @@ function Index(props: Props) {
     })
       .then((list: Array<List>) => {
         if (list && list.length) {
-          // 第一行左侧
-          const strData1 = list.map(({ count, total_time_elapsed_sec, scene, remark }) => ({
-            x: formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
-            y: count,
-            z: `${total_time_elapsed_sec}s`,
-            remark,
-          }));
-          setData1(strData1);
-          // 第一行右侧
-          const remark = objToArrObj(list[0].remark);
-          if (remark && remark.length) {
-            const datalist = formatRemark(remark);
-            setData2(datalist);
+          if (ivrIntents && ivrIntents.length) {
+            setOneLine(list, ivrIntents);
+          } else {
+            getIvrIntents()
+              .then((ivrIntents) => {
+                setOneLine(list, ivrIntents);
+              })
+              .catch((e) => message.error(e.message));
           }
         } else {
           setData1(noData);
@@ -332,19 +328,14 @@ function Index(props: Props) {
     })
       .then((list: Array<List>) => {
         if (list && list.length) {
-          // 第二行左侧
-          const strData3 = list.map(({ count, total_time_elapsed_sec, operator, scene }) => ({
-            x: operator,
-            y: count,
-            z: `${total_time_elapsed_sec}s`,
-            scene,
-          }));
-          setData3(strData3);
-          // 第二行右侧
-          const scene = objToArrObj(list[0].scene);
-          if (scene && scene.length) {
-            const datalist = formatScene(ivrIntents, scene);
-            setData4(datalist);
+          if (ivrIntents && ivrIntents.length) {
+            setTwoLine(list, ivrIntents);
+          } else {
+            getIvrIntents()
+              .then((ivrIntents) => {
+                setTwoLine(list, ivrIntents);
+              })
+              .catch((e) => message.error(e.message));
           }
         } else {
           setData3(noData);
@@ -358,10 +349,44 @@ function Index(props: Props) {
     onSubmit({ time: moment() });
   }, []);
 
+  function setOneLine(list, ivrIntents) {
+    // 第一行左侧
+    const strData1 = list.map(({ count, total_time_elapsed_sec, scene, remark }) => ({
+      x: formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
+      y: count,
+      z: `${total_time_elapsed_sec}s`,
+      remark,
+    }));
+    setData1(strData1);
+    // 第一行右侧
+    const remark = objToArrObj(list[0].remark);
+    if (remark && remark.length) {
+      const datalist = formatRemark(remark);
+      setData2(datalist);
+    }
+  }
+
+  function setTwoLine(list, ivrIntents) {
+    // 第二行左侧
+    const strData3 = list.map(({ count, total_time_elapsed_sec, operator, scene }) => ({
+      x: operator,
+      y: count,
+      z: `${total_time_elapsed_sec}s`,
+      scene,
+    }));
+    setData3(strData3);
+    // 第二行右侧
+    const scene = objToArrObj(list[0].scene);
+    if (scene && scene.length) {
+      const datalist = formatScene(ivrIntents, scene);
+      setData4(datalist);
+    }
+  }
+
   function lengendClick(item: any): void {
     const { x, y } = item;
     const list = data1.filter((item) => item.x === x) || [{}];
-    const remark = list[0] && objToArrObj(list[0].remark) || [];
+    const remark = (list[0] && objToArrObj(list[0].remark)) || [];
     if (remark && remark.length) {
       const list = formatRemark(remark);
       setData2(list);
@@ -373,7 +398,7 @@ function Index(props: Props) {
   function lengendClick2(item: any): void {
     const { x } = item;
     const list = data3.filter((item) => item.x === x) || [{}];
-    const scene = list[0] && objToArrObj(list[0].scene) || [];
+    const scene = (list[0] && objToArrObj(list[0].scene)) || [];
     if (scene && scene.length) {
       const list = formatScene(ivrIntents, scene);
       setData4(list);
