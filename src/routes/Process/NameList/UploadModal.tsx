@@ -31,6 +31,7 @@ const sceneObj = {
   '12097': '面试提醒(物流)',
   '12098': '背调提醒(物流)',
   '12099': '入职提醒(物流)',
+  '12100': '面试回访(CHO)',
 };
 
 interface Props {
@@ -227,6 +228,8 @@ function ImportModal(props: Props) {
         ];
       case '12065': //'面试调研',
         return ['候选人姓名', '电话', 'HR姓名', 'HR联系人电话'];
+      case '12100': // '面试回访(CHO)'
+        return ['候选人姓名', '电话', '岗位', 'HR姓名', 'HR联系人电话'];
       case '12072': //'面试调研（新）',
         return ['候选人姓名', '电话', 'HR姓名', 'HR联系人电话'];
       case '12095': //CHO校招offer确认
@@ -310,6 +313,16 @@ function ImportModal(props: Props) {
             two: '18608001700',
             three: '胡女士',
             four: '18608001700',
+          },
+        ];
+      case '12100': // '面试回访(CHO)'
+        return [
+          {
+            one: '梁主任',
+            two: '18608001700',
+            three: '产品岗',
+            four: '胡女士',
+            five: '18608001700'
           },
         ];
       case '12072': //'面试调研（新）',
