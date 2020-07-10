@@ -12,7 +12,7 @@ var data = {
 
 export default class OnlineEcharts extends Component {
   componentDidUpdate(props) {
-    if (!equals(props.monthData, this.props.monthData)) {
+    if (!equals(props.monthData, this.props.monthData) || !equals(props.lineValue, this.props.lineValue)) {
       // console.log('=====>两个类型====》',props.monthData,this.props.monthData,equals(props.monthData,this.props.monthData));
       let echarts_instance = this._echarts_react.getEchartsInstance();
       // then you can use any API of echarts.
