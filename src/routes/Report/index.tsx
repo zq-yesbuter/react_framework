@@ -332,7 +332,7 @@ function Index(props: Props) {
           setData1(noData);
           // setExpandObj({...expandObj,one:{length:5,expand:false}});
           setData2(noData);
-          setOnelineData({one: { expand: false, length: 16 },two: { expand: false, length: 5 }});
+          setOnelineData({one: { expand: false, length: 5 },two: { expand: false, length: 5 }});
           // setExpandObj({...expandObj,two:{length:5,expand:false}});
         }
       })

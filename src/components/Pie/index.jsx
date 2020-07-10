@@ -68,7 +68,7 @@ export default class Pie extends Component {
 
     let height = 350;
     if(expandKey==='one' || expandKey==='two'){
-      height = (Math.max(expandObj.one.length,expandObj.two.length)+ 2) * 33;
+      height = (Math.max(expandObj.one.length,expandObj.two.length)+ 2) * 33 > 350 ? (Math.max(expandObj.one.length,expandObj.two.length)+ 2) * 33 : 350;
       // this.setState({oneHeight:height},() => {
       //   // fedBack(expandKey,true)
       // });
@@ -98,14 +98,14 @@ export default class Pie extends Component {
       //   }
       // }
       // this.setState({oneHeight:height});
-      console.log('height====>',height,expandObj.one.length,expandObj.two.length,'expandKey==>',expandKey);
+      // console.log('height====>',height,expandObj.one.length,expandObj.two.length,'expandKey==>',expandKey);
     }else{
-      height = (Math.max(expandObj.three.length,expandObj.four.length)+ 2) * 33;
+      height = (Math.max(expandObj.three.length,expandObj.four.length)+ 2) * 33 > 350 ? (Math.max(expandObj.three.length,expandObj.four.length)+ 2) * 33 : 350;
       // this.setState({oneHeight:height},() => {
       //   // fedBack(expandKey,true)
       // });
     }
-    console.log('height====>',height,'expandKey==>',expandKey);
+    // console.log('height====>',height,'expandKey==>',expandKey);
     this.setState((state) => {
       return {
         ...state,
@@ -334,7 +334,7 @@ export default class Pie extends Component {
       dimension: 'x',
       as: 'percent',
     });
-    console.log(staticLegendData.length,staticLegendData.length === legendData.length,legendData.length );
+    // console.log(staticLegendData.length,staticLegendData.length === legendData.length,legendData.length );
     const {oneHeight} = this.state;
     return (
       <div ref={this.handleRoot} className={pieClassName} style={{height:oneHeight,display:'flex',alignItems:'center'}}>

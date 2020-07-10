@@ -28,6 +28,7 @@ function Index(props: Props): any {
   const [value, setValue] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [content, setcontent] = useState('');
   const { pathname }: { pathname: String } = window.location;
   const isAllDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'deleteAll';
   const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
@@ -106,7 +107,7 @@ function Index(props: Props): any {
     total: batchTotal,
     current: batchCur,
     pageSize: batchPageSize,
-    columns: renderColumns(dispatch, ivrIntents),
+    columns: renderColumns(dispatch, ivrIntents,content, setcontent),
     loading,
     selectedRowKeys,
     onSizeChange: (pageSize: number) => {

@@ -1,16 +1,22 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 import { routerRedux } from 'dva/router';
 import queryString from 'query-string';
-import { Divider } from 'antd';
+import { Divider, Popover, Spin } from 'antd';
 import { formatTaskType } from '@/utils/utils';
 import { statusOptions } from '../contant';
+import { getProResult } from '@/services/nameList';
 
 interface Value {
   intent: string;
   status: number | string;
   createdTime: any;
+  actualCount?: any;
 }
-const renderColumns = (dispatch: Function, ivrIntents: any) => {
+const renderColumns = (dispatch: Function, ivrIntents: any, content, setcontent) => {
+  // const [visible, setVisible] = useState(false);
+  // const handleVisibleChange = (visible) => {
+  //   setVisible(visible);
+  // };
   const columns = [
     {
       title: '任务名',
@@ -35,6 +41,15 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
       dataIndex: 'triggerStartTime',
     },
     {
+      title: '外呼平均时长',
+      key: 'totalTimeElapsedSec',
+      dataIndex: 'totalTimeElapsedSec',
+      render: (totalTimeElapsedSec: number, value: Value) => {
+        const { actualCount } = value || {};
+        return <Fragment>{actualCount ? totalTimeElapsedSec / actualCount : 0}</Fragment>;
+      },
+    },
+    {
       title: '场景',
       key: 'scene',
       dataIndex: 'scene',
@@ -45,6 +60,11 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
       key: 'status',
       dataIndex: 'status',
       render: (status: number) => formatTaskType(statusOptions, 'value', status, 'name'),
+    },
+    {
+      title: '创建人',
+      key: 'created',
+      dataIndex: 'created',
     },
     {
       title: '更新人',
@@ -64,7 +84,7 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
       dataIndex: 'id',
       width: 150,
       render: (id: number | string, value: Value) => {
-        const { intent, status, createdTime } = value || {};
+        const { intent, status, createdTime,actualCount } = value || {};
         const { pathname } = window.location;
         const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
         const search = isDelete
@@ -103,6 +123,38 @@ const renderColumns = (dispatch: Function, ivrIntents: any) => {
             >
               名单
             </a>
+            {status > 3 && 
+            <Fragment>
+              <Divider type="vertical" />
+              <Popover
+                content={content}
+                title="外呼占比"
+                trigger="click"
+                placement="topRight"
+                // visible={visible}
+                // onVisibleChange={handleVisibleChange}
+              >
+                <a
+                  onClick={() => {
+                    setcontent(<Spin size="small" />);
+                    getProResult({ batchId: id }).then((data) => {
+                      if (data && data.length) {
+                        let result = data.reduce(
+                          (acc, cur) => acc + `${cur.remark} :   ${actualCount ? `${Math.round(cur.count/actualCount * 10000)/100}%` : '0%'}\n`,
+                          ''
+                        );
+                        setcontent(result);
+                      } else {
+                        setcontent('暂无数据');
+                      }
+                    });
+                  }}
+                >
+                  查看
+                </a>
+              </Popover>
+            </Fragment>
+          } 
           </Fragment>
         );
       },

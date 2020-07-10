@@ -146,3 +146,10 @@ export async function getResult(body) {
     method: 'GET',
   });
 }
+
+// result Proportion
+export async function getProResult(body) {
+  return request(`/rpt/scene/batch/?${stringify(body)}`, {
+    method: 'GET',
+  });
+}
