@@ -176,7 +176,18 @@ function Index(props: Props) {
   const [data3, setData3] = useState(noData as Array<PieData>);
   const [data4, setData4] = useState(noData as Array<PieData>);
   const [lineValue, setLineValue] = useState([] as any[]);
-
+  const [oneLineData,setOnelineData] = useState({one: { expand: false, length: 5 },two: { expand: false, length: 5 }});
+  const [twoLineData,setTwolineData] = useState({three: { expand: false, length: 5 },four: { expand: false, length: 5 }});
+  // const [expandObj, setExpandObj] = useState({
+  //   one: { expand: false, length: 5 },
+  //   two: { expand: false, length: 5 },
+  //   three: { expand: false, length: 5 },
+  //   four: { expand: false, length: 5 },
+  // });
+  
+  
+  const [oneHeight,setOneHeight] = useState(350);
+  const [twoHeight,setTwoHeight] = useState(350);
   // 筛选条件
   function onSubmit(values: any) {
     const { time, tenantId } = values;
@@ -249,28 +260,29 @@ function Index(props: Props) {
             }
             // 有多个树状结构时
             const root = formatNotTree(parentList, baseDepartList, tenantId) || [];
+            // const root = formatNotTree(parentList, oneO, tenantId) || [];
             // console.log('root=====>dauncheg', root);
             if (root.length) {
-              const data = [{ ...root[0], children: undefined }, ...root[0].children] || [root[0]];
+              const data = root[0].children && root[0].children.length ? [{ ...root[0], children: undefined }, ...root[0].children] : [root[0]];
               // console.log('包含根节点的所有的数据的总和==>', data);
               const newData = formatTwoDimension(data);
               // console.log('相同的数据合并--->', newData);
               const strucData = newData.map((item) => flatFn(item));
               // console.log('扁平化的=>', strucData);
-              // const lineData = flatten(strucData);
-              // const flatValue = lineData.reduce(
-              //   (acc, cur) => acc.concat(cur.data && cur.data.length ? cur.data : []),
-              //   []
-              // );
+              const lineData = flatten(strucData);
+              const flatValue = lineData.reduce(
+                (acc, cur) => acc.concat(cur.data && cur.data.length ? cur.data : []),
+                []
+              );
               // console.log('flatValue====>', flatValue);
-              // let lineValue = [] as any[];
-              // ss.forEach((x) => {
-              //   let filterArr = [] as any[];
-              //   filterArr = flatValue.filter((val) => val.time === x);
-              //   lineValue.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
-              // });
+              let lineValue = [] as any[];
+              ss.forEach((x) => {
+                let filterArr = [] as any[];
+                filterArr = flatValue.filter((val) => val.time === x);
+                lineValue.push(filterArr.reduce((acc, cur) => acc + cur.count, 0));
+              });
               // console.log('lineData===>', lineData, 'lineValue==>', lineValue);
-              // setLineValue([{ name: data[0] && `${data[0].name}总量`, value: lineValue }]);
+              setLineValue([{ name: data[0] && `${data[0].name}总量`, value: lineValue }]);
               let monthData = [] as any[];
               // const splitFirstList = strucData.slice(1);
               strucData.map((val, index) => {
@@ -316,7 +328,10 @@ function Index(props: Props) {
           }
         } else {
           setData1(noData);
+          // setExpandObj({...expandObj,one:{length:5,expand:false}});
           setData2(noData);
+          setOnelineData({one: { expand: false, length: 16 },two: { expand: false, length: 5 }});
+          // setExpandObj({...expandObj,two:{length:5,expand:false}});
         }
       })
       .catch((e) => message.error(e.message));
@@ -339,7 +354,10 @@ function Index(props: Props) {
           }
         } else {
           setData3(noData);
+          // setExpandObj({...expandObj,three:{length:5,expand:false}});
           setData4(noData);
+          setTwolineData({three: { expand: false, length: 5 },four: { expand: false, length: 5 }})
+          // setExpandObj({...expandObj,four:{length:5,expand:false}});
         }
       })
       .catch((e) => message.error(e.message));
@@ -358,11 +376,19 @@ function Index(props: Props) {
       remark,
     }));
     setData1(strData1);
+    // setExpandObj({...expandObj,one:{}});
     // 第一行右侧
     const remark = objToArrObj(list[0].remark);
     if (remark && remark.length) {
       const datalist = formatRemark(remark);
       setData2(datalist);
+      // setExpandObj({...expandObj,two:{length:datalist.length,expand:false}});
+      // console.log('=====>',{...expandObj,two:{}});
+      setOnelineData({one:{length:strData1.length,expand:false},two:{length:datalist.length,expand:false}})
+    }else{
+      setData2(noData);
+      setOnelineData({one:{length:strData1.length,expand:false},two:{length:5,expand:false}})
+      // setExpandObj({...expandObj,two:{length:5,expand:false}});
     }
   }
 
@@ -375,11 +401,18 @@ function Index(props: Props) {
       scene,
     }));
     setData3(strData3);
+    // setExpandObj({...expandObj,three:{length:strData3.length,expand:false}});
+    
     // 第二行右侧
     const scene = objToArrObj(list[0].scene);
     if (scene && scene.length) {
       const datalist = formatScene(ivrIntents, scene);
       setData4(datalist);
+      setTwolineData({three: { expand: false, length: strData3.length },four: { expand: false, length: datalist.length }})
+      // setExpandObj({...expandObj,four:{length:datalist.length,expand:false}});
+    }else{
+      setTwolineData({three: { expand: false, length: strData3.length },four: { expand: false, length: 5 }})
+      // setExpandObj({...expandObj,four:{length:5,expand:false}});
     }
   }
 
@@ -431,37 +464,59 @@ function Index(props: Props) {
             onSubmit(data);
           }}
         />
-        <LineChart
-          xAxisData={xAxisData}
-          monthData={monthData}
-          // lineValue={lineValue}
-        />
-        <Row gutter={50} style={{ marginBottom: 100, marginTop: 100 }}>
+        <LineChart xAxisData={xAxisData} monthData={monthData} lineValue={lineValue} />
+        <Row type="flex" align="middle">
           <Col span={12}>
             <Pie
               hasLegend
               subTitle="外呼类型分布"
               data={data1}
               height={254}
+              // expandClick={oneHeightClick}
               lengendClick={lengendClick}
+              expandObj = {oneLineData}
+              expandKey='one'
+              // fedBack={fedBack}
             />
           </Col>
           <Col span={12}>
-            <Pie hasLegend subTitle="外呼结果分布" data={data2} height={254} />
+            <Pie
+              hasLegend
+              subTitle="外呼结果分布"
+              data={data2}
+              height={254}
+              expandObj = {oneLineData}
+              expandKey='two'
+              // fedBack={fedBack}
+              // expandClick={twoHeightClick}
+            />
           </Col>
         </Row>
-        <Row gutter={50}>
+        <Row type="flex" align="middle">
           <Col span={12}>
             <Pie
               hasLegend
               subTitle="使用人使用量分布"
               data={data3}
               height={254}
+              expandObj = {twoLineData}
+              // expandClick={threeHeightClick}
               lengendClick={lengendClick2}
+              expandKey='three'
+              // fedBack={fedBack}
             />
           </Col>
           <Col span={12}>
-            <Pie hasLegend subTitle="外呼类型分布" data={data4} height={254} />
+            <Pie
+              hasLegend
+              subTitle="外呼类型分布"
+              data={data4}
+              height={254}
+              expandObj = {twoLineData}
+              expandKey = 'four'
+              // fedBack={fedBack}
+              // expandClick={fourHeightClick}
+            />
           </Col>
         </Row>
       </Card>

@@ -19,6 +19,7 @@ export default class Pie extends Component {
     selIndex: 0,
     start: 0,
     length: 5,
+    oneHeight:350,
   };
 
   componentDidMount() {
@@ -51,24 +52,70 @@ export default class Pie extends Component {
     this.resize.cancel();
     this.setState({start: 0});
   }
-
+  
+  // 展开
   handleListChange = (e) => {
     e && e.preventDefault();
     const { start, length, staticLegendData } = this.state;
-    const { lengendClick } = this.props;
+    const { lengendClick, expandKey, expandObj } = this.props;
     const s = start + length >= staticLegendData.length ? 0 : start + length;
-    const newLegendData = staticLegendData.slice(s, s + length) || [];
+    let newLegendData = staticLegendData.slice(0) || [];
     if (newLegendData.length) {
+      newLegendData = newLegendData.map((item) => ({ ...item, checked: true }));
       newLegendData[0].checked = false;
       lengendClick && lengendClick(newLegendData[0]);
     }
+
+    let height = 350;
+    if(expandKey==='one' || expandKey==='two'){
+      height = (Math.max(expandObj.one.length,expandObj.two.length)+ 2) * 33;
+      // this.setState({oneHeight:height},() => {
+      //   // fedBack(expandKey,true)
+      // });
+      // if(expandKey ==='two'){
+      //   if(expandObj.one.expand) {
+      //     height = (Math.max(expandObj.one.length,expandObj.two.length)+ 2) * 33;
+      //   }else{
+      //     height = (expandObj.two.length+ 2) * 33;
+      //   }
+      // }else if(expandKey ==='one'){
+      //   if(expandObj.two.expand) {
+      //     height = (Math.max(expandObj.one.length,expandObj.two.length)+ 2) * 33;
+      //   }else{
+      //     height = (expandObj.one.length+ 2) * 33;
+      //   }
+      // }else if(expandKey === 'three'){
+      //   if(expandObj.four.expand) {
+      //     height = (Math.max(expandObj.three.length,expandObj.four.length)+ 2) * 33;
+      //   }else{
+      //     height = (expandObj.three.length+ 2) * 33;
+      //   }
+      // }else if(expandKey === 'four'){
+      //   if(expandObj.three.expand) {
+      //     height = (Math.max(expandObj.three.length,expandObj.four.length)+ 2) * 33;
+      //   }else{
+      //     height = (expandObj.four.length+ 2) * 33;
+      //   }
+      // }
+      // this.setState({oneHeight:height});
+      console.log('height====>',height,expandObj.one.length,expandObj.two.length,'expandKey==>',expandKey);
+    }else{
+      height = (Math.max(expandObj.three.length,expandObj.four.length)+ 2) * 33;
+      // this.setState({oneHeight:height},() => {
+      //   // fedBack(expandKey,true)
+      // });
+    }
+    console.log('height====>',height,'expandKey==>',expandKey);
     this.setState((state) => {
       return {
         ...state,
         legendData: newLegendData,
         start: s,
+        // oneHeight:600,
+        oneHeight:height,
       };
     });
+
     // this.setState(state => {
     //   return ({
     //     ...state,
@@ -76,6 +123,32 @@ export default class Pie extends Component {
     //     start: s,
     //   })
     // });
+  };
+
+  handleListShou = (e) => {
+    e && e.preventDefault();
+    const { start, length, staticLegendData } = this.state;
+    const { lengendClick, expandClick} = this.props;
+    const s = start + length >= staticLegendData.length ? 0 : start + length;
+    let newLegendData = staticLegendData.slice(0,5) || [];
+    if (newLegendData.length) {
+      newLegendData = newLegendData.map((item) => ({ ...item, checked: true }));
+      newLegendData[0].checked = false;
+      lengendClick && lengendClick(newLegendData[0]);
+    }
+    this.setState({oneHeight:350},() => {
+      // fedBack(expandKey,false)
+    });
+
+    this.setState((state) => {
+      return {
+        ...state,
+        legendData: newLegendData,
+        start: s,
+      };
+    },() => {
+      // expandClick(newLegendData.length,false);
+    });
   };
 
   getG2Instance = (chart) => {
@@ -261,8 +334,10 @@ export default class Pie extends Component {
       dimension: 'x',
       as: 'percent',
     });
+    console.log(staticLegendData.length,staticLegendData.length === legendData.length,legendData.length );
+    const {oneHeight} = this.state;
     return (
-      <div ref={this.handleRoot} className={pieClassName} style={style}>
+      <div ref={this.handleRoot} className={pieClassName} style={{height:oneHeight,display:'flex',alignItems:'center'}}>
         <ReactFitText maxFontSize={25}>
           <div className="chart">
             <Chart
@@ -369,7 +444,7 @@ export default class Pie extends Component {
                 ))}
             {staticLegendData.length > 5 && (
               <li style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
-                <a onClick={this.handleListChange}>换一换</a>
+                {staticLegendData.length === legendData.length ? <a onClick={this.handleListShou}>收起</a> : <a onClick={this.handleListChange}>展开</a>}
               </li>
             )}
           </ul>

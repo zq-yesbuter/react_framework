@@ -42,43 +42,42 @@ export default class OnlineEcharts extends Component {
       yAxisIndex: 0,
       data: item.value,
     }));
-    // series.push({
-    //   name: lineValue[0] && lineValue[0].name,
-    //   type: 'line',
-    //   yAxisIndex: 0,
-    //   smooth: true, //是否平滑
-    //   showAllSymbol: true,
-    //   // symbol: 'circle',
-    //   symbolSize: 5,
-    //   label: {
-    //     show: true,
-    //     position: 'top',
-    //     textStyle: {
-    //       color: '#6c50f3', //'#6c50f3',
-    //     },
-    //     formatter: function (p) {
-    //       return p.value > 0 ? p.value : '';
-    //     },
-    //   },
-    //   itemStyle: {
-    //     normal: {
-    //       color: '#6c50f3',
-    //       lineStyle: {
-    //         color: '#6c50f3',
-    //         width: 1,
-    //       },
-    //     },
-    //   },
-    //   tooltip: {
-    //     trigger: 'axis',
-    //   },
-    //   data: lineValue[0] && lineValue[0].value,
-    // });
-    // console.log('lineValue====>', lineValue);
     let newLegend = monthData.map((item) => item.name);
-    // if (lineValue[0] && lineValue[0].name) {
-    //   newLegend.push(lineValue[0].name);
-    // }
+    if(lineValue && lineValue[0] && lineValue[0].value) {
+      series.push({
+        name: lineValue[0] && lineValue[0].name,
+        type: 'line',
+        yAxisIndex: 0,
+        smooth: true, //是否平滑
+        showAllSymbol: true,
+        // symbol: 'circle',
+        symbolSize: 5,
+        label: {
+          show: true,
+          position: 'top',
+          textStyle: {
+            color: '#6c50f3', //'#6c50f3',
+          },
+          formatter: function (p) {
+            return p.value > 0 ? p.value : '';
+          },
+        },
+        itemStyle: {
+          normal: {
+            color: '#6c50f3',
+            lineStyle: {
+              color: '#6c50f3',
+              width: 1,
+            },
+          },
+        },
+        tooltip: {
+          trigger: 'axis',
+        },
+        data: lineValue[0] && lineValue[0].value,
+      });
+      newLegend.push(lineValue[0].name);
+    }
     const yAxis = [
       {
         type: 'value',
@@ -111,12 +110,12 @@ export default class OnlineEcharts extends Component {
       tooltip: {
         trigger: 'axis',
         formatter: (params) => {
-          let res = `<div><p>外呼时间：${params[0].axisValue}</p></div>`;
+          let res = `<li>外呼时间：${params[0].axisValue}</li>`;
           for (let i = 0; i < params.length; i++) {
             // if (params[i].seriesName === '增量') {
             //   res += `<p>外呼${params[i].seriesName}:${params[i].value}%</p>`;
             // } else {
-            res += `<p>${params[i].seriesName}:${params[i].value}</p>`;
+            res += `<li>${params[i].seriesName}: ${params[i].value}</li>`;
             // }
           }
           return res;

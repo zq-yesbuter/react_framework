@@ -17,6 +17,10 @@ export interface IPieProps {
   valueFormat?: (value: string) => string | React.ReactNode;
   subTitle?: React.ReactNode;
   lengendClick?:(item:any) => void;
+  // expandClick: (item:any,expanded:boolean) => void;
+  expandObj: any;
+  expandKey: string;
+  // fedBack: (item:any,expanded:boolean) => void;
 }
 
 export default class Pie extends React.Component<IPieProps, any> {}

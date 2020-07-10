@@ -8,28 +8,28 @@ const renderColumns = (dispatch:Function, showIntent:any, setShowVisible:any) =>
   const columns = [
     {
       title: '场景ID',
+      key: 'id',
+      dataIndex: 'id',
+    },
+    {
+      title: '场景名称',
       key: 'name',
       dataIndex: 'name',
     },
     {
-      title: '场景名称',
-      key: 'tel',
-      dataIndex: 'tel',
-    },
-    {
       title: '数据调用',
-      key: 'job',
-      dataIndex: 'job',
+      key: 'intent',
+      dataIndex: 'intent',
     },
     {
       title: '词槽匹配',
-      key: 'triggerTime',
-      dataIndex: 'triggerTime',
+      key: 'scene',
+      dataIndex: 'scene',
     },
     {
       title: '状态',
-      key: 'startTime',
-      dataIndex: 'startTime',
+      key: 'status',
+      dataIndex: 'status',
     },
     {
       title: '操作人',
