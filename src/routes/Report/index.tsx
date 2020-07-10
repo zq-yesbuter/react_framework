@@ -222,6 +222,7 @@ function Index(props: Props) {
             // const list = one;
             if (!list && !list.length) {
               setMonthData([{ name: '', value: [] }]);
+              setLineValue([]);
               return;
             }
             const newList = list.map((item) => ({
@@ -252,6 +253,7 @@ function Index(props: Props) {
               });
               const monthData = [{ name: parentList[0] && parentList[0].name, value: baseData }];
               setMonthData(monthData);
+              setLineValue([]);
               // setLineValue([
               //   { name: parentList[0] && `${parentList[0].name}总量`, value: baseData },
               // ]);
