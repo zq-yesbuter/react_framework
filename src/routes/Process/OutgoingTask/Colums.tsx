@@ -47,7 +47,7 @@ const renderColumns = (dispatch: Function, ivrIntents: any, content, setcontent)
       render: (totalTimeElapsedSec: number, value: Value) => {
         const { actualCount } = value || {};
         return (
-          <Fragment>{actualCount ? (totalTimeElapsedSec / actualCount).toFixed(2) : 0}</Fragment>
+          <Fragment>{actualCount ? `${(totalTimeElapsedSec / actualCount).toFixed(0)}s` : '0s'}</Fragment>
         );
       },
     },

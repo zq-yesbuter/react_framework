@@ -76,11 +76,13 @@ function formatRemark(remark: any) {
       remarkList.push({ x: i, ...item[i] });
     });
   });
-  return remarkList.map(({ count, total_time_elapsed_sec, x }) => ({
-    x,
-    y: count,
-    z: `${total_time_elapsed_sec}s`,
-  }));
+  return remarkList
+    .sort((a, b) => b.count - a.count)
+    .map(({ count, total_time_elapsed_sec, x }) => ({
+      x,
+      y: count,
+      z: `${total_time_elapsed_sec}s`,
+    }));
 }
 
 function formatScene(ivrIntents: any, scene: any) {
@@ -93,11 +95,13 @@ function formatScene(ivrIntents: any, scene: any) {
       });
     });
   });
-  return sceneList.map(({ count, total_time_elapsed_sec, x }) => ({
-    x,
-    y: count,
-    z: `${total_time_elapsed_sec}s`,
-  }));
+  return sceneList
+    .sort((a, b) => b.count - a.count)
+    .map(({ count, total_time_elapsed_sec, x }) => ({
+      x,
+      y: count,
+      z: `${total_time_elapsed_sec}s`,
+    }));
 }
 
 // 扁平化数组
@@ -176,19 +180,14 @@ function Index(props: Props) {
   const [data3, setData3] = useState(noData as Array<PieData>);
   const [data4, setData4] = useState(noData as Array<PieData>);
   const [lineValue, setLineValue] = useState([] as any[]);
-  const [oneLineData,setOnelineData] = useState({one: { expand: false, length: 5 },two: { expand: false, length: 5 }});
-  const [twoLineData,setTwolineData] = useState({three: { expand: false, length: 5 },four: { expand: false, length: 5 }});
-  // const [expandObj, setExpandObj] = useState({
-  //   one: { expand: false, length: 5 },
-  //   two: { expand: false, length: 5 },
-  //   three: { expand: false, length: 5 },
-  //   four: { expand: false, length: 5 },
-  // });
-  
-  
-  const [oneHeight,setOneHeight] = useState(350);
-  const [twoHeight,setTwoHeight] = useState(350);
-  // 筛选条件
+  const [oneLineData, setOnelineData] = useState({
+    one: { expand: false, length: 5 },
+    two: { expand: false, length: 5 },
+  });
+  const [twoLineData, setTwolineData] = useState({
+    three: { expand: false, length: 5 },
+    four: { expand: false, length: 5 },
+  });
   function onSubmit(values: any) {
     const { time, tenantId } = values;
     let payload: QueryData = {
@@ -265,7 +264,10 @@ function Index(props: Props) {
             // const root = formatNotTree(parentList, oneO, tenantId) || [];
             // console.log('root=====>dauncheg', root);
             if (root.length) {
-              const data = root[0].children && root[0].children.length ? [{ ...root[0], children: undefined }, ...root[0].children] : [root[0]];
+              const data =
+                root[0].children && root[0].children.length
+                  ? [{ ...root[0], children: undefined }, ...root[0].children]
+                  : [root[0]];
               // console.log('包含根节点的所有的数据的总和==>', data);
               const newData = formatTwoDimension(data);
               // console.log('相同的数据合并--->', newData);
@@ -330,10 +332,8 @@ function Index(props: Props) {
           }
         } else {
           setData1(noData);
-          // setExpandObj({...expandObj,one:{length:5,expand:false}});
           setData2(noData);
-          setOnelineData({one: { expand: false, length: 5 },two: { expand: false, length: 5 }});
-          // setExpandObj({...expandObj,two:{length:5,expand:false}});
+          setOnelineData({ one: { expand: false, length: 5 }, two: { expand: false, length: 5 } });
         }
       })
       .catch((e) => message.error(e.message));
@@ -356,10 +356,11 @@ function Index(props: Props) {
           }
         } else {
           setData3(noData);
-          // setExpandObj({...expandObj,three:{length:5,expand:false}});
           setData4(noData);
-          setTwolineData({three: { expand: false, length: 5 },four: { expand: false, length: 5 }})
-          // setExpandObj({...expandObj,four:{length:5,expand:false}});
+          setTwolineData({
+            three: { expand: false, length: 5 },
+            four: { expand: false, length: 5 },
+          });
         }
       })
       .catch((e) => message.error(e.message));
@@ -371,50 +372,59 @@ function Index(props: Props) {
 
   function setOneLine(list, ivrIntents) {
     // 第一行左侧
-    const strData1 = list.map(({ count, total_time_elapsed_sec, scene, remark }) => ({
-      x: formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
-      y: count,
-      z: `${total_time_elapsed_sec}s`,
-      remark,
-    }));
+    const strData1 = list
+      .sort((a, b) => b.count - a.count)
+      .map(({ count, total_time_elapsed_sec, scene, remark }) => ({
+        x: formatTaskType(ivrIntents, 'scene', scene, 'sceneDesc'),
+        y: count,
+        z: `${total_time_elapsed_sec}s`,
+        remark,
+      }));
     setData1(strData1);
-    // setExpandObj({...expandObj,one:{}});
     // 第一行右侧
     const remark = objToArrObj(list[0].remark);
     if (remark && remark.length) {
       const datalist = formatRemark(remark);
       setData2(datalist);
-      // setExpandObj({...expandObj,two:{length:datalist.length,expand:false}});
-      // console.log('=====>',{...expandObj,two:{}});
-      setOnelineData({one:{length:strData1.length,expand:false},two:{length:datalist.length,expand:false}})
-    }else{
+      setOnelineData({
+        one: { length: strData1.length, expand: false },
+        two: { length: datalist.length, expand: false },
+      });
+    } else {
       setData2(noData);
-      setOnelineData({one:{length:strData1.length,expand:false},two:{length:5,expand:false}})
-      // setExpandObj({...expandObj,two:{length:5,expand:false}});
+      setOnelineData({
+        one: { length: strData1.length, expand: false },
+        two: { length: 5, expand: false },
+      });
     }
   }
 
   function setTwoLine(list, ivrIntents) {
     // 第二行左侧
-    const strData3 = list.map(({ count, total_time_elapsed_sec, operator, scene }) => ({
-      x: operator,
-      y: count,
-      z: `${total_time_elapsed_sec}s`,
-      scene,
-    }));
+    const strData3 = list
+      .sort((a, b) => b.count - a.count)
+      .map(({ count, total_time_elapsed_sec, operator, scene }) => ({
+        x: operator,
+        y: count,
+        z: `${total_time_elapsed_sec}s`,
+        scene,
+      }));
     setData3(strData3);
-    // setExpandObj({...expandObj,three:{length:strData3.length,expand:false}});
-    
+
     // 第二行右侧
     const scene = objToArrObj(list[0].scene);
     if (scene && scene.length) {
       const datalist = formatScene(ivrIntents, scene);
       setData4(datalist);
-      setTwolineData({three: { expand: false, length: strData3.length },four: { expand: false, length: datalist.length }})
-      // setExpandObj({...expandObj,four:{length:datalist.length,expand:false}});
-    }else{
-      setTwolineData({three: { expand: false, length: strData3.length },four: { expand: false, length: 5 }})
-      // setExpandObj({...expandObj,four:{length:5,expand:false}});
+      setTwolineData({
+        three: { expand: false, length: strData3.length },
+        four: { expand: false, length: datalist.length },
+      });
+    } else {
+      setTwolineData({
+        three: { expand: false, length: strData3.length },
+        four: { expand: false, length: 5 },
+      });
     }
   }
 
@@ -476,8 +486,8 @@ function Index(props: Props) {
               height={254}
               // expandClick={oneHeightClick}
               lengendClick={lengendClick}
-              expandObj = {oneLineData}
-              expandKey='one'
+              expandObj={oneLineData}
+              expandKey="one"
               // fedBack={fedBack}
             />
           </Col>
@@ -487,8 +497,8 @@ function Index(props: Props) {
               subTitle="外呼结果分布"
               data={data2}
               height={254}
-              expandObj = {oneLineData}
-              expandKey='two'
+              expandObj={oneLineData}
+              expandKey="two"
               // fedBack={fedBack}
               // expandClick={twoHeightClick}
             />
@@ -501,11 +511,9 @@ function Index(props: Props) {
               subTitle="使用人使用量分布"
               data={data3}
               height={254}
-              expandObj = {twoLineData}
-              // expandClick={threeHeightClick}
+              expandObj={twoLineData}
               lengendClick={lengendClick2}
-              expandKey='three'
-              // fedBack={fedBack}
+              expandKey="three"
             />
           </Col>
           <Col span={12}>
@@ -514,10 +522,8 @@ function Index(props: Props) {
               subTitle="外呼类型分布"
               data={data4}
               height={254}
-              expandObj = {twoLineData}
-              expandKey = 'four'
-              // fedBack={fedBack}
-              // expandClick={fourHeightClick}
+              expandObj={twoLineData}
+              expandKey="four"
             />
           </Col>
         </Row>
