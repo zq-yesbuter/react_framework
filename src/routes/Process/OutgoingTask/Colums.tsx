@@ -46,7 +46,9 @@ const renderColumns = (dispatch: Function, ivrIntents: any, content, setcontent)
       dataIndex: 'totalTimeElapsedSec',
       render: (totalTimeElapsedSec: number, value: Value) => {
         const { actualCount } = value || {};
-        return <Fragment>{actualCount ? totalTimeElapsedSec / actualCount : 0}</Fragment>;
+        return (
+          <Fragment>{actualCount ? (totalTimeElapsedSec / actualCount).toFixed(2) : 0}</Fragment>
+        );
       },
     },
     {
@@ -84,7 +86,7 @@ const renderColumns = (dispatch: Function, ivrIntents: any, content, setcontent)
       dataIndex: 'id',
       width: 150,
       render: (id: number | string, value: Value) => {
-        const { intent, status, createdTime,actualCount } = value || {};
+        const { intent, status, createdTime, actualCount } = value || {};
         const { pathname } = window.location;
         const isDelete = pathname.slice(pathname.lastIndexOf('/') + 1) === 'delete';
         const search = isDelete
@@ -123,38 +125,46 @@ const renderColumns = (dispatch: Function, ivrIntents: any, content, setcontent)
             >
               名单
             </a>
-            {status > 3 && 
-            <Fragment>
-              <Divider type="vertical" />
-              <Popover
-                content={content}
-                title="挂机原因占比"
-                trigger="click"
-                placement="topRight"
-                // visible={visible}
-                // onVisibleChange={handleVisibleChange}
-              >
-                <a
-                  onClick={() => {
-                    setcontent(<Spin size="small" />);
-                    getProResult({ batchId: id }).then((data) => {
-                      if (data && data.length) {
-                        let result = data.reduce(
-                          (acc, cur) => acc + `${cur.remark} :   ${actualCount ? `${Math.round(cur.count/actualCount * 10000)/100}%` : '0%'}\n`,
-                          ''
-                        );
-                        setcontent(result);
-                      } else {
-                        setcontent('暂无数据');
-                      }
-                    });
-                  }}
+            {status > 3 && (
+              <Fragment>
+                <Divider type="vertical" />
+                <Popover
+                  content={content}
+                  title="挂机原因占比"
+                  trigger="click"
+                  placement="topRight"
+                  // visible={visible}
+                  // onVisibleChange={handleVisibleChange}
                 >
-                  查看
-                </a>
-              </Popover>
-            </Fragment>
-          } 
+                  <a
+                    onClick={() => {
+                      setcontent(<Spin size="small" />);
+                      getProResult({ batchId: id }).then((data) => {
+                        if (data && data.length) {
+                          const newData = data.sort((a, b) => b.count - a.count);
+                          const result = (
+                            <div>
+                              {newData.map((cur) => (
+                                <p>{`${cur.remark} :   ${
+                                  actualCount
+                                    ? `${Math.round((cur.count / actualCount) * 10000) / 100}%`
+                                    : '0%'
+                                }`}</p>
+                              ))}
+                            </div>
+                          );
+                          setcontent(result);
+                        } else {
+                          setcontent(<div>暂无数据</div>);
+                        }
+                      });
+                    }}
+                  >
+                    查看
+                  </a>
+                </Popover>
+              </Fragment>
+            )}
           </Fragment>
         );
       },
