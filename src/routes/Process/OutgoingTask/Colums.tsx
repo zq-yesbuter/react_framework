@@ -128,7 +128,7 @@ const renderColumns = (dispatch: Function, ivrIntents: any, content, setcontent)
               <Divider type="vertical" />
               <Popover
                 content={content}
-                title="外呼占比"
+                title="挂机原因占比"
                 trigger="click"
                 placement="topRight"
                 // visible={visible}

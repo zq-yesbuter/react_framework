@@ -6,6 +6,7 @@ import _ from 'lodash';
 import { FormComponentProps } from 'antd/lib/form/Form';
 import { statusOptions } from '../contant';
 import DateTimeRangePicker from '@/components/DateRangePicker';
+import TrimInput from '@/components/TrimInput';
 import { unique } from './utils';
 
 const { Option } = Select;
@@ -95,7 +96,7 @@ class QueryForm extends React.Component<IFormComponentProps> {
         </FormItem>
         <FormItem label="任务名称">
           {getFieldDecorator('batchName')(
-            <Input placeholder="请输入任务名称" style={{ width: 200 }} />
+            <TrimInput placeholder="请输入任务名称" style={{ width: 200 }} />
           )}
         </FormItem>
         <FormItem label="任务状态">
@@ -111,12 +112,12 @@ class QueryForm extends React.Component<IFormComponentProps> {
         </FormItem>
         <FormItem label="创建人">
           {getFieldDecorator('created')(
-            <Input placeholder="请输入创建人姓名" style={{ width: 200 }} />
+            <TrimInput placeholder="请输入创建人姓名" style={{ width: 200 }} />
           )}
         </FormItem>
         <FormItem label="更新人">
           {getFieldDecorator('modified')(
-            <Input placeholder="请输入更新人姓名" style={{ width: 200 }} />
+            <TrimInput placeholder="请输入更新人姓名" style={{ width: 200 }} />
           )}
         </FormItem>
         <FormItem label="时间选项">
