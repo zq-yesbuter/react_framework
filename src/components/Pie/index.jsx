@@ -19,7 +19,7 @@ export default class Pie extends Component {
     selIndex: 0,
     start: 0,
     length: 5,
-    oneHeight:350,
+    oneHeight: 350,
   };
 
   componentDidMount() {
@@ -50,9 +50,9 @@ export default class Pie extends Component {
   componentWillUnmount() {
     window.removeEventListener('resize', this.resize);
     this.resize.cancel();
-    this.setState({start: 0});
+    this.setState({ start: 0 });
   }
-  
+
   // 展开
   handleListChange = (e) => {
     e && e.preventDefault();
@@ -67,8 +67,11 @@ export default class Pie extends Component {
     }
 
     let height = 350;
-    if(expandKey==='one' || expandKey==='two'){
-      height = (Math.max(expandObj.one.length,expandObj.two.length)+ 2) * 33 > 350 ? (Math.max(expandObj.one.length,expandObj.two.length)+ 2) * 33 : 350;
+    if (expandKey === 'one' || expandKey === 'two') {
+      height =
+        (Math.max(expandObj.one.length, expandObj.two.length) + 2) * 33 > 350
+          ? (Math.max(expandObj.one.length, expandObj.two.length) + 2) * 33
+          : 350;
       // this.setState({oneHeight:height},() => {
       //   // fedBack(expandKey,true)
       // });
@@ -99,8 +102,11 @@ export default class Pie extends Component {
       // }
       // this.setState({oneHeight:height});
       // console.log('height====>',height,expandObj.one.length,expandObj.two.length,'expandKey==>',expandKey);
-    }else{
-      height = (Math.max(expandObj.three.length,expandObj.four.length)+ 2) * 33 > 350 ? (Math.max(expandObj.three.length,expandObj.four.length)+ 2) * 33 : 350;
+    } else {
+      height =
+        (Math.max(expandObj.three.length, expandObj.four.length) + 2) * 33 > 350
+          ? (Math.max(expandObj.three.length, expandObj.four.length) + 2) * 33
+          : 350;
       // this.setState({oneHeight:height},() => {
       //   // fedBack(expandKey,true)
       // });
@@ -112,7 +118,7 @@ export default class Pie extends Component {
         legendData: newLegendData,
         start: s,
         // oneHeight:600,
-        oneHeight:height,
+        oneHeight: height,
       };
     });
 
@@ -128,27 +134,30 @@ export default class Pie extends Component {
   handleListShou = (e) => {
     e && e.preventDefault();
     const { start, length, staticLegendData } = this.state;
-    const { lengendClick, expandClick} = this.props;
+    const { lengendClick, expandClick } = this.props;
     const s = start + length >= staticLegendData.length ? 0 : start + length;
-    let newLegendData = staticLegendData.slice(0,5) || [];
+    let newLegendData = staticLegendData.slice(0, 5) || [];
     if (newLegendData.length) {
       newLegendData = newLegendData.map((item) => ({ ...item, checked: true }));
       newLegendData[0].checked = false;
       lengendClick && lengendClick(newLegendData[0]);
     }
-    this.setState({oneHeight:350},() => {
+    this.setState({ oneHeight: 350 }, () => {
       // fedBack(expandKey,false)
     });
 
-    this.setState((state) => {
-      return {
-        ...state,
-        legendData: newLegendData,
-        start: s,
-      };
-    },() => {
-      // expandClick(newLegendData.length,false);
-    });
+    this.setState(
+      (state) => {
+        return {
+          ...state,
+          legendData: newLegendData,
+          start: s,
+        };
+      },
+      () => {
+        // expandClick(newLegendData.length,false);
+      }
+    );
   };
 
   getG2Instance = (chart) => {
@@ -335,9 +344,13 @@ export default class Pie extends Component {
       as: 'percent',
     });
     // console.log(staticLegendData.length,staticLegendData.length === legendData.length,legendData.length );
-    const {oneHeight} = this.state;
+    const { oneHeight } = this.state;
     return (
-      <div ref={this.handleRoot} className={pieClassName} style={{height:oneHeight,display:'flex',alignItems:'center'}}>
+      <div
+        ref={this.handleRoot}
+        className={pieClassName}
+        style={{ height: oneHeight, display: 'flex', alignItems: 'center' }}
+      >
         <ReactFitText maxFontSize={25}>
           <div className="chart">
             <Chart
@@ -393,7 +406,7 @@ export default class Pie extends Component {
                         backgroundColor: !lengendClick && !item.checked ? '#aaa' : item.color,
                       }}
                     />
-                    {item.x && item.x.length > 4 ? (
+                    {item.x && item.x.length > (document.body.clientWidth < 1550 ? 4 : 6) ? (
                       <AntTooltip title={item.x}>
                         <span
                           className="legendTitle"
@@ -444,7 +457,11 @@ export default class Pie extends Component {
                 ))}
             {staticLegendData.length > 5 && (
               <li style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
-                {staticLegendData.length === legendData.length ? <a onClick={this.handleListShou}>收起</a> : <a onClick={this.handleListChange}>展开</a>}
+                {staticLegendData.length === legendData.length ? (
+                  <a onClick={this.handleListShou}>收起</a>
+                ) : (
+                  <a onClick={this.handleListChange}>展开</a>
+                )}
               </li>
             )}
           </ul>

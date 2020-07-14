@@ -50,7 +50,8 @@ class FlowBody extends React.Component {
     return (
       <Fragment>
         <Flow
-          className="flow"
+          // className="flow"
+          style={{flex:1}}
           data={data}
           onAfterChange={this.onAfterChange}
         />

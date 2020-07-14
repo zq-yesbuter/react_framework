@@ -59,7 +59,7 @@ export default () => (
         <Col span={4} className="editorSidebar">
           <FlowItemPanel />
         </Col>
-        <Col span={16} className="editorContent">
+        <Col span={16} style={{display: 'flex',flexDirection: 'column'}}>
           <FlowBody id='flowBody' data={data} />
         </Col>
         <Col span={4} className="editorSidebar">
