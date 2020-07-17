@@ -8,6 +8,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // const mockUrlObj = require('./devServer.mock');
 // const HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
 const merge = require('webpack-merge');
+const WebpackBar = require('webpackbar');
 
 const bodyParser = require('body-parser');
 const commonConf = require('./webpack.common');
@@ -152,6 +153,8 @@ const devConf = {
     },
   },
   plugins: [
+    // 添加 进度条
+    new WebpackBar(),
     new MiniCssExtractPlugin({
       filename: '[name].css',
       ignoreOrder: true,

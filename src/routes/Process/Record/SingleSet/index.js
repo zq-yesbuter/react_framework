@@ -51,7 +51,7 @@ function usePrevious(value) {
 function SingleSet({
   form,
   dispatch,
-  namelist: { jobList = [], selectJobId, listValue },
+  namelist: { jobList = [], selectJobId, listValue, selectedScene },
   location,
   setRef,
 }) {
@@ -210,6 +210,7 @@ function SingleSet({
         let payload = {
           triggerTime: values.triggerTime.format(format),
           intent,
+          scene:selectedScene,
         };
         if (intent === 'interview_invitation') {
           payload.params = { startTime: params.startTime ? params.startTime.format(format) : null };

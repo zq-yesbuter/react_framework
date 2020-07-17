@@ -47,6 +47,7 @@ export default {
     deleteNameList: [],
     messageList: [],
     resultList: [],
+    selectedScene: '',
   },
   effects: {
     *getBatch({ payload }, { call, put, select }) {

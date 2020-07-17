@@ -82,8 +82,8 @@ const renderColumns = (dispatch:Function, showIntent:string, setShowVisible:Func
       key: 'invitationId',
       dataIndex: 'invitationId',
       width: 150,
-      render: (group:string|number, value:{intent:string|any}) => {
-        const { intent } = value;
+      render: (group:string|number, value:{intent:string|any,scene:string|any,}) => {
+        const { intent,scene } = value;
         return (
           <Fragment>
             <a
@@ -106,6 +106,10 @@ const renderColumns = (dispatch:Function, showIntent:string, setShowVisible:Func
                   payload: dataStatus
                     ? { id: group, intent, dataStatus: 2 }
                     : { id: group, intent },
+                });
+                dispatch({
+                  type: 'namelist/save',
+                  payload: {selectedScene:scene},
                 });
                 setShowVisible(true);
               }}
