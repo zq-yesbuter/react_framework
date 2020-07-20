@@ -163,7 +163,9 @@ function Index(props: Props) {
     if (configNameList && configNameList.length) {
       const { retries } = configNameList[0] || {};
       if (retries && retries.length) {
-        retries.forEach((item: any) => Object.assign(retry, item));
+        retries[0] &&
+          retries[0].retries &&
+          retries[0].retries.forEach((item: any) => Object.assign(retry, item));
       }
     }
     const showSure =
@@ -226,6 +228,9 @@ function Index(props: Props) {
               ],
             })(
               <Select style={{ width: 200, marginRight: 10 }}>
+                <Option value={5} key={5}>
+                  5分钟
+                </Option>
                 <Option value={10} key={10}>
                   10分钟
                 </Option>
