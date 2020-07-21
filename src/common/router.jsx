@@ -110,6 +110,10 @@ export const getRouterData = (app) => {
     '/AI/outgoing/namelist': {
       component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/NameList')),
     },
+    // 外呼名单
+    '/AI/record': {
+      component: dynamicWrapper(app, ['namelist'], () => import('../routes/Process/Record/FullIndex')),
+    },
     // 场景配置
     '/AI/scene': {
       component: dynamicWrapper(app, ['scene'], ReadSubRoutes),
