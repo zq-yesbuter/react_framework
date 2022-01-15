@@ -52,7 +52,7 @@
     "less-loader": "^5.0.0",
     "lodash": "^4.17.4",
     "lodash-decorators": "^4.4.1",
-    "marked": "^0.6.2",
+    "marked": "^4.0.10",
     "moment": "^2.19.1",
     "numeral": "^2.0.6",
     "omit.js": "^1.0.0",
